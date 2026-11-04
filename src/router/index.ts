@@ -24,6 +24,13 @@ const router = createRouter({
       component: () => import('@/views/auth/AceptarInvitacionView.vue'),
       meta: { public: true, allowLoggedIn: true }
     },
+    // Pagina publica para dar: la ve cualquier persona con el enlace de la iglesia
+    {
+      path: '/dar/:slug',
+      name: 'dar-publica',
+      component: () => import('@/views/DarPublicaView.vue'),
+      meta: { public: true, allowLoggedIn: true }
+    },
     // App principal (requiere auth)
     {
       path: '/',

@@ -521,6 +521,14 @@
     "configDescripcion": "Enter the web address where your church receives each kind of gift. ViveADN does not process or store payments: it only shows a button that opens that site in a new tab. Leave a field empty to hide its button.",
     "ejemploUrl": "https://your-church.org/tithes",
     "urlInvalida": "Enter an address that starts with https:// and has no spaces.",
-    "sinPermiso": "Only people who manage the church settings can change these links."
+    "sinPermiso": "Only people who manage the church settings can change these links.",
+    "paginaNoDisponible": "There is nothing to show here for now.",
+    "paginaDescripcion": "{iglesia} receives tithes, offerings and donations on its own website. Choose an option to continue.",
+    "paginaAviso": "You will be taken to the church giving site. ViveADN does not process or store payments.",
+    "publicaTitulo": "Public giving page",
+    "publicaDescripcion": "Anyone with this link can see your church giving buttons, without signing in. Share it on social media, by WhatsApp or on your website.",
+    "copiar": "Copy link",
+    "copiado": "Copied",
+    "abrirPagina": "Open the page"
   }
 }

@@ -521,6 +521,14 @@
     "configDescripcion": "Escribe la dirección web donde tu iglesia recibe cada aporte. ViveADN no procesa ni guarda pagos: solo muestra un botón que abre ese sitio en otra pestaña. Deja un campo vacío para ocultar su botón.",
     "ejemploUrl": "https://tu-iglesia.org/diezmos",
     "urlInvalida": "Escribe una dirección que empiece por https:// y no tenga espacios.",
-    "sinPermiso": "Solo quien configura la iglesia puede cambiar estos enlaces."
+    "sinPermiso": "Solo quien configura la iglesia puede cambiar estos enlaces.",
+    "paginaNoDisponible": "No hay nada para mostrar aquí por ahora.",
+    "paginaDescripcion": "{iglesia} recibe diezmos, ofrendas y donaciones en su propio sitio web. Elige una opción para continuar.",
+    "paginaAviso": "Serás llevado al sitio de recaudo de la iglesia. ViveADN no procesa ni guarda pagos.",
+    "publicaTitulo": "Página pública para dar",
+    "publicaDescripcion": "Cualquier persona con este enlace puede ver los botones de dar de tu iglesia, sin iniciar sesión. Compártelo en redes, por WhatsApp o en tu web.",
+    "copiar": "Copiar enlace",
+    "copiado": "Copiado",
+    "abrirPagina": "Abrir la página"
   }
 }
