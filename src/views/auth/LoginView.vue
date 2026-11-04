@@ -25,13 +25,7 @@
 
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">{{ t('login.contrasena') }}</label>
-          <input
-            v-model="password"
-            type="password"
-            required
-            placeholder="••••••••"
-            class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-adn-verde focus:border-transparent transition"
-          />
+          <CampoContrasena v-model="password" required placeholder="••••••••" autocomplete="current-password" />
         </div>
 
         <div v-if="error" class="bg-red-50 text-red-700 text-sm px-4 py-3 rounded-lg border border-red-200">
@@ -120,6 +114,7 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { I18nT, useI18n } from 'vue-i18n'
 import SelectorIdioma from '@/components/SelectorIdioma.vue'
+import CampoContrasena from '@/components/CampoContrasena.vue'
 import { useAuthStore } from '@/stores/auth'
 import { supabase } from '@/lib/supabase'
 

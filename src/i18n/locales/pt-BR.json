@@ -12,7 +12,9 @@
     "inactivo": "Inativo",
     "activa": "Ativa",
     "inactiva": "Inativa",
-    "idioma": "Idioma"
+    "idioma": "Idioma",
+    "verContrasena": "Mostrar senha",
+    "ocultarContrasena": "Ocultar senha"
   },
   "menu": {
     "dashboard": "Painel",
