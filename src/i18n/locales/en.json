@@ -354,7 +354,8 @@
       "iglesia": "Church",
       "usuarios": "Users",
       "integraciones": "Integrations",
-      "seguridad": "Security"
+      "seguridad": "Security",
+      "dar": "Give"
     },
     "identidad": "Church identity",
     "nombreIglesia": "Church name *",
@@ -508,5 +509,18 @@
     "ninguno": "My role (real)",
     "aviso": "Preview as {rol}. It only changes what the interface shows; the data is still yours. To see what that person really sees, sign in with an account of that role.",
     "salir": "Exit preview"
+  },
+  "dar": {
+    "titulo": "Give",
+    "descripcion": "Your church receives tithes, offerings and donations on its own websites. These buttons take you there.",
+    "diezmo": "Give tithe",
+    "ofrenda": "Give offering",
+    "donacion": "Donate",
+    "seAbreEnOtraPagina": "Opens in another page",
+    "configTitulo": "Giving links",
+    "configDescripcion": "Enter the web address where your church receives each kind of gift. ViveADN does not process or store payments: it only shows a button that opens that site in a new tab. Leave a field empty to hide its button.",
+    "ejemploUrl": "https://your-church.org/tithes",
+    "urlInvalida": "Enter an address that starts with https:// and has no spaces.",
+    "sinPermiso": "Only people who manage the church settings can change these links."
   }
 }
