@@ -8,6 +8,8 @@ La cuenta tiene otros proyectos de Supabase: comprueba siempre esta referencia a
 - `schema/esquema_completo.sql`: estado completo de la base a 24 de octubre de 2026 (tablas, funciones, triggers, seguridad por filas y permisos). Sirve para reconstruir la base en un proyecto **nuevo y vacío**. No se ejecuta contra producción.
 - `schema/seed.sql`: datos de catálogo (módulos, planes, permisos). Sin datos de personas.
 - `functions/plataforma/index.ts`: función del panel de plataforma, igual a la desplegada (versión 1).
+- `functions/dar-publico/index.ts`: función pública de la página `/dar/<slug>`. Solo devuelve el nombre de la iglesia y sus enlaces de recaudo activos. Se despliega con verificación de JWT (la web envía la clave anónima).
+- `functions/invitaciones/index.ts`: invitaciones de acceso por correo.
 - `migrations/`: a partir de ahora, cada cambio de base de datos es un archivo aquí.
 
 ## Reglas

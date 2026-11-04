@@ -93,6 +93,20 @@
       </div>
     </div>
 
+    <!-- Pagina publica para dar -->
+    <div v-if="tabActivo === 'dar' && enlacePublicoDar" class="card space-y-3">
+      <h2 class="text-lg font-semibold text-gray-900 flex items-center gap-2"><ExternalLink class="w-5 h-5 text-adn-verde" aria-hidden="true" /> {{ t('dar.publicaTitulo') }}</h2>
+      <p class="text-sm text-gray-500">{{ t('dar.publicaDescripcion') }}</p>
+      <div class="flex flex-col sm:flex-row gap-2">
+        <input :value="enlacePublicoDar" readonly aria-label="URL" @focus="($event.target as HTMLInputElement).select()"
+          class="flex-1 px-3 py-2.5 border border-gray-200 rounded-lg text-sm bg-gray-50 font-mono" />
+        <button @click="copiarEnlaceDar" class="btn-secondary text-sm">{{ enlaceDarCopiado ? t('dar.copiado') : t('dar.copiar') }}</button>
+        <a :href="enlacePublicoDar" target="_blank" rel="noopener noreferrer" class="btn-primary text-sm inline-flex items-center justify-center gap-2">
+          {{ t('dar.abrirPagina') }} <ExternalLink class="w-4 h-4" aria-hidden="true" />
+        </a>
+      </div>
+    </div>
+
     <!-- Tab: Usuarios y roles -->
     <div v-if="tabActivo === 'usuarios'" class="space-y-6">
       <div class="card">
@@ -347,7 +361,7 @@
 </template>
 
 <script setup lang="ts">
-import { Check, Church, Database, HandHeart, KeyRound, Lightbulb, ListChecks, Lock, Mail, MessageCircle, Palette, Plug, ShieldCheck, TriangleAlert, Users } from '@lucide/vue'
+import { Check, Church, Database, ExternalLink, HandHeart, KeyRound, Lightbulb, ListChecks, Lock, Mail, MessageCircle, Palette, Plug, ShieldCheck, TriangleAlert, Users } from '@lucide/vue'
 import { ref, computed, onMounted } from 'vue'
 import { supabase } from '@/lib/supabase'
 import { TIPOS_DAR, urlDarValida } from '@/lib/dar'
@@ -389,6 +403,13 @@ const iglesia = ref({ nombre: '', pais: '', ciudad: '', email: '' })
 // Enlaces para dar: una dirección por tipo; vacía = sin botón
 const enlacesDar = ref<Record<TipoDar, string>>({ diezmo: '', ofrenda: '', donacion: '' })
 const mensajeDar = ref('')
+const enlaceDarCopiado = ref(false)
+// Solo se ofrece si ya hay algún enlace guardado; la página pública no existe sin ellos
+const enlacePublicoDar = computed(() =>
+  auth.iglesia?.slug && TIPOS_DAR.some(tipo => enlacesDar.value[tipo].trim()) ? `${window.location.origin}/dar/${auth.iglesia.slug}` : '')
+async function copiarEnlaceDar() {
+  try { await navigator.clipboard.writeText(enlacePublicoDar.value); enlaceDarCopiado.value = true; setTimeout(() => { enlaceDarCopiado.value = false }, 2000) } catch { /* se puede copiar a mano */ }
+}
 const hayUrlInvalida = computed(() => TIPOS_DAR.some(tipo => enlacesDar.value[tipo].trim() && !urlDarValida(enlacesDar.value[tipo].trim())))
 const nuevoUsuario = ref({ email: '', nombre: '', apellido: '', rol: '' })
 

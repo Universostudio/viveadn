@@ -521,6 +521,14 @@
     "configDescripcion": "Informe o endereço web onde sua igreja recebe cada contribuição. O ViveADN não processa nem guarda pagamentos: apenas mostra um botão que abre esse site em outra aba. Deixe um campo vazio para ocultar o botão.",
     "ejemploUrl": "https://sua-igreja.org/dizimos",
     "urlInvalida": "Informe um endereço que comece com https:// e não tenha espaços.",
-    "sinPermiso": "Somente quem gerencia as configurações da igreja pode alterar estes links."
+    "sinPermiso": "Somente quem gerencia as configurações da igreja pode alterar estes links.",
+    "paginaNoDisponible": "Não há nada para mostrar aqui por enquanto.",
+    "paginaDescripcion": "{iglesia} recebe dízimos, ofertas e doações em seu próprio site. Escolha uma opção para continuar.",
+    "paginaAviso": "Você será levado ao site de arrecadação da igreja. O ViveADN não processa nem guarda pagamentos.",
+    "publicaTitulo": "Página pública para contribuir",
+    "publicaDescripcion": "Qualquer pessoa com este link pode ver os botões de contribuição da sua igreja, sem fazer login. Compartilhe nas redes, por WhatsApp ou no seu site.",
+    "copiar": "Copiar link",
+    "copiado": "Copiado",
+    "abrirPagina": "Abrir a página"
   }
 }

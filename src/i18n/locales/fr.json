@@ -521,6 +521,14 @@
     "configDescripcion": "Saisissez l'adresse web où votre église reçoit chaque type de don. ViveADN ne traite ni ne conserve aucun paiement : elle affiche seulement un bouton qui ouvre ce site dans un nouvel onglet. Laissez un champ vide pour masquer son bouton.",
     "ejemploUrl": "https://votre-eglise.org/dimes",
     "urlInvalida": "Saisissez une adresse qui commence par https:// et sans espaces.",
-    "sinPermiso": "Seules les personnes qui gèrent la configuration de l'église peuvent modifier ces liens."
+    "sinPermiso": "Seules les personnes qui gèrent la configuration de l'église peuvent modifier ces liens.",
+    "paginaNoDisponible": "Il n'y a rien à afficher ici pour le moment.",
+    "paginaDescripcion": "{iglesia} reçoit les dîmes, les offrandes et les dons sur son propre site web. Choisissez une option pour continuer.",
+    "paginaAviso": "Vous serez redirigé vers le site de collecte de l'église. ViveADN ne traite ni ne conserve aucun paiement.",
+    "publicaTitulo": "Page publique pour donner",
+    "publicaDescripcion": "Toute personne disposant de ce lien peut voir les boutons de don de votre église, sans se connecter. Partagez-le sur les réseaux, par WhatsApp ou sur votre site.",
+    "copiar": "Copier le lien",
+    "copiado": "Copié",
+    "abrirPagina": "Ouvrir la page"
   }
 }
