@@ -16,6 +16,8 @@
       <RouterLink to="/configuracion" class="underline font-medium">{{ t('panel.faltaSegundoSuperAccion') }}</RouterLink>
     </div>
 
+    <BotonesDar />
+
     <!-- Stats principales -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       <div class="card-stat">
@@ -134,6 +136,7 @@ import { formatoFecha } from '@/i18n'
 import { supabase } from '@/lib/supabase'
 import { Users, House, HeartHandshake, Siren, CircleCheck, UserPlus } from '@lucide/vue'
 import EstadoAlerta from '@/components/EstadoAlerta.vue'
+import BotonesDar from '@/components/BotonesDar.vue'
 import { useAuthStore } from '@/stores/auth'
 import { ETIQUETAS_COMPROMISO } from '@/lib/supabase'
 import type { AlertaColor, NivelCompromiso } from '@/lib/supabase'

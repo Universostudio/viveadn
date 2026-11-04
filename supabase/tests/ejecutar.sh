@@ -20,3 +20,4 @@ done
 "${PSQL[@]}" -d $DB -f tests/roles_nuevos.sql
 "${PSQL[@]}" -d $DB -f tests/invitaciones.sql
 "${PSQL[@]}" -d $DB -f tests/permisos.sql
+"${PSQL[@]}" -d $DB -f tests/enlaces_dar.sql

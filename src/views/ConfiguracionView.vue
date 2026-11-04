@@ -69,6 +69,30 @@
       </div>
     </div>
 
+    <!-- Tab: Dar (diezmos, ofrendas y donaciones) -->
+    <div v-if="tabActivo === 'dar'" class="space-y-6">
+      <div class="card space-y-4">
+        <div>
+          <h2 class="text-lg font-semibold text-gray-900 flex items-center gap-2"><HandHeart class="w-5 h-5 text-adn-verde" aria-hidden="true" /> {{ t('dar.configTitulo') }}</h2>
+          <p class="text-sm text-gray-500 mt-0.5">{{ t('dar.configDescripcion') }}</p>
+        </div>
+        <div v-for="tipo in TIPOS_DAR" :key="tipo">
+          <label :for="`dar-${tipo}`" class="block text-sm font-medium text-gray-700 mb-1">{{ t(`dar.${tipo}`) }}</label>
+          <input :id="`dar-${tipo}`" v-model="enlacesDar[tipo]" type="url" inputmode="url" maxlength="500" :placeholder="t('dar.ejemploUrl')"
+            :disabled="!auth.can('iglesia.configurar')"
+            class="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-adn-verde disabled:bg-gray-50" />
+          <p v-if="enlacesDar[tipo].trim() && !urlDarValida(enlacesDar[tipo].trim())" class="text-xs text-red-600 mt-1">{{ t('dar.urlInvalida') }}</p>
+        </div>
+        <p v-if="mensajeDar" class="text-sm text-gray-600">{{ t(mensajeDar) }}</p>
+        <div class="flex justify-end">
+          <button v-if="auth.can('iglesia.configurar')" @click="guardarEnlacesDar" :disabled="guardando || hayUrlInvalida" class="btn-primary disabled:opacity-60">
+            {{ guardando ? t('comun.guardando') : t('configuracion.guardarCambios') }}
+          </button>
+          <p v-else class="text-xs text-gray-400">{{ t('dar.sinPermiso') }}</p>
+        </div>
+      </div>
+    </div>
+
     <!-- Tab: Usuarios y roles -->
     <div v-if="tabActivo === 'usuarios'" class="space-y-6">
       <div class="card">
@@ -323,9 +347,11 @@
 </template>
 
 <script setup lang="ts">
-import { Check, Church, Database, KeyRound, Lightbulb, ListChecks, Lock, Mail, MessageCircle, Palette, Plug, ShieldCheck, TriangleAlert, Users } from '@lucide/vue'
+import { Check, Church, Database, HandHeart, KeyRound, Lightbulb, ListChecks, Lock, Mail, MessageCircle, Palette, Plug, ShieldCheck, TriangleAlert, Users } from '@lucide/vue'
 import { ref, computed, onMounted } from 'vue'
 import { supabase } from '@/lib/supabase'
+import { TIPOS_DAR, urlDarValida } from '@/lib/dar'
+import type { TipoDar } from '@/lib/dar'
 import { useAuthStore } from '@/stores/auth'
 import { useI18n } from 'vue-i18n'
 
@@ -353,11 +379,17 @@ const camposIntegracion = ref<Record<string, string>>({})
 const tabs = [
   { id: 'iglesia', icono: Church },
   { id: 'usuarios', icono: Users },
+  { id: 'dar', icono: HandHeart },
   { id: 'integraciones', icono: Plug },
   { id: 'seguridad', icono: ShieldCheck },
 ]
 
 const iglesia = ref({ nombre: '', pais: '', ciudad: '', email: '' })
+
+// Enlaces para dar: una dirección por tipo; vacía = sin botón
+const enlacesDar = ref<Record<TipoDar, string>>({ diezmo: '', ofrenda: '', donacion: '' })
+const mensajeDar = ref('')
+const hayUrlInvalida = computed(() => TIPOS_DAR.some(tipo => enlacesDar.value[tipo].trim() && !urlDarValida(enlacesDar.value[tipo].trim())))
 const nuevoUsuario = ref({ email: '', nombre: '', apellido: '', rol: '' })
 
 // nombre: clave de traducción
@@ -437,6 +469,32 @@ async function cambiarRol(usuario: any, nuevoRol: string) {
     return
   }
   usuario.rol = nuevoRol
+}
+
+async function cargarEnlacesDar() {
+  const { data } = await supabase.from('enlaces_dar').select('tipo, url')
+  for (const e of (data ?? []) as { tipo: TipoDar; url: string }[]) enlacesDar.value[e.tipo] = e.url
+}
+
+async function guardarEnlacesDar() {
+  if (!auth.iglesiaId || hayUrlInvalida.value) return
+  guardando.value = true
+  mensajeDar.value = ''
+  const iglesiaId = auth.iglesiaId
+  const rellenos = TIPOS_DAR.filter(tipo => enlacesDar.value[tipo].trim())
+  const vacios = TIPOS_DAR.filter(tipo => !enlacesDar.value[tipo].trim())
+  const [guardar, borrar] = await Promise.all([
+    rellenos.length
+      ? supabase.from('enlaces_dar').upsert(
+          rellenos.map(tipo => ({ iglesia_id: iglesiaId, tipo, url: enlacesDar.value[tipo].trim(), activo: true, updated_at: new Date().toISOString() })),
+          { onConflict: 'iglesia_id,tipo' })
+      : Promise.resolve({ error: null }),
+    vacios.length
+      ? supabase.from('enlaces_dar').delete().eq('iglesia_id', iglesiaId).in('tipo', vacios)
+      : Promise.resolve({ error: null }),
+  ])
+  guardando.value = false
+  mensajeDar.value = guardar.error || borrar.error ? 'configuracion.errorGuardar' : 'configuracion.guardado'
 }
 
 async function guardarIglesia() {
@@ -533,6 +591,7 @@ onMounted(async () => {
     .order('created_at')
   roles.value = rs ?? []
   await cargarUsuarios()
+  await cargarEnlacesDar()
   if (auth.can('usuarios.gestionar')) await cargarInvitaciones()
 })
 </script>

@@ -354,7 +354,8 @@
       "iglesia": "Iglesia",
       "usuarios": "Usuarios",
       "integraciones": "Integraciones",
-      "seguridad": "Seguridad"
+      "seguridad": "Seguridad",
+      "dar": "Dar"
     },
     "identidad": "Identidad de la iglesia",
     "nombreIglesia": "Nombre de la iglesia *",
@@ -508,5 +509,18 @@
     "ninguno": "Mi rol (real)",
     "aviso": "Vista previa como {rol}. Solo cambia lo que muestra la interfaz; los datos siguen siendo los tuyos. Para ver lo que ve de verdad esa persona, entra con una cuenta de ese rol.",
     "salir": "Salir de la vista previa"
+  },
+  "dar": {
+    "titulo": "Dar",
+    "descripcion": "Tu iglesia recibe diezmos, ofrendas y donaciones en sus propios sitios web. Estos botones te llevan allí.",
+    "diezmo": "Diezmar",
+    "ofrenda": "Ofrendar",
+    "donacion": "Donar",
+    "seAbreEnOtraPagina": "Se abre en otra página",
+    "configTitulo": "Enlaces para dar",
+    "configDescripcion": "Escribe la dirección web donde tu iglesia recibe cada aporte. ViveADN no procesa ni guarda pagos: solo muestra un botón que abre ese sitio en otra pestaña. Deja un campo vacío para ocultar su botón.",
+    "ejemploUrl": "https://tu-iglesia.org/diezmos",
+    "urlInvalida": "Escribe una dirección que empiece por https:// y no tenga espacios.",
+    "sinPermiso": "Solo quien configura la iglesia puede cambiar estos enlaces."
   }
 }

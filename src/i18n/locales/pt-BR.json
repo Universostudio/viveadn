@@ -354,7 +354,8 @@
       "iglesia": "Igreja",
       "usuarios": "Usuários",
       "integraciones": "Integrações",
-      "seguridad": "Segurança"
+      "seguridad": "Segurança",
+      "dar": "Contribuir"
     },
     "identidad": "Identidade da igreja",
     "nombreIglesia": "Nome da igreja *",
@@ -508,5 +509,18 @@
     "ninguno": "Meu papel (real)",
     "aviso": "Pré-visualização como {rol}. Só muda o que a interface mostra; os dados continuam sendo os seus. Para ver o que essa pessoa realmente vê, entre com uma conta desse papel.",
     "salir": "Sair da pré-visualização"
+  },
+  "dar": {
+    "titulo": "Contribuir",
+    "descripcion": "Sua igreja recebe dízimos, ofertas e doações em seus próprios sites. Estes botões levam você até lá.",
+    "diezmo": "Dizimar",
+    "ofrenda": "Ofertar",
+    "donacion": "Doar",
+    "seAbreEnOtraPagina": "Abre em outra página",
+    "configTitulo": "Links para contribuir",
+    "configDescripcion": "Informe o endereço web onde sua igreja recebe cada contribuição. O ViveADN não processa nem guarda pagamentos: apenas mostra um botão que abre esse site em outra aba. Deixe um campo vazio para ocultar o botão.",
+    "ejemploUrl": "https://sua-igreja.org/dizimos",
+    "urlInvalida": "Informe um endereço que comece com https:// e não tenha espaços.",
+    "sinPermiso": "Somente quem gerencia as configurações da igreja pode alterar estes links."
   }
 }

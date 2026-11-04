@@ -354,7 +354,8 @@
       "iglesia": "Église",
       "usuarios": "Utilisateurs",
       "integraciones": "Intégrations",
-      "seguridad": "Sécurité"
+      "seguridad": "Sécurité",
+      "dar": "Donner"
     },
     "identidad": "Identité de l'église",
     "nombreIglesia": "Nom de l'église *",
@@ -508,5 +509,18 @@
     "ninguno": "Mon rôle (réel)",
     "aviso": "Aperçu en tant que {rol}. Cela ne change que l'interface ; les données restent les vôtres. Pour voir ce que voit vraiment cette personne, connectez-vous avec un compte de ce rôle.",
     "salir": "Quitter l'aperçu"
+  },
+  "dar": {
+    "titulo": "Donner",
+    "descripcion": "Votre église reçoit les dîmes, les offrandes et les dons sur ses propres sites web. Ces boutons vous y conduisent.",
+    "diezmo": "Donner la dîme",
+    "ofrenda": "Faire une offrande",
+    "donacion": "Faire un don",
+    "seAbreEnOtraPagina": "S'ouvre dans une autre page",
+    "configTitulo": "Liens pour donner",
+    "configDescripcion": "Saisissez l'adresse web où votre église reçoit chaque type de don. ViveADN ne traite ni ne conserve aucun paiement : elle affiche seulement un bouton qui ouvre ce site dans un nouvel onglet. Laissez un champ vide pour masquer son bouton.",
+    "ejemploUrl": "https://votre-eglise.org/dimes",
+    "urlInvalida": "Saisissez une adresse qui commence par https:// et sans espaces.",
+    "sinPermiso": "Seules les personnes qui gèrent la configuration de l'église peuvent modifier ces liens."
   }
 }
