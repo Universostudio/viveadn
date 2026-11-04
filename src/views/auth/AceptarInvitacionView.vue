@@ -23,14 +23,11 @@
         </div>
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">{{ t('invitacion.elige') }}</label>
-          <input v-model="password" type="password" required minlength="10" autocomplete="new-password"
-            :placeholder="t('invitacion.minimo')"
-            class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-adn-verde" />
+          <CampoContrasena v-model="password" required minlength="10" autocomplete="new-password" :placeholder="t('invitacion.minimo')" />
         </div>
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">{{ t('reset.confirmar') }}</label>
-          <input v-model="confirmar" type="password" required autocomplete="new-password"
-            class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-adn-verde" />
+          <CampoContrasena v-model="confirmar" required autocomplete="new-password" />
         </div>
         <div v-if="error" role="alert" class="bg-red-50 text-red-700 text-sm px-4 py-3 rounded-lg border border-red-200">{{ error }}</div>
         <button type="submit" :disabled="enviando" class="w-full btn-primary py-3 text-base disabled:opacity-60">
@@ -50,6 +47,7 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { supabase } from '@/lib/supabase'
+import CampoContrasena from '@/components/CampoContrasena.vue'
 
 const router = useRouter()
 const { t } = useI18n()

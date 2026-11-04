@@ -12,7 +12,9 @@
     "inactivo": "Inactif",
     "activa": "Active",
     "inactiva": "Inactive",
-    "idioma": "Langue"
+    "idioma": "Langue",
+    "verContrasena": "Afficher le mot de passe",
+    "ocultarContrasena": "Masquer le mot de passe"
   },
   "menu": {
     "dashboard": "Tableau de bord",

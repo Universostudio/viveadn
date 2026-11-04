@@ -12,7 +12,9 @@
     "inactivo": "Inactivo",
     "activa": "Activa",
     "inactiva": "Inactiva",
-    "idioma": "Idioma"
+    "idioma": "Idioma",
+    "verContrasena": "Mostrar contraseña",
+    "ocultarContrasena": "Ocultar contraseña"
   },
   "menu": {
     "dashboard": "Dashboard",

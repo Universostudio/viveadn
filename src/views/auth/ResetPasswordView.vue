@@ -13,25 +13,12 @@
       <form v-if="!exito" @submit.prevent="handleReset" class="space-y-5">
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">{{ t('reset.nueva') }}</label>
-          <input
-            v-model="password"
-            type="password"
-            required
-            minlength="8"
-            :placeholder="t('reset.minimo')"
-            class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-adn-verde focus:border-transparent transition"
-          />
+          <CampoContrasena v-model="password" required minlength="8" autocomplete="new-password" :placeholder="t('reset.minimo')" />
         </div>
 
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">{{ t('reset.confirmar') }}</label>
-          <input
-            v-model="confirmar"
-            type="password"
-            required
-            :placeholder="t('reset.repite')"
-            class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-adn-verde focus:border-transparent transition"
-          />
+          <CampoContrasena v-model="confirmar" required autocomplete="new-password" :placeholder="t('reset.repite')" />
         </div>
 
         <div v-if="error" class="bg-red-50 text-red-700 text-sm px-4 py-3 rounded-lg border border-red-200">
@@ -69,6 +56,7 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { supabase } from '@/lib/supabase'
+import CampoContrasena from '@/components/CampoContrasena.vue'
 
 const router = useRouter()
 const { t } = useI18n()
