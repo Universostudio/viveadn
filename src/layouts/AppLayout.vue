@@ -104,6 +104,7 @@ import { useI18n } from 'vue-i18n'
 import SelectorIdioma from '@/components/SelectorIdioma.vue'
 import { useAuthStore } from '@/stores/auth'
 import { supabase } from '@/lib/supabase'
+import { haceHoras } from '@/lib/alertas'
 
 const auth = useAuthStore()
 const router = useRouter()
@@ -154,7 +155,7 @@ onMounted(async () => {
   const { count } = await supabase
     .from('consolidaciones')
     .select('*', { count: 'exact', head: true })
-    .in('estado_alerta', ['naranja', 'rojo'])
+    .lt('fecha_conversion', haceHoras(48))
     .eq('completado', false)
 
   consolidacionPendientes.value = count ?? 0

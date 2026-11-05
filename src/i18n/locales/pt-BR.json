@@ -277,7 +277,28 @@
     "horasTranscurridas": "Horas decorridas",
     "conversion": "Conversão",
     "limite": "Prazo de 72h",
-    "marcarCompletado": "Marcar como concluída"
+    "marcarCompletado": "Marcar como concluída",
+    "metricas": {
+      "titulo": "Métricas OP72",
+      "periodo": "Período",
+      "dias": "Últimos {n} dias",
+      "error": "Não foi possível carregar as métricas.",
+      "sinDatos": "Ainda não há consolidações neste período.",
+      "total": "Consolidações",
+      "contacto24h": "Primeiro contato em 24 h",
+      "horasPrimerContacto": "Horas médias até o primeiro contato",
+      "completados72h": "Concluídas em 72 h",
+      "completados": "Concluídas",
+      "abiertos": "Abertas",
+      "vencidos": "Vencidas sem concluir",
+      "conContacto": "Com algum contato",
+      "porConsolidador": "Por consolidador",
+      "porCasa": "Por casa de oração",
+      "sinAsignar": "Sem responsável",
+      "vencidosN": "{n} vencidas",
+      "promo": "Métricas avançadas do OP72",
+      "promoAyuda": "Tempos de contato, cumprimento das 72 horas e detalhe por consolidador e por casa. Incluídas nos planos Básico e Premium, ou como complemento."
+    }
   },
   "formacion": {
     "titulo": "Formação",

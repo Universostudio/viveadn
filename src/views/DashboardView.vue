@@ -134,6 +134,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { formatoFecha } from '@/i18n'
 import { supabase } from '@/lib/supabase'
+import { conAlerta, haceHoras } from '@/lib/alertas'
 import { Users, House, HeartHandshake, Siren, CircleCheck, UserPlus } from '@lucide/vue'
 import EstadoAlerta from '@/components/EstadoAlerta.vue'
 import BotonesDar from '@/components/BotonesDar.vue'
@@ -182,7 +183,7 @@ onMounted(async () => {
     supabase.from('consolidaciones').select('*', { count: 'exact', head: true }).eq('completado', false),
     supabase.from('consolidaciones')
       .select('*, miembros(nombre, apellido)')
-      .in('estado_alerta', ['naranja', 'rojo'])
+      .lt('fecha_conversion', haceHoras(48))
       .eq('completado', false)
       .order('fecha_conversion', { ascending: true })
       .limit(5),
@@ -191,7 +192,7 @@ onMounted(async () => {
   stats.value.totalMiembros = miembrosRes.count ?? 0
   stats.value.totalCasas = casasRes.count ?? 0
   stats.value.consolidacionesActivas = consolRes.count ?? 0
-  consolidaciones.value = recientesRes.data ?? []
+  consolidaciones.value = (recientesRes.data ?? []).map(conAlerta)
   stats.value.alertasCriticas = consolidaciones.value.filter(c => c.estado_alerta === 'rojo').length
 
   const { data: recientes } = await supabase

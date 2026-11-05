@@ -168,6 +168,7 @@ import { Activity, ArrowLeft, Award, Check, Flame, GraduationCap, HeartHandshake
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { supabase } from '@/lib/supabase'
+import { conAlerta } from '@/lib/alertas'
 import type { NivelCompromiso } from '@/lib/supabase'
 import EstadoAlerta from '@/components/EstadoAlerta.vue'
 import { useI18n } from 'vue-i18n'
@@ -220,7 +221,7 @@ onMounted(async () => {
       .single(),
     supabase
       .from('consolidaciones')
-      .select('id, fecha_conversion, estado_alerta, completado, notas')
+      .select('id, fecha_conversion, completado, notas')
       .eq('miembro_id', id)
       .order('fecha_conversion', { ascending: false }),
     supabase
@@ -233,7 +234,7 @@ onMounted(async () => {
       .eq('miembro_id', id),
   ])
   miembro.value = miembroRes.data
-  consolidaciones.value = consolRes.data ?? []
+  consolidaciones.value = (consolRes.data ?? []).map(conAlerta)
   progreso.value = progresoRes.data ?? []
   logros.value = logrosRes.data ?? []
   cargando.value = false

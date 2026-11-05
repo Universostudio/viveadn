@@ -277,7 +277,28 @@
     "horasTranscurridas": "Heures écoulées",
     "conversion": "Conversion",
     "limite": "Échéance 72 h",
-    "marcarCompletado": "Marquer comme terminée"
+    "marcarCompletado": "Marquer comme terminée",
+    "metricas": {
+      "titulo": "Indicateurs OP72",
+      "periodo": "Période",
+      "dias": "{n} derniers jours",
+      "error": "Impossible de charger les indicateurs.",
+      "sinDatos": "Il n'y a encore aucune consolidation sur cette période.",
+      "total": "Consolidations",
+      "contacto24h": "Premier contact sous 24 h",
+      "horasPrimerContacto": "Heures moyennes avant le premier contact",
+      "completados72h": "Terminées sous 72 h",
+      "completados": "Terminées",
+      "abiertos": "Ouvertes",
+      "vencidos": "En retard, non terminées",
+      "conContacto": "Avec au moins un contact",
+      "porConsolidador": "Par consolidateur",
+      "porCasa": "Par maison de prière",
+      "sinAsignar": "Non assignées",
+      "vencidosN": "{n} en retard",
+      "promo": "Indicateurs avancés OP72",
+      "promoAyuda": "Délais de contact, respect des 72 heures et détail par consolidateur et par maison. Inclus dans les forfaits Basique et Premium, ou en option."
+    }
   },
   "formacion": {
     "titulo": "Formation",
