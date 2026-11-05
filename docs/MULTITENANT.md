@@ -44,7 +44,7 @@ Todo lo que cruza iglesias pasa por una función de borde con `service_role`, qu
 **P1. Hay que cerrarlas antes de abrir a terceros.**
 
 1. **Límites del plan: resuelto.** Disparadores `SECURITY DEFINER` rechazan altas por encima de `max_miembros` y `max_usuarios` con `PLAN_LIMITE`, serializadas por iglesia con un cerrojo; las invitaciones vigentes reservan plaza y el registro por QR responde "cerrado" sin plazas. Pruebas en `limites_plan.sql` y `limites_concurrencia.sh`.
-2. **Archivos.** No existe almacenamiento todavía. Antes de subir el primer logo, certificado o documento hay que diseñar un cubo con políticas por prefijo de iglesia y una prueba de aislamiento.
+2. **Archivos: resuelto.** Dos cubos: `iglesia-marca` (lectura pública, para logos; 2 MB; PNG, JPEG y WebP, sin SVG porque puede llevar scripts) e `iglesia-archivos` (privado, se lee con URL firmada; 10 MB; PDF e imágenes). Toda ruta empieza por `{iglesia_id}/`, y las políticas de `storage.objects` exigen que esa carpeta sea la iglesia de quien pregunta; escribir exige `iglesia.configurar` y leer el cubo privado exige que la iglesia esté operativa. La exportación lista los archivos y el borrado los elimina de Storage. Las pruebas están en `archivos.sql`.
 3. **Ciclo de vida de la iglesia: resuelto.** `iglesias.etapa` (onboarding, prueba, activa, receso, suspendida) gobierna `activa` mediante un disparador, de modo que políticas y funciones de borde no cambian. Receso y suspendida cierran el acceso y conservan los datos; una prueba vencida corta los módulos. La exportación (`exportar_iglesia`) recorre todas las tablas con `iglesia_id` y excluye tokens y huellas. El borrado (`borrar_iglesia`) exige receso o suspendida, un plazo programado de 7 a 90 días y la dirección escrita; borra la iglesia en cascada, las cuentas de Auth y el detalle de su auditoría. CI rechaza una tabla nueva que no lleve `iglesia_id` ni esté clasificada como global.
 
 **P2. Para escalar con orden.**
@@ -70,12 +70,13 @@ Todo lo que cruza iglesias pasa por una función de borde con `service_role`, qu
 5. `grant` explícito a `authenticated` y `service_role`; nada para `anon`.
 6. Si solo la usa el servidor: política que lo niega todo, sin permisos, y añadirla a `solo_servidor` en `supabase/tests/permisos.sql`.
 7. Prueba en `supabase/tests/aislamiento.sql` o en su propio archivo, incluida en `ejecutar.sh`.
-8. Cualquier función privilegiada va en `private` con `search_path` fijo, o es una función de borde con `service_role` que valida a quien llama.
+8. Todo archivo nuevo va en uno de los dos cubos, bajo `{iglesia_id}/`; un cubo nuevo repite las políticas de prefijo y se añade a `CUBOS_IGLESIA` en la función `plataforma` para que la exportación y el borrado lo cubran.
+9. Cualquier función privilegiada va en `private` con `search_path` fijo, o es una función de borde con `service_role` que valida a quien llama.
 
 ## 6. Orden de trabajo
 
 1. Hecho: corte duro de los límites del plan e índices de las tablas que crecen.
 2. Hecho: ciclo de vida de la iglesia, con exportación y borrado.
-3. Almacenamiento de archivos con aislamiento por iglesia.
+3. Hecho: almacenamiento de archivos con aislamiento por iglesia.
 4. OP72 v2 con el modo de alias.
 5. Motor de formación, QR en sus tres partes, alianzas e integraciones.

@@ -28,6 +28,9 @@ const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
 
 const ETAPAS = ['onboarding', 'prueba', 'activa', 'receso', 'suspendida']
 
+// Cubos con archivos de iglesia; la primera carpeta de cada ruta es el id de la iglesia
+const CUBOS_IGLESIA = ['iglesia-marca', 'iglesia-archivos']
+
 const texto = (v: unknown, max: number) => String(v ?? '').trim().slice(0, max)
 
 Deno.serve(async (req) => {
@@ -68,6 +71,26 @@ Deno.serve(async (req) => {
       if (typeof id !== 'string' || !UUID_RE.test(id)) return null
       const { data } = await admin.from('iglesias').select('id').eq('id', id).maybeSingle()
       return data ? id : null
+    }
+
+    // Recorre un prefijo del almacenamiento, carpeta a carpeta, y devuelve todos sus archivos
+    const listarArchivos = async (cubo: string, prefijo: string) => {
+      const salida: { ruta: string; bytes: number | null }[] = []
+      const pila = [prefijo]
+      while (pila.length) {
+        const dir = pila.pop()!
+        for (let offset = 0; ; offset += 100) {
+          const { data, error } = await admin.storage.from(cubo).list(dir, { limit: 100, offset })
+          if (error) throw new Error('No se pudo listar el almacenamiento')
+          for (const e of data ?? []) {
+            const ruta = `${dir}/${e.name}`
+            if (e.id === null) pila.push(ruta)
+            else salida.push({ ruta, bytes: (e.metadata as { size?: number } | null)?.size ?? null })
+          }
+          if (!data || data.length < 100) break
+        }
+      }
+      return salida
     }
 
     switch (body.accion) {
@@ -219,8 +242,15 @@ Deno.serve(async (req) => {
         if (!iglesiaId) return json({ error: 'La iglesia no existe' }, 404)
         const { data, error } = await admin.rpc('exportar_iglesia', { p_iglesia: iglesiaId })
         if (error || !data) return json({ error: 'No se pudo exportar la iglesia' }, 500)
+        // Los archivos no viajan dentro del JSON: se entrega su listado para pedirlos aparte
+        let archivos: Record<string, unknown> = {}
+        try {
+          for (const cubo of CUBOS_IGLESIA) archivos[cubo] = await listarArchivos(cubo, iglesiaId)
+        } catch {
+          archivos = { error: 'No se pudo listar el almacenamiento' }
+        }
         const auditado = await auditar('exportar_iglesia', iglesiaId)
-        return json({ ok: true, exportacion: data, auditado })
+        return json({ ok: true, exportacion: { ...data, archivos }, auditado })
       }
 
       case 'programar_borrado': {
@@ -266,8 +296,31 @@ Deno.serve(async (req) => {
           const { error: eBorrar } = await admin.auth.admin.deleteUser(id)
           if (eBorrar) { pendientes.push(id); console.error('no se pudo borrar el usuario', id, eBorrar.message) }
         }
-        const auditado = await auditar('borrar_iglesia', null, { iglesia_id: iglesiaId, usuarios_borrados: ids.length - pendientes.length, usuarios_pendientes: pendientes })
-        return json({ ok: true, usuarios_borrados: ids.length - pendientes.length, usuarios_pendientes: pendientes.length, auditado })
+        // Y sus archivos. Lo que falle queda anotado para repetirlo a mano
+        let archivosBorrados = 0
+        let archivosPendientes = 0
+        for (const cubo of CUBOS_IGLESIA) {
+          try {
+            const rutas = (await listarArchivos(cubo, iglesiaId)).map(a => a.ruta)
+            for (let i = 0; i < rutas.length; i += 100) {
+              const lote = rutas.slice(i, i + 100)
+              const { error: eQuitar } = await admin.storage.from(cubo).remove(lote)
+              if (eQuitar) archivosPendientes += lote.length
+              else archivosBorrados += lote.length
+            }
+          } catch (e) {
+            archivosPendientes += 1
+            console.error('no se pudo vaciar el cubo', cubo, e instanceof Error ? e.message : e)
+          }
+        }
+        const auditado = await auditar('borrar_iglesia', null, {
+          iglesia_id: iglesiaId, usuarios_borrados: ids.length - pendientes.length, usuarios_pendientes: pendientes,
+          archivos_borrados: archivosBorrados, archivos_pendientes: archivosPendientes,
+        })
+        return json({
+          ok: true, usuarios_borrados: ids.length - pendientes.length, usuarios_pendientes: pendientes.length,
+          archivos_borrados: archivosBorrados, archivos_pendientes: archivosPendientes, auditado,
+        })
       }
 
       case 'vincular_red': {
