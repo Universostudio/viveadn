@@ -141,7 +141,48 @@
     "errorRegistrar": "Impossible d'inscrire le membre. Vérifiez les informations.",
     "ejemploNombre": "Jean",
     "ejemploApellido": "Dupont",
-    "ejemploEmail": "jean{'@'}email.fr"
+    "ejemploEmail": "jean{'@'}email.fr",
+    "importar": {
+      "boton": "Importer",
+      "titulo": "Importer des membres",
+      "descripcion": "Téléversez un fichier CSV, que vous pouvez enregistrer depuis Excel ou Google Sheets, pour enregistrer plusieurs membres d'un coup. Vous verrez d'abord un résumé et rien n'est enregistré avant votre confirmation.",
+      "reglaObligatorias": "Chaque ligne exige au moins un nom et un prénom. Autres colonnes possibles : email, téléphone, date de naissance, genre, niveau d'engagement et notes.",
+      "reglaFechas": "Les dates peuvent être AAAA-MM-JJ ou JJ/MM/AAAA. Le niveau peut être nuevo, en_crecimiento, maduro, lider ou multiplicador.",
+      "reglaRepetidos": "Les membres déjà existants sont ignorés, par e-mail ou, à défaut, par nom et prénom.",
+      "reglaLimite": "{n} lignes maximum par fichier.",
+      "descargarPlantilla": "Télécharger le modèle",
+      "elegirArchivo": "Choisir un fichier CSV",
+      "listas": "Prêtes à importer",
+      "duplicadas": "Existent déjà",
+      "conErrores": "Avec erreurs",
+      "ignoradas": "Colonnes non reconnues, ignorées : {columnas}.",
+      "revisaErrores": "Corrigez ces lignes dans votre fichier et téléversez-le de nouveau, ou ajoutez-les plus tard une par une.",
+      "linea": "Ligne {n}",
+      "yMas": "et {n} autres avec erreurs.",
+      "otroArchivo": "Choisir un autre fichier",
+      "importarN": "Importer {n} membres",
+      "importando": "Importation des membres...",
+      "noCierres": "Ne fermez pas cette fenêtre.",
+      "hecho": "{n} membres importés.",
+      "omitidas": "{n} lignes n'ont pas été importées car elles étaient en double ou comportaient des erreurs.",
+      "errorImportar": "L'importation s'est arrêtée à cause d'une erreur. Les membres déjà importés sont conservés ; téléversez à nouveau le fichier et les doublons seront ignorés.",
+      "errorArchivo": {
+        "vacio": "Le fichier est vide ou ne contient que la ligne d'en-tête.",
+        "sinColumnas": "La première ligne doit contenir les colonnes nombre et apellido.",
+        "demasiadasFilas": "Le fichier compte plus de {n} lignes. Divisez-le en parties.",
+        "grande": "Le fichier est trop volumineux.",
+        "lectura": "Impossible de lire le fichier. Vérifiez qu'il s'agit d'un CSV."
+      },
+      "error": {
+        "faltaNombre": "prénom manquant",
+        "faltaApellido": "nom manquant",
+        "emailInvalido": "e-mail non valide",
+        "telefonoInvalido": "téléphone non valide",
+        "fechaInvalida": "date de naissance non valide",
+        "nivelInvalido": "niveau d'engagement non valide",
+        "demasiadoLargo": "un texte est trop long"
+      }
+    }
   },
   "ficha": {
     "volver": "Retour aux membres",

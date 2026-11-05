@@ -141,7 +141,48 @@
     "errorRegistrar": "We couldn't register the member. Please check the details.",
     "ejemploNombre": "John",
     "ejemploApellido": "Smith",
-    "ejemploEmail": "john{'@'}email.com"
+    "ejemploEmail": "john{'@'}email.com",
+    "importar": {
+      "boton": "Import",
+      "titulo": "Import members",
+      "descripcion": "Upload a CSV file, which you can save from Excel or Google Sheets, to register many members at once. You will see a summary first and nothing is saved until you confirm.",
+      "reglaObligatorias": "Each row needs at least a first and last name. Other possible columns: email, phone, birth date, gender, commitment level and notes.",
+      "reglaFechas": "Dates can be YYYY-MM-DD or DD/MM/YYYY. The level can be nuevo, en_crecimiento, maduro, lider or multiplicador.",
+      "reglaRepetidos": "Members that already exist are skipped, by email or, if they have none, by first and last name.",
+      "reglaLimite": "Up to {n} rows per file.",
+      "descargarPlantilla": "Download template",
+      "elegirArchivo": "Choose CSV file",
+      "listas": "Ready to import",
+      "duplicadas": "Already exist",
+      "conErrores": "With errors",
+      "ignoradas": "Unrecognized columns, which are ignored: {columnas}.",
+      "revisaErrores": "Fix these rows in your file and upload it again, or add them later one by one.",
+      "linea": "Line {n}",
+      "yMas": "and {n} more with errors.",
+      "otroArchivo": "Choose another file",
+      "importarN": "Import {n} members",
+      "importando": "Importing members...",
+      "noCierres": "Do not close this window.",
+      "hecho": "{n} members imported.",
+      "omitidas": "{n} rows were not imported because they were duplicates or had errors.",
+      "errorImportar": "The import stopped because of an error. Members already imported are kept; upload the file again and duplicates will be skipped.",
+      "errorArchivo": {
+        "vacio": "The file is empty or only has the header row.",
+        "sinColumnas": "The first row needs the columns nombre and apellido.",
+        "demasiadasFilas": "The file has more than {n} rows. Split it into parts.",
+        "grande": "The file is too large.",
+        "lectura": "The file could not be read. Check that it is a CSV."
+      },
+      "error": {
+        "faltaNombre": "first name missing",
+        "faltaApellido": "last name missing",
+        "emailInvalido": "invalid email",
+        "telefonoInvalido": "invalid phone",
+        "fechaInvalida": "invalid birth date",
+        "nivelInvalido": "invalid commitment level",
+        "demasiadoLargo": "a text is too long"
+      }
+    }
   },
   "ficha": {
     "volver": "Back to members",
