@@ -45,8 +45,8 @@ select pg_temp.igual((select (j::text like '%abababababababababababababababababa
 select pg_temp.igual((select (j::text like '%otra@prueba.test%')::text from exp), 'false', 'no se cuela nada de otra iglesia');
 -- Cubre todas las tablas con iglesia_id mas rol_permisos
 select pg_temp.igual(
-  (select string_agg(k, ',' order by k) from exp, jsonb_object_keys(j->'tablas') k),
-  (select string_agg(relname, ',' order by relname) from (
+  (select string_agg(k, ',' order by k collate "C") from exp, jsonb_object_keys(j->'tablas') k),
+  (select string_agg(relname, ',' order by relname collate "C") from (
      select c.relname from pg_class c
      where c.relnamespace = 'public'::regnamespace and c.relkind = 'r' and c.relname <> 'iglesias'
        and exists (select 1 from pg_attribute a where a.attrelid = c.oid and a.attname = 'iglesia_id' and not a.attisdropped)
