@@ -125,11 +125,14 @@ Deno.serve(async (req) => {
       id: inv.user.id, iglesia_id: ig.id, nombre: propietario.nombre, apellido: propietario.apellido, email: propietario.email, rol: 'propietario',
     })
     if (ePerfil) {
-      if (creadoAhora) {
+      // Si otra alta con el mismo correo ya dejo su perfil, ese usuario es suyo y no se toca
+      const { data: dueno } = await admin.from('perfiles').select('id').eq('id', inv.user.id).maybeSingle()
+      if (creadoAhora && !dueno) {
         const { error } = await admin.auth.admin.deleteUser(inv.user.id)
         if (error) console.error('no se pudo borrar el usuario creado', inv.user.id, error.message)
       }
       await deshacerIglesia(); await devolverCodigo()
+      if (dueno) return json({ ok: true })
       console.error('perfil', ePerfil.message)
       return json({ error: 'interno' }, 500)
     }
