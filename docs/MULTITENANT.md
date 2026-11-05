@@ -81,10 +81,14 @@ Todo lo que cruza iglesias pasa por una función de borde con `service_role`, qu
 
 El módulo `consolidacion` está en todos los planes y es la parte gratuita: registro, asignación, tres contactos, resultado y las 72 horas con su color. El módulo `op72_avanzado` es la parte de pago: viene en Básico y Premium y se contrata como complemento en Semilla con la misma maquinaria de planes y complementos que ya existe, sin lógica nueva de licencias. Hoy incluye las métricas avanzadas (`metricas_op72`: tiempos de primer contacto, cumplimiento de las 72 horas y desglose por consolidador y casa), que respetan los permisos de quien las pide. Las alertas automáticas por correo o WhatsApp quedan para cuando exista el canal de envío. El color de alerta se calcula siempre desde `fecha_conversion`: la columna `estado_alerta` solo se actualiza al escribir, envejece sola y no se usa para mostrar ni para filtrar.
 
+## Motor de formación
+
+Cada iglesia crea sus propios programas de formación (`programas_formacion`), con lecciones ordenadas (`programa_lecciones`), inscribe a sus miembros (`inscripciones_formacion`) y registra el avance lección a lección (`avance_formacion`). Convive con `progreso_formacion`, el seguimiento fijo por niveles que ya existía. Las claves foráneas llevan `iglesia_id` y el avance lleva además `programa_id`, de modo que la propia base impide mezclar iglesias o apuntar a una lección de otro programa. La finalización se calcula siempre desde las lecciones y nadie puede fijarla a mano, ni siquiera quien edita los programas: un disparador rechaza cambiar `estado` a completado o tocar `completado_en`, y solo el recálculo interno lo hace. Quitar un avance o añadir una lección reabre a quien ya había terminado, y un programa sin lecciones nunca se completa. Esa garantía es la base de los certificados, que son el siguiente cambio. Permisos: leer exige `formacion.ver`, inscribir y avanzar `formacion.actualizar`, y editar programas y lecciones `formacion.programas` (administrador, coadministrador y líder de escuela).
+
 ## 6. Orden de trabajo
 
 1. Hecho: corte duro de los límites del plan e índices de las tablas que crecen.
 2. Hecho: ciclo de vida de la iglesia, con exportación y borrado.
 3. Hecho: almacenamiento de archivos con aislamiento por iglesia.
 4. Hecho: OP72 v2, con modo alias y versión gratuita y de pago. Falta el canal de envío de las alertas automáticas.
-5. Motor de formación, QR en sus tres partes, alianzas e integraciones.
+5. Motor de formación: programas, lecciones y avance hechos; faltan los certificados con QR. Después, QR en sus tres partes, alianzas e integraciones.

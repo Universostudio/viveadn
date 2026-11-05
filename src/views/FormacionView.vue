@@ -1,8 +1,11 @@
 <template>
   <div class="p-4 sm:p-6 space-y-6">
-    <div>
-      <h1 class="text-2xl font-bold text-gray-900">{{ t('formacion.titulo') }}</h1>
-      <p class="text-gray-500 text-sm mt-0.5">{{ t('formacion.subtitulo') }}</p>
+    <div class="flex items-start justify-between gap-3 flex-wrap">
+      <div>
+        <h1 class="text-2xl font-bold text-gray-900">{{ t('formacion.titulo') }}</h1>
+        <p class="text-gray-500 text-sm mt-0.5">{{ t('formacion.subtitulo') }}</p>
+      </div>
+      <RouterLink to="/formacion/programas" class="btn-secondary text-sm">{{ t('formacion.programas.enlace') }}</RouterLink>
     </div>
 
     <!-- Descripción niveles -->

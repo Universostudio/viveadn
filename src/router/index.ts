@@ -104,6 +104,11 @@ const router = createRouter({
           component: () => import('@/views/FormacionView.vue')
         },
         {
+          path: 'formacion/programas',
+          name: 'programas-formacion',
+          component: () => import('@/views/formacion/ProgramasFormacionView.vue')
+        },
+        {
           path: 'comunicacion',
           name: 'comunicacion',
           component: () => import('@/views/ComunicacionView.vue')
