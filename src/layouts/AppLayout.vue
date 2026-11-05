@@ -97,7 +97,7 @@
 import { computed, onMounted, ref, watch, type Component } from 'vue'
 import {
   LayoutDashboard, Users, House, HeartHandshake, GraduationCap, MessageSquare,
-  ChartColumn, Settings, ShieldCheck, LogOut, Menu,
+  ChartColumn, CalendarDays, Settings, ShieldCheck, LogOut, Menu,
 } from '@lucide/vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
@@ -124,6 +124,7 @@ const consolidacionPendientes = ref(0)
 const todosLosItems: { to: string; icon: Component; label: string; badge?: boolean; modulo?: string; plataforma?: boolean; permisos: string[] }[] = [
   { to: '/',              icon: LayoutDashboard, label: 'menu.dashboard', permisos: [] },
   { to: '/miembros',      icon: Users, label: 'menu.miembros', permisos: ['miembros.ver', 'miembros.ver_asignados'] },
+  { to: '/eventos',       icon: CalendarDays, label: 'menu.eventos', modulo: 'eventos', permisos: ['eventos.ver'] },
   { to: '/casas',         icon: House, label: 'menu.casas', permisos: ['casas.ver', 'casas.ver_propia'] },
   { to: '/consolidacion', icon: HeartHandshake, label: 'menu.consolidacion', badge: true, permisos: ['consolidacion.ver', 'consolidacion.ver_asignados', 'consolidacion.ver_casa'] },
   { to: '/formacion',     icon: GraduationCap, label: 'menu.formacion', permisos: ['formacion.ver'] },
