@@ -6,10 +6,17 @@
         <h1 class="text-2xl font-bold text-gray-900">{{ t('miembros.titulo') }}</h1>
         <p class="text-gray-500 text-sm mt-0.5">{{ t('miembros.subtitulo') }}</p>
       </div>
-      <button @click="abrirNuevo = true" class="btn-primary flex items-center gap-2">
-        <UserPlus class="w-4 h-4" aria-hidden="true" /> {{ t('miembros.nuevo') }}
-      </button>
+      <div class="flex items-center gap-2">
+        <button v-if="puedeImportar" @click="abrirImportar = true" class="btn-secondary flex items-center gap-2">
+          <Upload class="w-4 h-4" aria-hidden="true" /> {{ t('miembros.importar.boton') }}
+        </button>
+        <button @click="abrirNuevo = true" class="btn-primary flex items-center gap-2">
+          <UserPlus class="w-4 h-4" aria-hidden="true" /> {{ t('miembros.nuevo') }}
+        </button>
+      </div>
     </div>
+
+    <ImportarMiembros v-if="abrirImportar" @cerrar="abrirImportar = false" @importado="cargarDatos" />
 
     <!-- Buscador y filtros -->
     <div class="card">
@@ -188,15 +195,18 @@
 </template>
 
 <script setup lang="ts">
-import { LoaderCircle, Search, SearchX, UserPlus } from '@lucide/vue'
+import { LoaderCircle, Search, SearchX, Upload, UserPlus } from '@lucide/vue'
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { supabase } from '@/lib/supabase'
+import { useAuthStore } from '@/stores/auth'
+import ImportarMiembros from '@/components/ImportarMiembros.vue'
 import { ETIQUETAS_COMPROMISO, NIVELES_COMPROMISO } from '@/lib/supabase'
 import type { NivelCompromiso } from '@/lib/supabase'
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
+const auth = useAuthStore()
 
 const cargando = ref(true)
 const miembros = ref<any[]>([])
@@ -207,6 +217,9 @@ const filtroEstado = ref('activo')
 const pagina = ref(0)
 const POR_PAGINA = 20
 const abrirNuevo = ref(false)
+const abrirImportar = ref(false)
+// Importar necesita su permiso y también el de registrar, que es el que exige la base al insertar
+const puedeImportar = computed(() => auth.can('miembros.importar') && auth.can('miembros.crear'))
 const guardando = ref(false)
 // Clave de traducción del error visible ('' = sin error)
 const error = ref('')

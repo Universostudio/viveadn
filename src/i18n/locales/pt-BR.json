@@ -141,7 +141,48 @@
     "errorRegistrar": "Não foi possível cadastrar o membro. Verifique os dados.",
     "ejemploNombre": "João",
     "ejemploApellido": "Silva",
-    "ejemploEmail": "joao{'@'}email.com"
+    "ejemploEmail": "joao{'@'}email.com",
+    "importar": {
+      "boton": "Importar",
+      "titulo": "Importar membros",
+      "descripcion": "Envie um arquivo CSV, que você pode salvar do Excel ou do Google Sheets, para cadastrar muitos membros de uma vez. Você verá um resumo antes e nada é salvo até você confirmar.",
+      "reglaObligatorias": "Cada linha precisa de pelo menos nome e sobrenome. Outras colunas possíveis: email, telefone, data de nascimento, gênero, nível de compromisso e notas.",
+      "reglaFechas": "As datas podem ser AAAA-MM-DD ou DD/MM/AAAA. O nível pode ser nuevo, en_crecimiento, maduro, lider ou multiplicador.",
+      "reglaRepetidos": "Membros que já existem são ignorados, pelo email ou, se não tiverem, pelo nome e sobrenome.",
+      "reglaLimite": "No máximo {n} linhas por arquivo.",
+      "descargarPlantilla": "Baixar modelo",
+      "elegirArchivo": "Escolher arquivo CSV",
+      "listas": "Prontas para importar",
+      "duplicadas": "Já existem",
+      "conErrores": "Com erros",
+      "ignoradas": "Colunas não reconhecidas, que serão ignoradas: {columnas}.",
+      "revisaErrores": "Corrija estas linhas no seu arquivo e envie de novo, ou cadastre-as depois uma a uma.",
+      "linea": "Linha {n}",
+      "yMas": "e mais {n} com erros.",
+      "otroArchivo": "Escolher outro arquivo",
+      "importarN": "Importar {n} membros",
+      "importando": "Importando membros...",
+      "noCierres": "Não feche esta janela.",
+      "hecho": "{n} membros importados.",
+      "omitidas": "{n} linhas não foram importadas por estarem repetidas ou terem erros.",
+      "errorImportar": "A importação parou por um erro. Os membros já importados foram mantidos; envie o arquivo de novo e os repetidos serão ignorados.",
+      "errorArchivo": {
+        "vacio": "O arquivo está vazio ou só tem a linha de títulos.",
+        "sinColumnas": "A primeira linha precisa das colunas nombre e apellido.",
+        "demasiadasFilas": "O arquivo tem mais de {n} linhas. Divida-o em partes.",
+        "grande": "O arquivo é grande demais.",
+        "lectura": "Não foi possível ler o arquivo. Verifique se é um CSV."
+      },
+      "error": {
+        "faltaNombre": "falta o nome",
+        "faltaApellido": "falta o sobrenome",
+        "emailInvalido": "email inválido",
+        "telefonoInvalido": "telefone inválido",
+        "fechaInvalida": "data de nascimento inválida",
+        "nivelInvalido": "nível de compromisso inválido",
+        "demasiadoLargo": "algum texto é longo demais"
+      }
+    }
   },
   "ficha": {
     "volver": "Voltar para membros",

@@ -141,7 +141,48 @@
     "errorRegistrar": "Error al registrar el miembro. Verifica los datos.",
     "ejemploNombre": "Juan",
     "ejemploApellido": "García",
-    "ejemploEmail": "juan{'@'}email.com"
+    "ejemploEmail": "juan{'@'}email.com",
+    "importar": {
+      "boton": "Importar",
+      "titulo": "Importar miembros",
+      "descripcion": "Sube un archivo CSV, que puedes guardar desde Excel o Google Sheets, para registrar muchos miembros de una vez. Antes de importar verás un resumen y nada se guarda hasta que lo confirmes.",
+      "reglaObligatorias": "Cada fila necesita al menos nombre y apellido. Otras columnas posibles: email, telefono, fecha_nacimiento, genero, nivel_compromiso y notas.",
+      "reglaFechas": "Las fechas pueden ir como AAAA-MM-DD o DD/MM/AAAA. El nivel puede ser nuevo, en_crecimiento, maduro, lider o multiplicador.",
+      "reglaRepetidos": "Se omiten los miembros que ya existen, por correo o, si no tienen correo, por nombre y apellido.",
+      "reglaLimite": "Máximo {n} filas por archivo.",
+      "descargarPlantilla": "Descargar plantilla",
+      "elegirArchivo": "Elegir archivo CSV",
+      "listas": "Listas para importar",
+      "duplicadas": "Ya existen",
+      "conErrores": "Con errores",
+      "ignoradas": "Columnas no reconocidas, que se ignoran: {columnas}.",
+      "revisaErrores": "Corrige estas filas en tu archivo y vuelve a subirlo, o impórtalas después una por una.",
+      "linea": "Línea {n}",
+      "yMas": "y {n} más con errores.",
+      "otroArchivo": "Elegir otro archivo",
+      "importarN": "Importar {n} miembros",
+      "importando": "Importando miembros...",
+      "noCierres": "No cierres esta ventana.",
+      "hecho": "{n} miembros importados.",
+      "omitidas": "{n} filas no se importaron por estar repetidas o tener errores.",
+      "errorImportar": "Se detuvo la importación por un error. Los miembros ya importados se conservan; vuelve a subir el archivo y los repetidos se omitirán.",
+      "errorArchivo": {
+        "vacio": "El archivo está vacío o solo tiene la fila de títulos.",
+        "sinColumnas": "Faltan las columnas nombre y apellido en la primera fila.",
+        "demasiadasFilas": "El archivo tiene más de {n} filas. Divídelo en partes.",
+        "grande": "El archivo es demasiado grande.",
+        "lectura": "No se pudo leer el archivo. Comprueba que sea un CSV."
+      },
+      "error": {
+        "faltaNombre": "falta el nombre",
+        "faltaApellido": "falta el apellido",
+        "emailInvalido": "correo no válido",
+        "telefonoInvalido": "teléfono no válido",
+        "fechaInvalida": "fecha de nacimiento no válida",
+        "nivelInvalido": "nivel de compromiso no válido",
+        "demasiadoLargo": "algún texto es demasiado largo"
+      }
+    }
   },
   "ficha": {
     "volver": "Volver a miembros",
