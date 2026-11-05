@@ -1,7 +1,7 @@
 // Pruebas del cálculo de series semanales de eventos. Uso: npm run test:eventos
 process.env.TZ = 'Europe/Madrid'
 import assert from 'node:assert/strict'
-const { fechasDeSerie, MAX_SERIE, TIPOS_EVENTO, DURACION_POR_DEFECTO_MS } = await import('../src/lib/eventos.ts')
+const { fechasDeSerie, MAX_SERIE, TIPOS_EVENTO, DURACION_POR_DEFECTO_MS, aInputLocal, errorFechas } = await import('../src/lib/eventos.ts')
 const { leerTodo } = await import('../src/lib/paginar.ts')
 
 // La serie cruza el cambio de horario del 25 de octubre de 2026 (a las 03:00 se retrasa una hora)
@@ -47,4 +47,17 @@ assert.equal((await leerTodo(f.pedir))?.length, 2000, 'un múltiplo exacto del t
 assert.equal(f.llamadas.length, 3)
 assert.equal((await leerTodo(falso(0).pedir))?.length, 0)
 assert.equal(await leerTodo(falso(2500, 2).pedir), null, 'si una página falla, devuelve null y no datos parciales')
+// Conversión a input datetime-local: hora local (Madrid), también en verano y en invierno
+assert.equal(aInputLocal(new Date(2026, 6, 15, 9, 5).toISOString()), '2026-07-15T09:05')
+assert.equal(aInputLocal(new Date(2026, 11, 6, 20, 0).toISOString()), '2026-12-06T20:00')
+assert.equal(aInputLocal('2026-12-06T19:00:00.000Z'), '2026-12-06T20:00', 'las 19:00 UTC son las 20:00 en Madrid en invierno')
+assert.equal(aInputLocal(null), ''); assert.equal(aInputLocal('no es fecha'), '')
+const ida = aInputLocal(new Date(2026, 9, 25, 20, 30).toISOString())
+assert.equal(new Date(ida).getTime(), new Date(2026, 9, 25, 20, 30).getTime(), 'ida y vuelta sin cambio de hora')
+// Validación de fechas
+assert.equal(errorFechas('2026-12-06T20:00', ''), null)
+assert.equal(errorFechas('2026-12-06T20:00', '2026-12-06T22:00'), null)
+assert.equal(errorFechas('2026-12-06T20:00', '2026-12-06T20:00'), 'eventos.errorFechas', 'fin igual al inicio')
+assert.equal(errorFechas('2026-12-06T20:00', '2026-12-06T19:00'), 'eventos.errorFechas', 'fin antes del inicio')
+assert.equal(errorFechas('', ''), 'eventos.errorFechas', 'sin inicio')
 console.log('OK: todas las pruebas de eventos pasan')
