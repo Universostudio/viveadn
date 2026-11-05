@@ -10,6 +10,7 @@ La cuenta tiene otros proyectos de Supabase: comprueba siempre esta referencia a
 - `functions/plataforma/index.ts`: función del panel de plataforma, igual a la desplegada (versión 1).
 - `functions/dar-publico/index.ts`: función pública de la página `/dar/<slug>`. Solo devuelve el nombre de la iglesia y sus enlaces de recaudo activos. Se despliega con verificación de JWT (la web envía la clave anónima).
 - `functions/invitaciones/index.ts`: invitaciones de acceso por correo.
+- `functions/checkin-evento/`: registro por QR de asistencia (`/checkin/<enlace>`). Pública, con verificación de JWT (la web envía la clave anónima). `validar.ts` valida lo recibido y se prueba con `npm run test:checkin`; la lógica de ventana, tope, límite por dispositivo y duplicados está en las funciones `info_checkin` y `registrar_checkin`, que solo ejecuta `service_role`.
 - `migrations/`: a partir de ahora, cada cambio de base de datos es un archivo aquí.
 
 ## Reglas
