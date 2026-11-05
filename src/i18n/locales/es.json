@@ -573,7 +573,90 @@
     "publicaDescripcion": "Cualquier persona con este enlace puede ver los botones de dar de tu iglesia, sin iniciar sesión. Compártelo en redes, por WhatsApp o en tu web.",
     "copiar": "Copiar enlace",
     "copiado": "Copiado",
-    "abrirPagina": "Abrir la página"
+    "abrirPagina": "Abrir la página",
+    "pagina": {
+      "tituloClasica": "Diezmos, ofrendas y donaciones",
+      "subtituloClasica": "{iglesia} recibe tus aportes en su propio sitio web.",
+      "tituloDia": "Dona el ingreso de un día",
+      "subtituloDia": "Calcula cuánto representa un día de tu ingreso y úsalo como tu aporte.",
+      "calcula": "Calcula tu aporte",
+      "calculadoraTitulo": "Calculadora de aporte",
+      "tabs": {
+        "anual": "Anual",
+        "mensual": "Mensual",
+        "semanal": "Semanal",
+        "personalizado": "Otra cantidad"
+      },
+      "ingreso": {
+        "anual": "Ingreso anual",
+        "mensual": "Ingreso mensual",
+        "semanal": "Ingreso semanal"
+      },
+      "cantidadPersonalizada": "Cantidad que quieres dar",
+      "importeInvalido": "Escribe un número mayor que cero.",
+      "resultadoDia": "El ingreso de un día equivale a",
+      "resultadoDiezmo": "El diez por ciento de tu ingreso es",
+      "resultadoPersonalizado": "Tu aporte será de",
+      "usarCantidad": "Usar esta cantidad",
+      "completa": "Completa tu aporte",
+      "tuAporte": "Tu aporte",
+      "copiarCantidad": "Copiar cantidad",
+      "indicaEnSitio": "Indica esta cantidad en el sitio de la iglesia.",
+      "elegirFondo": "¿A qué quieres aportar?",
+      "continuar": "Continuar con {fondo}"
+    },
+    "config": {
+      "fondosTitulo": "Fondos para dar",
+      "fondosAyuda": "Cada fondo es un botón que lleva al sitio donde tu iglesia recibe ese aporte. ViveADN no procesa ni guarda pagos. Un fondo sin enlace no se muestra.",
+      "nombre": "Nombre del fondo",
+      "enlace": "Enlace",
+      "descripcion": "Descripción breve (opcional)",
+      "sinEnlaceSeOculta": "Sin enlace, este fondo no aparecerá en la página.",
+      "sinFondos": "Aún no has añadido ningún fondo.",
+      "subir": "Subir",
+      "bajar": "Bajar",
+      "quitar": "Quitar fondo",
+      "anadir": "Añadir un fondo…",
+      "maximo": "Máximo {n} fondos.",
+      "preset": {
+        "diezmo": "Diezmo",
+        "ofrenda": "Ofrenda",
+        "donacion": "Donación",
+        "misiones": "Misiones",
+        "casas": "Casas de oración",
+        "escuelas": "Escuelas",
+        "vmad": "VMAD",
+        "otro": "Otro fondo"
+      },
+      "aparienciaTitulo": "Apariencia de la página",
+      "aparienciaAyuda": "Elige la plantilla y los colores con los que las personas verán tu página de dar.",
+      "plantilla": "Plantilla",
+      "plantillas": {
+        "clasica": {
+          "nombre": "Clásica",
+          "descripcion": "Lista de fondos con botón para cada uno."
+        },
+        "dia": {
+          "nombre": "Un día de ingreso",
+          "descripcion": "Calculadora del ingreso de un día y selección de fondo."
+        }
+      },
+      "titulo": "Título",
+      "subtitulo": "Subtítulo",
+      "colorPrimario": "Color principal",
+      "colorAcento": "Color de acento",
+      "logo": "Logo (dirección web)",
+      "logoAyuda": "Opcional. Una imagen alojada en tu sitio, con dirección https://.",
+      "calculadora": "Calculadora",
+      "moneda": "Moneda",
+      "calculadoras": {
+        "dia": "Ingreso de un día",
+        "diezmo": "Diez por ciento del ingreso",
+        "ninguna": "Sin calculadora"
+      },
+      "errorNombre": "Cada fondo con enlace necesita un nombre.",
+      "errorDatos": "Revisa los colores: deben tener formato #RRGGBB."
+    }
   },
   "eventos": {
     "titulo": "Eventos",

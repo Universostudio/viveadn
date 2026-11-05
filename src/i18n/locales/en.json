@@ -573,7 +573,90 @@
     "publicaDescripcion": "Anyone with this link can see your church giving buttons, without signing in. Share it on social media, by WhatsApp or on your website.",
     "copiar": "Copy link",
     "copiado": "Copied",
-    "abrirPagina": "Open the page"
+    "abrirPagina": "Open the page",
+    "pagina": {
+      "tituloClasica": "Tithes, offerings and donations",
+      "subtituloClasica": "{iglesia} receives your giving on its own website.",
+      "tituloDia": "Give one day of your income",
+      "subtituloDia": "Work out what one day of your income comes to and use it as your gift.",
+      "calcula": "Work out your gift",
+      "calculadoraTitulo": "Giving calculator",
+      "tabs": {
+        "anual": "Yearly",
+        "mensual": "Monthly",
+        "semanal": "Weekly",
+        "personalizado": "Other amount"
+      },
+      "ingreso": {
+        "anual": "Yearly income",
+        "mensual": "Monthly income",
+        "semanal": "Weekly income"
+      },
+      "cantidadPersonalizada": "Amount you want to give",
+      "importeInvalido": "Enter a number greater than zero.",
+      "resultadoDia": "One day of your income comes to",
+      "resultadoDiezmo": "Ten percent of your income is",
+      "resultadoPersonalizado": "Your gift will be",
+      "usarCantidad": "Use this amount",
+      "completa": "Complete your gift",
+      "tuAporte": "Your gift",
+      "copiarCantidad": "Copy amount",
+      "indicaEnSitio": "Enter this amount on the church's site.",
+      "elegirFondo": "What would you like to give to?",
+      "continuar": "Continue to {fondo}"
+    },
+    "config": {
+      "fondosTitulo": "Giving funds",
+      "fondosAyuda": "Each fund is a button that leads to the site where your church receives that gift. ViveADN does not process or store payments. A fund without a link is not shown.",
+      "nombre": "Fund name",
+      "enlace": "Link",
+      "descripcion": "Short description (optional)",
+      "sinEnlaceSeOculta": "Without a link, this fund will not appear on the page.",
+      "sinFondos": "You have not added any fund yet.",
+      "subir": "Move up",
+      "bajar": "Move down",
+      "quitar": "Remove fund",
+      "anadir": "Add a fund…",
+      "maximo": "Up to {n} funds.",
+      "preset": {
+        "diezmo": "Tithe",
+        "ofrenda": "Offering",
+        "donacion": "Donation",
+        "misiones": "Missions",
+        "casas": "Prayer houses",
+        "escuelas": "Schools",
+        "vmad": "VMAD",
+        "otro": "Other fund"
+      },
+      "aparienciaTitulo": "Page appearance",
+      "aparienciaAyuda": "Choose the template and colors people will see on your giving page.",
+      "plantilla": "Template",
+      "plantillas": {
+        "clasica": {
+          "nombre": "Classic",
+          "descripcion": "List of funds with a button for each one."
+        },
+        "dia": {
+          "nombre": "One day of income",
+          "descripcion": "One-day income calculator and fund selection."
+        }
+      },
+      "titulo": "Title",
+      "subtitulo": "Subtitle",
+      "colorPrimario": "Main color",
+      "colorAcento": "Accent color",
+      "logo": "Logo (web address)",
+      "logoAyuda": "Optional. An image hosted on your site, with an https:// address.",
+      "calculadora": "Calculator",
+      "moneda": "Currency",
+      "calculadoras": {
+        "dia": "One day of income",
+        "diezmo": "Ten percent of income",
+        "ninguna": "No calculator"
+      },
+      "errorNombre": "Each fund with a link needs a name.",
+      "errorDatos": "Check the colors: they must use the #RRGGBB format."
+    }
   },
   "eventos": {
     "titulo": "Events",

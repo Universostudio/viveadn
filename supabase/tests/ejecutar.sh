@@ -23,4 +23,5 @@ done
 "${PSQL[@]}" -d $DB -f tests/eventos.sql
 "${PSQL[@]}" -d $DB -f tests/checkin.sql
 bash tests/checkin_concurrencia.sh "$DB"
+"${PSQL[@]}" -d $DB -f tests/dar_plantillas.sql
 "${PSQL[@]}" -d $DB -f tests/enlaces_dar.sql
