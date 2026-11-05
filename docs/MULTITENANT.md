@@ -8,7 +8,7 @@ Estado verificado en producción el 5 de noviembre de 2026 (proyecto `viveadn-sa
 - **Una sola base de datos compartida, con aislamiento por filas** (RLS de PostgreSQL). No usamos un esquema ni una base por iglesia. Es el modelo adecuado para muchas iglesias pequeñas y medianas, con el menor coste y la menor operación. Para un cliente muy grande que exija aislamiento total queda la salida de un proyecto Supabase propio con el mismo código.
 - **Un usuario pertenece a una sola iglesia** (`perfiles.id = auth.uid()`, con `iglesia_id`). La iglesia activa se resuelve en la base con `private.get_iglesia_id()`.
 - **Red de iglesias:** una iglesia madre puede tener sedes (un solo nivel). Cada sede sigue siendo un inquilino independiente. La madre solo recibe cifras agregadas, y solo de las sedes que la plataforma autoriza (`red_acceso`).
-- **Planes y módulos:** cada iglesia tiene un plan y puede tener módulos extra. Todo permiso exige que el módulo esté activo y que la iglesia esté activa (`private.tiene_modulo`), de modo que suspender una iglesia bloquea el acceso a sus datos en la propia base.
+- **Planes y módulos:** cada iglesia tiene un plan y puede tener módulos extra. Todo permiso exige que el módulo esté activo y que la iglesia esté activa (`private.tiene_modulo`), de modo que suspender una iglesia bloquea en la propia base el acceso a sus datos de negocio. Siguen siendo legibles, a propósito, la fila de la propia iglesia, el propio perfil y la configuración mínima (roles, módulos, enlaces de dar y apariencia), porque la web los necesita para iniciar sesión y mostrar el aviso de suspensión.
 
 ## 2. Garantías verificadas
 
@@ -16,10 +16,10 @@ Estado verificado en producción el 5 de noviembre de 2026 (proyecto `viveadn-sa
 | --- | --- | --- |
 | Todas las tablas con RLS | 27 de 27 tablas de `public` | Producción |
 | Cada fila pertenece a una iglesia | 18 tablas con `iglesia_id`, por defecto `private.get_iglesia_id()` | Producción |
-| Sin referencias entre iglesias | Claves foráneas compuestas `(iglesia_id, id)` | Producción y CI |
+| Sin referencias entre iglesias | Claves foráneas compuestas `(iglesia_id, id)`; una comprobación de `permisos.sql` rechaza cualquier clave simple entre dos tablas de iglesia | Producción y CI |
 | Políticas eficientes | `(select private.get_iglesia_id())` se evalúa una vez por consulta | Producción |
 | Permisos por rol, por iglesia y por plan | `private.tiene_permiso` + `private.tiene_modulo` | Producción |
-| Suspender una iglesia corta el acceso | `tiene_modulo` exige `iglesias.activa` | Producción |
+| Suspender una iglesia corta el acceso a sus datos de negocio | `tiene_modulo` exige `iglesias.activa`; solo quedan legibles su fila de iglesia, su propio perfil y la configuración mínima | Producción |
 | Ningún visitante anónimo toca tablas ni funciones | `permisos.sql` en cada PR | CI |
 | Ninguna función SECURITY DEFINER expuesta en `public` | `permisos.sql` | CI |
 | Tablas de uso solo del servidor | `plataforma_auditoria`, `plataforma_ajustes`, `registro_codigos`, `registro_intentos` | CI |
