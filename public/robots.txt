@@ -1,4 +1,0 @@
-# Etapa de pruebas cerradas: ningun buscador debe indexar el sitio.
-# Al lanzar, borrar este archivo y el encabezado X-Robots-Tag de vercel.json.
-User-agent: *
-Disallow: /
