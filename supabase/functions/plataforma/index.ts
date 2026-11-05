@@ -289,14 +289,8 @@ Deno.serve(async (req) => {
           const antes = /BORRADO_NO_VENCIDO/.test(error.message)
           return json({ error: antes ? 'El plazo de borrado programado todavia no ha vencido' : 'No se pudo borrar la iglesia' }, antes ? 409 : 500)
         }
-        // La base ya no tiene la iglesia: se retiran sus cuentas de acceso. Las que fallen quedan anotadas
-        const ids: string[] = Array.isArray(usuarios) ? usuarios : []
-        const pendientes: string[] = []
-        for (const id of ids) {
-          const { error: eBorrar } = await admin.auth.admin.deleteUser(id)
-          if (eBorrar) { pendientes.push(id); console.error('no se pudo borrar el usuario', id, eBorrar.message) }
-        }
-        // Y sus archivos. Lo que falle queda anotado para repetirlo a mano
+        // La base ya no tiene la iglesia. Primero se vacian sus archivos: Storage impide borrar una cuenta
+        // que todavia es propietaria de objetos. Lo que falle queda anotado para repetirlo a mano
         let archivosBorrados = 0
         let archivosPendientes = 0
         for (const cubo of CUBOS_IGLESIA) {
@@ -312,6 +306,13 @@ Deno.serve(async (req) => {
             archivosPendientes += 1
             console.error('no se pudo vaciar el cubo', cubo, e instanceof Error ? e.message : e)
           }
+        }
+        // Despues se retiran sus cuentas de acceso. Las que fallen quedan anotadas
+        const ids: string[] = Array.isArray(usuarios) ? usuarios : []
+        const pendientes: string[] = []
+        for (const id of ids) {
+          const { error: eBorrar } = await admin.auth.admin.deleteUser(id)
+          if (eBorrar) { pendientes.push(id); console.error('no se pudo borrar el usuario', id, eBorrar.message) }
         }
         const auditado = await auditar('borrar_iglesia', null, {
           iglesia_id: iglesiaId, usuarios_borrados: ids.length - pendientes.length, usuarios_pendientes: pendientes,
