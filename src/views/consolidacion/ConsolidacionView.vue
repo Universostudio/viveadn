@@ -28,6 +28,48 @@
       </div>
     </div>
 
+    <!-- OP72 avanzado: metricas del seguimiento. Sin el modulo, una tarjeta informativa -->
+    <div v-if="verMetricas" class="card space-y-4">
+      <div class="flex items-center justify-between gap-3 flex-wrap">
+        <h2 class="text-lg font-semibold text-gray-900 flex items-center gap-2"><ChartColumn class="w-5 h-5 text-adn-verde" aria-hidden="true" /> {{ t('consolidacion.metricas.titulo') }}</h2>
+        <select v-model.number="diasMetricas" @change="cargarMetricas" :aria-label="t('consolidacion.metricas.periodo')"
+          class="text-sm border border-gray-200 rounded-lg px-2 py-1.5 bg-white">
+          <option :value="7">{{ t('consolidacion.metricas.dias', { n: 7 }) }}</option>
+          <option :value="30">{{ t('consolidacion.metricas.dias', { n: 30 }) }}</option>
+          <option :value="90">{{ t('consolidacion.metricas.dias', { n: 90 }) }}</option>
+        </select>
+      </div>
+      <p v-if="errorMetricas" class="text-sm text-red-600" role="alert">{{ t('consolidacion.metricas.error') }}</p>
+      <p v-else-if="!metricas" class="text-sm text-gray-500" role="status">{{ t('comun.cargando') }}</p>
+      <p v-else-if="metricas.total === 0" class="text-sm text-gray-500">{{ t('consolidacion.metricas.sinDatos') }}</p>
+      <template v-else>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div v-for="k in tarjetasMetricas" :key="k.etiqueta" class="bg-gray-50 rounded-xl p-3">
+            <p class="text-2xl font-bold text-gray-900">{{ k.valor }}</p>
+            <p class="text-xs text-gray-500">{{ t(k.etiqueta) }}</p>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div v-for="g in gruposMetricas" :key="g.titulo">
+            <h3 class="text-sm font-semibold text-gray-700 mb-2">{{ t(g.titulo) }}</h3>
+            <ul class="divide-y divide-gray-100 text-sm">
+              <li v-for="f in g.filas" :key="f.id ?? 'sin'" class="flex items-center justify-between py-1.5 gap-3">
+                <span class="truncate text-gray-700">{{ f.nombre || t('consolidacion.metricas.sinAsignar') }}</span>
+                <span class="text-gray-500 whitespace-nowrap">{{ f.total }}<span v-if="f.vencidos" class="text-red-600"> · {{ t('consolidacion.metricas.vencidosN', { n: f.vencidos }) }}</span></span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </template>
+    </div>
+    <div v-else-if="ofrecerMetricas" class="card flex items-start gap-3 bg-adn-arena/40">
+      <ChartColumn class="w-6 h-6 text-adn-verde flex-shrink-0" aria-hidden="true" />
+      <div>
+        <p class="font-semibold text-gray-900">{{ t('consolidacion.metricas.promo') }}</p>
+        <p class="text-sm text-gray-600">{{ t('consolidacion.metricas.promoAyuda') }}</p>
+      </div>
+    </div>
+
     <!-- Lista de consolidaciones -->
     <div class="card">
       <div class="flex items-center justify-between mb-4">
@@ -241,14 +283,57 @@
 
 <script setup lang="ts">
 import EstadoAlerta from '@/components/EstadoAlerta.vue'
-import { CalendarDays, Check, CircleCheck, Clock, LoaderCircle, Siren, Timer, TriangleAlert, UserPlus, UserRound } from '@lucide/vue'
+import { CalendarDays, ChartColumn, Check, CircleCheck, Clock, LoaderCircle, Siren, Timer, TriangleAlert, UserPlus, UserRound } from '@lucide/vue'
 import { ref, computed, onMounted } from 'vue'
 import { supabase } from '@/lib/supabase'
+import { conAlerta } from '@/lib/alertas'
 import type { AlertaColor } from '@/lib/supabase'
 import { useI18n } from 'vue-i18n'
 import { formatoFechaHora } from '@/i18n'
+import { useAuthStore } from '@/stores/auth'
 
 const { t, te } = useI18n()
+const auth = useAuthStore()
+
+// ---- OP72 avanzado (de pago) ----
+const verMetricas = computed(() => auth.tieneModulo('op72_avanzado') && auth.can('consolidacion.ver'))
+const ofrecerMetricas = computed(() => !auth.tieneModulo('op72_avanzado') && auth.can('consolidacion.ver'))
+const metricas = ref<any>(null)
+const errorMetricas = ref(false)
+const diasMetricas = ref(30)
+
+async function cargarMetricas() {
+  if (!verMetricas.value) return
+  metricas.value = null
+  errorMetricas.value = false
+  const { data, error } = await supabase.rpc('metricas_op72', { p_desde: new Date(Date.now() - diasMetricas.value * 86_400_000).toISOString() })
+  if (error) { errorMetricas.value = true; return }
+  metricas.value = data
+}
+
+const pct = (n: number, d: number) => (d > 0 ? `${Math.round((n / d) * 100)}%` : '0%')
+const tarjetasMetricas = computed(() => {
+  const m = metricas.value
+  if (!m) return []
+  return [
+    { etiqueta: 'consolidacion.metricas.total', valor: m.total },
+    { etiqueta: 'consolidacion.metricas.contacto24h', valor: pct(m.primer_contacto_24h, m.total) },
+    { etiqueta: 'consolidacion.metricas.horasPrimerContacto', valor: m.horas_primer_contacto == null ? '-' : `${m.horas_primer_contacto} h` },
+    { etiqueta: 'consolidacion.metricas.completados72h', valor: pct(m.completados_72h, m.total) },
+    { etiqueta: 'consolidacion.metricas.completados', valor: m.completados },
+    { etiqueta: 'consolidacion.metricas.abiertos', valor: m.abiertos },
+    { etiqueta: 'consolidacion.metricas.vencidos', valor: m.vencidos },
+    { etiqueta: 'consolidacion.metricas.conContacto', valor: pct(m.con_primer_contacto, m.total) },
+  ]
+})
+const gruposMetricas = computed(() => {
+  const m = metricas.value
+  if (!m) return []
+  return [
+    { titulo: 'consolidacion.metricas.porConsolidador', filas: (m.por_consolidador ?? []).map((f: any) => ({ id: f.consolidador_id, nombre: f.nombre, total: f.total, vencidos: f.vencidos })) },
+    { titulo: 'consolidacion.metricas.porCasa', filas: (m.por_casa ?? []).map((f: any) => ({ id: f.casa_oracion_id, nombre: f.nombre, total: f.total, vencidos: f.vencidos })) },
+  ]
+})
 
 const cargando = ref(true)
 const consolidaciones = ref<any[]>([])
@@ -349,7 +434,7 @@ async function cargarDatos() {
       .eq('activo', true)
       .order('nombre'),
   ])
-  consolidaciones.value = consolRes.data ?? []
+  consolidaciones.value = (consolRes.data ?? []).map(conAlerta)
   miembrosDisponibles.value = miembrosRes.data ?? []
   cargando.value = false
 }
@@ -374,5 +459,5 @@ async function marcarCompletado(id: string) {
   consolidaciones.value = consolidaciones.value.filter(c => c.id !== id)
 }
 
-onMounted(cargarDatos)
+onMounted(() => { cargarDatos(); cargarMetricas() })
 </script>

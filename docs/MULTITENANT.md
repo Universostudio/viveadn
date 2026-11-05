@@ -77,10 +77,14 @@ Todo lo que cruza iglesias pasa por una función de borde con `service_role`, qu
 
 `iglesias.modo_alias` hace que la iglesia registre a las personas con un alias o ID interno en lugar de su identidad civil. Si el dato no se guarda, no puede filtrarse ni hace falta enmascararlo. Con el modo activo, la base normaliza cada miembro nuevo (disparador `miembros_modo_alias`): el alias va en `nombre`, `apellido` queda vacío y no se guarda correo. El teléfono se conserva porque la llamada de las 72 horas lo necesita. Los miembros que ya existían no se tocan al activar el modo. Los formularios de alta, el registro público por QR y la importación se adaptan solos; ninguna lista cambia, porque ya muestran `nombre` y `apellido` juntos. No hay modo mixto: una iglesia que quiere nombres reales no activa el modo.
 
+## OP72 gratuito y de pago
+
+El módulo `consolidacion` está en todos los planes y es la parte gratuita: registro, asignación, tres contactos, resultado y las 72 horas con su color. El módulo `op72_avanzado` es la parte de pago: viene en Básico y Premium y se contrata como complemento en Semilla con la misma maquinaria de planes y complementos que ya existe, sin lógica nueva de licencias. Hoy incluye las métricas avanzadas (`metricas_op72`: tiempos de primer contacto, cumplimiento de las 72 horas y desglose por consolidador y casa), que respetan los permisos de quien las pide. Las alertas automáticas por correo o WhatsApp quedan para cuando exista el canal de envío. El color de alerta se calcula siempre desde `fecha_conversion`: la columna `estado_alerta` solo se actualiza al escribir, envejece sola y no se usa para mostrar ni para filtrar.
+
 ## 6. Orden de trabajo
 
 1. Hecho: corte duro de los límites del plan e índices de las tablas que crecen.
 2. Hecho: ciclo de vida de la iglesia, con exportación y borrado.
 3. Hecho: almacenamiento de archivos con aislamiento por iglesia.
-4. Hecho: OP72 v2, modo alias. Falta la versión gratuita y de pago del módulo (alertas y métricas avanzadas).
+4. Hecho: OP72 v2, con modo alias y versión gratuita y de pago. Falta el canal de envío de las alertas automáticas.
 5. Motor de formación, QR en sus tres partes, alianzas e integraciones.

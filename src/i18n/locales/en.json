@@ -277,7 +277,28 @@
     "horasTranscurridas": "Hours elapsed",
     "conversion": "Conversion",
     "limite": "72h deadline",
-    "marcarCompletado": "Mark as completed"
+    "marcarCompletado": "Mark as completed",
+    "metricas": {
+      "titulo": "OP72 metrics",
+      "periodo": "Period",
+      "dias": "Last {n} days",
+      "error": "The metrics could not be loaded.",
+      "sinDatos": "There are no consolidations in this period yet.",
+      "total": "Consolidations",
+      "contacto24h": "First contact within 24 h",
+      "horasPrimerContacto": "Average hours to first contact",
+      "completados72h": "Completed within 72 h",
+      "completados": "Completed",
+      "abiertos": "Open",
+      "vencidos": "Overdue, not completed",
+      "conContacto": "With any contact",
+      "porConsolidador": "By consolidator",
+      "porCasa": "By house of prayer",
+      "sinAsignar": "Unassigned",
+      "vencidosN": "{n} overdue",
+      "promo": "Advanced OP72 metrics",
+      "promoAyuda": "Contact times, 72-hour compliance and a breakdown by consolidator and house. Included in the Basic and Premium plans, or as an add-on."
+    }
   },
   "formacion": {
     "titulo": "Discipleship training",
