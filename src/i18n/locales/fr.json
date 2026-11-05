@@ -911,5 +911,9 @@
     },
     "nombre": "Prénom",
     "apellido": "Nom"
+  },
+  "plan": {
+    "limiteMiembros": "Votre offre a atteint sa limite de membres. Pour ajouter des personnes, désactivez-en une ou changez d'offre.",
+    "limiteMiembrosImportar": "Votre offre a atteint sa limite de membres. Les personnes avant ce point ont été importées ; les autres non. Changez d'offre ou désactivez quelqu'un pour continuer."
   }
 }

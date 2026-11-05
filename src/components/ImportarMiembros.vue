@@ -80,6 +80,7 @@ import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { Upload, X, Download, FileSpreadsheet, CircleCheck, TriangleAlert } from '@lucide/vue'
 import { supabase } from '@/lib/supabase'
+import { esLimitePlan } from '@/lib/plan'
 import { analizarCsv, marcarDuplicados, claveMiembro, MAX_FILAS, MAX_BYTES, PLANTILLA_CSV } from '@/lib/importarMiembros'
 import type { FilaImportar } from '@/lib/importarMiembros'
 
@@ -153,7 +154,7 @@ async function importar() {
   for (let i = 0; i < lista.length; i += LOTE) {
     const lote = lista.slice(i, i + LOTE).map(f => ({ ...f.datos, activo: true }))
     const { error } = await supabase.from('miembros').insert(lote)
-    if (error) { errorImportar.value = 'miembros.importar.errorImportar'; break }
+    if (error) { errorImportar.value = esLimitePlan(error) ? 'plan.limiteMiembrosImportar' : 'miembros.importar.errorImportar'; break }
     importados.value += lote.length
     progreso.value = Math.round((importados.value / lista.length) * 100)
   }
