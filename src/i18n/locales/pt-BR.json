@@ -572,7 +572,17 @@
       "sinVencimiento": "Sem vencimento",
       "sinCodigos": "Ainda não há códigos.",
       "guardado": "Alterações salvas."
-    }
+    },
+    "etapa": {
+      "onboarding": "Em cadastro",
+      "prueba": "Em teste",
+      "activa": "Ativa",
+      "receso": "Em recesso",
+      "suspendida": "Suspensa"
+    },
+    "etapaCambiada": "{iglesia} passa para: {etapa}.",
+    "confirmarEtapa": "Mudar {iglesia} para \"{etapa}\"? Recesso e suspensa fecham o acesso da igreja; os dados são mantidos.",
+    "pruebaHasta": "Teste até {fecha}"
   },
   "invitacion": {
     "comprobando": "Verificando seu convite…",

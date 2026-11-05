@@ -572,7 +572,17 @@
       "sinVencimiento": "Sin vencimiento",
       "sinCodigos": "Todavía no hay códigos.",
       "guardado": "Cambios guardados."
-    }
+    },
+    "etapa": {
+      "onboarding": "En alta",
+      "prueba": "En prueba",
+      "activa": "Activa",
+      "receso": "En receso",
+      "suspendida": "Suspendida"
+    },
+    "etapaCambiada": "{iglesia} pasa a: {etapa}.",
+    "confirmarEtapa": "¿Cambiar {iglesia} a «{etapa}»? Receso y suspendida cierran el acceso de la iglesia; los datos se conservan.",
+    "pruebaHasta": "Prueba hasta {fecha}"
   },
   "invitacion": {
     "comprobando": "Comprobando tu invitación…",

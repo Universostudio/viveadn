@@ -572,7 +572,17 @@
       "sinVencimiento": "Sans expiration",
       "sinCodigos": "Il n'y a pas encore de codes.",
       "guardado": "Modifications enregistrées."
-    }
+    },
+    "etapa": {
+      "onboarding": "En inscription",
+      "prueba": "À l'essai",
+      "activa": "Active",
+      "receso": "En pause",
+      "suspendida": "Suspendue"
+    },
+    "etapaCambiada": "{iglesia} passe à : {etapa}.",
+    "confirmarEtapa": "Passer {iglesia} à « {etapa} » ? Pause et suspension ferment l'accès de l'église ; les données sont conservées.",
+    "pruebaHasta": "Essai jusqu'au {fecha}"
   },
   "invitacion": {
     "comprobando": "Vérification de votre invitation…",
