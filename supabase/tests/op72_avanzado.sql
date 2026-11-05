@@ -39,6 +39,16 @@ insert into public.consolidaciones (iglesia_id, miembro_id, consolidador_id, fec
   ('0a100000-0000-0000-0000-00000000000a', '3a000000-0000-0000-0000-000000000005', null, now() - interval '200 days', null, false, null),
   ('0a100000-0000-0000-0000-00000000000b', '3a000000-0000-0000-0000-000000000009', null, now() - interval '5 hours', null, false, null);
 
+-- La fecha de cierre la fija la base: completar desde la pantalla (solo completado = true) la rellena y reabrir la limpia
+update public.consolidaciones set completado = true where miembro_id = '3a000000-0000-0000-0000-000000000001';
+select pg_temp.igual((select (completado_at is not null)::text from public.consolidaciones where miembro_id = '3a000000-0000-0000-0000-000000000001'), 'true', 'completar sin fecha deja completado_at');
+update public.consolidaciones set completado = false where miembro_id = '3a000000-0000-0000-0000-000000000001';
+select pg_temp.igual((select (completado_at is null)::text from public.consolidaciones where miembro_id = '3a000000-0000-0000-0000-000000000001'), 'true', 'reabrir limpia completado_at');
+insert into public.consolidaciones (iglesia_id, miembro_id, fecha_conversion, completado)
+  values ('0a100000-0000-0000-0000-00000000000b', '3a000000-0000-0000-0000-000000000009', now() - interval '1 hour', true);
+select pg_temp.igual((select (completado_at is not null)::text from public.consolidaciones where miembro_id = '3a000000-0000-0000-0000-000000000009' and completado), 'true', 'un caso que nace completado tambien recibe la fecha');
+delete from public.consolidaciones where miembro_id = '3a000000-0000-0000-0000-000000000009' and completado;
+
 -- Iglesia de pago: propietario
 select set_config('request.jwt.claim.sub', '0a000000-0000-0000-0000-000000000001', true);
 set local role authenticated;
