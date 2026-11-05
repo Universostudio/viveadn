@@ -27,3 +27,5 @@ bash tests/checkin_concurrencia.sh "$DB"
 "${PSQL[@]}" -d $DB -f tests/enlaces_dar.sql
 "${PSQL[@]}" -d $DB -f tests/red_iglesias.sql
 "${PSQL[@]}" -d $DB -f tests/registro.sql
+"${PSQL[@]}" -d $DB -f tests/limites_plan.sql
+bash tests/limites_concurrencia.sh "$DB"
