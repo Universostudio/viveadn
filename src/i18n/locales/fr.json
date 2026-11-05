@@ -28,7 +28,8 @@
     "plataforma": "Plateforme",
     "salir": "Se déconnecter",
     "abrirMenu": "Ouvrir le menu",
-    "eventos": "Événements"
+    "eventos": "Événements",
+    "red": "Réseau"
   },
   "login": {
     "subtitulo": "Système de gestion d'église",
@@ -534,7 +535,25 @@
     "confirmarReactivar": "Réactiver {iglesia} ?",
     "iglesiaSuspendida": "{iglesia} suspendue.",
     "iglesiaReactivada": "{iglesia} réactivée.",
-    "creada": "Église créée. L'invitation a été envoyée à {correo}."
+    "creada": "Église créée. L'invitation a été envoyée à {correo}.",
+    "resumen": {
+      "titulo": "Résumé de toutes les églises",
+      "activas": "Églises actives",
+      "suspendidas": "Suspendues",
+      "demos": "Démos",
+      "miembros": "Membres au total",
+      "porPlan": "Églises actives par offre",
+      "iglesiasMiembros": "{i} églises · {m} membres"
+    },
+    "red": {
+      "madre": "Église mère",
+      "independiente": "Indépendante",
+      "acceso": "Ce que voit la mère",
+      "resumen": "Résumé des chiffres",
+      "ninguno": "Rien",
+      "conSedes": "Elle a des antennes liées ({n}). Déliez-les avant d'en faire l'antenne d'une autre église.",
+      "guardada": "Réseau mis à jour pour {iglesia}."
+    }
   },
   "invitacion": {
     "comprobando": "Vérification de votre invitation…",
@@ -762,5 +781,79 @@
       "error": "Impossible d'enregistrer. Réessayez.",
       "qrAlt": "QR code d'enregistrement"
     }
+  },
+  "bienvenida": {
+    "lema1": "Votre vocation,",
+    "lema2": "notre essence.",
+    "entrar": "Se connecter",
+    "conocer": "Découvrir ViveADN"
+  },
+  "presentacion": {
+    "inicio": "Accueil",
+    "titulo": "Chaque personne de votre église, accompagnée.",
+    "subtitulo": "ViveADN réunit en un seul lieu les membres, les maisons de prière, le suivi et la formation de votre église, avec sa propre identité.",
+    "queHaceTitulo": "Ce que fait ViveADN",
+    "queHaceTexto": "Des modules pensés pour le travail quotidien d'une église. Chaque église utilise ceux que son offre inclut.",
+    "modulos": {
+      "miembros": {
+        "titulo": "Membres",
+        "texto": "Fiches complètes, import depuis des tableurs et inscription des visiteurs par QR."
+      },
+      "op72": {
+        "titulo": "Suivi OP72",
+        "texto": "Suivi de chaque nouvelle personne, avec des alertes quand quelqu'un reste sans attention."
+      },
+      "casas": {
+        "titulo": "Maisons de prière",
+        "texto": "Maisons, responsables et participants organisés par zone."
+      },
+      "formacion": {
+        "titulo": "Formation LBS",
+        "texto": "Parcours de formation et progression de chaque personne."
+      },
+      "eventos": {
+        "titulo": "Événements et présence",
+        "texto": "Calendrier, séries de réunions et présence saisie à la main ou par QR."
+      },
+      "dar": {
+        "titulo": "Dîmes, offrandes et dons",
+        "texto": "Une page de don à l'image de votre église qui mène à vos propres sites de collecte."
+      }
+    },
+    "nivelesTitulo": "Un tableau de bord pour chaque niveau",
+    "nivelesTexto": "Chacun ne voit que ce qui le concerne.",
+    "niveles": {
+      "plataforma": {
+        "titulo": "Panneau Maître",
+        "texto": "Qui administre ViveADN voit toutes les églises, leurs offres, modules et membres."
+      },
+      "iglesia": {
+        "titulo": "Tableau de bord de l'église",
+        "texto": "Chaque église gère ses personnes avec ses propres rôles et autorisations."
+      },
+      "red": {
+        "titulo": "Tableau de bord du réseau",
+        "texto": "Une église avec des antennes voit les chiffres de tout son réseau. La plateforme décide ce que chaque antenne partage."
+      }
+    },
+    "dar": {
+      "titulo": "Sans toucher à votre argent",
+      "texto": "ViveADN ne traite ni ne conserve aucun paiement. Les dons arrivent directement sur les sites que votre église utilise déjà."
+    }
+  },
+  "red": {
+    "titulo": "Réseau d'églises",
+    "subtitulo": "Chiffres de {iglesia} et de ses antennes.",
+    "sinSedes": "Cette église n'a pas encore d'antenne liée.",
+    "miembros": "Membres actifs",
+    "casas": "Maisons de prière",
+    "consolidacion": "En suivi",
+    "alertas": "Alertes critiques",
+    "totalesNota": "Les totaux additionnent votre église et les antennes qui partagent leur résumé. Ils ne contiennent aucune donnée personnelle.",
+    "iglesia": "Église",
+    "estaIglesia": "cette église",
+    "sinAcceso": "Ne partage pas son résumé",
+    "suspendida": "Suspendue",
+    "errorCargar": "Le réseau n'a pas pu être chargé. Réessayez."
   }
 }

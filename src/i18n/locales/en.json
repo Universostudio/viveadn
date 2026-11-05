@@ -28,7 +28,8 @@
     "plataforma": "Platform",
     "salir": "Sign out",
     "abrirMenu": "Open menu",
-    "eventos": "Events"
+    "eventos": "Events",
+    "red": "Network"
   },
   "login": {
     "subtitulo": "Church Management System",
@@ -534,7 +535,25 @@
     "confirmarReactivar": "Reactivate {iglesia}?",
     "iglesiaSuspendida": "{iglesia} suspended.",
     "iglesiaReactivada": "{iglesia} reactivated.",
-    "creada": "Church created. The invitation was sent to {correo}."
+    "creada": "Church created. The invitation was sent to {correo}.",
+    "resumen": {
+      "titulo": "Summary of all churches",
+      "activas": "Active churches",
+      "suspendidas": "Suspended",
+      "demos": "Demos",
+      "miembros": "Total members",
+      "porPlan": "Active churches by plan",
+      "iglesiasMiembros": "{i} churches · {m} members"
+    },
+    "red": {
+      "madre": "Parent church",
+      "independiente": "Independent",
+      "acceso": "What the parent sees",
+      "resumen": "Summary figures",
+      "ninguno": "Nothing",
+      "conSedes": "It has linked branches ({n}). Unlink them before making it a branch of another church.",
+      "guardada": "Network updated for {iglesia}."
+    }
   },
   "invitacion": {
     "comprobando": "Checking your invitation…",
@@ -762,5 +781,79 @@
       "error": "It could not be saved. Please try again.",
       "qrAlt": "Check-in QR code"
     }
+  },
+  "bienvenida": {
+    "lema1": "Your purpose,",
+    "lema2": "our essence.",
+    "entrar": "Sign in",
+    "conocer": "About ViveADN"
+  },
+  "presentacion": {
+    "inicio": "Home",
+    "titulo": "Every person in your church, cared for.",
+    "subtitulo": "ViveADN brings your members, prayer houses, follow-up and training together in one place, with your own identity.",
+    "queHaceTitulo": "What ViveADN does",
+    "queHaceTexto": "Modules built for the daily work of a church. Each church uses the ones its plan includes.",
+    "modulos": {
+      "miembros": {
+        "titulo": "Members",
+        "texto": "Complete records, import from spreadsheets and visitor sign-up by QR."
+      },
+      "op72": {
+        "titulo": "OP72 follow-up",
+        "texto": "Follow-up for every new person, with alerts when someone is left without attention."
+      },
+      "casas": {
+        "titulo": "Prayer houses",
+        "texto": "Houses, leaders and attendees organized by zone."
+      },
+      "formacion": {
+        "titulo": "LBS training",
+        "texto": "Training paths and each person's progress."
+      },
+      "eventos": {
+        "titulo": "Events and attendance",
+        "texto": "Calendar, meeting series and attendance recorded by hand or by QR."
+      },
+      "dar": {
+        "titulo": "Tithes, offerings and donations",
+        "texto": "A giving page with your church's identity that leads to your own giving sites."
+      }
+    },
+    "nivelesTitulo": "A dashboard for each level",
+    "nivelesTexto": "Each person sees only what concerns them.",
+    "niveles": {
+      "plataforma": {
+        "titulo": "Master Panel",
+        "texto": "Whoever runs ViveADN sees every church, its plan, modules and members."
+      },
+      "iglesia": {
+        "titulo": "Church dashboard",
+        "texto": "Each church manages its people with its own roles and permissions."
+      },
+      "red": {
+        "titulo": "Network dashboard",
+        "texto": "A church with branches sees the figures of its whole network. The platform decides what each branch shares."
+      }
+    },
+    "dar": {
+      "titulo": "Your money stays yours",
+      "texto": "ViveADN does not process or store payments. Gifts go straight to the sites your church already uses."
+    }
+  },
+  "red": {
+    "titulo": "Church network",
+    "subtitulo": "Figures for {iglesia} and its branches.",
+    "sinSedes": "This church has no linked branches yet.",
+    "miembros": "Active members",
+    "casas": "Prayer houses",
+    "consolidacion": "In follow-up",
+    "alertas": "Critical alerts",
+    "totalesNota": "Totals add your church and the branches that share their summary. They include no personal data.",
+    "iglesia": "Church",
+    "estaIglesia": "this church",
+    "sinAcceso": "Does not share its summary",
+    "suspendida": "Suspended",
+    "errorCargar": "The network could not be loaded. Try again."
   }
 }

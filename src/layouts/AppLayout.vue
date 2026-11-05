@@ -97,7 +97,7 @@
 import { computed, onMounted, ref, watch, type Component } from 'vue'
 import {
   LayoutDashboard, Users, House, HeartHandshake, GraduationCap, MessageSquare,
-  ChartColumn, CalendarDays, Settings, ShieldCheck, LogOut, Menu,
+  ChartColumn, CalendarDays, Settings, ShieldCheck, LogOut, Menu, Network,
 } from '@lucide/vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
@@ -121,7 +121,7 @@ const iglesiaName = computed(() => auth.nombreIglesia)
 const consolidacionPendientes = ref(0)
 
 // Cada sección se muestra si el rol tiene alguno de sus permisos; label es la clave de traducción
-const todosLosItems: { to: string; icon: Component; label: string; badge?: boolean; modulo?: string; plataforma?: boolean; permisos: string[] }[] = [
+const todosLosItems: { to: string; icon: Component; label: string; badge?: boolean; modulo?: string; plataforma?: boolean; red?: boolean; permisos: string[] }[] = [
   { to: '/',              icon: LayoutDashboard, label: 'menu.dashboard', permisos: [] },
   { to: '/miembros',      icon: Users, label: 'menu.miembros', permisos: ['miembros.ver', 'miembros.ver_asignados'] },
   { to: '/eventos',       icon: CalendarDays, label: 'menu.eventos', modulo: 'eventos', permisos: ['eventos.ver'] },
@@ -131,12 +131,14 @@ const todosLosItems: { to: string; icon: Component; label: string; badge?: boole
   { to: '/comunicacion',  icon: MessageSquare, label: 'menu.comunicacion', modulo: 'comunicacion', permisos: ['miembros.ver'] },
   { to: '/reportes',      icon: ChartColumn, label: 'menu.reportes', permisos: ['reportes.ver'] },
   { to: '/configuracion', icon: Settings, label: 'menu.configuracion', permisos: ['usuarios.gestionar', 'roles.gestionar', 'iglesia.configurar'] },
+  { to: '/red',            icon: Network, label: 'menu.red', red: true, permisos: [] },
   { to: '/plataforma',    icon: ShieldCheck, label: 'menu.plataforma', plataforma: true, permisos: [] },
 ]
 
 const navItems = computed(() =>
   todosLosItems.filter(i =>
     (!i.plataforma || auth.esPlataforma) &&
+    (!i.red || auth.tieneSedes) &&
     (!i.modulo || auth.tieneModulo(i.modulo)) &&
     (i.permisos.length === 0 || auth.can(...i.permisos))
   )
