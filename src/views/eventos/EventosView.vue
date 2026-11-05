@@ -146,7 +146,6 @@ const fecha = (iso: string, opciones: Intl.DateTimeFormatOptions) => new Date(is
 const visibles = computed(() => eventos.value)
 
 const POR_VISTA = 100
-const limite = ref(POR_VISTA)
 const hayMas = ref(false)
 
 // Cuántos asistieron a cada evento, contando todas las filas (no solo la primera página de 1000)
@@ -163,36 +162,44 @@ async function contarPresentes(ids: string[]): Promise<Record<string, number> | 
   return c
 }
 
-async function cargar() {
-  cargando.value = true
+// Pide una página de 100 eventos (más una fila para saber si quedan más) a partir de la posición ya cargada.
+// Nunca pide más de 101 filas, así que el tope de 1000 de Supabase no corta el calendario.
+async function cargar(anadir = false) {
+  if (!anadir) cargando.value = true
   // Un evento es "próximo" hasta que termina o, sin hora de fin, durante 3 horas desde que empieza
   const limiteSinFin = new Date(Date.now() - DURACION_POR_DEFECTO_MS).toISOString()
   const ahora = new Date().toISOString()
   const proximos = vista.value === 'proximos'
+  const desde = anadir ? eventos.value.length : 0
   let q = supabase.from('eventos')
     .select('id, titulo, tipo, inicia_en, termina_en, lugar, cancelado, casa_oracion_id, casas_oracion!eventos_casa_fk(nombre)')
     .or(proximos
       ? `termina_en.gte.${ahora},and(termina_en.is.null,inicia_en.gte.${limiteSinFin})`
       : `termina_en.lt.${ahora},and(termina_en.is.null,inicia_en.lt.${limiteSinFin})`)
     .order('inicia_en', { ascending: proximos })
+    .order('id')
   if (filtroTipo.value) q = q.eq('tipo', filtroTipo.value)
   const [ev, cs] = await Promise.all([
-    q.limit(limite.value + 1),
+    q.range(desde, desde + POR_VISTA),
     casas.value.length ? Promise.resolve({ data: casas.value }) : supabase.from('casas_oracion').select('id, nombre, codigo_zona').eq('activa', true).order('nombre'),
   ])
   const filas = ev.data ?? []
-  hayMas.value = filas.length > limite.value
-  eventos.value = filas.slice(0, limite.value)
+  hayMas.value = filas.length > POR_VISTA
+  const nuevos = filas.slice(0, POR_VISTA)
+  eventos.value = anadir ? [...eventos.value, ...nuevos] : nuevos
   casas.value = cs.data ?? []
   cargando.value = false
-  conteo.value = {}
-  if (auth.can('asistencia.ver') && eventos.value.length) conteo.value = (await contarPresentes(eventos.value.map(e => e.id))) ?? {}
+  if (!anadir) conteo.value = {}
+  if (auth.can('asistencia.ver') && nuevos.length) {
+    const c = await contarPresentes(nuevos.map(e => e.id))
+    if (c) conteo.value = { ...conteo.value, ...c }
+  }
 }
 
 // Al cambiar de vista o de tipo se empieza de nuevo desde la primera página
-watch([vista, filtroTipo], () => { limite.value = POR_VISTA; cargar() })
+watch([vista, filtroTipo], () => cargar())
 
-function verMas() { limite.value += POR_VISTA; cargar() }
+function verMas() { cargar(true) }
 
 function abrirNuevo() {
   form.value = formVacio()
@@ -223,5 +230,5 @@ async function crear() {
   await cargar()
 }
 
-onMounted(cargar)
+onMounted(() => cargar())
 </script>
