@@ -184,7 +184,10 @@
         "nivelInvalido": "niveau d'engagement non valide",
         "demasiadoLargo": "un texte est trop long"
       }
-    }
+    },
+    "alias": "Alias",
+    "ejemploAlias": "Chene-01",
+    "aliasAyuda": "Un alias ou un identifiant interne, pas son nom civil."
   },
   "ficha": {
     "volver": "Retour aux membres",
@@ -499,7 +502,9 @@
     "nuevoEnlace": "Nouveau lien",
     "revocar": "Révoquer",
     "correoEnviado": "Nous avons envoyé l'invitation par e-mail à {email}. Demandez-lui de vérifier aussi les courriers indésirables. Si elle n'arrive pas, copiez le lien et envoyez-le vous-même.",
-    "correoNoEnviado": "L'e-mail n'a pas pu être envoyé automatiquement. Copiez le lien et envoyez-le à {email}."
+    "correoNoEnviado": "L'e-mail n'a pas pu être envoyé automatiquement. Copiez le lien et envoyez-le à {email}.",
+    "modoAlias": "Enregistrer les personnes avec un alias",
+    "modoAliasAyuda": "Les nouvelles personnes sont enregistrées avec un alias ou un identifiant interne : sans nom de famille ni e-mail. Le téléphone est conservé pour le contact. Les membres existants ne changent pas."
   },
   "plataforma": {
     "titulo": "Plateforme",

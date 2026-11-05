@@ -30,4 +30,12 @@ const f = analizarCsv('nombre,apellido,email\nA,B,a@x.es\nC,D,A@X.ES\nE,F,\ne,f,
 const d = marcarDuplicados(f, new Set(['e:g@x.es']))
 assert.deepEqual(d.map(x => x.duplicado), [false, true, false, true, true, false])
 assert.equal(claveMiembro({nombre:'José', apellido:'Núñez', email:null}), claveMiembro({nombre:'jose', apellido:'NUNEZ', email:null}))
+// Modo alias: sin columna apellido; el correo y el apellido se descartan aunque vengan en el archivo
+const al = analizarCsv('nombre,telefono\nRoble-01,+34 600 111 111\nCedro-02,\n', true)
+assert.equal(al.error, undefined)
+assert.deepEqual(al.filas.map(x => x.errores), [[], []])
+assert.equal(al.filas[0].datos.apellido, ''); assert.equal(al.filas[0].datos.email, null)
+const conCorreo = analizarCsv('nombre,apellido,email\nRoble-03,Perez,p@x.es\n', true).filas[0]
+assert.deepEqual(conCorreo.errores, []); assert.equal(conCorreo.datos.apellido, ''); assert.equal(conCorreo.datos.email, null)
+assert.equal(analizarCsv('nombre,telefono\nRoble-01,1\n').error, 'sinColumnas', 'sin modo alias el apellido sigue siendo obligatorio')
 console.log('OK: todas las pruebas de importación pasan')

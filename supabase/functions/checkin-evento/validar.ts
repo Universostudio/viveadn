@@ -4,7 +4,7 @@ export const TOKEN_RE = /^[0-9a-f]{64}$/
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const TEL_RE = /^[+\d][\d\s().\-]{5,29}$/
 // Caracteres de control y de formato invisibles (cero ancho, direccion de texto), que no tienen sitio en un nombre
-const RARO_RE = /[\u0000-\u001f\u007f​-‏‪-‮⁠﻿]/
+const RARO_RE = /[\u0000-\u001f\u007f\u200b-\u200f\u202a-\u202e\u2060\ufeff]/
 
 export interface Datos {
   nombre: string
@@ -27,7 +27,8 @@ export function validarRegistro(b: Record<string, unknown>): Resultado {
   const apellido = texto(b.apellido, 100)
   const telefono = texto(b.telefono, 30)
   const email = texto(b.email, 254).toLowerCase()
-  if (!nombre || !apellido || nombre.length > 100 || apellido.length > 100) return { ok: false, error: 'datos' }
+  // El apellido puede venir vacio: en una iglesia con modo alias no existe. Si la iglesia lo exige, lo rechaza la base de datos
+  if (!nombre || nombre.length > 100 || apellido.length > 100) return { ok: false, error: 'datos' }
   if (RARO_RE.test(nombre) || RARO_RE.test(apellido) || RARO_RE.test(telefono) || RARO_RE.test(email)) return { ok: false, error: 'datos' }
   if (!TEL_RE.test(telefono) || telefono.replace(/\D/g, '').length < 7) return { ok: false, error: 'datos' }
   if (email && (email.length > 254 || !EMAIL_RE.test(email))) return { ok: false, error: 'datos' }
@@ -42,6 +43,7 @@ export function respuestaDe(estado: string): { status: number; cuerpo: Record<st
     case 'cerrado': return { status: 409, cuerpo: { error: 'cerrado' } }
     case 'lleno': return { status: 409, cuerpo: { error: 'lleno' } }
     case 'limite': return { status: 429, cuerpo: { error: 'limite' } }
+    case 'datos': return { status: 400, cuerpo: { error: 'datos' } }
     default: return { status: 404, cuerpo: { error: 'no_valido' } }
   }
 }

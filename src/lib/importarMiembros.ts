@@ -102,13 +102,14 @@ export function fechaIso(v: string, hoy = new Date()): string | null {
 
 const LIMITES: Record<Columna, number> = { nombre: 100, apellido: 100, email: 254, telefono: 30, fecha_nacimiento: 10, genero: 30, nivel_compromiso: 30, notas: 1000 }
 
-export function validarFila(celdas: Partial<Record<Columna, string>>, linea: number): FilaImportar {
+// En modo alias el apellido no existe y el correo no se guarda: el alias va en la columna nombre
+export function validarFila(celdas: Partial<Record<Columna, string>>, linea: number, alias = false): FilaImportar {
   const v = (c: Columna) => (celdas[c] ?? '').trim()
   const errores: CodigoError[] = []
   if (Object.entries(LIMITES).some(([c, max]) => v(c as Columna).length > max)) errores.push('demasiadoLargo')
   if (!v('nombre')) errores.push('faltaNombre')
-  if (!v('apellido')) errores.push('faltaApellido')
-  const email = v('email').toLowerCase()
+  if (!alias && !v('apellido')) errores.push('faltaApellido')
+  const email = alias ? '' : v('email').toLowerCase()
   if (email && !EMAIL_RE.test(email)) errores.push('emailInvalido')
   const tel = v('telefono')
   if (tel && !TEL_RE.test(tel)) errores.push('telefonoInvalido')
@@ -124,7 +125,7 @@ export function validarFila(celdas: Partial<Record<Columna, string>>, linea: num
     errores,
     duplicado: false,
     datos: {
-      nombre: v('nombre'), apellido: v('apellido'),
+      nombre: v('nombre'), apellido: alias ? '' : v('apellido'),
       email: email || null, telefono: tel || null, fecha_nacimiento: nacimiento,
       genero: v('genero') || null, nivel_compromiso: nivel, notas: v('notas') || null,
     },
@@ -147,12 +148,12 @@ export function marcarDuplicados(filas: FilaImportar[], existentes: Set<string>)
   })
 }
 
-export function analizarCsv(texto: string): Analisis {
+export function analizarCsv(texto: string, alias = false): Analisis {
   const filas = parseCsv(texto)
   if (filas.length < 2) return { error: 'vacio', filas: [], ignoradas: [] }
   const cabecera = filas[0] ?? []
   const columnas = cabecera.map(h => ALIAS[normalizar(h)] as Columna | undefined)
-  if (!columnas.includes('nombre') || !columnas.includes('apellido')) return { error: 'sinColumnas', filas: [], ignoradas: [] }
+  if (!columnas.includes('nombre') || (!alias && !columnas.includes('apellido'))) return { error: 'sinColumnas', filas: [], ignoradas: [] }
   if (filas.length - 1 > MAX_FILAS) return { error: 'demasiadasFilas', filas: [], ignoradas: [] }
   const ignoradas = cabecera.filter((_, i) => !columnas[i]).map(h => h.trim()).filter(Boolean)
   const vistas = new Set<Columna>()
@@ -160,7 +161,7 @@ export function analizarCsv(texto: string): Analisis {
   const resultado = filas.slice(1).map((celdas, i) => {
     const datos: Partial<Record<Columna, string>> = {}
     cols.forEach((c, j) => { if (c) datos[c] = celdas[j] ?? '' })
-    return validarFila(datos, i + 2)
+    return validarFila(datos, i + 2, alias)
   })
   return { filas: resultado, ignoradas }
 }

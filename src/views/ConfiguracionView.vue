@@ -46,6 +46,13 @@
               class="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-adn-verde" />
           </div>
         </div>
+        <label class="flex items-start gap-3 cursor-pointer">
+          <input v-model="iglesia.modoAlias" type="checkbox" :disabled="!auth.can('iglesia.configurar')" class="mt-1 w-4 h-4 accent-adn-verde" />
+          <span>
+            <span class="block text-sm font-medium text-gray-700">{{ t('configuracion.modoAlias') }}</span>
+            <span class="block text-xs text-gray-500">{{ t('configuracion.modoAliasAyuda') }}</span>
+          </span>
+        </label>
         <p v-if="mensajeIglesia" class="text-sm text-gray-600">{{ t(mensajeIglesia) }}</p>
         <div class="flex justify-end">
           <button v-if="auth.can('iglesia.configurar')" @click="guardarIglesia" :disabled="guardando" class="btn-primary disabled:opacity-60">
@@ -362,7 +369,7 @@ const tabs = [
   { id: 'seguridad', icono: ShieldCheck },
 ]
 
-const iglesia = ref({ nombre: '', pais: '', ciudad: '', email: '' })
+const iglesia = ref({ nombre: '', pais: '', ciudad: '', email: '', modoAlias: false })
 
 const nuevoUsuario = ref({ email: '', nombre: '', apellido: '', rol: '' })
 
@@ -456,6 +463,7 @@ async function guardarIglesia() {
       pais: iglesia.value.pais,
       ciudad: iglesia.value.ciudad,
       email_contacto: iglesia.value.email,
+      modo_alias: iglesia.value.modoAlias,
     })
     .eq('id', auth.iglesiaId)
     .select('*')
@@ -531,6 +539,7 @@ onMounted(async () => {
       pais: ig.pais ?? '',
       ciudad: ig.ciudad ?? '',
       email: ig.email_contacto ?? '',
+      modoAlias: ig.modo_alias === true,
     }
   }
   const { data: rs } = await supabase

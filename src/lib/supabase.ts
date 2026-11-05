@@ -35,6 +35,7 @@ export interface Iglesia {
   email_contacto?: string
   plan: string
   activa: boolean
+  modo_alias?: boolean
   created_at: string
 }
 
