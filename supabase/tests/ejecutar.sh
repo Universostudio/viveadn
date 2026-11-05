@@ -26,3 +26,4 @@ bash tests/checkin_concurrencia.sh "$DB"
 "${PSQL[@]}" -d $DB -f tests/dar_plantillas.sql
 "${PSQL[@]}" -d $DB -f tests/enlaces_dar.sql
 "${PSQL[@]}" -d $DB -f tests/red_iglesias.sql
+"${PSQL[@]}" -d $DB -f tests/registro.sql

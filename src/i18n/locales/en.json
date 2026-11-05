@@ -553,6 +553,25 @@
       "ninguno": "Nothing",
       "conSedes": "It has linked branches ({n}). Unlink them before making it a branch of another church.",
       "guardada": "Network updated for {iglesia}."
+    },
+    "registro": {
+      "titulo": "Church registration",
+      "ayuda": "Control whether churches can register on their own and who can do it during testing.",
+      "abierto": "Registration open",
+      "requiereCodigo": "Require an access code",
+      "enlace": "Address to share:",
+      "codigoCreado": "Code created",
+      "codigoUnaVez": "Copy it now: it will not be shown again.",
+      "etiqueta": "Who it is for",
+      "usos": "Uses",
+      "dias": "Days valid (0 = no expiry)",
+      "crear": "Create code",
+      "usados": "Uses",
+      "vence": "Expires",
+      "estado": "Status",
+      "sinVencimiento": "No expiry",
+      "sinCodigos": "There are no codes yet.",
+      "guardado": "Changes saved."
     }
   },
   "invitacion": {
@@ -855,5 +874,42 @@
     "sinAcceso": "Does not share its summary",
     "suspendida": "Suspended",
     "errorCargar": "The network could not be loaded. Try again."
+  },
+  "registro": {
+    "titulo": "Register your church",
+    "subtitulo": "Create your church account and start trying ViveADN.",
+    "cerradoTitulo": "Registration is not available right now",
+    "cerradoTexto": "For now, churches are admitted by invitation only. If you already have an account, sign in.",
+    "irAlAcceso": "Sign in",
+    "exitoTitulo": "Check your email",
+    "exitoTexto": "We sent you a message so you can create your password and enter your church account.",
+    "exitoAyuda": "If it does not arrive in a few minutes, check your spam folder. If you already had an account, sign in or recover your password.",
+    "tuIglesia": "Your church",
+    "nombreIglesia": "Church name",
+    "direccion": "Short address",
+    "direccionAyuda": "It identifies your church, for example on the giving page: /dar/{ejemplo}",
+    "pais": "Country",
+    "ciudad": "City",
+    "tuCuenta": "Your super administrator account",
+    "correoAyuda": "We will send you a link to create your password.",
+    "codigo": "Access code",
+    "codigoAyuda": "During testing, registration needs a code. Ask whoever invited you.",
+    "consentimiento": "I agree that ViveADN processes this data to create my church account.",
+    "enviar": "Register my church",
+    "enviando": "Sending…",
+    "yaTienes": "Already have an account?",
+    "enlaceLogin": "Is your church not on ViveADN yet?",
+    "enlaceLoginAccion": "Register my church",
+    "enlaceBienvenida": "Register my church",
+    "errores": {
+      "datos": "Check the details: a field is empty or has an invalid format.",
+      "consentimiento": "To continue you must accept the processing of the data.",
+      "codigo": "The code is not valid, has already been used, or has expired.",
+      "slug": "That short address is already in use. Try another one.",
+      "limite": "Too many attempts. Wait a while and try again.",
+      "generico": "We could not complete the registration. Try again in a few minutes."
+    },
+    "nombre": "First name",
+    "apellido": "Last name"
   }
 }

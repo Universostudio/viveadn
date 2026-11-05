@@ -25,6 +25,12 @@ const router = createRouter({
       meta: { public: true }
     },
     {
+      path: '/registro',
+      name: 'registro',
+      component: () => import('@/views/auth/RegistroView.vue'),
+      meta: { public: true }
+    },
+    {
       path: '/reset-password',
       name: 'reset-password',
       component: () => import('@/views/auth/ResetPasswordView.vue'),

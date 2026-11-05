@@ -21,6 +21,9 @@
           {{ t('bienvenida.conocer') }}
         </RouterLink>
       </div>
+      <p class="mt-6 text-sm text-white/70 sube" style="animation-delay: 2.4s">
+        <RouterLink :to="{ name: 'registro' }" class="underline underline-offset-4 hover:text-adn-oro">{{ t('registro.enlaceBienvenida') }}</RouterLink>
+      </p>
       <div class="mt-10 flex justify-center"><SelectorIdioma ocultar-etiqueta /></div>
     </div>
     <p class="absolute bottom-5 inset-x-0 text-center text-[10px] tracking-widest uppercase text-white/30 aparece" style="animation-delay: 2.5s">

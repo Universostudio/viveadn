@@ -217,6 +217,57 @@ Deno.serve(async (req) => {
         return json({ ok: true, auditado })
       }
 
+      case 'registro_estado': {
+        const [{ data: ajustes }, { data: codigos }] = await Promise.all([
+          admin.from('plataforma_ajustes').select('clave, valor').in('clave', ['registro_abierto', 'registro_requiere_codigo']),
+          admin.from('registro_codigos').select('id, etiqueta, usos, usos_max, vence_en, activo, created_at').order('created_at', { ascending: false }).limit(100),
+        ])
+        const ajuste = (c: string, defecto: boolean) => { const v = (ajustes ?? []).find(a => a.clave === c)?.valor; return typeof v === 'boolean' ? v : defecto }
+        return json({ abierto: ajuste('registro_abierto', false), requiere_codigo: ajuste('registro_requiere_codigo', true), codigos: codigos ?? [] })
+      }
+
+      case 'registro_ajustes': {
+        if (typeof body.abierto !== 'boolean' || typeof body.requiere_codigo !== 'boolean') return json({ error: 'Faltan los ajustes' }, 400)
+        const ahora = new Date().toISOString()
+        const { error } = await admin.from('plataforma_ajustes').upsert([
+          { clave: 'registro_abierto', valor: body.abierto, updated_at: ahora },
+          { clave: 'registro_requiere_codigo', valor: body.requiere_codigo, updated_at: ahora },
+        ])
+        if (error) return json({ error: 'No se pudieron guardar los ajustes' }, 500)
+        const auditado = await auditar('registro_ajustes', null, { abierto: body.abierto, requiere_codigo: body.requiere_codigo })
+        return json({ ok: true, auditado })
+      }
+
+      case 'codigo_crear': {
+        const etiqueta = texto(body.etiqueta, 80)
+        const usosMax = Number.isInteger(body.usos_max) ? Number(body.usos_max) : 1
+        const dias = Number.isInteger(body.dias) ? Number(body.dias) : 0
+        if (!etiqueta) return json({ error: 'Falta la etiqueta del codigo' }, 400)
+        if (usosMax < 1 || usosMax > 1000) return json({ error: 'Los usos deben estar entre 1 y 1000' }, 400)
+        if (dias < 0 || dias > 365) return json({ error: 'La vigencia debe estar entre 0 y 365 dias' }, 400)
+        // Sin letras ambiguas (I, O) ni cifras 0 y 1; 32 simbolos, asi que cada byte se reparte sin sesgo
+        const alfabeto = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
+        const aleatorio = (n: number) => [...crypto.getRandomValues(new Uint8Array(n))].map(x => alfabeto[x % 32]).join('')
+        const codigo = `ADN-${aleatorio(4)}-${aleatorio(4)}`
+        const huella = [...new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(codigo)))].map(x => x.toString(16).padStart(2, '0')).join('')
+        const vence = dias > 0 ? new Date(Date.now() + dias * 86400000).toISOString() : null
+        const { data: fila, error } = await admin.from('registro_codigos')
+          .insert({ codigo_hash: huella, etiqueta, usos_max: usosMax, vence_en: vence }).select('id').single()
+        if (error || !fila) return json({ error: 'No se pudo crear el codigo' }, 500)
+        // El codigo solo se muestra ahora: en la base queda su huella
+        const auditado = await auditar('codigo_crear', null, { codigo_id: fila.id, etiqueta, usos_max: usosMax, dias })
+        return json({ ok: true, codigo, auditado })
+      }
+
+      case 'codigo_estado': {
+        if (typeof body.id !== 'string' || !UUID_RE.test(body.id) || typeof body.activo !== 'boolean') return json({ error: 'Datos no validos' }, 400)
+        const { data, error } = await admin.from('registro_codigos').update({ activo: body.activo }).eq('id', body.id).select('id').maybeSingle()
+        if (error) return json({ error: 'No se pudo cambiar el codigo' }, 500)
+        if (!data) return json({ error: 'El codigo no existe' }, 404)
+        const auditado = await auditar(body.activo ? 'codigo_activar' : 'codigo_desactivar', null, { codigo_id: body.id })
+        return json({ ok: true, auditado })
+      }
+
       default:
         return json({ error: 'Accion desconocida' }, 400)
     }

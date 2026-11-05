@@ -33,7 +33,6 @@
 
 <style scoped>
 /* Los cinco grupos de nodos aparecen escalonados; con "animar" desactivado se ven completos */
-.logo-adn { color: inherit; }
 .animar .g1, .animar .g2, .animar .g3, .animar .g4, .animar .g5 { opacity: 0; animation: nodo 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
 .animar .g1 { animation-delay: 0.1s; transform-origin: 50% 85%; }
 .animar .g2 { animation-delay: 0.35s; transform-origin: 30% 60%; }

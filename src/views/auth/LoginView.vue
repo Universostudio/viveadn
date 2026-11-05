@@ -99,6 +99,11 @@
         </div>
       </form>
 
+      <p v-if="!modoRecuperar" class="text-center text-sm text-gray-500 mt-5">
+        {{ t('registro.enlaceLogin') }}
+        <RouterLink :to="{ name: 'registro' }" class="text-adn-verde font-medium hover:underline">{{ t('registro.enlaceLoginAccion') }}</RouterLink>
+      </p>
+
       <SelectorIdioma id="selector-idioma-login" class="mt-6 max-w-xs mx-auto" />
 
       <p class="text-center text-xs text-gray-400 mt-4">

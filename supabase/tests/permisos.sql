@@ -9,7 +9,7 @@
 do $$
 declare
   -- Tablas que a propósito solo usa el servidor (service_role) y no tienen políticas
-  solo_servidor constant text[] := array['plataforma_auditoria'];
+  solo_servidor constant text[] := array['plataforma_auditoria', 'plataforma_ajustes', 'registro_codigos', 'registro_intentos'];
   errores text[] := '{}';
   r record;
 begin
