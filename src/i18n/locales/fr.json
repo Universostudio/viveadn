@@ -573,7 +573,90 @@
     "publicaDescripcion": "Toute personne disposant de ce lien peut voir les boutons de don de votre église, sans se connecter. Partagez-le sur les réseaux, par WhatsApp ou sur votre site.",
     "copiar": "Copier le lien",
     "copiado": "Copié",
-    "abrirPagina": "Ouvrir la page"
+    "abrirPagina": "Ouvrir la page",
+    "pagina": {
+      "tituloClasica": "Dîmes, offrandes et dons",
+      "subtituloClasica": "{iglesia} reçoit vos dons sur son propre site web.",
+      "tituloDia": "Donnez le revenu d'une journée",
+      "subtituloDia": "Calculez ce que représente une journée de votre revenu et faites-en votre don.",
+      "calcula": "Calculer votre don",
+      "calculadoraTitulo": "Calculateur de don",
+      "tabs": {
+        "anual": "Annuel",
+        "mensual": "Mensuel",
+        "semanal": "Hebdomadaire",
+        "personalizado": "Autre montant"
+      },
+      "ingreso": {
+        "anual": "Revenu annuel",
+        "mensual": "Revenu mensuel",
+        "semanal": "Revenu hebdomadaire"
+      },
+      "cantidadPersonalizada": "Montant que vous voulez donner",
+      "importeInvalido": "Saisissez un nombre supérieur à zéro.",
+      "resultadoDia": "Le revenu d'une journée équivaut à",
+      "resultadoDiezmo": "Dix pour cent de votre revenu représentent",
+      "resultadoPersonalizado": "Votre don sera de",
+      "usarCantidad": "Utiliser ce montant",
+      "completa": "Finalisez votre don",
+      "tuAporte": "Votre don",
+      "copiarCantidad": "Copier le montant",
+      "indicaEnSitio": "Indiquez ce montant sur le site de l'église.",
+      "elegirFondo": "À quoi souhaitez-vous donner ?",
+      "continuar": "Continuer vers {fondo}"
+    },
+    "config": {
+      "fondosTitulo": "Fonds de don",
+      "fondosAyuda": "Chaque fonds est un bouton qui mène au site où votre église reçoit ce don. ViveADN ne traite ni ne conserve aucun paiement. Un fonds sans lien n'est pas affiché.",
+      "nombre": "Nom du fonds",
+      "enlace": "Lien",
+      "descripcion": "Courte description (facultatif)",
+      "sinEnlaceSeOculta": "Sans lien, ce fonds n'apparaîtra pas sur la page.",
+      "sinFondos": "Vous n'avez ajouté aucun fonds pour l'instant.",
+      "subir": "Monter",
+      "bajar": "Descendre",
+      "quitar": "Retirer le fonds",
+      "anadir": "Ajouter un fonds…",
+      "maximo": "{n} fonds au maximum.",
+      "preset": {
+        "diezmo": "Dîme",
+        "ofrenda": "Offrande",
+        "donacion": "Don",
+        "misiones": "Missions",
+        "casas": "Maisons de prière",
+        "escuelas": "Écoles",
+        "vmad": "VMAD",
+        "otro": "Autre fonds"
+      },
+      "aparienciaTitulo": "Apparence de la page",
+      "aparienciaAyuda": "Choisissez le modèle et les couleurs que verront les personnes sur votre page de don.",
+      "plantilla": "Modèle",
+      "plantillas": {
+        "clasica": {
+          "nombre": "Classique",
+          "descripcion": "Liste des fonds avec un bouton pour chacun."
+        },
+        "dia": {
+          "nombre": "Un jour de revenu",
+          "descripcion": "Calculateur du revenu d'une journée et choix du fonds."
+        }
+      },
+      "titulo": "Titre",
+      "subtitulo": "Sous-titre",
+      "colorPrimario": "Couleur principale",
+      "colorAcento": "Couleur d'accent",
+      "logo": "Logo (adresse web)",
+      "logoAyuda": "Facultatif. Une image hébergée sur votre site, avec une adresse https://.",
+      "calculadora": "Calculateur",
+      "moneda": "Devise",
+      "calculadoras": {
+        "dia": "Revenu d'une journée",
+        "diezmo": "Dix pour cent du revenu",
+        "ninguna": "Sans calculateur"
+      },
+      "errorNombre": "Chaque fonds avec un lien doit avoir un nom.",
+      "errorDatos": "Vérifiez les couleurs : elles doivent suivre le format #RRGGBB."
+    }
   },
   "eventos": {
     "titulo": "Événements",

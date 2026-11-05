@@ -573,7 +573,90 @@
     "publicaDescripcion": "Qualquer pessoa com este link pode ver os botões de contribuição da sua igreja, sem fazer login. Compartilhe nas redes, por WhatsApp ou no seu site.",
     "copiar": "Copiar link",
     "copiado": "Copiado",
-    "abrirPagina": "Abrir a página"
+    "abrirPagina": "Abrir a página",
+    "pagina": {
+      "tituloClasica": "Dízimos, ofertas e doações",
+      "subtituloClasica": "{iglesia} recebe suas contribuições no próprio site.",
+      "tituloDia": "Doe a renda de um dia",
+      "subtituloDia": "Calcule quanto representa um dia da sua renda e use como sua contribuição.",
+      "calcula": "Calcule sua contribuição",
+      "calculadoraTitulo": "Calculadora de contribuição",
+      "tabs": {
+        "anual": "Anual",
+        "mensual": "Mensal",
+        "semanal": "Semanal",
+        "personalizado": "Outro valor"
+      },
+      "ingreso": {
+        "anual": "Renda anual",
+        "mensual": "Renda mensal",
+        "semanal": "Renda semanal"
+      },
+      "cantidadPersonalizada": "Valor que você quer dar",
+      "importeInvalido": "Digite um número maior que zero.",
+      "resultadoDia": "A renda de um dia equivale a",
+      "resultadoDiezmo": "Dez por cento da sua renda são",
+      "resultadoPersonalizado": "Sua contribuição será de",
+      "usarCantidad": "Usar este valor",
+      "completa": "Conclua sua contribuição",
+      "tuAporte": "Sua contribuição",
+      "copiarCantidad": "Copiar valor",
+      "indicaEnSitio": "Informe este valor no site da igreja.",
+      "elegirFondo": "Para que você quer contribuir?",
+      "continuar": "Continuar para {fondo}"
+    },
+    "config": {
+      "fondosTitulo": "Fundos para dar",
+      "fondosAyuda": "Cada fundo é um botão que leva ao site onde sua igreja recebe essa contribuição. O ViveADN não processa nem guarda pagamentos. Um fundo sem link não aparece.",
+      "nombre": "Nome do fundo",
+      "enlace": "Link",
+      "descripcion": "Descrição curta (opcional)",
+      "sinEnlaceSeOculta": "Sem link, este fundo não aparecerá na página.",
+      "sinFondos": "Você ainda não adicionou nenhum fundo.",
+      "subir": "Subir",
+      "bajar": "Descer",
+      "quitar": "Remover fundo",
+      "anadir": "Adicionar um fundo…",
+      "maximo": "No máximo {n} fundos.",
+      "preset": {
+        "diezmo": "Dízimo",
+        "ofrenda": "Oferta",
+        "donacion": "Doação",
+        "misiones": "Missões",
+        "casas": "Casas de oração",
+        "escuelas": "Escolas",
+        "vmad": "VMAD",
+        "otro": "Outro fundo"
+      },
+      "aparienciaTitulo": "Aparência da página",
+      "aparienciaAyuda": "Escolha o modelo e as cores que as pessoas verão na sua página de dar.",
+      "plantilla": "Modelo",
+      "plantillas": {
+        "clasica": {
+          "nombre": "Clássico",
+          "descripcion": "Lista de fundos com um botão para cada um."
+        },
+        "dia": {
+          "nombre": "Um dia de renda",
+          "descripcion": "Calculadora da renda de um dia e escolha do fundo."
+        }
+      },
+      "titulo": "Título",
+      "subtitulo": "Subtítulo",
+      "colorPrimario": "Cor principal",
+      "colorAcento": "Cor de destaque",
+      "logo": "Logo (endereço web)",
+      "logoAyuda": "Opcional. Uma imagem hospedada no seu site, com endereço https://.",
+      "calculadora": "Calculadora",
+      "moneda": "Moeda",
+      "calculadoras": {
+        "dia": "Renda de um dia",
+        "diezmo": "Dez por cento da renda",
+        "ninguna": "Sem calculadora"
+      },
+      "errorNombre": "Cada fundo com link precisa de um nome.",
+      "errorDatos": "Confira as cores: devem estar no formato #RRGGBB."
+    }
   },
   "eventos": {
     "titulo": "Eventos",

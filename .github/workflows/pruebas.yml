@@ -51,4 +51,5 @@ jobs:
       - run: npm run test:importacion
       - run: npm run test:eventos
       - run: npm run test:checkin
+      - run: npm run test:dar
       - run: npm run build

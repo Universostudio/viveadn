@@ -12,7 +12,8 @@
     "check:idiomas": "node scripts/verificar-idiomas.mjs",
     "test:importacion": "node scripts/probar-importacion.mts",
     "test:eventos": "node scripts/probar-eventos.mts",
-    "test:checkin": "node scripts/probar-checkin.mts"
+    "test:checkin": "node scripts/probar-checkin.mts",
+    "test:dar": "node scripts/probar-dar.mts"
   },
   "dependencies": {
     "@fontsource/dm-sans": "^5.3.0",
