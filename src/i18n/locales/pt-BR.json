@@ -911,5 +911,9 @@
     },
     "nombre": "Nome",
     "apellido": "Sobrenome"
+  },
+  "plan": {
+    "limiteMiembros": "Seu plano atingiu o limite de membros. Para adicionar mais pessoas, desative alguém ou mude de plano.",
+    "limiteMiembrosImportar": "Seu plano atingiu o limite de membros. As pessoas anteriores a esse ponto foram importadas; as demais não. Mude de plano ou desative alguém para continuar."
   }
 }

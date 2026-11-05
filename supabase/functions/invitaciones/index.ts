@@ -149,6 +149,7 @@ Deno.serve(async (req) => {
       if (ePerfil) {
         await admin.auth.admin.deleteUser(creado.user.id)
         await liberar()
+        if (/PLAN_LIMITE/.test(ePerfil.message ?? '')) return json({ error: 'Esta iglesia ha alcanzado el limite de usuarios de su plan. Avisa a quien te invito.' }, 409)
         return json({ error: 'No se pudo crear el perfil' }, 500)
       }
       return json({ ok: true, email: inv.email })
@@ -207,7 +208,10 @@ Deno.serve(async (req) => {
         await admin.from('invitaciones').update({ revocada_en: new Date().toISOString() })
           .eq('iglesia_id', yo.iglesia_id).eq('email', email).is('usada_en', null).is('revocada_en', null)
         const r = await crearEnlace({ email, nombre, apellido, rol })
-        if ('error' in r) { console.error('crear', r.error?.message); return json({ error: 'No se pudo crear la invitacion' }, 500) }
+        if ('error' in r) {
+          if (/PLAN_LIMITE/.test(r.error?.message ?? '')) return json({ error: 'Has alcanzado el limite de usuarios de tu plan. Quita un usuario o una invitacion pendiente, o cambia de plan.' }, 409)
+          console.error('crear', r.error?.message); return json({ error: 'No se pudo crear la invitacion' }, 500)
+        }
         const enviado = await mandar({ email, nombre, rol }, r)
         return json({ ok: true, ...r, enviado })
       }
@@ -220,7 +224,10 @@ Deno.serve(async (req) => {
         if (rolV?.es_propietario && !soySuper) return json({ error: 'Solo un superadministrador puede invitar a otro' }, 403)
         await admin.from('invitaciones').update({ revocada_en: new Date().toISOString() }).eq('id', body.id).is('revocada_en', null)
         const r = await crearEnlace(vieja)
-        if ('error' in r) return json({ error: 'No se pudo crear la invitacion' }, 500)
+        if ('error' in r) {
+          if (/PLAN_LIMITE/.test(r.error?.message ?? '')) return json({ error: 'Has alcanzado el limite de usuarios de tu plan. Quita un usuario o una invitacion pendiente, o cambia de plan.' }, 409)
+          return json({ error: 'No se pudo crear la invitacion' }, 500)
+        }
         const enviado = await mandar(vieja, r)
         return json({ ok: true, ...r, enviado })
       }

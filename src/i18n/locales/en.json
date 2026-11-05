@@ -911,5 +911,9 @@
     },
     "nombre": "First name",
     "apellido": "Last name"
+  },
+  "plan": {
+    "limiteMiembros": "Your plan has reached its member limit. To add more people, deactivate someone or change plan.",
+    "limiteMiembrosImportar": "Your plan has reached its member limit. The people before that point were imported; the rest were not. Change plan or deactivate someone to continue."
   }
 }
