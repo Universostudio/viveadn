@@ -118,6 +118,18 @@ begin
     errores := errores || format('clave foránea simple entre tablas de iglesia: %s.%s -> %s (debe incluir iglesia_id)', r.origen, r.columna, r.destino);
   end loop;
 
+  -- 11. Toda tabla de public lleva iglesia_id o esta clasificada como global. Asi la exportacion
+  --     y el borrado de una iglesia no pueden dejar fuera una tabla nueva sin que CI avise.
+  for r in
+    select c.relname from pg_class c
+    where c.relnamespace = 'public'::regnamespace and c.relkind in ('r', 'p')
+      and c.relname <> all (array['iglesias', 'modulos', 'permisos', 'plan_modulos', 'planes', 'plataforma_admins',
+                                  'plataforma_ajustes', 'registro_codigos', 'registro_intentos', 'rol_permisos'])
+      and not exists (select 1 from pg_attribute a where a.attrelid = c.oid and a.attname = 'iglesia_id' and not a.attisdropped)
+  loop
+    errores := errores || format('la tabla %s no tiene iglesia_id ni esta clasificada como global (exportar_iglesia y borrar_iglesia no la cubririan)', r.relname);
+  end loop;
+
   if array_length(errores, 1) > 0 then
     raise exception E'PERMISOS: % problema(s)\n%', array_length(errores, 1), array_to_string(errores, E'\n');
   end if;

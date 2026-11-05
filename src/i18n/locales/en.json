@@ -582,7 +582,20 @@
     },
     "etapaCambiada": "{iglesia} is now: {etapa}.",
     "confirmarEtapa": "Change {iglesia} to \"{etapa}\"? On break and suspended close the church's access; the data is kept.",
-    "pruebaHasta": "Trial until {fecha}"
+    "pruebaHasta": "Trial until {fecha}",
+    "exportar": "Export data",
+    "exportada": "Export of {iglesia} downloaded.",
+    "programarBorrado": "Schedule deletion",
+    "pedirDias": "In how many days should {iglesia} be deleted? (7 to 90)",
+    "pedirDireccion": "To confirm, type the church address: {slug}",
+    "borradoProgramado": "Deletion scheduled for {fecha}",
+    "borradoVencido": "Period over: it can now be deleted",
+    "cancelarBorrado": "Cancel deletion",
+    "borrarAhora": "Delete now",
+    "borradoCancelado": "Deletion of {iglesia} cancelled.",
+    "borradoPlanificado": "Deletion of {iglesia} scheduled.",
+    "iglesiaBorrada": "{iglesia} deleted completely.",
+    "confirmarBorrarAhora": "All data and accounts of {iglesia} will be deleted irreversibly."
   },
   "invitacion": {
     "comprobando": "Checking your invitation…",

@@ -582,7 +582,20 @@
     },
     "etapaCambiada": "{iglesia} passa para: {etapa}.",
     "confirmarEtapa": "Mudar {iglesia} para \"{etapa}\"? Recesso e suspensa fecham o acesso da igreja; os dados são mantidos.",
-    "pruebaHasta": "Teste até {fecha}"
+    "pruebaHasta": "Teste até {fecha}",
+    "exportar": "Exportar dados",
+    "exportada": "Exportação de {iglesia} baixada.",
+    "programarBorrado": "Agendar exclusão",
+    "pedirDias": "Em quantos dias {iglesia} será excluída? (de 7 a 90)",
+    "pedirDireccion": "Para confirmar, digite o endereço da igreja: {slug}",
+    "borradoProgramado": "Exclusão agendada para {fecha}",
+    "borradoVencido": "Prazo vencido: já pode ser excluída",
+    "cancelarBorrado": "Cancelar exclusão",
+    "borrarAhora": "Excluir agora",
+    "borradoCancelado": "Exclusão de {iglesia} cancelada.",
+    "borradoPlanificado": "Exclusão de {iglesia} agendada.",
+    "iglesiaBorrada": "{iglesia} excluída por completo.",
+    "confirmarBorrarAhora": "Todos os dados e contas de {iglesia} serão excluídos de forma irreversível."
   },
   "invitacion": {
     "comprobando": "Verificando seu convite…",

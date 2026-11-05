@@ -73,7 +73,7 @@ Deno.serve(async (req) => {
     switch (body.accion) {
       case 'listar': {
         const [{ data: iglesias }, { data: addons }, { data: planes }, { data: modulos }, { data: planModulos }] = await Promise.all([
-          admin.from('iglesias').select('id, nombre, slug, plan, activa, etapa, prueba_hasta, es_demo, pais, ciudad, created_at, iglesia_madre_id, red_acceso').order('created_at'),
+          admin.from('iglesias').select('id, nombre, slug, plan, activa, etapa, prueba_hasta, borrado_programado_en, es_demo, pais, ciudad, created_at, iglesia_madre_id, red_acceso').order('created_at'),
           admin.from('iglesia_modulos').select('iglesia_id, modulo, activo, origen'),
           admin.from('planes').select('*').order('orden'),
           admin.from('modulos').select('*').order('orden'),
@@ -212,6 +212,62 @@ Deno.serve(async (req) => {
         if (error) return json({ error: 'No se pudo cambiar la etapa' }, 500)
         const auditado = await auditar('etapa_iglesia', iglesiaId, { etapa: body.etapa, prueba_hasta: cambios.prueba_hasta ?? null })
         return json({ ok: true, auditado })
+      }
+
+      case 'exportar': {
+        const iglesiaId = await iglesiaValida(body.iglesia_id)
+        if (!iglesiaId) return json({ error: 'La iglesia no existe' }, 404)
+        const { data, error } = await admin.rpc('exportar_iglesia', { p_iglesia: iglesiaId })
+        if (error || !data) return json({ error: 'No se pudo exportar la iglesia' }, 500)
+        const auditado = await auditar('exportar_iglesia', iglesiaId)
+        return json({ ok: true, exportacion: data, auditado })
+      }
+
+      case 'programar_borrado': {
+        // Solo desde receso o suspendida; deja un plazo para arrepentirse
+        const iglesiaId = await iglesiaValida(body.iglesia_id)
+        if (!iglesiaId) return json({ error: 'La iglesia no existe' }, 404)
+        const { data: ig } = await admin.from('iglesias').select('slug, etapa').eq('id', iglesiaId).single()
+        if (!ig || body.confirmar !== ig.slug) return json({ error: 'La confirmacion no coincide con la direccion de la iglesia' }, 400)
+        const dias = Number(body.dias ?? 30)
+        if (!Number.isInteger(dias) || dias < 7 || dias > 90) return json({ error: 'El plazo debe estar entre 7 y 90 dias' }, 400)
+        if (!['receso', 'suspendida'].includes(ig.etapa)) return json({ error: 'Solo se programa el borrado de una iglesia en receso o suspendida' }, 409)
+        const hasta = new Date(Date.now() + dias * 86400000).toISOString()
+        const { error } = await admin.from('iglesias').update({ borrado_programado_en: hasta }).eq('id', iglesiaId)
+        if (error) return json({ error: 'No se pudo programar el borrado' }, 500)
+        const auditado = await auditar('programar_borrado', iglesiaId, { borrado_programado_en: hasta })
+        return json({ ok: true, borrado_programado_en: hasta, auditado })
+      }
+
+      case 'cancelar_borrado': {
+        const iglesiaId = await iglesiaValida(body.iglesia_id)
+        if (!iglesiaId) return json({ error: 'La iglesia no existe' }, 404)
+        const { error } = await admin.from('iglesias').update({ borrado_programado_en: null }).eq('id', iglesiaId)
+        if (error) return json({ error: 'No se pudo cancelar el borrado' }, 500)
+        const auditado = await auditar('cancelar_borrado', iglesiaId)
+        return json({ ok: true, auditado })
+      }
+
+      case 'borrar_iglesia': {
+        // Irreversible: exige la direccion escrita y que el plazo programado haya vencido
+        const iglesiaId = await iglesiaValida(body.iglesia_id)
+        if (!iglesiaId) return json({ error: 'La iglesia no existe' }, 404)
+        const { data: ig } = await admin.from('iglesias').select('slug').eq('id', iglesiaId).single()
+        if (!ig || body.confirmar !== ig.slug) return json({ error: 'La confirmacion no coincide con la direccion de la iglesia' }, 400)
+        const { data: usuarios, error } = await admin.rpc('borrar_iglesia', { p_iglesia: iglesiaId })
+        if (error) {
+          const antes = /BORRADO_NO_VENCIDO/.test(error.message)
+          return json({ error: antes ? 'El plazo de borrado programado todavia no ha vencido' : 'No se pudo borrar la iglesia' }, antes ? 409 : 500)
+        }
+        // La base ya no tiene la iglesia: se retiran sus cuentas de acceso. Las que fallen quedan anotadas
+        const ids: string[] = Array.isArray(usuarios) ? usuarios : []
+        const pendientes: string[] = []
+        for (const id of ids) {
+          const { error: eBorrar } = await admin.auth.admin.deleteUser(id)
+          if (eBorrar) { pendientes.push(id); console.error('no se pudo borrar el usuario', id, eBorrar.message) }
+        }
+        const auditado = await auditar('borrar_iglesia', null, { iglesia_id: iglesiaId, usuarios_borrados: ids.length - pendientes.length, usuarios_pendientes: pendientes })
+        return json({ ok: true, usuarios_borrados: ids.length - pendientes.length, usuarios_pendientes: pendientes.length, auditado })
       }
 
       case 'vincular_red': {

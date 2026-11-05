@@ -155,7 +155,14 @@
           </div>
         </div>
 
-        <div class="flex justify-end">
+        <div class="flex justify-end items-center gap-3 flex-wrap text-xs">
+          <span v-if="ig.borrado_programado_en" :class="['font-medium', new Date(ig.borrado_programado_en) <= new Date() ? 'text-red-600' : 'text-amber-600']">
+            {{ new Date(ig.borrado_programado_en) <= new Date() ? t('plataforma.borradoVencido') : t('plataforma.borradoProgramado', { fecha: new Date(ig.borrado_programado_en).toLocaleDateString() }) }}
+          </span>
+          <button v-if="ig.borrado_programado_en && new Date(ig.borrado_programado_en) <= new Date()" @click="borrarAhora(ig)" class="text-red-600 hover:underline">{{ t('plataforma.borrarAhora') }}</button>
+          <button v-if="ig.borrado_programado_en" @click="cancelarBorrado(ig)" class="text-gray-500 hover:underline">{{ t('plataforma.cancelarBorrado') }}</button>
+          <button v-else-if="['receso', 'suspendida'].includes(ig.etapa)" @click="programarBorrado(ig)" class="text-gray-400 hover:text-red-600">{{ t('plataforma.programarBorrado') }}</button>
+          <button @click="exportar(ig)" class="text-gray-500 hover:underline">{{ t('plataforma.exportar') }}</button>
           <select :value="ig.etapa" @change="cambiarEtapa(ig, ($event.target as HTMLSelectElement))"
             class="text-xs text-gray-500 border border-gray-200 rounded-lg px-2 py-1 bg-white">
             <option v-for="e in ETAPAS" :key="e" :value="e">{{ t('plataforma.etapa.' + e) }}</option>
@@ -379,6 +386,42 @@ function cambiarEtapa(ig: any, el: HTMLSelectElement) {
   if (!window.confirm(t('plataforma.confirmarEtapa', { iglesia: ig.nombre, etapa: nombre }))) { el.value = ig.etapa; return }
   ejecutar({ accion: 'etapa', iglesia_id: ig.id, etapa },
     () => t('plataforma.etapaCambiada', { iglesia: ig.nombre, etapa: nombre }))
+}
+
+async function exportar(ig: any) {
+  try {
+    const r = await llamar({ accion: 'exportar', iglesia_id: ig.id })
+    const blob = new Blob([JSON.stringify(r.exportacion, null, 2)], { type: 'application/json' })
+    const a = document.createElement('a')
+    a.href = URL.createObjectURL(blob)
+    a.download = `viveadn-${ig.slug}-${new Date().toISOString().slice(0, 10)}.json`
+    a.click()
+    URL.revokeObjectURL(a.href)
+    avisar(() => t('plataforma.exportada', { iglesia: ig.nombre }))
+  } catch (e: any) {
+    const texto = e.message
+    avisar(() => texto, true)
+  }
+}
+
+function programarBorrado(ig: any) {
+  const dias = window.prompt(t('plataforma.pedirDias', { iglesia: ig.nombre }), '30')
+  if (!dias) return
+  const confirmar = window.prompt(t('plataforma.pedirDireccion', { slug: ig.slug }))
+  if (!confirmar) return
+  ejecutar({ accion: 'programar_borrado', iglesia_id: ig.id, dias: Number(dias), confirmar },
+    () => t('plataforma.borradoPlanificado', { iglesia: ig.nombre }))
+}
+
+const cancelarBorrado = (ig: any) =>
+  ejecutar({ accion: 'cancelar_borrado', iglesia_id: ig.id }, () => t('plataforma.borradoCancelado', { iglesia: ig.nombre }))
+
+function borrarAhora(ig: any) {
+  if (!window.confirm(t('plataforma.confirmarBorrarAhora', { iglesia: ig.nombre }))) return
+  const confirmar = window.prompt(t('plataforma.pedirDireccion', { slug: ig.slug }))
+  if (!confirmar) return
+  ejecutar({ accion: 'borrar_iglesia', iglesia_id: ig.id, confirmar },
+    () => t('plataforma.iglesiaBorrada', { iglesia: ig.nombre }))
 }
 
 async function crearIglesia() {
