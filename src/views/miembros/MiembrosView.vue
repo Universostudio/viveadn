@@ -199,6 +199,7 @@ import { LoaderCircle, Search, SearchX, Upload, UserPlus } from '@lucide/vue'
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { supabase } from '@/lib/supabase'
+import { esLimitePlan } from '@/lib/plan'
 import { useAuthStore } from '@/stores/auth'
 import ImportarMiembros from '@/components/ImportarMiembros.vue'
 import { ETIQUETAS_COMPROMISO, NIVELES_COMPROMISO } from '@/lib/supabase'
@@ -312,7 +313,7 @@ async function crearMiembro() {
   })
   guardando.value = false
   if (err) {
-    error.value = 'miembros.errorRegistrar'
+    error.value = esLimitePlan(err) ? 'plan.limiteMiembros' : 'miembros.errorRegistrar'
   } else {
     abrirNuevo.value = false
     nuevo.value = { nombre: '', apellido: '', email: '', telefono: '', casa_id: '', nivel_compromiso: 'nuevo' }

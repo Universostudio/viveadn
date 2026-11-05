@@ -125,6 +125,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { ArrowLeft, Check, ClipboardCheck, Pencil, Search, Trash2, UserPlus } from '@lucide/vue'
 import { supabase } from '@/lib/supabase'
+import { esLimitePlan } from '@/lib/plan'
 import { useAuthStore } from '@/stores/auth'
 import { leerTodo } from '@/lib/paginar'
 import { aInputLocal, errorFechas } from '@/lib/eventos'
@@ -279,7 +280,7 @@ async function guardarPersona() {
     nombre: p.nombre.trim(), apellido: p.apellido.trim(), telefono: p.telefono.trim() || null,
     casa_oracion_id: evento.value.casa_oracion_id ?? null, activo: true,
   }).select('id, nombre, apellido, casa_oracion_id').single()
-  if (error || !m) { guardandoPersona.value = false; errorPersona.value = 'eventos.errorPersona'; return }
+  if (error || !m) { guardandoPersona.value = false; errorPersona.value = esLimitePlan(error) ? 'plan.limiteMiembros' : 'eventos.errorPersona'; return }
   miembros.value = [...miembros.value, m].sort((a, b) => a.nombre.localeCompare(b.nombre))
   const { data: a, error: errA } = await supabase.from('asistencia_evento').insert({ evento_id: evento.value.id, miembro_id: m.id, presente: true }).select('id').single()
   if (!errA && a) asistencia.value = { ...asistencia.value, [m.id]: { id: a.id, presente: true } }

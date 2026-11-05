@@ -911,5 +911,9 @@
     },
     "nombre": "Nombre",
     "apellido": "Apellido"
+  },
+  "plan": {
+    "limiteMiembros": "Tu plan llegó a su límite de miembros. Para añadir más personas, desactiva a alguien o cambia de plan.",
+    "limiteMiembrosImportar": "Tu plan llegó a su límite de miembros. Se importaron las personas anteriores a ese punto; el resto no se importó. Cambia de plan o desactiva a alguien para seguir."
   }
 }
