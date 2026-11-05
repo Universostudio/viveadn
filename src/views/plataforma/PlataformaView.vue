@@ -12,6 +12,28 @@
       {{ mensaje() }}
     </p>
 
+    <!-- Resumen global de todas las iglesias -->
+    <section v-if="!cargando && iglesias.length" :aria-label="t('plataforma.resumen.titulo')" class="space-y-3">
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <div v-for="k in resumen.tarjetas" :key="k.clave" class="card-stat">
+          <div>
+            <p class="text-2xl font-bold text-gray-900">{{ k.valor }}</p>
+            <p class="text-xs text-gray-500">{{ t(`plataforma.resumen.${k.clave}`) }}</p>
+          </div>
+        </div>
+      </div>
+      <div v-if="resumen.porPlan.length" class="card">
+        <p class="text-xs font-medium text-gray-600 mb-2">{{ t('plataforma.resumen.porPlan') }}</p>
+        <ul class="space-y-2">
+          <li v-for="p in resumen.porPlan" :key="p.clave" class="flex items-center gap-3 text-sm">
+            <span class="w-28 truncate text-gray-700">{{ p.nombre }}</span>
+            <span class="flex-1 h-2 rounded-full bg-gray-100 overflow-hidden"><span class="block h-full bg-adn-verde" :style="{ width: p.porcentaje + '%' }"></span></span>
+            <span class="w-24 text-right text-xs text-gray-500">{{ t('plataforma.resumen.iglesiasMiembros', { i: p.iglesias, m: p.miembros }) }}</span>
+          </li>
+        </ul>
+      </div>
+    </section>
+
     <div v-if="cargando" class="py-12 text-center text-gray-400 text-sm">{{ t('plataforma.cargando') }}</div>
 
     <div v-else class="space-y-4">
@@ -124,11 +146,11 @@
 
 <script setup lang="ts">
 import { Check, Circle, CircleCheck, Plus } from '@lucide/vue'
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { supabase } from '@/lib/supabase'
 import { useI18n } from 'vue-i18n'
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 const iglesias = ref<any[]>([])
 const planes = ref<any[]>([])
@@ -147,6 +169,29 @@ const vacia = () => ({
   nombre_propietario: '', apellido_propietario: '', email: '', es_demo: false,
 })
 const nueva = ref(vacia())
+
+// Resumen global: sale de la misma lista que ya devuelve la funcion de la plataforma
+const resumen = computed(() => {
+  const todas = iglesias.value
+  const reales = todas.filter((i: any) => !i.es_demo)
+  const activas = reales.filter((i: any) => i.activa)
+  const suma = (l: any[], campo: string) => l.reduce((n, i) => n + (Number(i[campo]) || 0), 0)
+  const miembrosTotales = suma(reales, 'miembros')
+  const porPlan = planes.value.map((p: any) => {
+    const delPlan = activas.filter((i: any) => i.plan === p.clave)
+    return { clave: p.clave, nombre: p.nombre, iglesias: delPlan.length, miembros: suma(delPlan, 'miembros') }
+  }).filter((p: any) => p.iglesias > 0)
+  const maximo = Math.max(1, ...porPlan.map((p: any) => p.iglesias))
+  return {
+    tarjetas: [
+      { clave: 'activas', valor: activas.length },
+      { clave: 'suspendidas', valor: reales.length - activas.length },
+      { clave: 'demos', valor: todas.length - reales.length },
+      { clave: 'miembros', valor: miembrosTotales.toLocaleString(locale.value) },
+    ],
+    porPlan: porPlan.map((p: any) => ({ ...p, porcentaje: Math.round((p.iglesias / maximo) * 100) })),
+  }
+})
 
 async function llamar(cuerpo: Record<string, unknown>) {
   const { data, error } = await supabase.functions.invoke('plataforma', {

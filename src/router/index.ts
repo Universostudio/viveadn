@@ -4,6 +4,19 @@ import { useAuthStore } from '@/stores/auth'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
+    // Portada y presentacion: lo primero que ve quien aun no ha iniciado sesion
+    {
+      path: '/bienvenida',
+      name: 'bienvenida',
+      component: () => import('@/views/BienvenidaView.vue'),
+      meta: { public: true }
+    },
+    {
+      path: '/presentacion',
+      name: 'presentacion',
+      component: () => import('@/views/PresentacionView.vue'),
+      meta: { public: true, allowLoggedIn: true }
+    },
     // Auth
     {
       path: '/login',
@@ -121,7 +134,8 @@ router.beforeEach(async (to) => {
   if (auth.loading) await auth.init()
 
   if (to.meta.requiresAuth && !auth.isLoggedIn) {
-    return { name: 'login' }
+    // Quien llega a la raiz sin sesion ve la portada; el resto de rutas protegidas lleva directo al acceso
+    return { name: to.path === '/' ? 'bienvenida' : 'login' }
   }
   if (to.meta.public && auth.isLoggedIn && !to.meta.allowLoggedIn) {
     return { name: 'dashboard' }

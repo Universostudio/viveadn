@@ -534,7 +534,16 @@
     "confirmarReactivar": "Reativar {iglesia}?",
     "iglesiaSuspendida": "{iglesia} suspensa.",
     "iglesiaReactivada": "{iglesia} reativada.",
-    "creada": "Igreja criada. O convite foi enviado para {correo}."
+    "creada": "Igreja criada. O convite foi enviado para {correo}.",
+    "resumen": {
+      "titulo": "Resumo de todas as igrejas",
+      "activas": "Igrejas ativas",
+      "suspendidas": "Suspensas",
+      "demos": "Demos",
+      "miembros": "Membros no total",
+      "porPlan": "Igrejas ativas por plano",
+      "iglesiasMiembros": "{i} igrejas · {m} membros"
+    }
   },
   "invitacion": {
     "comprobando": "Verificando seu convite…",
@@ -761,6 +770,61 @@
       "aviso": "Mostre o QR apenas no local do evento. Quem tiver o link pode se registrar enquanto estiver aberto.",
       "error": "Não foi possível salvar. Tente novamente.",
       "qrAlt": "QR code do registro"
+    }
+  },
+  "bienvenida": {
+    "lema1": "Seu propósito,",
+    "lema2": "nossa essência.",
+    "entrar": "Entrar no sistema",
+    "conocer": "Conhecer o ViveADN"
+  },
+  "presentacion": {
+    "inicio": "Início",
+    "titulo": "Cada pessoa da sua igreja, acompanhada.",
+    "subtitulo": "O ViveADN reúne em um só lugar os membros, as casas de oração, o acompanhamento e a formação da sua igreja, com a identidade dela.",
+    "queHaceTitulo": "O que o ViveADN faz",
+    "queHaceTexto": "Módulos pensados para o trabalho diário de uma igreja. Cada igreja usa os que seu plano inclui.",
+    "modulos": {
+      "miembros": {
+        "titulo": "Membros",
+        "texto": "Fichas completas, importação de planilhas e cadastro de visitantes por QR."
+      },
+      "op72": {
+        "titulo": "Consolidação OP72",
+        "texto": "Acompanhamento de cada pessoa nova, com alertas quando alguém fica sem atenção."
+      },
+      "casas": {
+        "titulo": "Casas de oração",
+        "texto": "Casas, líderes e participantes organizados por zona."
+      },
+      "formacion": {
+        "titulo": "Formação LBS",
+        "texto": "Trilhas de formação e progresso de cada pessoa."
+      },
+      "eventos": {
+        "titulo": "Eventos e presença",
+        "texto": "Calendário, séries de reuniões e presença registrada à mão ou por QR."
+      },
+      "dar": {
+        "titulo": "Dízimos, ofertas e doações",
+        "texto": "Uma página de dar com a identidade da sua igreja que leva aos seus próprios sites de arrecadação."
+      }
+    },
+    "nivelesTitulo": "Um painel para cada nível",
+    "nivelesTexto": "Cada pessoa vê apenas o que lhe diz respeito.",
+    "niveles": {
+      "plataforma": {
+        "titulo": "Painel Mestre",
+        "texto": "Quem administra o ViveADN vê todas as igrejas, seus planos, módulos e membros."
+      },
+      "iglesia": {
+        "titulo": "Painel da igreja",
+        "texto": "Cada igreja gerencia suas pessoas com papéis e permissões próprios."
+      }
+    },
+    "dar": {
+      "titulo": "Sem mexer no seu dinheiro",
+      "texto": "O ViveADN não processa nem guarda pagamentos. As contribuições chegam direto aos sites que sua igreja já usa."
     }
   }
 }
