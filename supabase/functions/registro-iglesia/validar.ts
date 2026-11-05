@@ -3,7 +3,7 @@
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const SLUG_RE = /^[a-z0-9]+(-[a-z0-9]+)*$/
 // Caracteres de control y de formato invisibles (cero ancho, direccion de texto), que no tienen sitio en un nombre
-const RARO_RE = /[\u0000-\u001f\u007f​-‏‪-‮⁠﻿]/
+const RARO_RE = /[\u0000-\u001f\u007f\u200b-\u200f\u202a-\u202e\u2060\ufeff]/
 // Sin letras ambiguas (0/O, 1/I): se leen y dictan bien
 export const CODIGO_RE = /^ADN-[A-HJ-NP-Z2-9]{4}-[A-HJ-NP-Z2-9]{4}$/
 
