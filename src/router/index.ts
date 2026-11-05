@@ -53,6 +53,16 @@ const router = createRouter({
           component: () => import('@/views/miembros/MiembroDetalleView.vue')
         },
         {
+          path: 'eventos',
+          name: 'eventos',
+          component: () => import('@/views/eventos/EventosView.vue')
+        },
+        {
+          path: 'eventos/:id',
+          name: 'evento-detalle',
+          component: () => import('@/views/eventos/EventoDetalleView.vue')
+        },
+        {
           path: 'casas',
           name: 'casas',
           component: () => import('@/views/casas/CasasView.vue')
