@@ -21,6 +21,8 @@ begin
   raise exception 'FALLO: debia rechazarse por el limite del plan: %', msg;
 end $$;
 
+grant execute on function pg_temp.igual(text, text, text), pg_temp.limite(text, text) to authenticated;
+
 -- Semilla: 50 miembros y 3 usuarios. Premium: 5000 y sin tope de usuarios.
 insert into public.iglesias (id, nombre, slug, pais, ciudad, plan) values
   ('5e000000-0000-0000-0000-00000000000a', 'Prueba Semilla', 'prueba-ls1', 'ES', 'Sevilla', 'semilla'),
@@ -76,6 +78,40 @@ update public.invitaciones set caduca_en = now() - interval '1 day' where email 
 insert into public.invitaciones (iglesia_id, email, nombre, apellido, rol, token_hash) values
   ('5e000000-0000-0000-0000-00000000000a', 'inv3@ls.test', 'I', '3', 'miembro', repeat('3', 64));
 select pg_temp.igual('ok', 'ok', 'una invitacion caducada no ocupa plaza');
+
+-- Un colaborador solo ve lo que registra, pero el tope cuenta TODOS los miembros de la iglesia
+insert into auth.users (id) values ('5f000000-0000-0000-0000-0000000000c1'), ('5f000000-0000-0000-0000-0000000000c2'), ('5f000000-0000-0000-0000-0000000000c3');
+insert into public.iglesias (id, nombre, slug, pais, ciudad, plan) values
+  ('5e000000-0000-0000-0000-00000000000c', 'Prueba Colaborador', 'prueba-ls2', 'ES', 'Sevilla', 'semilla');
+insert into public.perfiles (id, iglesia_id, nombre, apellido, email, rol, activo) values
+  ('5f000000-0000-0000-0000-0000000000c1', '5e000000-0000-0000-0000-00000000000c', 'P', '1', 'p1@ls2.test', 'propietario', true),
+  ('5f000000-0000-0000-0000-0000000000c2', '5e000000-0000-0000-0000-00000000000c', 'P', '2', 'p2@ls2.test', 'propietario', true),
+  ('5f000000-0000-0000-0000-0000000000c3', '5e000000-0000-0000-0000-00000000000c', 'C', '1', 'c1@ls2.test', 'colaborador', true);
+insert into public.miembros (iglesia_id, nombre, apellido) select '5e000000-0000-0000-0000-00000000000c', 'L' || g, 'Prueba' from generate_series(1, 50) g;
+select set_config('request.jwt.claim.sub', '5f000000-0000-0000-0000-0000000000c3', true);
+set local role authenticated;
+select pg_temp.igual((select count(*)::text from public.miembros), '0', 'el colaborador no ve a los miembros que no registro');
+select pg_temp.limite($q$ insert into public.miembros (iglesia_id, nombre, apellido) values ('5e000000-0000-0000-0000-00000000000c', 'Extra', 'Colab') $q$, 'un colaborador no se salta el tope aunque no vea a los demas miembros');
+reset role;
+select set_config('request.jwt.claim.sub', '', true);
+
+-- Reactivar un perfil no ocupa una plaza reservada por una invitacion vigente
+insert into auth.users (id) values ('5f000000-0000-0000-0000-0000000000d1'), ('5f000000-0000-0000-0000-0000000000d2'), ('5f000000-0000-0000-0000-0000000000d3'), ('5f000000-0000-0000-0000-0000000000d4');
+insert into public.iglesias (id, nombre, slug, pais, ciudad, plan) values
+  ('5e000000-0000-0000-0000-00000000000d', 'Prueba Reservas', 'prueba-ls3', 'ES', 'Sevilla', 'semilla');
+insert into public.perfiles (id, iglesia_id, nombre, apellido, email, rol, activo) values
+  ('5f000000-0000-0000-0000-0000000000d1', '5e000000-0000-0000-0000-00000000000d', 'P', '1', 'p1@ls3.test', 'propietario', true),
+  ('5f000000-0000-0000-0000-0000000000d2', '5e000000-0000-0000-0000-00000000000d', 'P', '2', 'p2@ls3.test', 'propietario', true),
+  ('5f000000-0000-0000-0000-0000000000d3', '5e000000-0000-0000-0000-00000000000d', 'I', '1', 'i1@ls3.test', 'miembro', false);
+insert into public.invitaciones (id, iglesia_id, email, nombre, apellido, rol, token_hash) values
+  ('5d000000-0000-0000-0000-0000000000d1', '5e000000-0000-0000-0000-00000000000d', 'inv@ls3.test', 'I', 'V', 'miembro', repeat('d', 64));
+select pg_temp.limite($q$ update public.perfiles set activo = true where id = '5f000000-0000-0000-0000-0000000000d3' $q$, 'reactivar un perfil no ocupa la plaza reservada por una invitacion vigente');
+-- Quien acepta la invitacion entra: reclamar la marca como usada antes de crear su perfil, y no se cuenta dos veces
+update public.invitaciones set usada_en = now() where id = '5d000000-0000-0000-0000-0000000000d1';
+insert into public.perfiles (id, iglesia_id, nombre, apellido, email, rol, activo) values
+  ('5f000000-0000-0000-0000-0000000000d4', '5e000000-0000-0000-0000-00000000000d', 'I', 'V', 'inv@ls3.test', 'miembro', true);
+select pg_temp.igual((select count(*)::text from public.perfiles where iglesia_id = '5e000000-0000-0000-0000-00000000000d' and activo), '3', 'quien acepta su invitacion ocupa la plaza que tenia reservada');
+select pg_temp.limite($q$ update public.perfiles set activo = true where id = '5f000000-0000-0000-0000-0000000000d3' $q$, 'con las plazas llenas, reactivar sigue rechazado');
 
 -- Las funciones de los disparadores no se ejecutan a mano
 set local role authenticated;
