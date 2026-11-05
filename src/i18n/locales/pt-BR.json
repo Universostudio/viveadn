@@ -630,6 +630,12 @@
     "errorPersona": "Não foi possível cadastrar a pessoa.",
     "errorParcial": "A pessoa foi cadastrada, mas uma etapa seguinte falhou. Confira a presença ou o acompanhamento dela.",
     "verMas": "Ver mais eventos",
-    "errorCargar": "Não foi possível carregar toda a lista. Recarregue a página."
+    "errorCargar": "Não foi possível carregar toda a lista. Recarregue a página.",
+    "editar": "Editar",
+    "editarTitulo": "Editar evento",
+    "guardarCambios": "Salvar alterações",
+    "aplicarSerie": "Aplicar também às reuniões seguintes da série",
+    "aplicarSerieAyuda": "Altera título, tipo, local, casa e descrição. As datas das outras reuniões não mudam.",
+    "errorEditar": "Não foi possível salvar as alterações. Tente novamente."
   }
 }

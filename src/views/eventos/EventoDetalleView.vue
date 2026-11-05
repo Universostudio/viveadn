@@ -20,7 +20,8 @@
           </div>
           <p v-if="evento.descripcion" class="text-sm text-gray-600 mt-3 max-w-2xl whitespace-pre-line">{{ evento.descripcion }}</p>
         </div>
-        <div v-if="puedeGestionar" class="flex gap-2">
+        <div v-if="puedeGestionar" class="flex gap-2 flex-wrap">
+          <button @click="abrirEditar" class="btn-secondary text-sm inline-flex items-center gap-1"><Pencil class="w-4 h-4" aria-hidden="true" /> {{ t('eventos.editar') }}</button>
           <button @click="alternarCancelado" class="btn-secondary text-sm">{{ t(evento.cancelado ? 'eventos.reactivar' : 'eventos.cancelarEvento') }}</button>
           <button @click="eliminar" class="btn-secondary text-sm text-red-600 inline-flex items-center gap-1"><Trash2 class="w-4 h-4" aria-hidden="true" /> {{ t('eventos.eliminar') }}</button>
         </div>
@@ -62,6 +63,25 @@
       </div>
     </template>
 
+    <!-- Modal: editar evento -->
+    <div v-if="editando" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center p-4 z-50" @click.self="editando = false" role="dialog" aria-modal="true" :aria-label="t('eventos.editarTitulo')">
+      <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6 max-h-[90vh] overflow-y-auto">
+        <h2 class="text-lg font-bold text-gray-900 mb-4">{{ t('eventos.editarTitulo') }}</h2>
+        <form @submit.prevent="guardarEdicion" class="space-y-4">
+          <CamposEvento v-model="edicion" :casas="casas" id-base="ed" />
+          <label v-if="evento?.serie_id" class="flex items-start gap-2 rounded-xl bg-gray-50 p-3 text-sm text-gray-700">
+            <input v-model="aplicarSerie" type="checkbox" class="mt-0.5 rounded border-gray-300 text-adn-verde" />
+            <span>{{ t('eventos.aplicarSerie') }}<span class="block text-xs text-gray-400">{{ t('eventos.aplicarSerieAyuda') }}</span></span>
+          </label>
+          <p v-if="errorEdicion" role="alert" class="bg-red-50 text-red-700 text-sm px-4 py-3 rounded-lg border border-red-200">{{ t(errorEdicion) }}</p>
+          <div class="flex justify-end gap-3">
+            <button type="button" @click="editando = false" class="btn-secondary text-sm">{{ t('comun.cancelar') }}</button>
+            <button type="submit" :disabled="guardandoEdicion" class="btn-primary text-sm disabled:opacity-60">{{ guardandoEdicion ? t('comun.guardando') : t('eventos.guardarCambios') }}</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
     <!-- Modal: persona nueva -->
     <div v-if="abrirPersona" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center p-4 z-50" @click.self="abrirPersona = false" role="dialog" aria-modal="true" :aria-label="t('eventos.personaNueva')">
       <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
@@ -101,10 +121,13 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { ArrowLeft, Check, ClipboardCheck, Search, Trash2, UserPlus } from '@lucide/vue'
+import { ArrowLeft, Check, ClipboardCheck, Pencil, Search, Trash2, UserPlus } from '@lucide/vue'
 import { supabase } from '@/lib/supabase'
 import { useAuthStore } from '@/stores/auth'
 import { leerTodo } from '@/lib/paginar'
+import { aInputLocal, errorFechas } from '@/lib/eventos'
+import type { FormEvento } from '@/lib/eventos'
+import CamposEvento from '@/components/CamposEvento.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -140,7 +163,7 @@ const totalPresentes = computed(() => lista.value.filter(m => presente(m.id)).le
 async function cargar() {
   const id = String(route.params.id)
   const { data: ev } = await supabase.from('eventos')
-    .select('id, titulo, descripcion, tipo, inicia_en, termina_en, lugar, cancelado, casa_oracion_id, casas_oracion!eventos_casa_fk(nombre)')
+    .select('id, titulo, descripcion, tipo, inicia_en, termina_en, lugar, cancelado, casa_oracion_id, serie_id, casas_oracion!eventos_casa_fk(nombre)')
     .eq('id', id).maybeSingle()
   evento.value = ev
   if (ev) {
@@ -182,6 +205,55 @@ async function eliminar() {
   if (!window.confirm(t('eventos.confirmarEliminar'))) return
   const { error } = await supabase.from('eventos').delete().eq('id', evento.value.id)
   if (!error) router.push('/eventos')
+}
+
+// ---- Editar evento ----
+const editando = ref(false)
+const guardandoEdicion = ref(false)
+const errorEdicion = ref('')
+const aplicarSerie = ref(false)
+const casas = ref<any[]>([])
+const edicion = ref<FormEvento>({ titulo: '', tipo: 'culto', casa_id: '', inicio: '', fin: '', lugar: '', descripcion: '' })
+
+async function abrirEditar() {
+  const e = evento.value
+  edicion.value = {
+    titulo: e.titulo, tipo: e.tipo, casa_id: e.casa_oracion_id ?? '', inicio: aInputLocal(e.inicia_en), fin: aInputLocal(e.termina_en),
+    lugar: e.lugar ?? '', descripcion: e.descripcion ?? '',
+  }
+  aplicarSerie.value = false
+  errorEdicion.value = ''
+  editando.value = true
+  if (!casas.value.length) {
+    const { data } = await supabase.from('casas_oracion').select('id, nombre, codigo_zona').eq('activa', true).order('nombre')
+    casas.value = data ?? []
+  }
+}
+
+async function guardarEdicion() {
+  errorEdicion.value = ''
+  const f = edicion.value
+  const err = errorFechas(f.inicio, f.fin)
+  if (err) { errorEdicion.value = err; return }
+  guardandoEdicion.value = true
+  const comunes = {
+    titulo: f.titulo.trim(), tipo: f.tipo, lugar: f.lugar.trim() || null,
+    descripcion: f.descripcion.trim() || null, casa_oracion_id: f.casa_id || null,
+  }
+  const iniciaAntes = evento.value.inicia_en
+  const { data, error } = await supabase.from('eventos')
+    .update({ ...comunes, inicia_en: new Date(f.inicio).toISOString(), termina_en: f.fin ? new Date(f.fin).toISOString() : null })
+    .eq('id', evento.value.id).select('id')
+  let fallo = !!error || !data?.length
+  // En una serie, los cambios que no son de fecha pasan también a las reuniones siguientes
+  if (!fallo && aplicarSerie.value && evento.value.serie_id) {
+    const { error: errS } = await supabase.from('eventos').update(comunes).eq('serie_id', evento.value.serie_id).gt('inicia_en', iniciaAntes)
+    fallo = !!errS
+  }
+  guardandoEdicion.value = false
+  if (fallo) { errorEdicion.value = 'eventos.errorEditar'; return }
+  editando.value = false
+  await cargar()
 }
 
 // ---- Persona nueva ----

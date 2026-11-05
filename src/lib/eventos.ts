@@ -21,3 +21,34 @@ export function fechasDeSerie(inicio: Date, fin: Date | null, veces: number): { 
   }
   return salida
 }
+
+// Campos del formulario de un evento. Las fechas son el valor de un input datetime-local, en hora local.
+export interface FormEvento {
+  titulo: string
+  tipo: TipoEvento
+  casa_id: string
+  inicio: string
+  fin: string
+  lugar: string
+  descripcion: string
+}
+
+// Valor para un input datetime-local (AAAA-MM-DDTHH:mm) a partir de una fecha ISO, en la hora local
+export function aInputLocal(iso: string | null | undefined): string {
+  if (!iso) return ''
+  const d = new Date(iso)
+  if (Number.isNaN(d.getTime())) return ''
+  const p = (n: number) => String(n).padStart(2, '0')
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`
+}
+
+// Clave de traducción del error si el inicio no es válido o el fin no es posterior; null si todo está bien
+export function errorFechas(inicio: string, fin: string): 'eventos.errorFechas' | null {
+  const a = new Date(inicio)
+  if (Number.isNaN(a.getTime())) return 'eventos.errorFechas'
+  if (fin) {
+    const b = new Date(fin)
+    if (Number.isNaN(b.getTime()) || b <= a) return 'eventos.errorFechas'
+  }
+  return null
+}

@@ -630,6 +630,12 @@
     "errorPersona": "Impossible d'enregistrer la personne.",
     "errorParcial": "La personne a été enregistrée, mais une étape suivante a échoué. Vérifiez sa présence ou son suivi.",
     "verMas": "Voir plus d'événements",
-    "errorCargar": "Impossible de charger toute la liste. Rechargez la page."
+    "errorCargar": "Impossible de charger toute la liste. Rechargez la page.",
+    "editar": "Modifier",
+    "editarTitulo": "Modifier l'événement",
+    "guardarCambios": "Enregistrer les modifications",
+    "aplicarSerie": "Appliquer aussi aux réunions suivantes de la série",
+    "aplicarSerieAyuda": "Modifie le titre, le type, le lieu, la maison et la description. Les dates des autres réunions ne changent pas.",
+    "errorEditar": "Impossible d'enregistrer les modifications. Réessayez."
   }
 }

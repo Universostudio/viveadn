@@ -630,6 +630,12 @@
     "errorPersona": "No se pudo registrar a la persona.",
     "errorParcial": "La persona se registró, pero falló un paso posterior. Revisa su asistencia o su seguimiento.",
     "verMas": "Ver más eventos",
-    "errorCargar": "No se pudo cargar toda la lista. Recarga la página."
+    "errorCargar": "No se pudo cargar toda la lista. Recarga la página.",
+    "editar": "Editar",
+    "editarTitulo": "Editar evento",
+    "guardarCambios": "Guardar cambios",
+    "aplicarSerie": "Aplicar también a las siguientes reuniones de la serie",
+    "aplicarSerieAyuda": "Cambia título, tipo, lugar, casa y descripción. Las fechas de las demás reuniones no se modifican.",
+    "errorEditar": "No se pudieron guardar los cambios. Inténtalo de nuevo."
   }
 }

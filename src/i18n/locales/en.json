@@ -630,6 +630,12 @@
     "errorPersona": "The person could not be registered.",
     "errorParcial": "The person was registered, but a later step failed. Check their attendance or follow-up.",
     "verMas": "Show more events",
-    "errorCargar": "The full list could not be loaded. Reload the page."
+    "errorCargar": "The full list could not be loaded. Reload the page.",
+    "editar": "Edit",
+    "editarTitulo": "Edit event",
+    "guardarCambios": "Save changes",
+    "aplicarSerie": "Also apply to the following meetings in the series",
+    "aplicarSerieAyuda": "Changes title, type, place, house and description. The dates of the other meetings are not changed.",
+    "errorEditar": "The changes could not be saved. Please try again."
   }
 }

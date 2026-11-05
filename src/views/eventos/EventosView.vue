@@ -55,43 +55,7 @@
       <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6 max-h-[90vh] overflow-y-auto">
         <h2 class="text-lg font-bold text-gray-900 mb-4">{{ t('eventos.nuevo') }}</h2>
         <form @submit.prevent="crear" class="space-y-4">
-          <div>
-            <label for="ev-titulo" class="block text-sm font-medium text-gray-700 mb-1">{{ t('eventos.campoTitulo') }}</label>
-            <input id="ev-titulo" v-model="form.titulo" required maxlength="150" :placeholder="t('eventos.ejemploTitulo')" class="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-adn-verde" />
-          </div>
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <label for="ev-tipo" class="block text-sm font-medium text-gray-700 mb-1">{{ t('eventos.campoTipo') }}</label>
-              <select id="ev-tipo" v-model="form.tipo" class="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm bg-white">
-                <option v-for="tp in TIPOS" :key="tp" :value="tp">{{ t(`eventos.tipo.${tp}`) }}</option>
-              </select>
-            </div>
-            <div>
-              <label for="ev-casa" class="block text-sm font-medium text-gray-700 mb-1">{{ t('eventos.campoCasa') }}</label>
-              <select id="ev-casa" v-model="form.casa_id" class="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm bg-white">
-                <option value="">{{ t('eventos.sinCasa') }}</option>
-                <option v-for="c in casas" :key="c.id" :value="c.id">{{ c.nombre || c.codigo_zona }}</option>
-              </select>
-            </div>
-          </div>
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <label for="ev-inicio" class="block text-sm font-medium text-gray-700 mb-1">{{ t('eventos.campoInicio') }}</label>
-              <input id="ev-inicio" v-model="form.inicio" type="datetime-local" required class="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm" />
-            </div>
-            <div>
-              <label for="ev-fin" class="block text-sm font-medium text-gray-700 mb-1">{{ t('eventos.campoFin') }}</label>
-              <input id="ev-fin" v-model="form.fin" type="datetime-local" class="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm" />
-            </div>
-          </div>
-          <div>
-            <label for="ev-lugar" class="block text-sm font-medium text-gray-700 mb-1">{{ t('eventos.campoLugar') }}</label>
-            <input id="ev-lugar" v-model="form.lugar" maxlength="200" class="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-adn-verde" />
-          </div>
-          <div>
-            <label for="ev-desc" class="block text-sm font-medium text-gray-700 mb-1">{{ t('eventos.campoDescripcion') }}</label>
-            <textarea id="ev-desc" v-model="form.descripcion" rows="2" maxlength="2000" class="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm"></textarea>
-          </div>
+          <CamposEvento v-model="form" :casas="casas" id-base="ev" />
           <div class="rounded-xl bg-gray-50 p-3 space-y-2">
             <label class="flex items-center gap-2 text-sm font-medium text-gray-700">
               <input v-model="form.repetir" type="checkbox" class="rounded border-gray-300 text-adn-verde" /> {{ t('eventos.repetir') }}
@@ -118,7 +82,9 @@ import { useI18n } from 'vue-i18n'
 import { CalendarPlus } from '@lucide/vue'
 import { supabase } from '@/lib/supabase'
 import { useAuthStore } from '@/stores/auth'
-import { TIPOS_EVENTO as TIPOS, MAX_SERIE, fechasDeSerie, DURACION_POR_DEFECTO_MS } from '@/lib/eventos'
+import { TIPOS_EVENTO as TIPOS, MAX_SERIE, fechasDeSerie, errorFechas, DURACION_POR_DEFECTO_MS } from '@/lib/eventos'
+import type { FormEvento } from '@/lib/eventos'
+import CamposEvento from '@/components/CamposEvento.vue'
 import { leerTodo } from '@/lib/paginar'
 
 const { t, locale } = useI18n()
@@ -134,10 +100,10 @@ const filtroTipo = ref('')
 const abierto = ref(false)
 const guardando = ref(false)
 const errorForm = ref('')
-const form = ref(formVacio())
+const form = ref<FormEvento & { repetir: boolean; veces: number }>(formVacio())
 
 function formVacio() {
-  return { titulo: '', tipo: 'culto', casa_id: '', inicio: '', fin: '', lugar: '', descripcion: '', repetir: false, veces: 4 }
+  return { titulo: '', tipo: 'culto' as const, casa_id: '', inicio: '', fin: '', lugar: '', descripcion: '', repetir: false, veces: 4 }
 }
 
 const fecha = (iso: string, opciones: Intl.DateTimeFormatOptions) => new Date(iso).toLocaleString(locale.value, opciones)
@@ -220,10 +186,10 @@ function abrirNuevo() {
 async function crear() {
   errorForm.value = ''
   const f = form.value
+  const errFechas = errorFechas(f.inicio, f.fin)
+  if (errFechas) { errorForm.value = errFechas; return }
   const inicio = new Date(f.inicio)
   const fin = f.fin ? new Date(f.fin) : null
-  if (Number.isNaN(inicio.getTime())) { errorForm.value = 'eventos.errorFechas'; return }
-  if (fin && fin <= inicio) { errorForm.value = 'eventos.errorFechas'; return }
   const veces = f.repetir ? Math.floor(f.veces) : 1
   if (f.repetir && !(veces >= 2 && veces <= MAX_SERIE)) { errorForm.value = 'eventos.errorVeces'; return }
   const serie = f.repetir ? crypto.randomUUID() : null
