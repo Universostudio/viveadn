@@ -27,6 +27,8 @@
         </div>
       </div>
 
+      <RegistroQr v-if="puedeGestionar" :evento-id="evento.id" />
+
       <div class="card space-y-4">
         <div class="flex items-center justify-between gap-3 flex-wrap">
           <h2 class="text-lg font-semibold text-gray-900 flex items-center gap-2"><ClipboardCheck class="w-5 h-5 text-adn-verde" aria-hidden="true" /> {{ t('eventos.asistencia') }}</h2>
@@ -128,6 +130,7 @@ import { leerTodo } from '@/lib/paginar'
 import { aInputLocal, errorFechas } from '@/lib/eventos'
 import type { FormEvento } from '@/lib/eventos'
 import CamposEvento from '@/components/CamposEvento.vue'
+import RegistroQr from '@/components/RegistroQr.vue'
 
 const route = useRoute()
 const router = useRouter()

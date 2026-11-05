@@ -31,6 +31,13 @@ const router = createRouter({
       component: () => import('@/views/DarPublicaView.vue'),
       meta: { public: true, allowLoggedIn: true }
     },
+    // Registro por QR: lo abre cualquier persona con el enlace secreto de un evento
+    {
+      path: '/checkin/:token',
+      name: 'checkin-publico',
+      component: () => import('@/views/CheckinPublicoView.vue'),
+      meta: { public: true, allowLoggedIn: true }
+    },
     // App principal (requiere auth)
     {
       path: '/',
