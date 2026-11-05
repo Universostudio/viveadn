@@ -47,6 +47,7 @@
           <p v-else-if="conteo[e.id] !== undefined" class="text-xs text-gray-500">{{ t('eventos.presentes', { n: conteo[e.id] }) }}</p>
         </div>
       </RouterLink>
+      <button v-if="hayMas" @click="verMas" class="btn-secondary w-full text-sm">{{ t('eventos.verMas') }}</button>
     </div>
 
     <!-- Modal: nuevo evento -->
@@ -112,12 +113,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { CalendarPlus } from '@lucide/vue'
 import { supabase } from '@/lib/supabase'
 import { useAuthStore } from '@/stores/auth'
-import { TIPOS_EVENTO as TIPOS, MAX_SERIE, fechasDeSerie } from '@/lib/eventos'
+import { TIPOS_EVENTO as TIPOS, MAX_SERIE, fechasDeSerie, DURACION_POR_DEFECTO_MS } from '@/lib/eventos'
+import { leerTodo } from '@/lib/paginar'
 
 const { t, locale } = useI18n()
 const auth = useAuthStore()
@@ -140,34 +142,57 @@ function formVacio() {
 
 const fecha = (iso: string, opciones: Intl.DateTimeFormatOptions) => new Date(iso).toLocaleString(locale.value, opciones)
 
-// Un evento sigue siendo "próximo" hasta que termina (o, sin hora de fin, durante 3 horas)
-const visibles = computed(() => {
-  const ahora = Date.now()
-  const fin = (e: any) => new Date(e.termina_en ?? new Date(e.inicia_en).getTime() + 3 * 3600_000).getTime()
-  const lista = eventos.value.filter(e => (!filtroTipo.value || e.tipo === filtroTipo.value) && (vista.value === 'proximos' ? fin(e) >= ahora : fin(e) < ahora))
-  return lista.sort((a, b) => (vista.value === 'proximos' ? 1 : -1) * (new Date(a.inicia_en).getTime() - new Date(b.inicia_en).getTime()))
-})
+// El servidor ya devuelve la vista pedida (próximos desde el más cercano, pasados desde el más reciente)
+const visibles = computed(() => eventos.value)
+
+const POR_VISTA = 100
+const limite = ref(POR_VISTA)
+const hayMas = ref(false)
+
+// Cuántos asistieron a cada evento, contando todas las filas (no solo la primera página de 1000)
+async function contarPresentes(ids: string[]): Promise<Record<string, number> | null> {
+  const c: Record<string, number> = Object.fromEntries(ids.map(id => [id, 0]))
+  // Se piden de 50 en 50 eventos para que la dirección de la petición no sea demasiado larga
+  for (let i = 0; i < ids.length; i += 50) {
+    const lote = ids.slice(i, i + 50)
+    const filas = await leerTodo<{ evento_id: string }>((d, h) =>
+      supabase.from('asistencia_evento').select('evento_id').eq('presente', true).in('evento_id', lote).order('id').range(d, h))
+    if (!filas) return null
+    for (const a of filas) c[a.evento_id] = (c[a.evento_id] ?? 0) + 1
+  }
+  return c
+}
 
 async function cargar() {
   cargando.value = true
+  // Un evento es "próximo" hasta que termina o, sin hora de fin, durante 3 horas desde que empieza
+  const limiteSinFin = new Date(Date.now() - DURACION_POR_DEFECTO_MS).toISOString()
+  const ahora = new Date().toISOString()
+  const proximos = vista.value === 'proximos'
+  let q = supabase.from('eventos')
+    .select('id, titulo, tipo, inicia_en, termina_en, lugar, cancelado, casa_oracion_id, casas_oracion!eventos_casa_fk(nombre)')
+    .or(proximos
+      ? `termina_en.gte.${ahora},and(termina_en.is.null,inicia_en.gte.${limiteSinFin})`
+      : `termina_en.lt.${ahora},and(termina_en.is.null,inicia_en.lt.${limiteSinFin})`)
+    .order('inicia_en', { ascending: proximos })
+  if (filtroTipo.value) q = q.eq('tipo', filtroTipo.value)
   const [ev, cs] = await Promise.all([
-    supabase.from('eventos')
-      .select('id, titulo, tipo, inicia_en, termina_en, lugar, cancelado, casa_oracion_id, casas_oracion!eventos_casa_fk(nombre)')
-      .order('inicia_en', { ascending: false }).limit(300),
-    supabase.from('casas_oracion').select('id, nombre, codigo_zona').eq('activa', true).order('nombre'),
+    q.limit(limite.value + 1),
+    casas.value.length ? Promise.resolve({ data: casas.value }) : supabase.from('casas_oracion').select('id, nombre, codigo_zona').eq('activa', true).order('nombre'),
   ])
-  eventos.value = ev.data ?? []
+  const filas = ev.data ?? []
+  hayMas.value = filas.length > limite.value
+  eventos.value = filas.slice(0, limite.value)
   casas.value = cs.data ?? []
   cargando.value = false
-  // Cuántos asistieron a cada evento, solo para quien tiene permiso de ver la asistencia
-  if (auth.can('asistencia.ver') && eventos.value.length) {
-    const { data } = await supabase.from('asistencia_evento').select('evento_id').eq('presente', true).in('evento_id', eventos.value.map(e => e.id))
-    const c: Record<string, number> = {}
-    for (const e of eventos.value) c[e.id] = 0
-    for (const a of data ?? []) c[a.evento_id] = (c[a.evento_id] ?? 0) + 1
-    conteo.value = c
-  }
+  conteo.value = {}
+  if (auth.can('asistencia.ver') && eventos.value.length) conteo.value = (await contarPresentes(eventos.value.map(e => e.id))) ?? {}
 }
+
+// Al cambiar de vista o de tipo se empieza de nuevo desde la primera página
+watch([vista, filtroTipo], () => { limite.value = POR_VISTA; cargar() })
+
+function verMas() { limite.value += POR_VISTA; cargar() }
 
 function abrirNuevo() {
   form.value = formVacio()

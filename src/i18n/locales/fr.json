@@ -628,6 +628,8 @@
     "notaOp72": "Enregistré à l'événement : {evento}",
     "errorRegistrar": "Impossible d'enregistrer la présence. Vous n'avez peut-être pas la permission pour cet événement.",
     "errorPersona": "Impossible d'enregistrer la personne.",
-    "errorParcial": "La personne a été enregistrée, mais une étape suivante a échoué. Vérifiez sa présence ou son suivi."
+    "errorParcial": "La personne a été enregistrée, mais une étape suivante a échoué. Vérifiez sa présence ou son suivi.",
+    "verMas": "Voir plus d'événements",
+    "errorCargar": "Impossible de charger toute la liste. Rechargez la page."
   }
 }

@@ -628,6 +628,8 @@
     "notaOp72": "Registrado en el evento: {evento}",
     "errorRegistrar": "No se pudo guardar la asistencia. Puede que no tengas permiso para este evento.",
     "errorPersona": "No se pudo registrar a la persona.",
-    "errorParcial": "La persona se registró, pero falló un paso posterior. Revisa su asistencia o su seguimiento."
+    "errorParcial": "La persona se registró, pero falló un paso posterior. Revisa su asistencia o su seguimiento.",
+    "verMas": "Ver más eventos",
+    "errorCargar": "No se pudo cargar toda la lista. Recarga la página."
   }
 }

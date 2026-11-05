@@ -104,6 +104,7 @@ import { useI18n } from 'vue-i18n'
 import { ArrowLeft, Check, ClipboardCheck, Search, Trash2, UserPlus } from '@lucide/vue'
 import { supabase } from '@/lib/supabase'
 import { useAuthStore } from '@/stores/auth'
+import { leerTodo } from '@/lib/paginar'
 
 const route = useRoute()
 const router = useRouter()
@@ -144,11 +145,12 @@ async function cargar() {
   evento.value = ev
   if (ev) {
     const [ms, as] = await Promise.all([
-      supabase.from('miembros').select('id, nombre, apellido, casa_oracion_id').eq('activo', true).order('nombre'),
-      supabase.from('asistencia_evento').select('id, miembro_id, presente').eq('evento_id', id),
+      leerTodo<any>((d, h) => supabase.from('miembros').select('id, nombre, apellido, casa_oracion_id').eq('activo', true).order('nombre').order('id').range(d, h)),
+      leerTodo<any>((d, h) => supabase.from('asistencia_evento').select('id, miembro_id, presente').eq('evento_id', id).order('id').range(d, h)),
     ])
-    miembros.value = ms.data ?? []
-    asistencia.value = Object.fromEntries((as.data ?? []).map(a => [a.miembro_id, { id: a.id, presente: a.presente }]))
+    if (!ms || !as) errorRegistro.value = 'eventos.errorCargar'
+    miembros.value = ms ?? []
+    asistencia.value = Object.fromEntries((as ?? []).map(a => [a.miembro_id, { id: a.id, presente: a.presente }]))
   }
   cargando.value = false
 }

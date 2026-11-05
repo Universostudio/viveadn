@@ -628,6 +628,8 @@
     "notaOp72": "Registered at the event: {evento}",
     "errorRegistrar": "Attendance could not be saved. You may not have permission for this event.",
     "errorPersona": "The person could not be registered.",
-    "errorParcial": "The person was registered, but a later step failed. Check their attendance or follow-up."
+    "errorParcial": "The person was registered, but a later step failed. Check their attendance or follow-up.",
+    "verMas": "Show more events",
+    "errorCargar": "The full list could not be loaded. Reload the page."
   }
 }

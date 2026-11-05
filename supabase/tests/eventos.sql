@@ -22,7 +22,8 @@ grant execute on function pg_temp.igual(int, int, text), pg_temp.debe_fallar(tex
 
 insert into auth.users (id) values
   ('e1000000-0000-0000-0000-000000000001'), ('e1000000-0000-0000-0000-000000000002'),
-  ('e1000000-0000-0000-0000-000000000003'), ('e1000000-0000-0000-0000-000000000004');
+  ('e1000000-0000-0000-0000-000000000003'), ('e1000000-0000-0000-0000-000000000004'),
+  ('e1000000-0000-0000-0000-000000000005');
 insert into public.iglesias (id, nombre, slug, pais, ciudad, plan) values
   ('18000000-0000-0000-0000-00000000000a', 'Prueba E1', 'prueba-e1', 'ES', 'Sevilla', 'premium'),
   ('18000000-0000-0000-0000-00000000000b', 'Prueba E2', 'prueba-e2', 'ES', 'Sevilla', 'premium');
@@ -30,7 +31,8 @@ insert into public.perfiles (id, iglesia_id, nombre, apellido, email, rol, activ
   ('e1000000-0000-0000-0000-000000000001', '18000000-0000-0000-0000-00000000000a', 'Pro', 'Uno', 'p@e1.test', 'propietario', true),
   ('e1000000-0000-0000-0000-000000000002', '18000000-0000-0000-0000-00000000000a', 'Lid', 'Dos', 'l@e1.test', 'lider_casa', true),
   ('e1000000-0000-0000-0000-000000000003', '18000000-0000-0000-0000-00000000000a', 'Mie', 'Tres', 'm@e1.test', 'miembro', true),
-  ('e1000000-0000-0000-0000-000000000004', '18000000-0000-0000-0000-00000000000b', 'Pro', 'Dos', 'p@e2.test', 'propietario', true);
+  ('e1000000-0000-0000-0000-000000000004', '18000000-0000-0000-0000-00000000000b', 'Pro', 'Dos', 'p@e2.test', 'propietario', true),
+  ('e1000000-0000-0000-0000-000000000005', '18000000-0000-0000-0000-00000000000a', 'Col', 'Cinco', 'c@e1.test', 'colaborador', true);
 insert into public.casas_oracion (id, iglesia_id, codigo_zona, nombre, lider_id, pais, ciudad, direccion) values
   ('28000000-0000-0000-0000-00000000000a', '18000000-0000-0000-0000-00000000000a', 'ZN', 'Casa propia', 'e1000000-0000-0000-0000-000000000002', 'ES', 'Sevilla', 'C1'),
   ('28000000-0000-0000-0000-0000000000a2', '18000000-0000-0000-0000-00000000000a', 'ZS', 'Casa ajena', null, 'ES', 'Sevilla', 'C2'),
@@ -86,6 +88,24 @@ set local role authenticated;
 select pg_temp.igual((select count(*)::int from public.eventos), 4, 'el miembro ve el calendario');
 select pg_temp.igual((select count(*)::int from public.asistencia_evento), 0, 'el miembro no ve la asistencia');
 select pg_temp.debe_fallar($q$ insert into public.asistencia_evento (evento_id, miembro_id) values ('48000000-0000-0000-0000-0000000000a3', '38000000-0000-0000-0000-0000000000a2') $q$, 'el miembro no registra asistencia');
+reset role;
+
+-- Colaborador: registra asistencia y ve solo lo que el mismo registra
+select set_config('request.jwt.claim.sub', 'e1000000-0000-0000-0000-000000000005', true);
+set local role authenticated;
+select pg_temp.igual((select count(*)::int from public.eventos), 4, 'el colaborador ve el calendario');
+select pg_temp.igual((select count(*)::int from public.asistencia_evento), 0, 'el colaborador no ve la asistencia de otros');
+do $$ declare v uuid; n int; begin
+  insert into public.asistencia_evento (evento_id, miembro_id) values ('48000000-0000-0000-0000-0000000000a3', '38000000-0000-0000-0000-0000000000a2') returning id into v;
+  perform pg_temp.igual((v is not null)::int, 1, 'el colaborador marca asistencia y recibe la fila de vuelta');
+  update public.asistencia_evento set presente = false where id = v;
+  get diagnostics n = row_count;
+  perform pg_temp.igual(n, 1, 'el colaborador corrige su propio registro');
+  update public.asistencia_evento set presente = false where evento_id = '48000000-0000-0000-0000-0000000000a1';
+  get diagnostics n = row_count;
+  perform pg_temp.igual(n, 0, 'el colaborador no toca registros ajenos');
+end $$;
+select pg_temp.igual((select count(*)::int from public.asistencia_evento), 1, 'el colaborador solo ve lo que registro');
 reset role;
 
 -- Propietario de la otra iglesia: no ve nada de la primera
