@@ -144,19 +144,20 @@
       <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6 max-h-[90vh] overflow-y-auto">
         <h2 class="text-lg font-bold text-gray-900 mb-4">{{ t('miembros.registrarTitulo') }}</h2>
         <form @submit.prevent="crearMiembro" class="space-y-4">
-          <div class="grid grid-cols-2 gap-4">
+          <div :class="auth.modoAlias ? '' : 'grid grid-cols-2 gap-4'">
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">{{ t('miembros.nombre') }}</label>
-              <input v-model="nuevo.nombre" type="text" required :placeholder="t('miembros.ejemploNombre')"
+              <label class="block text-sm font-medium text-gray-700 mb-1">{{ auth.modoAlias ? t('miembros.alias') : t('miembros.nombre') }}</label>
+              <input v-model="nuevo.nombre" type="text" required :placeholder="auth.modoAlias ? t('miembros.ejemploAlias') : t('miembros.ejemploNombre')"
                 class="w-full px-3 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-adn-verde text-sm" />
+              <p v-if="auth.modoAlias" class="text-xs text-gray-500 mt-1">{{ t('miembros.aliasAyuda') }}</p>
             </div>
-            <div>
+            <div v-if="!auth.modoAlias">
               <label class="block text-sm font-medium text-gray-700 mb-1">{{ t('miembros.apellido') }}</label>
               <input v-model="nuevo.apellido" type="text" required :placeholder="t('miembros.ejemploApellido')"
                 class="w-full px-3 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-adn-verde text-sm" />
             </div>
           </div>
-          <div>
+          <div v-if="!auth.modoAlias">
             <label class="block text-sm font-medium text-gray-700 mb-1">{{ t('miembros.email') }}</label>
             <input v-model="nuevo.email" type="email" :placeholder="t('miembros.ejemploEmail')"
               class="w-full px-3 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-adn-verde text-sm" />
@@ -304,8 +305,8 @@ async function crearMiembro() {
   guardando.value = true
   const { error: err } = await supabase.from('miembros').insert({
     nombre: nuevo.value.nombre,
-    apellido: nuevo.value.apellido,
-    email: nuevo.value.email || null,
+    apellido: auth.modoAlias ? '' : nuevo.value.apellido,
+    email: auth.modoAlias ? null : (nuevo.value.email || null),
     telefono: nuevo.value.telefono || null,
     casa_oracion_id: nuevo.value.casa_id || null,
     nivel_compromiso: nuevo.value.nivel_compromiso,

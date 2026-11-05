@@ -35,12 +35,13 @@
       </div>
 
       <form v-else @submit.prevent="enviar" class="space-y-4" novalidate>
-        <div class="grid grid-cols-2 gap-3">
+        <div :class="info?.alias ? '' : 'grid grid-cols-2 gap-3'">
           <div>
-            <label for="ck-nombre" class="block text-sm font-medium text-gray-700 mb-1">{{ t('miembros.nombre') }}</label>
-            <input id="ck-nombre" v-model="form.nombre" required maxlength="100" autocomplete="given-name" class="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-adn-verde" />
+            <label for="ck-nombre" class="block text-sm font-medium text-gray-700 mb-1">{{ info?.alias ? t('miembros.alias') : t('miembros.nombre') }}</label>
+            <input id="ck-nombre" v-model="form.nombre" required maxlength="100" :autocomplete="info?.alias ? 'off' : 'given-name'" class="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-adn-verde" />
+            <p v-if="info?.alias" class="text-xs text-gray-500 mt-1">{{ t('miembros.aliasAyuda') }}</p>
           </div>
-          <div>
+          <div v-if="!info?.alias">
             <label for="ck-apellido" class="block text-sm font-medium text-gray-700 mb-1">{{ t('miembros.apellido') }}</label>
             <input id="ck-apellido" v-model="form.apellido" required maxlength="100" autocomplete="family-name" class="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-adn-verde" />
           </div>
@@ -49,7 +50,7 @@
           <label for="ck-tel" class="block text-sm font-medium text-gray-700 mb-1">{{ t('miembros.telefono') }}</label>
           <input id="ck-tel" v-model="form.telefono" required type="tel" inputmode="tel" maxlength="30" autocomplete="tel" placeholder="+34 600 000 000" class="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-adn-verde" />
         </div>
-        <div>
+        <div v-if="!info?.alias">
           <label for="ck-email" class="block text-sm font-medium text-gray-700 mb-1">{{ t('checkin.email') }}</label>
           <input id="ck-email" v-model="form.email" type="email" inputmode="email" maxlength="254" autocomplete="email" class="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-adn-verde" />
         </div>
@@ -95,7 +96,7 @@ const route = useRoute()
 const { t } = useI18n()
 
 const estado = ref<'cargando' | 'abierto' | 'cerrado' | 'lleno' | 'noDisponible' | 'enviado'>('cargando')
-const info = ref<{ iglesia?: string; evento?: string; contacto?: string } | null>(null)
+const info = ref<{ iglesia?: string; evento?: string; contacto?: string; alias?: boolean } | null>(null)
 const enviando = ref(false)
 const error = ref('')
 const form = reactive({ nombre: '', apellido: '', telefono: '', email: '', mayor14: false, consentimiento: false, web: '' })
@@ -133,10 +134,10 @@ onBeforeUnmount(() => metas.forEach(m => m.remove()))
 
 async function enviar() {
   error.value = ''
-  if (!form.nombre.trim() || !form.apellido.trim() || !form.telefono.trim()) { error.value = 'checkin.errorDatos'; return }
+  if (!form.nombre.trim() || (!info.value?.alias && !form.apellido.trim()) || !form.telefono.trim()) { error.value = 'checkin.errorDatos'; return }
   if (!form.mayor14 || !form.consentimiento) { error.value = 'checkin.errorConsentimiento'; return }
   enviando.value = true
-  const { error: err } = await supabase.functions.invoke('checkin-evento', { body: { accion: 'registrar', token, ...form } })
+  const { error: err } = await supabase.functions.invoke('checkin-evento', { body: { accion: 'registrar', token, ...form, ...(info.value?.alias ? { apellido: '', email: '' } : {}) } })
   enviando.value = false
   if (!err) { estado.value = 'enviado'; return }
   const codigo = await codigoDe(err)

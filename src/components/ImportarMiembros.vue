@@ -81,11 +81,13 @@ import { useI18n } from 'vue-i18n'
 import { Upload, X, Download, FileSpreadsheet, CircleCheck, TriangleAlert } from '@lucide/vue'
 import { supabase } from '@/lib/supabase'
 import { esLimitePlan } from '@/lib/plan'
+import { useAuthStore } from '@/stores/auth'
 import { analizarCsv, marcarDuplicados, claveMiembro, MAX_FILAS, MAX_BYTES, PLANTILLA_CSV } from '@/lib/importarMiembros'
 import type { FilaImportar } from '@/lib/importarMiembros'
 
 const emit = defineEmits<{ cerrar: []; importado: [] }>()
 const { t } = useI18n()
+const auth = useAuthStore()
 
 const LOTE = 200
 const paso = ref<'elegir' | 'revisar' | 'importando' | 'hecho'>('elegir')
@@ -135,7 +137,7 @@ async function leerArchivo(ev: Event) {
   if (!archivo) return
   if (archivo.size > MAX_BYTES) { errorArchivo.value = 'miembros.importar.errorArchivo.grande'; return }
   let analisis
-  try { analisis = analizarCsv(await leerTexto(archivo)) } catch { errorArchivo.value = 'miembros.importar.errorArchivo.lectura'; return }
+  try { analisis = analizarCsv(await leerTexto(archivo), auth.modoAlias) } catch { errorArchivo.value = 'miembros.importar.errorArchivo.lectura'; return }
   if (analisis.error) { errorArchivo.value = `miembros.importar.errorArchivo.${analisis.error}`; return }
   const existentes = await clavesExistentes()
   if (!existentes) { errorArchivo.value = 'miembros.importar.errorArchivo.lectura'; return }

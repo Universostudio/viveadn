@@ -184,7 +184,10 @@
         "nivelInvalido": "nivel de compromiso no válido",
         "demasiadoLargo": "algún texto es demasiado largo"
       }
-    }
+    },
+    "alias": "Alias",
+    "ejemploAlias": "Roble-01",
+    "aliasAyuda": "Un alias o ID interno, no su nombre civil."
   },
   "ficha": {
     "volver": "Volver a miembros",
@@ -499,7 +502,9 @@
     "nuevoEnlace": "Nuevo enlace",
     "revocar": "Revocar",
     "correoEnviado": "Hemos enviado la invitación por correo a {email}. Pídele que revise también la carpeta de spam. Si no llega, copia el enlace y envíaselo tú.",
-    "correoNoEnviado": "No se pudo enviar el correo automáticamente. Copia el enlace y envíaselo a {email}."
+    "correoNoEnviado": "No se pudo enviar el correo automáticamente. Copia el enlace y envíaselo a {email}.",
+    "modoAlias": "Registrar a las personas con un alias",
+    "modoAliasAyuda": "Las personas nuevas se guardan con un alias o ID interno: sin apellido ni correo. El teléfono se conserva para el contacto. Los miembros que ya existen no cambian."
   },
   "plataforma": {
     "titulo": "Plataforma",

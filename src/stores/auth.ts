@@ -64,6 +64,8 @@ export const useAuthStore = defineStore('auth', () => {
   const iglesiaId = computed(() => perfil.value?.iglesia_id)
   const rol = computed(() => perfil.value?.rol)
   const nombreIglesia = computed(() => iglesia.value?.nombre ?? '')
+  // Iglesia que registra a las personas con un alias, sin apellido ni correo
+  const modoAlias = computed(() => iglesia.value?.modo_alias === true)
   const nombreCompleto = computed(() =>
     perfil.value ? `${perfil.value.nombre} ${perfil.value.apellido}` : ''
   )
@@ -152,5 +154,5 @@ export const useAuthStore = defineStore('auth', () => {
     limpiar()
   }
 
-  return { user, perfil, iglesia, nombreIglesia, loading, isLoggedIn, iglesiaId, rol, rolInfo, verComo, rolesDisponibles, simularRol, nombreRol, nombreCompleto, esPlataforma, tieneSedes, can, tieneModulo, init, login, logout }
+  return { user, perfil, iglesia, nombreIglesia, modoAlias, loading, isLoggedIn, iglesiaId, rol, rolInfo, verComo, rolesDisponibles, simularRol, nombreRol, nombreCompleto, esPlataforma, tieneSedes, can, tieneModulo, init, login, logout }
 })

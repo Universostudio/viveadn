@@ -184,7 +184,10 @@
         "nivelInvalido": "nível de compromisso inválido",
         "demasiadoLargo": "algum texto é longo demais"
       }
-    }
+    },
+    "alias": "Apelido",
+    "ejemploAlias": "Carvalho-01",
+    "aliasAyuda": "Um apelido ou ID interno, não o nome civil."
   },
   "ficha": {
     "volver": "Voltar para membros",
@@ -499,7 +502,9 @@
     "nuevoEnlace": "Novo link",
     "revocar": "Revogar",
     "correoEnviado": "Enviamos o convite por e-mail para {email}. Peça que verifique também a pasta de spam. Se não chegar, copie o link e envie você mesmo.",
-    "correoNoEnviado": "Não foi possível enviar o e-mail automaticamente. Copie o link e envie para {email}."
+    "correoNoEnviado": "Não foi possível enviar o e-mail automaticamente. Copie o link e envie para {email}.",
+    "modoAlias": "Registrar as pessoas com um apelido",
+    "modoAliasAyuda": "As pessoas novas são salvas com um apelido ou ID interno: sem sobrenome nem e-mail. O telefone é mantido para contato. Os membros que já existem não mudam."
   },
   "plataforma": {
     "titulo": "Plataforma",

@@ -22,13 +22,18 @@ for (const c of [{ consentimiento: false }, { consentimiento: 'true' }, { consen
 
 // Datos invalidos
 const malos: Record<string, unknown>[] = [
-  { nombre: '' }, { nombre: '   ' }, { apellido: '' }, { nombre: 'x'.repeat(101) }, { apellido: 'x'.repeat(101) },
+  { nombre: '' }, { nombre: '   ' }, { nombre: 'x'.repeat(101) }, { apellido: 'x'.repeat(101) },
   { nombre: 'Ana\u0000' }, { nombre: 'Ana‮' }, { nombre: 'A​na' }, { apellido: 'Lo\npez\u0007' },
   { telefono: '' }, { telefono: 'abc' }, { telefono: '12345' }, { telefono: '+34 6' }, { telefono: '1'.repeat(31) }, { telefono: '600 111 222; DROP' },
   { email: 'sin-arroba' }, { email: 'a@b' }, { email: `${'a'.repeat(250)}@x.es` },
   { nombre: 123 }, { nombre: null }, { telefono: ['600111222'] },
 ]
 for (const m of malos) assert.deepEqual(validarRegistro({ ...bueno, ...m }), { ok: false, error: 'datos' }, JSON.stringify(m).slice(0, 60))
+
+// El apellido es opcional aqui: en modo alias no existe, y si la iglesia lo exige lo rechaza la base de datos
+const sinApellido = validarRegistro({ ...bueno, nombre: 'Roble-01', apellido: '' })
+assert.ok(sinApellido.ok && sinApellido.datos.apellido === '' && sinApellido.datos.nombre === 'Roble-01')
+assert.ok(validarRegistro({ ...bueno, apellido: undefined }).ok)
 
 // Los saltos de linea dentro de un nombre se tratan como espacios, no como cortes de una linea nueva
 const salto = validarRegistro({ ...bueno, nombre: 'Ana\n\tMaría' })
@@ -48,6 +53,7 @@ assert.deepEqual(respuestaDe('ok_nuevo'), { status: 200, cuerpo: { ok: true } })
 assert.deepEqual(respuestaDe('cerrado'), { status: 409, cuerpo: { error: 'cerrado' } })
 assert.deepEqual(respuestaDe('lleno'), { status: 409, cuerpo: { error: 'lleno' } })
 assert.deepEqual(respuestaDe('limite'), { status: 429, cuerpo: { error: 'limite' } })
+assert.deepEqual(respuestaDe('datos'), { status: 400, cuerpo: { error: 'datos' } })
 assert.equal(respuestaDe('no_valido').status, 404)
 assert.equal(respuestaDe('cualquier cosa rara').status, 404, 'un estado desconocido nunca se toma por exito')
 console.log('OK: todas las pruebas del registro por QR pasan')
