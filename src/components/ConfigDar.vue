@@ -236,8 +236,9 @@ async function guardar() {
   const sobran = claves.value.filter(c => !quedan.has(c))
 
   const errores: unknown[] = []
-  if (filasGuardar.length) errores.push((await supabase.from('enlaces_dar').upsert(filasGuardar, { onConflict: 'iglesia_id,tipo' })).error)
+  // Primero se borra lo quitado: con 20 fondos, quitar uno y añadir otro superaría el tope si se guardara al revés
   if (sobran.length) errores.push((await supabase.from('enlaces_dar').delete().eq('iglesia_id', iglesiaId).in('tipo', sobran)).error)
+  if (filasGuardar.length) errores.push((await supabase.from('enlaces_dar').upsert(filasGuardar, { onConflict: 'iglesia_id,tipo' })).error)
   errores.push((await supabase.from('dar_config').upsert({
     iglesia_id: iglesiaId, plantilla: config.value.plantilla, titulo: config.value.titulo?.trim() || null, subtitulo: config.value.subtitulo?.trim() || null,
     color_primario: config.value.color_primario, color_acento: config.value.color_acento, logo_url: logo.value.trim() || null,
