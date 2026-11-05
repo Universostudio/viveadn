@@ -103,6 +103,21 @@ begin
     errores := errores || format('vista sin security_invoker: %s', r.relname);
   end loop;
 
+  -- 10. Ninguna clave foránea simple entre dos tablas de iglesia: debe ser compuesta con iglesia_id,
+  --     para que una fila nunca pueda apuntar a otra iglesia (las claves hacia iglesias son la excepción)
+  for r in
+    select o.relname as origen, a.attname as columna, d.relname as destino
+    from pg_constraint k
+    join pg_class o on o.oid = k.conrelid and o.relnamespace = 'public'::regnamespace
+    join pg_class d on d.oid = k.confrelid and d.relnamespace = 'public'::regnamespace
+    join pg_attribute a on a.attrelid = k.conrelid and a.attnum = k.conkey[1]
+    where k.contype = 'f' and array_length(k.conkey, 1) = 1 and d.relname <> 'iglesias'
+      and exists (select 1 from pg_attribute x where x.attrelid = o.oid and x.attname = 'iglesia_id' and not x.attisdropped)
+      and exists (select 1 from pg_attribute x where x.attrelid = d.oid and x.attname = 'iglesia_id' and not x.attisdropped)
+  loop
+    errores := errores || format('clave foránea simple entre tablas de iglesia: %s.%s -> %s (debe incluir iglesia_id)', r.origen, r.columna, r.destino);
+  end loop;
+
   if array_length(errores, 1) > 0 then
     raise exception E'PERMISOS: % problema(s)\n%', array_length(errores, 1), array_to_string(errores, E'\n');
   end if;
