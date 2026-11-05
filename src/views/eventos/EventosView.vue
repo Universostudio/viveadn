@@ -47,7 +47,7 @@
           <p v-else-if="conteo[e.id] !== undefined" class="text-xs text-gray-500">{{ t('eventos.presentes', { n: conteo[e.id] }) }}</p>
         </div>
       </RouterLink>
-      <button v-if="hayMas" @click="verMas" class="btn-secondary w-full text-sm">{{ t('eventos.verMas') }}</button>
+      <button v-if="hayMas" @click="verMas" :disabled="cargandoMas" :aria-busy="cargandoMas" class="btn-secondary w-full text-sm disabled:opacity-60">{{ t('eventos.verMas') }}</button>
     </div>
 
     <!-- Modal: nuevo evento -->
@@ -164,8 +164,16 @@ async function contarPresentes(ids: string[]): Promise<Record<string, number> | 
 
 // Pide una página de 100 eventos (más una fila para saber si quedan más) a partir de la posición ya cargada.
 // Nunca pide más de 101 filas, así que el tope de 1000 de Supabase no corta el calendario.
+// Una carga nueva (otra vista u otro filtro) invalida las que siguen en vuelo, y mientras se pide
+// «Ver más» se ignoran los clics: sin esto, un doble clic pedía dos veces la misma página.
+let turno = 0
+const cargandoMas = ref(false)
+
 async function cargar(anadir = false) {
-  if (!anadir) cargando.value = true
+  if (anadir && cargandoMas.value) return
+  const mio = anadir ? turno : ++turno
+  if (anadir) cargandoMas.value = true
+  else { cargando.value = true; cargandoMas.value = false }
   // Un evento es "próximo" hasta que termina o, sin hora de fin, durante 3 horas desde que empieza
   const limiteSinFin = new Date(Date.now() - DURACION_POR_DEFECTO_MS).toISOString()
   const ahora = new Date().toISOString()
@@ -183,16 +191,18 @@ async function cargar(anadir = false) {
     q.range(desde, desde + POR_VISTA),
     casas.value.length ? Promise.resolve({ data: casas.value }) : supabase.from('casas_oracion').select('id, nombre, codigo_zona').eq('activa', true).order('nombre'),
   ])
+  if (mio !== turno) return   // llegó tarde: ya se pidió otra vista o filtro
   const filas = ev.data ?? []
   hayMas.value = filas.length > POR_VISTA
   const nuevos = filas.slice(0, POR_VISTA)
   eventos.value = anadir ? [...eventos.value, ...nuevos] : nuevos
   casas.value = cs.data ?? []
   cargando.value = false
+  cargandoMas.value = false
   if (!anadir) conteo.value = {}
   if (auth.can('asistencia.ver') && nuevos.length) {
     const c = await contarPresentes(nuevos.map(e => e.id))
-    if (c) conteo.value = { ...conteo.value, ...c }
+    if (c && mio === turno) conteo.value = { ...conteo.value, ...c }
   }
 }
 
