@@ -9,7 +9,7 @@ alter table public.iglesias add constraint iglesias_madre_distinta check (iglesi
 create index iglesias_madre_idx on public.iglesias (iglesia_madre_id) where iglesia_madre_id is not null;
 
 -- La iglesia puede leer a quien es su madre y su nivel; solo la plataforma (service_role) los cambia.
--- Las columnas nuevas no reciben UPDATE para authenticated, y ademas las protege el disparador de abajo.
+-- Quien tiene sesion (authenticated) no puede cambiarlos: lo impide el disparador private.guardar_iglesia de abajo.
 grant select (iglesia_madre_id, red_acceso) on public.iglesias to authenticated;
 
 -- Un solo nivel: una madre no es sede de otra y una sede no tiene sedes. Se bloquea la fila de la madre
