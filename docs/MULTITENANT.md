@@ -43,13 +43,13 @@ Todo lo que cruza iglesias pasa por una función de borde con `service_role`, qu
 
 **P1. Hay que cerrarlas antes de abrir a terceros.**
 
-1. **Los límites del plan no se hacen cumplir.** `planes` define `max_miembros` y `max_usuarios` (Semilla 50 y 3, Básico 300 y 10, Premium 5.000), pero solo se muestran en el Panel Maestro. Una iglesia Semilla podría crear miles de miembros. Hace falta corte duro en la base, serializado para que dos altas simultáneas no se cuelen.
+1. **Límites del plan: resuelto.** Disparadores `SECURITY DEFINER` rechazan altas por encima de `max_miembros` y `max_usuarios` con `PLAN_LIMITE`, serializadas por iglesia con un cerrojo; las invitaciones vigentes reservan plaza y el registro por QR responde "cerrado" sin plazas. Pruebas en `limites_plan.sql` y `limites_concurrencia.sh`.
 2. **Archivos.** No existe almacenamiento todavía. Antes de subir el primer logo, certificado o documento hay que diseñar un cubo con políticas por prefijo de iglesia y una prueba de aislamiento.
 3. **Ciclo de vida de la iglesia.** Hoy solo hay activa o no. Faltan las etapas de onboarding, prueba, receso y suspensión, y la exportación y el borrado completo de los datos de una iglesia (RGPD), incluidos usuarios de acceso, archivos y registros de auditoría.
 
 **P2. Para escalar con orden.**
 
-4. **Índices.** 12 claves foráneas sin índice. Las tablas que más crecerán (`asistencia_evento`, `checkin_registros`, `evento_checkin`) no tienen ningún índice que empiece por `iglesia_id`, que es por lo que filtra la RLS.
+4. **Índices: resuelto.** Nueve índices que empiezan por `iglesia_id` cubren las claves compuestas de `asistencia_evento`, `checkin_registros`, `evento_checkin`, `eventos`, `invitaciones` y `zonas`.
 5. **Un usuario, una iglesia.** Consultores, pastores regionales y agentes de soporte no caben en ese modelo. Decisión: no cambiamos el modelo. El soporte entra por una función de borde con acceso de solo lectura, con permiso de la iglesia, por tiempo limitado y registrado.
 6. **Registro de cambios por iglesia.** Hoy solo se audita la plataforma. Los datos pastorales necesitan un historial de quién cambió qué.
 7. **Subdominio por iglesia y dominio propio.** Existe `slug`, pero el enrutado por subdominio no está.
@@ -74,7 +74,7 @@ Todo lo que cruza iglesias pasa por una función de borde con `service_role`, qu
 
 ## 6. Orden de trabajo
 
-1. Corte duro de los límites del plan y índices de las tablas que crecen.
+1. Hecho: corte duro de los límites del plan e índices de las tablas que crecen.
 2. Ciclo de vida de la iglesia (etapas) y exportación y borrado de una iglesia.
 3. Almacenamiento de archivos con aislamiento por iglesia.
 4. OP72 v2 con el modo de alias.
