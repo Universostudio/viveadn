@@ -50,4 +50,20 @@ do $$ begin
   begin update public.iglesias set etapa = 'otra' where slug = 'prueba-v'; exception when check_violation then return; end;
   raise exception 'FALLO: una etapa invalida debia rechazarse';
 end $$;
+-- Quien configura la iglesia no puede tocar su etapa ni su prueba
+update public.iglesias set etapa = 'prueba' where slug = 'prueba-v';
+select set_config('request.jwt.claim.sub', 'cc000000-0000-0000-0000-000000000001', true);
+set local role authenticated;
+do $$ begin
+  begin update public.iglesias set prueba_hasta = now() + interval '5 years' where slug = 'prueba-v'; exception when others then null; return; end;
+  raise exception 'FALLO: el propietario pudo prorrogar su prueba';
+end $$;
+do $$ begin
+  begin update public.iglesias set etapa = 'activa' where slug = 'prueba-v'; exception when others then null; return; end;
+  raise exception 'FALLO: el propietario pudo cambiar su etapa';
+end $$;
+update public.iglesias set nombre = 'Prueba V editada' where slug = 'prueba-v';
+reset role;
+select set_config('request.jwt.claim.sub', '', true);
+select pg_temp.igual((select nombre from public.iglesias where slug = 'prueba-v'), 'Prueba V editada', 'el propietario sigue pudiendo editar el resto');
 rollback;
