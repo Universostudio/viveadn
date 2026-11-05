@@ -553,6 +553,25 @@
       "ninguno": "Rien",
       "conSedes": "Elle a des antennes liées ({n}). Déliez-les avant d'en faire l'antenne d'une autre église.",
       "guardada": "Réseau mis à jour pour {iglesia}."
+    },
+    "registro": {
+      "titulo": "Inscription des églises",
+      "ayuda": "Contrôlez si les églises peuvent s'inscrire seules et qui peut le faire pendant les essais.",
+      "abierto": "Inscription ouverte",
+      "requiereCodigo": "Exiger un code d'accès",
+      "enlace": "Adresse à partager :",
+      "codigoCreado": "Code créé",
+      "codigoUnaVez": "Copiez-le maintenant : il ne sera plus affiché.",
+      "etiqueta": "Pour qui",
+      "usos": "Utilisations",
+      "dias": "Jours de validité (0 = sans expiration)",
+      "crear": "Créer un code",
+      "usados": "Utilisations",
+      "vence": "Expire",
+      "estado": "État",
+      "sinVencimiento": "Sans expiration",
+      "sinCodigos": "Il n'y a pas encore de codes.",
+      "guardado": "Modifications enregistrées."
     }
   },
   "invitacion": {
@@ -855,5 +874,42 @@
     "sinAcceso": "Ne partage pas son résumé",
     "suspendida": "Suspendue",
     "errorCargar": "Le réseau n'a pas pu être chargé. Réessayez."
+  },
+  "registro": {
+    "titulo": "Inscrivez votre église",
+    "subtitulo": "Créez le compte de votre église et commencez à essayer ViveADN.",
+    "cerradoTitulo": "L'inscription n'est pas disponible pour le moment",
+    "cerradoTexto": "Pour l'instant, les églises sont admises sur invitation uniquement. Si vous avez déjà un compte, connectez-vous.",
+    "irAlAcceso": "Se connecter",
+    "exitoTitulo": "Vérifiez votre courriel",
+    "exitoTexto": "Nous vous avons envoyé un message pour créer votre mot de passe et accéder au compte de votre église.",
+    "exitoAyuda": "S'il n'arrive pas dans quelques minutes, vérifiez vos courriers indésirables. Si vous aviez déjà un compte, connectez-vous ou récupérez votre mot de passe.",
+    "tuIglesia": "Votre église",
+    "nombreIglesia": "Nom de l'église",
+    "direccion": "Adresse courte",
+    "direccionAyuda": "Elle identifie votre église, par exemple sur la page de don : /dar/{ejemplo}",
+    "pais": "Pays",
+    "ciudad": "Ville",
+    "tuCuenta": "Votre compte de super administrateur",
+    "correoAyuda": "Nous vous enverrons un lien pour créer votre mot de passe.",
+    "codigo": "Code d'accès",
+    "codigoAyuda": "Pendant les essais, l'inscription se fait avec un code. Demandez-le à la personne qui vous a invité.",
+    "consentimiento": "J'accepte que ViveADN traite ces données pour créer le compte de mon église.",
+    "enviar": "Inscrire mon église",
+    "enviando": "Envoi…",
+    "yaTienes": "Vous avez déjà un compte ?",
+    "enlaceLogin": "Votre église n'est pas encore sur ViveADN ?",
+    "enlaceLoginAccion": "Inscrire mon église",
+    "enlaceBienvenida": "Inscrire mon église",
+    "errores": {
+      "datos": "Vérifiez les données : un champ est vide ou son format n'est pas valide.",
+      "consentimiento": "Pour continuer, vous devez accepter le traitement des données.",
+      "codigo": "Le code n'est pas valide, a déjà été utilisé ou a expiré.",
+      "slug": "Cette adresse courte est déjà utilisée. Essayez-en une autre.",
+      "limite": "Trop de tentatives. Attendez un moment et réessayez.",
+      "generico": "Nous n'avons pas pu terminer l'inscription. Réessayez dans quelques minutes."
+    },
+    "nombre": "Prénom",
+    "apellido": "Nom"
   }
 }

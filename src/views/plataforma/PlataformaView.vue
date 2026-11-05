@@ -34,6 +34,55 @@
       </div>
     </section>
 
+    <!-- Registro de iglesias: apertura, codigos de acceso a la beta -->
+    <section v-if="!cargando" class="card space-y-4" :aria-label="t('plataforma.registro.titulo')">
+      <div>
+        <h2 class="text-lg font-semibold text-gray-900">{{ t('plataforma.registro.titulo') }}</h2>
+        <p class="text-sm text-gray-500 mt-0.5">{{ t('plataforma.registro.ayuda') }}</p>
+      </div>
+      <div class="flex flex-wrap gap-x-6 gap-y-2">
+        <label class="inline-flex items-center gap-2 text-sm text-gray-700"><input type="checkbox" :checked="registro.abierto" @change="guardarAjustesRegistro(($event.target as HTMLInputElement).checked, registro.requiere_codigo)" /> {{ t('plataforma.registro.abierto') }}</label>
+        <label class="inline-flex items-center gap-2 text-sm text-gray-700"><input type="checkbox" :checked="registro.requiere_codigo" @change="guardarAjustesRegistro(registro.abierto, ($event.target as HTMLInputElement).checked)" /> {{ t('plataforma.registro.requiereCodigo') }}</label>
+      </div>
+      <p v-if="registro.abierto" class="text-xs text-gray-400">{{ t('plataforma.registro.enlace') }} <span class="font-mono">{{ origen }}/registro</span></p>
+
+      <div v-if="codigoCreado" role="status" class="rounded-lg border border-green-200 bg-green-50 p-3 text-sm">
+        <p class="text-green-800 font-medium">{{ t('plataforma.registro.codigoCreado') }}</p>
+        <p class="mt-1 flex flex-wrap items-center gap-3"><span class="font-mono text-base text-green-900 select-all">{{ codigoCreado }}</span>
+          <button type="button" @click="copiarCodigo" class="btn-secondary text-xs">{{ codigoCopiado ? t('dar.copiado') : t('dar.copiar') }}</button></p>
+        <p class="text-xs text-green-700 mt-1">{{ t('plataforma.registro.codigoUnaVez') }}</p>
+      </div>
+
+      <form @submit.prevent="crearCodigo" class="flex flex-wrap items-end gap-3">
+        <div><label for="cd-eti" class="block text-xs font-medium text-gray-600 mb-1">{{ t('plataforma.registro.etiqueta') }}</label>
+          <input id="cd-eti" v-model="nuevoCodigo.etiqueta" required maxlength="80" class="text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-adn-verde" /></div>
+        <div><label for="cd-usos" class="block text-xs font-medium text-gray-600 mb-1">{{ t('plataforma.registro.usos') }}</label>
+          <input id="cd-usos" v-model.number="nuevoCodigo.usos_max" type="number" min="1" max="1000" required class="w-24 text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-adn-verde" /></div>
+        <div><label for="cd-dias" class="block text-xs font-medium text-gray-600 mb-1">{{ t('plataforma.registro.dias') }}</label>
+          <input id="cd-dias" v-model.number="nuevoCodigo.dias" type="number" min="0" max="365" required class="w-24 text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-adn-verde" /></div>
+        <button type="submit" class="btn-primary text-sm">{{ t('plataforma.registro.crear') }}</button>
+      </form>
+
+      <div v-if="registro.codigos.length" class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead class="text-left text-xs text-gray-500 border-b border-gray-100"><tr>
+            <th scope="col" class="py-2 pr-3 font-medium">{{ t('plataforma.registro.etiqueta') }}</th>
+            <th scope="col" class="py-2 pr-3 font-medium text-right">{{ t('plataforma.registro.usados') }}</th>
+            <th scope="col" class="py-2 pr-3 font-medium">{{ t('plataforma.registro.vence') }}</th>
+            <th scope="col" class="py-2 font-medium text-right">{{ t('plataforma.registro.estado') }}</th></tr></thead>
+          <tbody class="divide-y divide-gray-50">
+            <tr v-for="c in registro.codigos" :key="c.id">
+              <td class="py-2 pr-3 text-gray-900">{{ c.etiqueta }}</td>
+              <td class="py-2 pr-3 text-right">{{ c.usos }} / {{ c.usos_max }}</td>
+              <td class="py-2 pr-3 text-gray-500">{{ c.vence_en ? new Date(c.vence_en).toLocaleDateString(locale) : t('plataforma.registro.sinVencimiento') }}</td>
+              <td class="py-2 text-right"><button type="button" @click="estadoCodigo(c)" :class="['text-xs px-3 py-1 rounded-full border', c.activo ? 'border-green-200 text-green-700 bg-green-50' : 'border-gray-200 text-gray-500']">{{ c.activo ? t('comun.activo') : t('comun.inactivo') }}</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p v-else class="text-sm text-gray-400">{{ t('plataforma.registro.sinCodigos') }}</p>
+    </section>
+
     <div v-if="cargando" class="py-12 text-center text-gray-400 text-sm">{{ t('plataforma.cargando') }}</div>
 
     <div v-else class="space-y-4">
@@ -221,6 +270,29 @@ const posiblesMadres = (ig: any) => iglesias.value.filter((x: any) => x.id !== i
 const vincular = (ig: any, madre: string | null, acceso: string) =>
   ejecutar({ accion: 'vincular_red', iglesia_id: ig.id, madre_id: madre, red_acceso: acceso }, () => t('plataforma.red.guardada', { iglesia: ig.nombre }))
 
+// Registro de iglesias: ajustes y codigos de acceso a la beta
+const origen = window.location.origin
+const registro = ref<{ abierto: boolean; requiere_codigo: boolean; codigos: any[] }>({ abierto: false, requiere_codigo: true, codigos: [] })
+const nuevoCodigo = ref({ etiqueta: '', usos_max: 1, dias: 30 })
+const codigoCreado = ref('')
+const codigoCopiado = ref(false)
+
+async function guardarAjustesRegistro(abierto: boolean, requiereCodigo: boolean) {
+  await ejecutar({ accion: 'registro_ajustes', abierto, requiere_codigo: requiereCodigo }, () => t('plataforma.registro.guardado'))
+}
+async function crearCodigo() {
+  try {
+    const d = await llamar({ accion: 'codigo_crear', ...nuevoCodigo.value })
+    codigoCreado.value = d.codigo
+    nuevoCodigo.value = { etiqueta: '', usos_max: 1, dias: 30 }
+    await cargar()
+  } catch (e: any) { const texto = e.message; avisar(() => texto, true) }
+}
+const estadoCodigo = (c: any) => ejecutar({ accion: 'codigo_estado', id: c.id, activo: !c.activo }, () => t('plataforma.registro.guardado'))
+async function copiarCodigo() {
+  try { await navigator.clipboard.writeText(codigoCreado.value); codigoCopiado.value = true; setTimeout(() => { codigoCopiado.value = false }, 2000) } catch { /* se puede copiar a mano */ }
+}
+
 async function llamar(cuerpo: Record<string, unknown>) {
   const { data, error } = await supabase.functions.invoke('plataforma', {
     body: { ...cuerpo, origen: window.location.origin },
@@ -245,6 +317,7 @@ async function cargar() {
     planes.value = d.planes
     modulos.value = d.modulos
     planModulos.value = d.plan_modulos
+    registro.value = await llamar({ accion: 'registro_estado' })
   } catch (e: any) {
     const texto = e.message
     avisar(() => texto, true)

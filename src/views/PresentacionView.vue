@@ -17,9 +17,14 @@
       <div class="max-w-3xl mx-auto px-5 py-16 sm:py-24 text-center">
         <h1 class="font-display font-extrabold text-3xl sm:text-5xl leading-tight">{{ t('presentacion.titulo') }}</h1>
         <p class="mt-5 text-lg text-white/80">{{ t('presentacion.subtitulo') }}</p>
-        <RouterLink :to="{ name: 'login' }" class="mt-8 inline-flex items-center gap-2 bg-adn-oro text-[#0d1b3e] font-display font-bold px-8 py-3 rounded-lg hover:brightness-110 transition">
-          {{ t('bienvenida.entrar') }} <ArrowRight class="w-4 h-4" aria-hidden="true" />
-        </RouterLink>
+        <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
+          <RouterLink :to="{ name: 'registro' }" class="inline-flex items-center gap-2 bg-adn-oro text-[#0d1b3e] font-display font-bold px-8 py-3 rounded-lg hover:brightness-110 transition">
+            {{ t('registro.enlaceBienvenida') }} <ArrowRight class="w-4 h-4" aria-hidden="true" />
+          </RouterLink>
+          <RouterLink :to="{ name: 'login' }" class="inline-flex items-center border border-white/30 text-white/90 hover:border-adn-oro hover:text-adn-oro font-display font-medium px-8 py-3 rounded-lg transition">
+            {{ t('bienvenida.entrar') }}
+          </RouterLink>
+        </div>
       </div>
     </section>
 

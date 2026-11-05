@@ -553,6 +553,25 @@
       "ninguno": "Nada",
       "conSedes": "Tem sedes vinculadas ({n}). Desvincule-as antes de torná-la sede de outra.",
       "guardada": "Rede atualizada para {iglesia}."
+    },
+    "registro": {
+      "titulo": "Cadastro de igrejas",
+      "ayuda": "Controle se as igrejas podem se cadastrar sozinhas e quem pode fazê-lo durante os testes.",
+      "abierto": "Cadastro aberto",
+      "requiereCodigo": "Exigir código de acesso",
+      "enlace": "Endereço para compartilhar:",
+      "codigoCreado": "Código criado",
+      "codigoUnaVez": "Copie agora: ele não será mostrado de novo.",
+      "etiqueta": "Para quem é",
+      "usos": "Usos",
+      "dias": "Dias de validade (0 = sem vencimento)",
+      "crear": "Criar código",
+      "usados": "Usos",
+      "vence": "Vence",
+      "estado": "Estado",
+      "sinVencimiento": "Sem vencimento",
+      "sinCodigos": "Ainda não há códigos.",
+      "guardado": "Alterações salvas."
     }
   },
   "invitacion": {
@@ -855,5 +874,42 @@
     "sinAcceso": "Não compartilha o resumo",
     "suspendida": "Suspensa",
     "errorCargar": "Não foi possível carregar a rede. Tente novamente."
+  },
+  "registro": {
+    "titulo": "Cadastre sua igreja",
+    "subtitulo": "Crie a conta da sua igreja e comece a testar o ViveADN.",
+    "cerradoTitulo": "O cadastro não está disponível agora",
+    "cerradoTexto": "Por enquanto, as igrejas são admitidas somente por convite. Se você já tem conta, entre.",
+    "irAlAcceso": "Entrar",
+    "exitoTitulo": "Confira seu e-mail",
+    "exitoTexto": "Enviamos uma mensagem para você criar sua senha e entrar na conta da sua igreja.",
+    "exitoAyuda": "Se não chegar em alguns minutos, veja a pasta de spam. Se você já tinha conta, entre ou recupere sua senha.",
+    "tuIglesia": "Sua igreja",
+    "nombreIglesia": "Nome da igreja",
+    "direccion": "Endereço curto",
+    "direccionAyuda": "Identifica a sua igreja, por exemplo na página de dar: /dar/{ejemplo}",
+    "pais": "País",
+    "ciudad": "Cidade",
+    "tuCuenta": "Sua conta de superadministrador",
+    "correoAyuda": "Enviaremos um link para você criar sua senha.",
+    "codigo": "Código de acesso",
+    "codigoAyuda": "Durante os testes, o cadastro exige um código. Peça a quem convidou você.",
+    "consentimiento": "Aceito que o ViveADN trate estes dados para criar a conta da minha igreja.",
+    "enviar": "Cadastrar minha igreja",
+    "enviando": "Enviando…",
+    "yaTienes": "Já tem conta?",
+    "enlaceLogin": "Sua igreja ainda não está no ViveADN?",
+    "enlaceLoginAccion": "Cadastrar minha igreja",
+    "enlaceBienvenida": "Cadastrar minha igreja",
+    "errores": {
+      "datos": "Confira os dados: há um campo vazio ou com formato inválido.",
+      "consentimiento": "Para continuar, você precisa aceitar o tratamento dos dados.",
+      "codigo": "O código não é válido, já foi usado ou venceu.",
+      "slug": "Esse endereço curto já está em uso. Tente outro.",
+      "limite": "Muitas tentativas. Aguarde um pouco e tente de novo.",
+      "generico": "Não foi possível concluir o cadastro. Tente novamente em alguns minutos."
+    },
+    "nombre": "Nome",
+    "apellido": "Sobrenome"
   }
 }

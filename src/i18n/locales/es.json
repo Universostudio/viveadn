@@ -553,6 +553,25 @@
       "ninguno": "Nada",
       "conSedes": "Tiene sedes vinculadas ({n}). Desvincúlalas antes de hacerla sede de otra.",
       "guardada": "Red actualizada para {iglesia}."
+    },
+    "registro": {
+      "titulo": "Registro de iglesias",
+      "ayuda": "Controla si las iglesias pueden registrarse solas y quién puede hacerlo durante las pruebas.",
+      "abierto": "Registro abierto",
+      "requiereCodigo": "Exigir código de acceso",
+      "enlace": "Dirección para compartir:",
+      "codigoCreado": "Código creado",
+      "codigoUnaVez": "Cópialo ahora: no se vuelve a mostrar.",
+      "etiqueta": "Para quién es",
+      "usos": "Usos",
+      "dias": "Días de vigencia (0 = sin vencimiento)",
+      "crear": "Crear código",
+      "usados": "Usos",
+      "vence": "Vence",
+      "estado": "Estado",
+      "sinVencimiento": "Sin vencimiento",
+      "sinCodigos": "Todavía no hay códigos.",
+      "guardado": "Cambios guardados."
     }
   },
   "invitacion": {
@@ -855,5 +874,42 @@
     "sinAcceso": "No comparte su resumen",
     "suspendida": "Suspendida",
     "errorCargar": "No se pudo cargar la red. Inténtalo de nuevo."
+  },
+  "registro": {
+    "titulo": "Registra tu iglesia",
+    "subtitulo": "Crea la cuenta de tu iglesia y empieza a probar ViveADN.",
+    "cerradoTitulo": "El registro no está disponible ahora",
+    "cerradoTexto": "Por el momento solo se admiten iglesias por invitación. Si ya tienes cuenta, inicia sesión.",
+    "irAlAcceso": "Iniciar sesión",
+    "exitoTitulo": "Revisa tu correo",
+    "exitoTexto": "Te enviamos un mensaje para que crees tu contraseña y entres a la cuenta de tu iglesia.",
+    "exitoAyuda": "Si no llega en unos minutos, revisa la carpeta de correo no deseado. Si ya tenías cuenta, inicia sesión o recupera tu contraseña.",
+    "tuIglesia": "Tu iglesia",
+    "nombreIglesia": "Nombre de la iglesia",
+    "direccion": "Dirección corta",
+    "direccionAyuda": "Identifica a tu iglesia, por ejemplo en la página de dar: /dar/{ejemplo}",
+    "pais": "País",
+    "ciudad": "Ciudad",
+    "tuCuenta": "Tu cuenta de superadministrador",
+    "correoAyuda": "Te enviaremos un enlace para crear tu contraseña.",
+    "codigo": "Código de acceso",
+    "codigoAyuda": "Durante las pruebas el registro es solo con código. Pídelo a quien te invitó.",
+    "consentimiento": "Acepto que ViveADN trate estos datos para crear la cuenta de mi iglesia.",
+    "enviar": "Registrar mi iglesia",
+    "enviando": "Enviando…",
+    "yaTienes": "¿Ya tienes cuenta?",
+    "enlaceLogin": "¿Tu iglesia aún no está en ViveADN?",
+    "enlaceLoginAccion": "Registrar mi iglesia",
+    "enlaceBienvenida": "Registrar mi iglesia",
+    "errores": {
+      "datos": "Revisa los datos: hay algún campo vacío o con un formato que no es válido.",
+      "consentimiento": "Para continuar tienes que aceptar el tratamiento de los datos.",
+      "codigo": "El código no es válido, ya se usó o venció.",
+      "slug": "Esa dirección corta ya está en uso. Prueba con otra.",
+      "limite": "Has hecho demasiados intentos. Espera un rato y vuelve a probar.",
+      "generico": "No pudimos completar el registro. Inténtalo de nuevo en unos minutos."
+    },
+    "nombre": "Nombre",
+    "apellido": "Apellido"
   }
 }
