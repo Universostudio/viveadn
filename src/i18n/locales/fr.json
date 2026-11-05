@@ -582,7 +582,20 @@
     },
     "etapaCambiada": "{iglesia} passe à : {etapa}.",
     "confirmarEtapa": "Passer {iglesia} à « {etapa} » ? Pause et suspension ferment l'accès de l'église ; les données sont conservées.",
-    "pruebaHasta": "Essai jusqu'au {fecha}"
+    "pruebaHasta": "Essai jusqu'au {fecha}",
+    "exportar": "Exporter les données",
+    "exportada": "Export de {iglesia} téléchargé.",
+    "programarBorrado": "Programmer la suppression",
+    "pedirDias": "Dans combien de jours supprimer {iglesia} ? (de 7 à 90)",
+    "pedirDireccion": "Pour confirmer, saisissez l'adresse de l'église : {slug}",
+    "borradoProgramado": "Suppression programmée le {fecha}",
+    "borradoVencido": "Délai écoulé : la suppression est possible",
+    "cancelarBorrado": "Annuler la suppression",
+    "borrarAhora": "Supprimer maintenant",
+    "borradoCancelado": "Suppression de {iglesia} annulée.",
+    "borradoPlanificado": "Suppression de {iglesia} programmée.",
+    "iglesiaBorrada": "{iglesia} supprimée complètement.",
+    "confirmarBorrarAhora": "Toutes les données et tous les comptes de {iglesia} seront supprimés de façon irréversible."
   },
   "invitacion": {
     "comprobando": "Vérification de votre invitation…",

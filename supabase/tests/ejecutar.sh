@@ -29,5 +29,6 @@ bash tests/checkin_concurrencia.sh "$DB"
 "${PSQL[@]}" -d $DB -f tests/registro.sql
 "${PSQL[@]}" -d $DB -f tests/referencias_cruzadas.sql
 "${PSQL[@]}" -d $DB -f tests/ciclo_vida.sql
+"${PSQL[@]}" -d $DB -f tests/exportar_borrar.sql
 "${PSQL[@]}" -d $DB -f tests/limites_plan.sql
 bash tests/limites_concurrencia.sh "$DB"

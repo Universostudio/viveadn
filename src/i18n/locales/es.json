@@ -582,7 +582,20 @@
     },
     "etapaCambiada": "{iglesia} pasa a: {etapa}.",
     "confirmarEtapa": "¿Cambiar {iglesia} a «{etapa}»? Receso y suspendida cierran el acceso de la iglesia; los datos se conservan.",
-    "pruebaHasta": "Prueba hasta {fecha}"
+    "pruebaHasta": "Prueba hasta {fecha}",
+    "exportar": "Exportar datos",
+    "exportada": "Exportación de {iglesia} descargada.",
+    "programarBorrado": "Programar borrado",
+    "pedirDias": "¿En cuántos días se borrará {iglesia}? (de 7 a 90)",
+    "pedirDireccion": "Para confirmar, escribe la dirección de la iglesia: {slug}",
+    "borradoProgramado": "Borrado programado el {fecha}",
+    "borradoVencido": "Plazo vencido: ya puede borrarse",
+    "cancelarBorrado": "Cancelar borrado",
+    "borrarAhora": "Borrar ahora",
+    "borradoCancelado": "Borrado de {iglesia} cancelado.",
+    "borradoPlanificado": "Borrado de {iglesia} programado.",
+    "iglesiaBorrada": "{iglesia} borrada por completo.",
+    "confirmarBorrarAhora": "Se borrarán de forma irreversible todos los datos y cuentas de {iglesia}."
   },
   "invitacion": {
     "comprobando": "Comprobando tu invitación…",
