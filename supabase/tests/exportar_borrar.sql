@@ -31,7 +31,7 @@ insert into public.miembros (iglesia_id, nombre, apellido) values
 insert into public.invitaciones (iglesia_id, email, nombre, apellido, rol, token_hash) values
   ('ee100000-0000-0000-0000-00000000000a', 'i@prueba.test', 'I', 'B', 'colaborador', 'abababababababababababababababababababababababababababababababab');
 insert into public.plataforma_auditoria (actor, accion, iglesia_id, detalle) values
-  (null, 'crear_iglesia', 'ee100000-0000-0000-0000-00000000000a', '{"propietario": "p1@prueba.test"}');
+  (null, 'crear_iglesia', 'ee100000-0000-0000-0000-00000000000a', '{"propietario": "p1@prueba.test", "ip_hash": "huella-ip-secreta"}');
 
 -- Exportacion
 create temp table exp as select public.exportar_iglesia('ee100000-0000-0000-0000-00000000000a') j;
@@ -42,6 +42,7 @@ select pg_temp.igual(
   (select count(*)::text from exp, jsonb_array_elements(j->'tablas'->'invitaciones') i where i ? 'token_hash'), '0',
   'la exportacion no incluye el hash del token de invitacion');
 select pg_temp.igual((select (j::text like '%abababababababababababababababababababababababababababababababab%')::text from exp), 'false', 'el secreto no aparece en ninguna parte');
+select pg_temp.igual((select (j::text like '%huella-ip-secreta%')::text from exp), 'false', 'la exportacion quita los secretos anidados en la auditoria');
 select pg_temp.igual((select (j::text like '%otra@prueba.test%')::text from exp), 'false', 'no se cuela nada de otra iglesia');
 -- Cubre todas las tablas con iglesia_id mas rol_permisos
 select pg_temp.igual(
