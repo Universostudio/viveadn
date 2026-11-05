@@ -93,7 +93,10 @@
               <h2 class="text-lg font-semibold text-gray-900 truncate">{{ ig.nombre }}</h2>
               <span v-if="ig.es_demo" class="text-xs bg-adn-arena text-adn-profundo px-2 py-0.5 rounded-full font-medium">{{ t('plataforma.demo') }}</span>
               <span :class="['text-xs px-2 py-0.5 rounded-full font-medium', ig.activa ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700']">
-                {{ ig.activa ? t('comun.activa') : t('plataforma.suspendida') }}
+                {{ t('plataforma.etapa.' + (ig.etapa ?? (ig.activa ? 'activa' : 'suspendida'))) }}
+              </span>
+              <span v-if="ig.etapa === 'prueba' && ig.prueba_hasta" class="text-xs text-gray-400">
+                {{ t('plataforma.pruebaHasta', { fecha: new Date(ig.prueba_hasta).toLocaleDateString() }) }}
               </span>
             </div>
             <p class="text-xs text-gray-400 mt-0.5">
@@ -153,9 +156,10 @@
         </div>
 
         <div class="flex justify-end">
-          <button @click="alternarEstado(ig)" class="text-xs text-gray-400 hover:text-red-600 transition-colors">
-            {{ ig.activa ? t('plataforma.suspender') : t('plataforma.reactivar') }}
-          </button>
+          <select :value="ig.etapa" @change="cambiarEtapa(ig, ($event.target as HTMLSelectElement))"
+            class="text-xs text-gray-500 border border-gray-200 rounded-lg px-2 py-1 bg-white">
+            <option v-for="e in ETAPAS" :key="e" :value="e">{{ t('plataforma.etapa.' + e) }}</option>
+          </select>
         </div>
       </div>
     </div>
@@ -366,14 +370,15 @@ const alternarModulo = (ig: any, m: any) => {
     () => t(clave, { modulo: m.nombre, iglesia: ig.nombre }))
 }
 
-function alternarEstado(ig: any) {
-  const pregunta = ig.activa
-    ? t('plataforma.confirmarSuspender', { iglesia: ig.nombre })
-    : t('plataforma.confirmarReactivar', { iglesia: ig.nombre })
-  if (!window.confirm(pregunta)) return
-  const clave = ig.activa ? 'plataforma.iglesiaSuspendida' : 'plataforma.iglesiaReactivada'
-  ejecutar({ accion: 'estado', iglesia_id: ig.id, activa: !ig.activa },
-    () => t(clave, { iglesia: ig.nombre }))
+const ETAPAS = ['onboarding', 'prueba', 'activa', 'receso', 'suspendida']
+
+function cambiarEtapa(ig: any, el: HTMLSelectElement) {
+  const etapa = el.value
+  if (etapa === ig.etapa) return
+  const nombre = t('plataforma.etapa.' + etapa)
+  if (!window.confirm(t('plataforma.confirmarEtapa', { iglesia: ig.nombre, etapa: nombre }))) { el.value = ig.etapa; return }
+  ejecutar({ accion: 'etapa', iglesia_id: ig.id, etapa },
+    () => t('plataforma.etapaCambiada', { iglesia: ig.nombre, etapa: nombre }))
 }
 
 async function crearIglesia() {

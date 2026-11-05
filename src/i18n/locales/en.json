@@ -572,7 +572,17 @@
       "sinVencimiento": "No expiry",
       "sinCodigos": "There are no codes yet.",
       "guardado": "Changes saved."
-    }
+    },
+    "etapa": {
+      "onboarding": "Onboarding",
+      "prueba": "Trial",
+      "activa": "Active",
+      "receso": "On break",
+      "suspendida": "Suspended"
+    },
+    "etapaCambiada": "{iglesia} is now: {etapa}.",
+    "confirmarEtapa": "Change {iglesia} to \"{etapa}\"? On break and suspended close the church's access; the data is kept.",
+    "pruebaHasta": "Trial until {fecha}"
   },
   "invitacion": {
     "comprobando": "Checking your invitation…",

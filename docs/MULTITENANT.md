@@ -45,7 +45,7 @@ Todo lo que cruza iglesias pasa por una función de borde con `service_role`, qu
 
 1. **Límites del plan: resuelto.** Disparadores `SECURITY DEFINER` rechazan altas por encima de `max_miembros` y `max_usuarios` con `PLAN_LIMITE`, serializadas por iglesia con un cerrojo; las invitaciones vigentes reservan plaza y el registro por QR responde "cerrado" sin plazas. Pruebas en `limites_plan.sql` y `limites_concurrencia.sh`.
 2. **Archivos.** No existe almacenamiento todavía. Antes de subir el primer logo, certificado o documento hay que diseñar un cubo con políticas por prefijo de iglesia y una prueba de aislamiento.
-3. **Ciclo de vida de la iglesia.** Hoy solo hay activa o no. Faltan las etapas de onboarding, prueba, receso y suspensión, y la exportación y el borrado completo de los datos de una iglesia (RGPD), incluidos usuarios de acceso, archivos y registros de auditoría.
+3. **Ciclo de vida de la iglesia: etapas resueltas, exportación y borrado pendientes.** `iglesias.etapa` (onboarding, prueba, activa, receso, suspendida) gobierna `activa` mediante un disparador, de modo que políticas y funciones de borde no cambian. Receso y suspendida cierran el acceso y conservan los datos; una prueba vencida corta los módulos. Falta la exportación y el borrado completo de los datos de una iglesia (RGPD), incluidos usuarios de acceso, archivos y registros de auditoría.
 
 **P2. Para escalar con orden.**
 
@@ -75,7 +75,7 @@ Todo lo que cruza iglesias pasa por una función de borde con `service_role`, qu
 ## 6. Orden de trabajo
 
 1. Hecho: corte duro de los límites del plan e índices de las tablas que crecen.
-2. Ciclo de vida de la iglesia (etapas) y exportación y borrado de una iglesia.
+2. Ciclo de vida de la iglesia: etapas hechas; falta la exportación y el borrado de una iglesia.
 3. Almacenamiento de archivos con aislamiento por iglesia.
 4. OP72 v2 con el modo de alias.
 5. Motor de formación, QR en sus tres partes, alianzas e integraciones.

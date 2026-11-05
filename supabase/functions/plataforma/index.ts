@@ -26,6 +26,8 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const SLUG_RE = /^[a-z0-9]+(-[a-z0-9]+)*$/
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
+const ETAPAS = ['onboarding', 'prueba', 'activa', 'receso', 'suspendida']
+
 const texto = (v: unknown, max: number) => String(v ?? '').trim().slice(0, max)
 
 Deno.serve(async (req) => {
@@ -71,7 +73,7 @@ Deno.serve(async (req) => {
     switch (body.accion) {
       case 'listar': {
         const [{ data: iglesias }, { data: addons }, { data: planes }, { data: modulos }, { data: planModulos }] = await Promise.all([
-          admin.from('iglesias').select('id, nombre, slug, plan, activa, es_demo, pais, ciudad, created_at, iglesia_madre_id, red_acceso').order('created_at'),
+          admin.from('iglesias').select('id, nombre, slug, plan, activa, etapa, prueba_hasta, es_demo, pais, ciudad, created_at, iglesia_madre_id, red_acceso').order('created_at'),
           admin.from('iglesia_modulos').select('iglesia_id, modulo, activo, origen'),
           admin.from('planes').select('*').order('orden'),
           admin.from('modulos').select('*').order('orden'),
@@ -193,6 +195,22 @@ Deno.serve(async (req) => {
         const { error } = await admin.from('iglesias').update({ activa }).eq('id', iglesiaId)
         if (error) return json({ error: 'No se pudo cambiar el estado' }, 500)
         const auditado = await auditar(activa ? 'activar_iglesia' : 'suspender_iglesia', iglesiaId)
+        return json({ ok: true, auditado })
+      }
+
+      case 'etapa': {
+        const iglesiaId = await iglesiaValida(body.iglesia_id)
+        if (!iglesiaId) return json({ error: 'La iglesia no existe' }, 404)
+        if (!ETAPAS.includes(body.etapa)) return json({ error: 'La etapa no es valida' }, 400)
+        const cambios: Record<string, unknown> = { etapa: body.etapa }
+        if (body.etapa === 'prueba') {
+          const dias = Number(body.prueba_dias ?? 30)
+          if (!Number.isInteger(dias) || dias < 1 || dias > 365) return json({ error: 'Los dias de prueba deben estar entre 1 y 365' }, 400)
+          cambios.prueba_hasta = new Date(Date.now() + dias * 86400000).toISOString()
+        }
+        const { error } = await admin.from('iglesias').update(cambios).eq('id', iglesiaId)
+        if (error) return json({ error: 'No se pudo cambiar la etapa' }, 500)
+        const auditado = await auditar('etapa_iglesia', iglesiaId, { etapa: body.etapa, prueba_hasta: cambios.prueba_hasta ?? null })
         return json({ ok: true, auditado })
       }
 
