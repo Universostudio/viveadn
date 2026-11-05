@@ -113,6 +113,11 @@ const router = createRouter({
           component: () => import('@/views/ConfiguracionView.vue')
         },
         {
+          path: 'red',
+          name: 'red',
+          component: () => import('@/views/RedView.vue')
+        },
+        {
           path: 'plataforma',
           name: 'plataforma',
           component: () => import('@/views/plataforma/PlataformaView.vue'),

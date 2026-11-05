@@ -71,7 +71,7 @@ Deno.serve(async (req) => {
     switch (body.accion) {
       case 'listar': {
         const [{ data: iglesias }, { data: addons }, { data: planes }, { data: modulos }, { data: planModulos }] = await Promise.all([
-          admin.from('iglesias').select('id, nombre, slug, plan, activa, es_demo, pais, ciudad, created_at').order('created_at'),
+          admin.from('iglesias').select('id, nombre, slug, plan, activa, es_demo, pais, ciudad, created_at, iglesia_madre_id, red_acceso').order('created_at'),
           admin.from('iglesia_modulos').select('iglesia_id, modulo, activo, origen'),
           admin.from('planes').select('*').order('orden'),
           admin.from('modulos').select('*').order('orden'),
@@ -193,6 +193,27 @@ Deno.serve(async (req) => {
         const { error } = await admin.from('iglesias').update({ activa }).eq('id', iglesiaId)
         if (error) return json({ error: 'No se pudo cambiar el estado' }, 500)
         const auditado = await auditar(activa ? 'activar_iglesia' : 'suspender_iglesia', iglesiaId)
+        return json({ ok: true, auditado })
+      }
+
+      case 'vincular_red': {
+        // Vincula una iglesia como sede de otra (o la deja independiente con madre_id nulo) y fija el acceso de la madre
+        const iglesiaId = await iglesiaValida(body.iglesia_id)
+        if (!iglesiaId) return json({ error: 'La iglesia no existe' }, 404)
+        let madreId: string | null = null
+        if (body.madre_id !== null && body.madre_id !== undefined && body.madre_id !== '') {
+          madreId = await iglesiaValida(body.madre_id)
+          if (!madreId) return json({ error: 'La iglesia madre no existe' }, 404)
+          if (madreId === iglesiaId) return json({ error: 'Una iglesia no puede ser madre de si misma' }, 400)
+        }
+        if (!['ninguno', 'resumen'].includes(body.red_acceso)) return json({ error: 'El nivel de acceso no es valido' }, 400)
+        const { error } = await admin.from('iglesias').update({ iglesia_madre_id: madreId, red_acceso: body.red_acceso }).eq('id', iglesiaId)
+        if (error) {
+          // La base rechaza cadenas de mas de un nivel con un mensaje propio
+          const regla = /sede|madre/i.test(error.message)
+          return json({ error: regla ? 'Una iglesia madre no puede ser sede, ni una sede tener sedes' : 'No se pudo cambiar la red' }, regla ? 409 : 500)
+        }
+        const auditado = await auditar('vincular_red', iglesiaId, { madre_id: madreId, red_acceso: body.red_acceso })
         return json({ ok: true, auditado })
       }
 

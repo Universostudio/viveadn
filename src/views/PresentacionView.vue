@@ -77,5 +77,5 @@ const MODULOS = [
   { clave: 'eventos', icono: CalendarCheck },
   { clave: 'dar', icono: HandHeart },
 ] as const
-const NIVELES = ['plataforma', 'iglesia'] as const
+const NIVELES = ['plataforma', 'red', 'iglesia'] as const
 </script>

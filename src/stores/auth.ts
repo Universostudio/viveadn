@@ -12,6 +12,7 @@ export const useAuthStore = defineStore('auth', () => {
   const rolInfo = ref<{ nombre: string; es_propietario: boolean } | null>(null)
 
   const esPlataforma = ref(false)
+  const tieneSedes = ref(false)
   const modulosActivos = ref<Set<string>>(new Set())
   const moduloDePermiso = ref<Record<string, string>>({})
 
@@ -19,6 +20,16 @@ export const useAuthStore = defineStore('auth', () => {
   // Cambia lo que muestra la interfaz, NO lo que permite la base de datos: los datos siguen siendo los reales.
   const verComo = ref<{ clave: string; nombre: string; es_propietario: boolean; permisos: Set<string> } | null>(null)
   const rolesDisponibles = ref<{ clave: string; nombre: string }[]>([])
+
+  // Solo el superadministrador ve el panel de red, y solo si su iglesia tiene sedes
+  async function comprobarSedes() {
+    tieneSedes.value = false
+    if (rolInfo.value?.es_propietario !== true) return
+    try {
+      const { data } = await supabase.functions.invoke('red-resumen', { body: { solo_contar: true } })
+      tieneSedes.value = (data?.total ?? 0) > 0
+    } catch { /* sin red no hay menu: no es un error para quien entra */ }
+  }
 
   async function cargarRolesParaVerComo() {
     if (rolInfo.value?.es_propietario !== true) return
@@ -112,6 +123,7 @@ export const useAuthStore = defineStore('auth', () => {
       }
       modulosActivos.value = activos
       await cargarRolesParaVerComo()
+      await comprobarSedes()
       moduloDePermiso.value = Object.fromEntries((catalogo ?? []).map((p: any) => [p.clave, p.modulo]))
     }
   }
@@ -123,6 +135,7 @@ export const useAuthStore = defineStore('auth', () => {
     verComo.value = null
     rolesDisponibles.value = []
     esPlataforma.value = false
+    tieneSedes.value = false
     permisos.value = new Set()
     modulosActivos.value = new Set()
     moduloDePermiso.value = {}
@@ -139,5 +152,5 @@ export const useAuthStore = defineStore('auth', () => {
     limpiar()
   }
 
-  return { user, perfil, iglesia, nombreIglesia, loading, isLoggedIn, iglesiaId, rol, rolInfo, verComo, rolesDisponibles, simularRol, nombreRol, nombreCompleto, esPlataforma, can, tieneModulo, init, login, logout }
+  return { user, perfil, iglesia, nombreIglesia, loading, isLoggedIn, iglesiaId, rol, rolInfo, verComo, rolesDisponibles, simularRol, nombreRol, nombreCompleto, esPlataforma, tieneSedes, can, tieneModulo, init, login, logout }
 })

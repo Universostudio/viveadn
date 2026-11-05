@@ -28,7 +28,8 @@
     "plataforma": "Plataforma",
     "salir": "Salir",
     "abrirMenu": "Abrir menú",
-    "eventos": "Eventos"
+    "eventos": "Eventos",
+    "red": "Red"
   },
   "login": {
     "subtitulo": "Sistema de Gestión Eclesiástica",
@@ -543,6 +544,15 @@
       "miembros": "Miembros en total",
       "porPlan": "Iglesias activas por plan",
       "iglesiasMiembros": "{i} iglesias · {m} miembros"
+    },
+    "red": {
+      "madre": "Iglesia madre",
+      "independiente": "Independiente",
+      "acceso": "Lo que ve la madre",
+      "resumen": "Resumen de cifras",
+      "ninguno": "Nada",
+      "conSedes": "Tiene sedes vinculadas ({n}). Desvincúlalas antes de hacerla sede de otra.",
+      "guardada": "Red actualizada para {iglesia}."
     }
   },
   "invitacion": {
@@ -820,11 +830,30 @@
       "iglesia": {
         "titulo": "Panel de la iglesia",
         "texto": "Cada iglesia gestiona su gente con roles y permisos propios."
+      },
+      "red": {
+        "titulo": "Panel de red",
+        "texto": "Una iglesia con sedes ve las cifras de toda su red. La plataforma decide qué comparte cada sede."
       }
     },
     "dar": {
       "titulo": "Sin tocar tu dinero",
       "texto": "ViveADN no procesa ni guarda pagos. Las ofrendas llegan directamente a los sitios que tu iglesia ya usa."
     }
+  },
+  "red": {
+    "titulo": "Red de iglesias",
+    "subtitulo": "Cifras de {iglesia} y de sus sedes.",
+    "sinSedes": "Esta iglesia todavía no tiene sedes vinculadas.",
+    "miembros": "Miembros activos",
+    "casas": "Casas de oración",
+    "consolidacion": "En consolidación",
+    "alertas": "Alertas críticas",
+    "totalesNota": "Los totales suman tu iglesia y las sedes que comparten su resumen. No incluyen datos personales.",
+    "iglesia": "Iglesia",
+    "estaIglesia": "esta iglesia",
+    "sinAcceso": "No comparte su resumen",
+    "suspendida": "Suspendida",
+    "errorCargar": "No se pudo cargar la red. Inténtalo de nuevo."
   }
 }

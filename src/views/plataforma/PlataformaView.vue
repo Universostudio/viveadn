@@ -62,6 +62,27 @@
           </div>
         </div>
 
+        <div class="flex flex-wrap items-end gap-3">
+          <div>
+            <label :for="`madre-${ig.id}`" class="block text-xs font-medium text-gray-600 mb-1">{{ t('plataforma.red.madre') }}</label>
+            <select :id="`madre-${ig.id}`" :value="ig.iglesia_madre_id ?? ''" :disabled="tieneSedes(ig)"
+              @change="vincular(ig, ($event.target as HTMLSelectElement).value || null, ig.red_acceso)"
+              class="text-sm border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-adn-verde disabled:bg-gray-50 disabled:text-gray-400">
+              <option value="">{{ t('plataforma.red.independiente') }}</option>
+              <option v-for="m in posiblesMadres(ig)" :key="m.id" :value="m.id">{{ m.nombre }}</option>
+            </select>
+          </div>
+          <div v-if="ig.iglesia_madre_id">
+            <label :for="`acceso-${ig.id}`" class="block text-xs font-medium text-gray-600 mb-1">{{ t('plataforma.red.acceso') }}</label>
+            <select :id="`acceso-${ig.id}`" :value="ig.red_acceso" @change="vincular(ig, ig.iglesia_madre_id, ($event.target as HTMLSelectElement).value)"
+              class="text-sm border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-adn-verde">
+              <option value="resumen">{{ t('plataforma.red.resumen') }}</option>
+              <option value="ninguno">{{ t('plataforma.red.ninguno') }}</option>
+            </select>
+          </div>
+          <p v-if="tieneSedes(ig)" class="text-xs text-gray-400 pb-2">{{ t('plataforma.red.conSedes', { n: numeroSedes(ig) }) }}</p>
+        </div>
+
         <div>
           <p class="text-xs font-medium text-gray-600 mb-2">{{ t('plataforma.complementos') }}</p>
           <div class="flex flex-wrap gap-2">
@@ -192,6 +213,13 @@ const resumen = computed(() => {
     porPlan: porPlan.map((p: any) => ({ ...p, porcentaje: Math.round((p.iglesias / maximo) * 100) })),
   }
 })
+
+// Red de iglesias: una madre con sedes (un solo nivel). La base rechaza cualquier cadena mas larga.
+const numeroSedes = (ig: any) => iglesias.value.filter((x: any) => x.iglesia_madre_id === ig.id).length
+const tieneSedes = (ig: any) => numeroSedes(ig) > 0
+const posiblesMadres = (ig: any) => iglesias.value.filter((x: any) => x.id !== ig.id && !x.iglesia_madre_id)
+const vincular = (ig: any, madre: string | null, acceso: string) =>
+  ejecutar({ accion: 'vincular_red', iglesia_id: ig.id, madre_id: madre, red_acceso: acceso }, () => t('plataforma.red.guardada', { iglesia: ig.nombre }))
 
 async function llamar(cuerpo: Record<string, unknown>) {
   const { data, error } = await supabase.functions.invoke('plataforma', {

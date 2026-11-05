@@ -28,7 +28,8 @@
     "plataforma": "Platform",
     "salir": "Sign out",
     "abrirMenu": "Open menu",
-    "eventos": "Events"
+    "eventos": "Events",
+    "red": "Network"
   },
   "login": {
     "subtitulo": "Church Management System",
@@ -543,6 +544,15 @@
       "miembros": "Total members",
       "porPlan": "Active churches by plan",
       "iglesiasMiembros": "{i} churches · {m} members"
+    },
+    "red": {
+      "madre": "Parent church",
+      "independiente": "Independent",
+      "acceso": "What the parent sees",
+      "resumen": "Summary figures",
+      "ninguno": "Nothing",
+      "conSedes": "It has linked branches ({n}). Unlink them before making it a branch of another church.",
+      "guardada": "Network updated for {iglesia}."
     }
   },
   "invitacion": {
@@ -820,11 +830,30 @@
       "iglesia": {
         "titulo": "Church dashboard",
         "texto": "Each church manages its people with its own roles and permissions."
+      },
+      "red": {
+        "titulo": "Network dashboard",
+        "texto": "A church with branches sees the figures of its whole network. The platform decides what each branch shares."
       }
     },
     "dar": {
       "titulo": "Your money stays yours",
       "texto": "ViveADN does not process or store payments. Gifts go straight to the sites your church already uses."
     }
+  },
+  "red": {
+    "titulo": "Church network",
+    "subtitulo": "Figures for {iglesia} and its branches.",
+    "sinSedes": "This church has no linked branches yet.",
+    "miembros": "Active members",
+    "casas": "Prayer houses",
+    "consolidacion": "In follow-up",
+    "alertas": "Critical alerts",
+    "totalesNota": "Totals add your church and the branches that share their summary. They include no personal data.",
+    "iglesia": "Church",
+    "estaIglesia": "this church",
+    "sinAcceso": "Does not share its summary",
+    "suspendida": "Suspended",
+    "errorCargar": "The network could not be loaded. Try again."
   }
 }
