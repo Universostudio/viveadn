@@ -43,8 +43,10 @@
       <p class="text-xs text-gray-400">{{ t('checkin.qr.aviso') }}</p>
     </template>
     <!-- Cartel para imprimir y pegar en el lugar del evento -->
-    <div v-if="cartelAbierto" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center p-4 z-50 overflow-y-auto" @click.self="cartelAbierto = false" role="dialog" aria-modal="true" :aria-label="t('checkin.qr.cartel.boton')">
-      <div class="bg-white rounded-2xl shadow-2xl w-full max-w-xl p-6 my-6">
+    <div v-if="cartelAbierto" class="fixed inset-0 bg-black bg-opacity-40 z-50 overflow-y-auto" @click.self="cartelAbierto = false" role="dialog" aria-modal="true" :aria-label="t('checkin.qr.cartel.boton')">
+      <!-- El centrado va en un contenedor con min-h-full: en pantallas bajas el contenido empieza arriba y se desplaza -->
+      <div class="min-h-full flex items-center justify-center p-4" @click.self="cartelAbierto = false">
+      <div class="bg-white rounded-2xl shadow-2xl w-full max-w-xl p-6 my-2">
         <div class="cartel-imprimible border-4 border-adn-verde rounded-xl p-8 text-center bg-white">
           <p class="text-sm uppercase tracking-widest text-gray-500">{{ auth.nombreIglesia }}</p>
           <h2 class="text-3xl font-bold text-gray-900 mt-2">{{ eventoTitulo }}</h2>
@@ -61,6 +63,7 @@
           <button @click="cartelAbierto = false" class="btn-secondary flex-1">{{ t('checkin.qr.cartel.cerrar') }}</button>
           <button @click="imprimirCartel" class="btn-primary flex-1">{{ t('checkin.qr.cartel.imprimir') }}</button>
         </div>
+      </div>
       </div>
     </div>
 
@@ -156,10 +159,10 @@ onMounted(cargar)
 </script>
 
 <style>
-/* Al imprimir solo sale el cartel */
+/* Al imprimir con el cartel abierto solo sale el cartel; sin cartel, la pagina se imprime con normalidad */
 @media print {
-  body * { visibility: hidden; }
-  .cartel-imprimible, .cartel-imprimible * { visibility: visible; }
+  body:has(.cartel-imprimible) * { visibility: hidden; }
+  body:has(.cartel-imprimible) .cartel-imprimible, body:has(.cartel-imprimible) .cartel-imprimible * { visibility: visible; }
   .cartel-imprimible { position: fixed; left: 0; top: 0; width: 100%; border-width: 8px; }
 }
 </style>
