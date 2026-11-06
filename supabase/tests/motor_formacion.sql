@@ -75,6 +75,12 @@ select pg_temp.igual(pg_temp.funciona($q$ update public.inscripciones_formacion 
 select pg_temp.igual(pg_temp.funciona($q$ update public.inscripciones_formacion set estado = 'en_curso' where id = '7f000000-0000-0000-0000-000000000001' $q$)::text, 'false', 'no se puede descompletar a mano');
 select pg_temp.igual(pg_temp.funciona($q$ update public.inscripciones_formacion set estado = 'abandonado' where programa_id = '5f000000-0000-0000-0000-000000000002' $q$)::text, 'true', 'abandonar si se puede');
 
+-- Una inscripcion no se traspasa a otro miembro ni a otro programa, y una leccion no cambia de programa
+select pg_temp.igual(pg_temp.funciona($q$ update public.inscripciones_formacion set miembro_id = '3f000000-0000-0000-0000-000000000002' where id = '7f000000-0000-0000-0000-000000000001' $q$)::text, 'false', 'no se traspasa una inscripcion completada a otro miembro');
+select pg_temp.igual(pg_temp.funciona($q$ update public.inscripciones_formacion set programa_id = '5f000000-0000-0000-0000-000000000002' where id = '7f000000-0000-0000-0000-000000000001' $q$)::text, 'false', 'ni a otro programa');
+select pg_temp.igual(pg_temp.funciona($q$ update public.programa_lecciones set programa_id = '5f000000-0000-0000-0000-000000000001' where id = '6f000000-0000-0000-0000-000000000004' $q$)::text, 'false', 'una leccion no se mueve a otro programa');
+select pg_temp.igual(pg_temp.funciona($q$ update public.programa_lecciones set orden = 9, titulo = 'L1 renombrada' where id = '6f000000-0000-0000-0000-000000000001' $q$)::text, 'true', 'pero si se puede renombrar y reordenar');
+
 -- Coherencia: el avance solo vale para lecciones del mismo programa y de la misma iglesia
 select pg_temp.igual(pg_temp.funciona($q$ insert into public.avance_formacion (programa_id, inscripcion_id, leccion_id) values ('5f000000-0000-0000-0000-000000000001', '7f000000-0000-0000-0000-000000000001', '6f000000-0000-0000-0000-000000000004') $q$)::text, 'false', 'no se avanza con una leccion de otro programa');
 select pg_temp.igual(pg_temp.funciona($q$ insert into public.inscripciones_formacion (programa_id, miembro_id) values ('5f000000-0000-0000-0000-000000000001', '3f000000-0000-0000-0000-000000000009') $q$)::text, 'false', 'no se inscribe a un miembro de otra iglesia');

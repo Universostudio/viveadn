@@ -170,14 +170,15 @@ const claseEstado = (e: string) => (e === 'completado' ? 'bg-green-100 text-gree
 
 async function cargar() {
   error.value = ''
-  const [pRes, iRes, m] = await Promise.all([
+  // La API devuelve como mucho 1000 filas por peticion: inscripciones y miembros se leen por paginas, con orden estable
+  const [pRes, ins, m] = await Promise.all([
     supabase.from('programas_formacion').select('id, nombre, descripcion, activo, orden, programa_lecciones(id, orden, titulo, descripcion)').order('orden').order('nombre'),
-    supabase.from('inscripciones_formacion').select('id, programa_id, miembro_id, estado, completado_en, miembros(nombre, apellido), avance_formacion(leccion_id)').order('inscrito_en'),
+    leerTodo<any>((d, h) => supabase.from('inscripciones_formacion').select('id, programa_id, miembro_id, estado, completado_en, miembros(nombre, apellido), avance_formacion(leccion_id)').order('inscrito_en').order('id').range(d, h)),
     leerTodo<any>((d, h) => supabase.from('miembros').select('id, nombre, apellido').eq('activo', true).order('nombre').order('id').range(d, h)),
   ])
-  if (pRes.error || iRes.error || !m) { error.value = 'formacion.programas.errorCargar'; cargando.value = false; return }
+  if (pRes.error || !ins || !m) { error.value = 'formacion.programas.errorCargar'; cargando.value = false; return }
   programas.value = pRes.data ?? []
-  inscripciones.value = iRes.data ?? []
+  inscripciones.value = ins
   miembros.value = m
   if (!seleccionado.value || !programas.value.some(p => p.id === seleccionado.value)) seleccionado.value = programas.value[0]?.id ?? null
   cargando.value = false

@@ -36,3 +36,4 @@ bash tests/checkin_concurrencia.sh "$DB"
 "${PSQL[@]}" -d $DB -f tests/motor_formacion.sql
 "${PSQL[@]}" -d $DB -f tests/limites_plan.sql
 bash tests/limites_concurrencia.sh "$DB"
+bash tests/formacion_concurrencia.sh "$DB"
