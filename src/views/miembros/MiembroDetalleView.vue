@@ -7,6 +7,9 @@
         <h1 class="text-2xl font-bold text-gray-900">{{ t('ficha.titulo') }}</h1>
         <p class="text-gray-500 text-sm">{{ miembro?.crm_id }}</p>
       </div>
+      <div v-if="miembro?.activo && auth.can('miembros.credencial')" class="ml-auto">
+        <CredencialMiembro :miembro="miembro" />
+      </div>
     </div>
 
     <div v-if="cargando" class="py-20 text-center text-gray-400">
@@ -171,10 +174,13 @@ import { supabase } from '@/lib/supabase'
 import { conAlerta } from '@/lib/alertas'
 import type { NivelCompromiso } from '@/lib/supabase'
 import EstadoAlerta from '@/components/EstadoAlerta.vue'
+import CredencialMiembro from '@/components/CredencialMiembro.vue'
+import { useAuthStore } from '@/stores/auth'
 import { useI18n } from 'vue-i18n'
 import { formatoFecha } from '@/i18n'
 
 const route = useRoute()
+const auth = useAuthStore()
 const { t, te } = useI18n()
 const cargando = ref(true)
 const miembro = ref<any>(null)

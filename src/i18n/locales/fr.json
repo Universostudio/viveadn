@@ -208,7 +208,21 @@
     "informacion": "Informations",
     "registrado": "Inscrit le",
     "estado": "Statut",
-    "zona": "Zone"
+    "zona": "Zone",
+    "credencial": {
+      "boton": "Carte",
+      "titulo": "Carte de présence",
+      "uso": "Présentez-la en arrivant à un événement.",
+      "qrAlt": "Code QR de la carte",
+      "imprimir": "Imprimer",
+      "renovar": "Renouveler",
+      "retirar": "Retirer",
+      "cerrar": "Fermer",
+      "aviso": "Quiconque détient cette carte peut marquer la présence de la personne. En cas de perte, renouvelez-la et l'ancienne cessera de fonctionner.",
+      "confirmarRenovar": "La carte actuelle cessera de fonctionner. Continuer ?",
+      "confirmarRetirar": "La carte sera retirée et son QR cessera de fonctionner. Continuer ?",
+      "error": "Action impossible. Réessayez."
+    }
   },
   "casas": {
     "titulo": "Maisons de prière",
@@ -865,7 +879,27 @@
     "guardarCambios": "Enregistrer les modifications",
     "aplicarSerie": "Appliquer aussi aux réunions suivantes de la série",
     "aplicarSerieAyuda": "Modifie le titre, le type, le lieu, la maison et la description. Les dates des autres réunions ne changent pas.",
-    "errorEditar": "Impossible d'enregistrer les modifications. Réessayez."
+    "errorEditar": "Impossible d'enregistrer les modifications. Réessayez.",
+    "escaner": {
+      "titulo": "Scanner les cartes",
+      "descripcion": "Scannez la carte QR de chaque personne à son arrivée pour marquer sa présence.",
+      "abrir": "Ouvrir la caméra",
+      "cerrar": "Fermer la caméra",
+      "camara": "Vue de la caméra",
+      "manual": "Ou saisissez le code de la carte",
+      "enviar": "Enregistrer",
+      "errorCamara": "Impossible d'utiliser la caméra. Vérifiez l'autorisation du navigateur.",
+      "sinCamara": "Ce navigateur ne peut pas utiliser la caméra ici.",
+      "resultado": {
+        "registrado": "{nombre} : présence enregistrée.",
+        "ya_registrado": "{nombre} était déjà enregistré(e).",
+        "desconocida": "Carte non reconnue.",
+        "cancelado": "L'événement est annulé.",
+        "fuera_de_casa": "Cette personne n'est pas de votre maison.",
+        "inactivo": "Cette personne n'est plus active.",
+        "error": "Enregistrement impossible. Réessayez."
+      }
+    }
   },
   "checkin": {
     "titulo": "Enregistrement de la présence",

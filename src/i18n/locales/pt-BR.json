@@ -208,7 +208,21 @@
     "informacion": "Informações",
     "registrado": "Cadastrado em",
     "estado": "Status",
-    "zona": "Zona"
+    "zona": "Zona",
+    "credencial": {
+      "boton": "Credencial",
+      "titulo": "Credencial de presença",
+      "uso": "Apresente ao chegar a um evento.",
+      "qrAlt": "Código QR da credencial",
+      "imprimir": "Imprimir",
+      "renovar": "Renovar",
+      "retirar": "Retirar",
+      "cerrar": "Fechar",
+      "aviso": "Quem tiver esta credencial pode marcar a presença da pessoa. Se for perdida, renove-a e a anterior deixará de funcionar.",
+      "confirmarRenovar": "A credencial atual deixará de funcionar. Continuar?",
+      "confirmarRetirar": "A credencial será retirada e seu QR deixará de funcionar. Continuar?",
+      "error": "Não foi possível concluir a ação. Tente novamente."
+    }
   },
   "casas": {
     "titulo": "Casas de Oração",
@@ -865,7 +879,27 @@
     "guardarCambios": "Salvar alterações",
     "aplicarSerie": "Aplicar também às reuniões seguintes da série",
     "aplicarSerieAyuda": "Altera título, tipo, local, casa e descrição. As datas das outras reuniões não mudam.",
-    "errorEditar": "Não foi possível salvar as alterações. Tente novamente."
+    "errorEditar": "Não foi possível salvar as alterações. Tente novamente.",
+    "escaner": {
+      "titulo": "Escanear credenciais",
+      "descripcion": "Escaneie a credencial QR de cada pessoa na chegada para marcar a presença.",
+      "abrir": "Abrir câmera",
+      "cerrar": "Fechar câmera",
+      "camara": "Visão da câmera",
+      "manual": "Ou digite o código da credencial",
+      "enviar": "Registrar",
+      "errorCamara": "Não foi possível usar a câmera. Verifique a permissão do navegador.",
+      "sinCamara": "Este navegador não pode usar a câmera aqui.",
+      "resultado": {
+        "registrado": "{nombre}: presença registrada.",
+        "ya_registrado": "{nombre} já estava registrado.",
+        "desconocida": "Credencial não reconhecida.",
+        "cancelado": "O evento está cancelado.",
+        "fuera_de_casa": "Esta pessoa não é da sua casa.",
+        "inactivo": "Esta pessoa não está mais ativa.",
+        "error": "Não foi possível registrar. Tente novamente."
+      }
+    }
   },
   "checkin": {
     "titulo": "Registro de presença",

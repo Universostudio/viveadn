@@ -208,7 +208,21 @@
     "informacion": "Information",
     "registrado": "Registered",
     "estado": "Status",
-    "zona": "Zone"
+    "zona": "Zone",
+    "credencial": {
+      "boton": "Credential",
+      "titulo": "Attendance credential",
+      "uso": "Show it when you arrive at an event.",
+      "qrAlt": "Credential QR code",
+      "imprimir": "Print",
+      "renovar": "Renew",
+      "retirar": "Withdraw",
+      "cerrar": "Close",
+      "aviso": "Whoever holds this credential can mark the person's attendance. If it is lost, renew it and the old one stops working.",
+      "confirmarRenovar": "The current credential will stop working. Continue?",
+      "confirmarRetirar": "The credential will be withdrawn and its QR will stop working. Continue?",
+      "error": "The action could not be completed. Please try again."
+    }
   },
   "casas": {
     "titulo": "Prayer Houses",
@@ -865,7 +879,27 @@
     "guardarCambios": "Save changes",
     "aplicarSerie": "Also apply to the following meetings in the series",
     "aplicarSerieAyuda": "Changes title, type, place, house and description. The dates of the other meetings are not changed.",
-    "errorEditar": "The changes could not be saved. Please try again."
+    "errorEditar": "The changes could not be saved. Please try again.",
+    "escaner": {
+      "titulo": "Scan credentials",
+      "descripcion": "Scan each person's QR credential on arrival to mark their attendance.",
+      "abrir": "Open camera",
+      "cerrar": "Close camera",
+      "camara": "Camera view",
+      "manual": "Or type the credential code",
+      "enviar": "Register",
+      "errorCamara": "The camera could not be used. Check the browser permission.",
+      "sinCamara": "This browser cannot use the camera here.",
+      "resultado": {
+        "registrado": "{nombre}: attendance recorded.",
+        "ya_registrado": "{nombre} was already registered.",
+        "desconocida": "Credential not recognized.",
+        "cancelado": "The event is cancelled.",
+        "fuera_de_casa": "This person is not in your house.",
+        "inactivo": "This person is no longer active.",
+        "error": "It could not be recorded. Please try again."
+      }
+    }
   },
   "checkin": {
     "titulo": "Attendance check-in",
