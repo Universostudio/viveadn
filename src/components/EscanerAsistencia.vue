@@ -51,6 +51,8 @@ const ocupado = ref(false)
 const resultado = ref<{ estado: string; nombre?: string } | null>(null)
 
 let flujo: MediaStream | null = null
+let abriendo = false
+let desmontado = false
 let temporizador: ReturnType<typeof setInterval> | null = null
 let ultimo = { token: '', en: 0 }
 
@@ -99,13 +101,21 @@ function leerFotograma() {
 
 async function abrirCamara() {
   errorCamara.value = ''
+  if (abriendo || camaraActiva.value) return
   if (!navigator.mediaDevices?.getUserMedia) { errorCamara.value = 'eventos.escaner.sinCamara'; return }
+  abriendo = true
+  let obtenido: MediaStream
   try {
-    flujo = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' } }, audio: false })
+    obtenido = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' } }, audio: false })
   } catch {
-    errorCamara.value = 'eventos.escaner.errorCamara'
+    abriendo = false
+    if (!desmontado) errorCamara.value = 'eventos.escaner.errorCamara'
     return
   }
+  abriendo = false
+  // Si se salio de la pantalla mientras el navegador pedia el permiso, la camara se apaga en cuanto llega
+  if (desmontado) { obtenido.getTracks().forEach(p => p.stop()); return }
+  flujo = obtenido
   camaraActiva.value = true
   const v = video.value
   if (v) { v.srcObject = flujo; await v.play().catch(() => undefined) }
@@ -120,5 +130,5 @@ function cerrarCamara() {
   camaraActiva.value = false
 }
 
-onBeforeUnmount(cerrarCamara)
+onBeforeUnmount(() => { desmontado = true; cerrarCamara() })
 </script>
