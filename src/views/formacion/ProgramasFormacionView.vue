@@ -88,13 +88,12 @@
                   <button v-if="puedeActualizar && i.estado !== 'completado'" @click="cambiarAbandono(i)" class="text-xs text-gray-500 hover:underline">
                     {{ i.estado === 'abandonado' ? t('formacion.programas.retomar') : t('formacion.programas.abandonar') }}
                   </button>
-                  <template v-if="i.estado === 'completado'">
-                    <button v-if="certDe(i)" @click="verCertificado(i)" class="text-xs text-adn-verde hover:underline">{{ t('formacion.programas.certificado.ver') }}</button>
-                    <button v-else-if="puedeCertificar" @click="emitirCertificado(i)" class="text-xs text-adn-verde font-medium hover:underline">{{ t('formacion.programas.certificado.emitir') }}</button>
-                    <button v-if="certDe(i) && puedeCertificar" @click="alternarRevocado(certDe(i))" class="text-xs text-gray-500 hover:underline">
-                      {{ certDe(i).revocado_en ? t('formacion.programas.certificado.restaurar') : t('formacion.programas.certificado.revocar') }}
-                    </button>
-                  </template>
+                  <!-- Un certificado ya emitido sigue siendo valido aunque la inscripcion se reabra: se puede ver y revocar siempre -->
+                  <button v-if="certDe(i)" @click="verCertificado(i)" class="text-xs text-adn-verde hover:underline">{{ t('formacion.programas.certificado.ver') }}</button>
+                  <button v-else-if="i.estado === 'completado' && puedeCertificar" @click="emitirCertificado(i)" class="text-xs text-adn-verde font-medium hover:underline">{{ t('formacion.programas.certificado.emitir') }}</button>
+                  <button v-if="certDe(i) && puedeCertificar" @click="alternarRevocado(certDe(i))" class="text-xs text-gray-500 hover:underline">
+                    {{ certDe(i).revocado_en ? t('formacion.programas.certificado.restaurar') : t('formacion.programas.certificado.revocar') }}
+                  </button>
                   <button v-if="puedeActualizar" @click="desinscribir(i)" class="text-xs text-red-600 hover:underline">{{ t('formacion.programas.quitar') }}</button>
                 </div>
               </div>
