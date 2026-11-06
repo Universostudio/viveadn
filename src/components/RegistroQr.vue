@@ -22,6 +22,7 @@
             <button @click="copiar" class="btn-secondary text-sm">{{ copiado ? t('checkin.qr.copiado') : t('checkin.qr.copiar') }}</button>
             <a :href="url" target="_blank" rel="noopener noreferrer" class="btn-secondary text-sm inline-flex items-center gap-1">{{ t('checkin.qr.abrir') }} <ExternalLink class="w-4 h-4" aria-hidden="true" /></a>
             <a v-if="imagen" :href="imagen" download="registro-qr.png" class="btn-secondary text-sm inline-flex items-center gap-1"><Download class="w-4 h-4" aria-hidden="true" /> {{ t('checkin.qr.descargar') }}</a>
+            <button v-if="enlace.activo" @click="abrirCartel" class="btn-secondary text-sm inline-flex items-center gap-1"><Printer class="w-4 h-4" aria-hidden="true" /> {{ t('checkin.qr.cartel.boton') }}</button>
           </div>
           <p class="text-sm text-gray-600">{{ t('checkin.qr.registros', { n: totales.registros, nuevos: totales.nuevos }) }}</p>
           <p class="text-xs text-gray-400">{{ t('checkin.qr.ventana') }}</p>
@@ -41,6 +42,28 @@
       </div>
       <p class="text-xs text-gray-400">{{ t('checkin.qr.aviso') }}</p>
     </template>
+    <!-- Cartel para imprimir y pegar en el lugar del evento -->
+    <div v-if="cartelAbierto" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center p-4 z-50 overflow-y-auto" @click.self="cartelAbierto = false" role="dialog" aria-modal="true" :aria-label="t('checkin.qr.cartel.boton')">
+      <div class="bg-white rounded-2xl shadow-2xl w-full max-w-xl p-6 my-6">
+        <div class="cartel-imprimible border-4 border-adn-verde rounded-xl p-8 text-center bg-white">
+          <p class="text-sm uppercase tracking-widest text-gray-500">{{ auth.nombreIglesia }}</p>
+          <h2 class="text-3xl font-bold text-gray-900 mt-2">{{ eventoTitulo }}</h2>
+          <p class="text-xl font-semibold text-adn-verde mt-6">{{ t('checkin.qr.cartel.titulo') }}</p>
+          <img v-if="imagenCartel" :src="imagenCartel" :alt="t('checkin.qr.qrAlt')" class="mx-auto mt-4" width="320" height="320" />
+          <ol class="text-left text-gray-700 mt-6 space-y-1 text-base list-decimal list-inside">
+            <li>{{ t('checkin.qr.cartel.paso1') }}</li>
+            <li>{{ t('checkin.qr.cartel.paso2') }}</li>
+            <li>{{ t('checkin.qr.cartel.paso3') }}</li>
+          </ol>
+          <p class="text-xs text-gray-400 mt-6">{{ t('checkin.qr.cartel.privacidad') }}</p>
+        </div>
+        <div class="flex gap-3 mt-4">
+          <button @click="cartelAbierto = false" class="btn-secondary flex-1">{{ t('checkin.qr.cartel.cerrar') }}</button>
+          <button @click="imprimirCartel" class="btn-primary flex-1">{{ t('checkin.qr.cartel.imprimir') }}</button>
+        </div>
+      </div>
+    </div>
+
     <p v-if="error" role="alert" class="bg-red-50 text-red-700 text-sm px-4 py-3 rounded-lg border border-red-200">{{ t(error) }}</p>
   </div>
 </template>
@@ -49,10 +72,12 @@
 import { ref, computed, watch, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import QRCode from 'qrcode'
-import { QrCode, ExternalLink, Download, RefreshCw } from '@lucide/vue'
+import { QrCode, ExternalLink, Download, RefreshCw, Printer } from '@lucide/vue'
 import { supabase } from '@/lib/supabase'
+import { useAuthStore } from '@/stores/auth'
 
-const props = defineProps<{ eventoId: string }>()
+const props = defineProps<{ eventoId: string; eventoTitulo: string }>()
+const auth = useAuthStore()
 const { t } = useI18n()
 
 const cargando = ref(true)
@@ -118,5 +143,23 @@ async function copiar() {
   try { await navigator.clipboard.writeText(url.value); copiado.value = true; setTimeout(() => { copiado.value = false }, 2000) } catch { /* se puede copiar a mano */ }
 }
 
+// Cartel: el QR se redibuja a mayor resolucion para que se lea bien impreso
+const cartelAbierto = ref(false)
+const imagenCartel = ref('')
+async function abrirCartel() {
+  imagenCartel.value = await QRCode.toDataURL(url.value, { width: 900, margin: 2, errorCorrectionLevel: 'M' })
+  cartelAbierto.value = true
+}
+const imprimirCartel = () => window.print()
+
 onMounted(cargar)
 </script>
+
+<style>
+/* Al imprimir solo sale el cartel */
+@media print {
+  body * { visibility: hidden; }
+  .cartel-imprimible, .cartel-imprimible * { visibility: visible; }
+  .cartel-imprimible { position: fixed; left: 0; top: 0; width: 100%; border-width: 8px; }
+}
+</style>

@@ -93,4 +93,4 @@ Certificados con QR (`certificados`). Solo se emite un certificado para una insc
 2. Hecho: ciclo de vida de la iglesia, con exportación y borrado.
 3. Hecho: almacenamiento de archivos con aislamiento por iglesia.
 4. Hecho: OP72 v2, con modo alias y versión gratuita y de pago. Falta el canal de envío de las alertas automáticas.
-5. Motor de formación: programas, lecciones, avance y certificados con QR hechos. Después, QR en sus tres partes, alianzas e integraciones.
+5. Motor de formación: programas, lecciones, avance y certificados con QR hechos. QR en tres partes: cartel imprimible del registro de evento hecho (solo interfaz, sin cambios en la base; el QR se redibuja a 900 px en el navegador y el botón solo aparece con el registro activo); faltan la credencial personal con escáner y los reportes. Después, alianzas e integraciones.

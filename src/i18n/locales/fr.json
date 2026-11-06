@@ -906,7 +906,17 @@
       "ventana": "Ouvre 2 heures avant l'événement et ferme 1 heure après sa fin.",
       "aviso": "Affichez le QR uniquement sur le lieu de l'événement. Toute personne ayant le lien peut s'enregistrer tant qu'il est ouvert.",
       "error": "Impossible d'enregistrer. Réessayez.",
-      "qrAlt": "QR code d'enregistrement"
+      "qrAlt": "QR code d'enregistrement",
+      "cartel": {
+        "boton": "Imprimer l'affiche",
+        "titulo": "Enregistrez votre présence",
+        "paso1": "Ouvrez l'appareil photo de votre téléphone.",
+        "paso2": "Pointez-le vers le code QR.",
+        "paso3": "Saisissez votre nom, et c'est fait.",
+        "privacidad": "Seule l'église voit vos données.",
+        "imprimir": "Imprimer",
+        "cerrar": "Fermer"
+      }
     }
   },
   "bienvenida": {

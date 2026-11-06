@@ -906,7 +906,17 @@
       "ventana": "Opens 2 hours before the event and closes 1 hour after it ends.",
       "aviso": "Show the QR only at the event location. Anyone with the link can check in while it is open.",
       "error": "It could not be saved. Please try again.",
-      "qrAlt": "Check-in QR code"
+      "qrAlt": "Check-in QR code",
+      "cartel": {
+        "boton": "Print poster",
+        "titulo": "Check in to this event",
+        "paso1": "Open your phone camera.",
+        "paso2": "Point it at the QR code.",
+        "paso3": "Enter your name and you are done.",
+        "privacidad": "Only the church sees your details.",
+        "imprimir": "Print",
+        "cerrar": "Close"
+      }
     }
   },
   "bienvenida": {

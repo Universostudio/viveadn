@@ -906,7 +906,17 @@
       "ventana": "Abre 2 horas antes del evento y cierra 1 hora después de terminar.",
       "aviso": "Muestra el QR solo en el lugar del evento. Quien tenga el enlace puede registrarse mientras esté abierto.",
       "error": "No se pudo guardar. Inténtalo de nuevo.",
-      "qrAlt": "Código QR del registro"
+      "qrAlt": "Código QR del registro",
+      "cartel": {
+        "boton": "Imprimir cartel",
+        "titulo": "Registra tu asistencia",
+        "paso1": "Abre la cámara de tu móvil.",
+        "paso2": "Apunta al código QR.",
+        "paso3": "Escribe tu nombre y listo.",
+        "privacidad": "Tus datos los ve solo la iglesia.",
+        "imprimir": "Imprimir",
+        "cerrar": "Cerrar"
+      }
     }
   },
   "bienvenida": {
