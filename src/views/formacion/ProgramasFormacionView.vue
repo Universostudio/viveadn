@@ -115,8 +115,9 @@
     </div>
 
     <!-- Certificado imprimible, con el QR que lleva a la verificacion publica -->
-    <div v-if="certificadoAbierto" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center p-4 z-50 overflow-y-auto" @click.self="certificadoAbierto = null" role="dialog" aria-modal="true" :aria-label="t('formacion.programas.certificado.titulo')">
-      <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl p-6 my-6">
+    <div v-if="certificadoAbierto" class="fixed inset-0 bg-black bg-opacity-40 z-50 overflow-y-auto" @click.self="certificadoAbierto = null" role="dialog" aria-modal="true" :aria-label="t('formacion.programas.certificado.titulo')">
+      <div class="min-h-full flex items-center justify-center p-4" @click.self="certificadoAbierto = null">
+      <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl p-6 my-2">
         <div class="certificado-imprimible border-4 border-double border-adn-verde rounded-xl p-8 text-center bg-white">
           <p v-if="certificadoAbierto.cert.revocado_en" class="text-sm font-bold text-red-600 uppercase tracking-wide mb-3">{{ t('formacion.programas.certificado.revocadoAviso') }}</p>
           <p class="text-sm uppercase tracking-widest text-gray-500">{{ auth.nombreIglesia }}</p>
@@ -135,6 +136,7 @@
           <button @click="certificadoAbierto = null" class="btn-secondary flex-1">{{ t('formacion.programas.certificado.cerrar') }}</button>
           <button @click="imprimir" class="btn-primary flex-1">{{ t('formacion.programas.certificado.imprimir') }}</button>
         </div>
+      </div>
       </div>
     </div>
 
@@ -317,10 +319,10 @@ onMounted(cargar)
 </script>
 
 <style>
-/* Al imprimir solo sale el certificado */
+/* Al imprimir con el certificado abierto solo sale el certificado; sin el, la pagina se imprime con normalidad */
 @media print {
-  body * { visibility: hidden; }
-  .certificado-imprimible, .certificado-imprimible * { visibility: visible; }
+  body:has(.certificado-imprimible) * { visibility: hidden; }
+  body:has(.certificado-imprimible) .certificado-imprimible, body:has(.certificado-imprimible) .certificado-imprimible * { visibility: visible; }
   .certificado-imprimible { position: fixed; left: 0; top: 0; width: 100%; border-width: 6px; }
 }
 </style>

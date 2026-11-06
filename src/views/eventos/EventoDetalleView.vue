@@ -27,7 +27,7 @@
         </div>
       </div>
 
-      <RegistroQr v-if="puedeGestionar" :evento-id="evento.id" />
+      <RegistroQr v-if="puedeGestionar" :evento-id="evento.id" :evento-titulo="evento.titulo" />
 
       <div class="card space-y-4">
         <div class="flex items-center justify-between gap-3 flex-wrap">
