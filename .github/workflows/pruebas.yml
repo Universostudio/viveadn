@@ -54,4 +54,5 @@ jobs:
       - run: npm run test:dar
       - run: npm run test:registro
       - run: npm run test:alertas
+      - run: npm run test:certificados
       - run: npm run build

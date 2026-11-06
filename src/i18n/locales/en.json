@@ -365,7 +365,24 @@
       "confirmarBorrar": "Delete the program \"{nombre}\"? Its lessons, enrollments and progress are deleted too.",
       "confirmarQuitar": "Remove this person from the program and delete their progress?",
       "errorCargar": "The programs could not be loaded.",
-      "errorGuardar": "The change could not be saved."
+      "errorGuardar": "The change could not be saved.",
+      "certificado": {
+        "ver": "View certificate",
+        "emitir": "Issue certificate",
+        "revocar": "Revoke",
+        "restaurar": "Restore",
+        "titulo": "Training certificate",
+        "otorgado": "Awarded to",
+        "porCompletar": "for completing the program",
+        "emitidoEl": "Issued on {fecha}",
+        "verificaEn": "Verify its authenticity at",
+        "qrAlt": "Verification QR code",
+        "imprimir": "Print",
+        "cerrar": "Close",
+        "revocadoAviso": "Certificate revoked",
+        "errorEmitir": "The certificate could not be issued.",
+        "confirmarRevocar": "Revoke this certificate? Public verification will stop showing it as valid."
+      }
     }
   },
   "comunicacion": {
@@ -1006,5 +1023,19 @@
   "plan": {
     "limiteMiembros": "Your plan has reached its member limit. To add more people, deactivate someone or change plan.",
     "limiteMiembrosImportar": "Your plan has reached its member limit. The people before that point were imported; the rest were not. Change plan or deactivate someone to continue."
+  },
+  "verificar": {
+    "valido": "Valid certificate",
+    "validoTexto": "This certificate was issued by the church shown.",
+    "revocado": "Certificate revoked",
+    "revocadoTexto": "The church has withdrawn this certificate: it is no longer valid.",
+    "titular": "Holder",
+    "programa": "Program",
+    "iglesia": "Church",
+    "emitido": "Issued",
+    "noEncontrado": "Certificate not found",
+    "noEncontradoTexto": "This code does not match any certificate. Check the link or the QR.",
+    "error": "Could not verify",
+    "errorTexto": "Please try again in a few minutes."
   }
 }

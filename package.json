@@ -15,7 +15,8 @@
     "test:checkin": "node scripts/probar-checkin.mts",
     "test:dar": "node scripts/probar-dar.mts",
     "test:registro": "node scripts/probar-registro.mts",
-    "test:alertas": "node scripts/probar-alertas.mts"
+    "test:alertas": "node scripts/probar-alertas.mts",
+    "test:certificados": "node scripts/probar-certificados.mts"
   },
   "dependencies": {
     "@fontsource/dm-sans": "^5.3.0",
