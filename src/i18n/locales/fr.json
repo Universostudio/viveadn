@@ -365,7 +365,24 @@
       "confirmarBorrar": "Supprimer le programme « {nombre} » ? Ses leçons, inscriptions et progressions sont aussi supprimées.",
       "confirmarQuitar": "Retirer cette personne du programme et supprimer sa progression ?",
       "errorCargar": "Impossible de charger les programmes.",
-      "errorGuardar": "Impossible d'enregistrer la modification."
+      "errorGuardar": "Impossible d'enregistrer la modification.",
+      "certificado": {
+        "ver": "Voir le certificat",
+        "emitir": "Délivrer le certificat",
+        "revocar": "Révoquer",
+        "restaurar": "Rétablir",
+        "titulo": "Certificat de formation",
+        "otorgado": "Décerné à",
+        "porCompletar": "pour avoir terminé le programme",
+        "emitidoEl": "Délivré le {fecha}",
+        "verificaEn": "Vérifiez son authenticité sur",
+        "qrAlt": "Code QR de vérification",
+        "imprimir": "Imprimer",
+        "cerrar": "Fermer",
+        "revocadoAviso": "Certificat révoqué",
+        "errorEmitir": "Impossible de délivrer le certificat.",
+        "confirmarRevocar": "Révoquer ce certificat ? La vérification publique ne le donnera plus pour valide."
+      }
     }
   },
   "comunicacion": {
@@ -1006,5 +1023,19 @@
   "plan": {
     "limiteMiembros": "Votre offre a atteint sa limite de membres. Pour ajouter des personnes, désactivez-en une ou changez d'offre.",
     "limiteMiembrosImportar": "Votre offre a atteint sa limite de membres. Les personnes avant ce point ont été importées ; les autres non. Changez d'offre ou désactivez quelqu'un pour continuer."
+  },
+  "verificar": {
+    "valido": "Certificat valide",
+    "validoTexto": "Ce certificat a été délivré par l'église indiquée.",
+    "revocado": "Certificat révoqué",
+    "revocadoTexto": "L'église a retiré ce certificat : il n'est plus valide.",
+    "titular": "Titulaire",
+    "programa": "Programme",
+    "iglesia": "Église",
+    "emitido": "Délivré",
+    "noEncontrado": "Certificat introuvable",
+    "noEncontradoTexto": "Ce code ne correspond à aucun certificat. Vérifiez le lien ou le QR.",
+    "error": "Vérification impossible",
+    "errorTexto": "Réessayez dans quelques minutes."
   }
 }

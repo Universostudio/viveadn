@@ -365,7 +365,24 @@
       "confirmarBorrar": "Excluir o programa \"{nombre}\"? Suas lições, inscrições e progresso também são excluídos.",
       "confirmarQuitar": "Remover esta pessoa do programa e apagar seu progresso?",
       "errorCargar": "Não foi possível carregar os programas.",
-      "errorGuardar": "Não foi possível salvar a alteração."
+      "errorGuardar": "Não foi possível salvar a alteração.",
+      "certificado": {
+        "ver": "Ver certificado",
+        "emitir": "Emitir certificado",
+        "revocar": "Revogar",
+        "restaurar": "Restaurar",
+        "titulo": "Certificado de formação",
+        "otorgado": "Concedido a",
+        "porCompletar": "por concluir o programa",
+        "emitidoEl": "Emitido em {fecha}",
+        "verificaEn": "Verifique sua autenticidade em",
+        "qrAlt": "Código QR de verificação",
+        "imprimir": "Imprimir",
+        "cerrar": "Fechar",
+        "revocadoAviso": "Certificado revogado",
+        "errorEmitir": "Não foi possível emitir o certificado.",
+        "confirmarRevocar": "Revogar este certificado? A verificação pública deixará de considerá-lo válido."
+      }
     }
   },
   "comunicacion": {
@@ -1006,5 +1023,19 @@
   "plan": {
     "limiteMiembros": "Seu plano atingiu o limite de membros. Para adicionar mais pessoas, desative alguém ou mude de plano.",
     "limiteMiembrosImportar": "Seu plano atingiu o limite de membros. As pessoas anteriores a esse ponto foram importadas; as demais não. Mude de plano ou desative alguém para continuar."
+  },
+  "verificar": {
+    "valido": "Certificado válido",
+    "validoTexto": "Este certificado foi emitido pela igreja indicada.",
+    "revocado": "Certificado revogado",
+    "revocadoTexto": "A igreja retirou este certificado: ele não é mais válido.",
+    "titular": "Titular",
+    "programa": "Programa",
+    "iglesia": "Igreja",
+    "emitido": "Emitido",
+    "noEncontrado": "Certificado não encontrado",
+    "noEncontradoTexto": "Este código não corresponde a nenhum certificado. Confira o link ou o QR.",
+    "error": "Não foi possível verificar",
+    "errorTexto": "Tente novamente em alguns minutos."
   }
 }

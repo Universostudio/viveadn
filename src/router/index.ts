@@ -57,6 +57,13 @@ const router = createRouter({
       component: () => import('@/views/CheckinPublicoView.vue'),
       meta: { public: true, allowLoggedIn: true }
     },
+    // Verificacion de un certificado de formacion: lo abre cualquiera con el codigo del QR
+    {
+      path: '/verificar/:codigo',
+      name: 'verificar-certificado',
+      component: () => import('@/views/VerificarCertificadoView.vue'),
+      meta: { public: true, allowLoggedIn: true }
+    },
     // App principal (requiere auth)
     {
       path: '/',

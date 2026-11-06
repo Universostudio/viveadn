@@ -88,6 +88,12 @@
                   <button v-if="puedeActualizar && i.estado !== 'completado'" @click="cambiarAbandono(i)" class="text-xs text-gray-500 hover:underline">
                     {{ i.estado === 'abandonado' ? t('formacion.programas.retomar') : t('formacion.programas.abandonar') }}
                   </button>
+                  <!-- Un certificado ya emitido sigue siendo valido aunque la inscripcion se reabra: se puede ver y revocar siempre -->
+                  <button v-if="certDe(i)" @click="verCertificado(i)" class="text-xs text-adn-verde hover:underline">{{ t('formacion.programas.certificado.ver') }}</button>
+                  <button v-else-if="i.estado === 'completado' && puedeCertificar" @click="emitirCertificado(i)" class="text-xs text-adn-verde font-medium hover:underline">{{ t('formacion.programas.certificado.emitir') }}</button>
+                  <button v-if="certDe(i) && puedeCertificar" @click="alternarRevocado(certDe(i))" class="text-xs text-gray-500 hover:underline">
+                    {{ certDe(i).revocado_en ? t('formacion.programas.certificado.restaurar') : t('formacion.programas.certificado.revocar') }}
+                  </button>
                   <button v-if="puedeActualizar" @click="desinscribir(i)" class="text-xs text-red-600 hover:underline">{{ t('formacion.programas.quitar') }}</button>
                 </div>
               </div>
@@ -104,6 +110,30 @@
               </div>
             </li>
           </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Certificado imprimible, con el QR que lleva a la verificacion publica -->
+    <div v-if="certificadoAbierto" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center p-4 z-50 overflow-y-auto" @click.self="certificadoAbierto = null" role="dialog" aria-modal="true" :aria-label="t('formacion.programas.certificado.titulo')">
+      <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl p-6 my-6">
+        <div class="certificado-imprimible border-4 border-double border-adn-verde rounded-xl p-8 text-center bg-white">
+          <p v-if="certificadoAbierto.cert.revocado_en" class="text-sm font-bold text-red-600 uppercase tracking-wide mb-3">{{ t('formacion.programas.certificado.revocadoAviso') }}</p>
+          <p class="text-sm uppercase tracking-widest text-gray-500">{{ auth.nombreIglesia }}</p>
+          <h2 class="text-3xl font-bold text-adn-verde mt-2">{{ t('formacion.programas.certificado.titulo') }}</h2>
+          <p class="text-sm text-gray-500 mt-6">{{ t('formacion.programas.certificado.otorgado') }}</p>
+          <p class="text-2xl font-bold text-gray-900 mt-1">{{ `${certificadoAbierto.insc.miembros?.nombre ?? ''} ${certificadoAbierto.insc.miembros?.apellido ?? ''}`.trim() }}</p>
+          <p class="text-sm text-gray-500 mt-4">{{ t('formacion.programas.certificado.porCompletar') }}</p>
+          <p class="text-xl font-semibold text-gray-900 mt-1">{{ certificadoAbierto.cert.programa_nombre }}</p>
+          <p class="text-sm text-gray-500 mt-4">{{ t('formacion.programas.certificado.emitidoEl', { fecha: formatoFecha(certificadoAbierto.cert.emitido_en, { dateStyle: 'long' }) }) }}</p>
+          <div class="mt-6 flex flex-col items-center gap-1">
+            <img v-if="qrImagen" :src="qrImagen" :alt="t('formacion.programas.certificado.qrAlt')" width="120" height="120" />
+            <p class="text-xs text-gray-500 break-all">{{ t('formacion.programas.certificado.verificaEn') }}<br /><span class="font-mono">{{ enlaceVerificacion(certificadoAbierto.cert) }}</span></p>
+          </div>
+        </div>
+        <div class="flex gap-3 mt-4">
+          <button @click="certificadoAbierto = null" class="btn-secondary flex-1">{{ t('formacion.programas.certificado.cerrar') }}</button>
+          <button @click="imprimir" class="btn-primary flex-1">{{ t('formacion.programas.certificado.imprimir') }}</button>
         </div>
       </div>
     </div>
@@ -138,16 +168,22 @@ import { ArrowLeft, Check, ChevronDown, ChevronUp, GraduationCap, Plus, Trash2, 
 import { supabase } from '@/lib/supabase'
 import { leerTodo } from '@/lib/paginar'
 import { useAuthStore } from '@/stores/auth'
+import { formatoFecha } from '@/i18n'
+import QRCode from 'qrcode'
 
 const { t } = useI18n()
 const auth = useAuthStore()
 const puedeProgramas = computed(() => auth.can('formacion.programas'))
 const puedeActualizar = computed(() => auth.can('formacion.actualizar'))
+const puedeCertificar = computed(() => auth.can('formacion.certificar'))
 
 const cargando = ref(true)
 const error = ref('')
 const programas = ref<any[]>([])
 const inscripciones = ref<any[]>([])
+const certificados = ref<any[]>([])
+const certificadoAbierto = ref<{ cert: any; insc: any } | null>(null)
+const qrImagen = ref('')
 const miembros = ref<any[]>([])
 const seleccionado = ref<string | null>(null)
 const modal = ref<null | 'nuevo' | 'editar'>(null)
@@ -171,14 +207,16 @@ const claseEstado = (e: string) => (e === 'completado' ? 'bg-green-100 text-gree
 async function cargar() {
   error.value = ''
   // La API devuelve como mucho 1000 filas por peticion: inscripciones y miembros se leen por paginas, con orden estable
-  const [pRes, ins, m] = await Promise.all([
+  const [pRes, ins, m, certs] = await Promise.all([
     supabase.from('programas_formacion').select('id, nombre, descripcion, activo, orden, programa_lecciones(id, orden, titulo, descripcion)').order('orden').order('nombre'),
     leerTodo<any>((d, h) => supabase.from('inscripciones_formacion').select('id, programa_id, miembro_id, estado, completado_en, miembros(nombre, apellido), avance_formacion(leccion_id)').order('inscrito_en').order('id').range(d, h)),
     leerTodo<any>((d, h) => supabase.from('miembros').select('id, nombre, apellido').eq('activo', true).order('nombre').order('id').range(d, h)),
+    leerTodo<any>((d, h) => supabase.from('certificados').select('id, inscripcion_id, codigo, programa_nombre, emitido_en, revocado_en').order('emitido_en').order('id').range(d, h)),
   ])
-  if (pRes.error || !ins || !m) { error.value = 'formacion.programas.errorCargar'; cargando.value = false; return }
+  if (pRes.error || !ins || !m || !certs) { error.value = 'formacion.programas.errorCargar'; cargando.value = false; return }
   programas.value = pRes.data ?? []
   inscripciones.value = ins
+  certificados.value = certs
   miembros.value = m
   if (!seleccionado.value || !programas.value.some(p => p.id === seleccionado.value)) seleccionado.value = programas.value[0]?.id ?? null
   cargando.value = false
@@ -248,5 +286,41 @@ const alternarAvance = (i: any, l: any) => hecha(i, l.id)
   ? hacer(supabase.from('avance_formacion').delete().eq('inscripcion_id', i.id).eq('leccion_id', l.id))
   : hacer(supabase.from('avance_formacion').insert({ programa_id: i.programa_id, inscripcion_id: i.id, leccion_id: l.id }))
 
+// ---- Certificados ----
+const certDe = (i: any) => certificados.value.find(c => c.inscripcion_id === i.id)
+const enlaceVerificacion = (c: any) => `${window.location.origin}/verificar/${c.codigo}`
+
+async function verCertificado(i: any) {
+  const cert = certDe(i)
+  if (!cert) return
+  qrImagen.value = await QRCode.toDataURL(enlaceVerificacion(cert), { width: 360, margin: 1, errorCorrectionLevel: 'M' })
+  certificadoAbierto.value = { cert, insc: i }
+}
+async function emitirCertificado(i: any) {
+  error.value = ''
+  const { error: e } = await supabase.rpc('emitir_certificado', { p_inscripcion: i.id })
+  if (e) { error.value = 'formacion.programas.certificado.errorEmitir'; return }
+  await cargar()
+  await verCertificado(i)
+}
+async function alternarRevocado(c: any) {
+  const revocar = !c.revocado_en
+  if (revocar && !window.confirm(t('formacion.programas.certificado.confirmarRevocar'))) return
+  error.value = ''
+  const { error: e } = await supabase.rpc('revocar_certificado', { p_id: c.id, p_revocar: revocar })
+  if (e) { error.value = 'formacion.programas.errorGuardar'; return }
+  await cargar()
+}
+const imprimir = () => window.print()
+
 onMounted(cargar)
 </script>
+
+<style>
+/* Al imprimir solo sale el certificado */
+@media print {
+  body * { visibility: hidden; }
+  .certificado-imprimible, .certificado-imprimible * { visibility: visible; }
+  .certificado-imprimible { position: fixed; left: 0; top: 0; width: 100%; border-width: 6px; }
+}
+</style>
