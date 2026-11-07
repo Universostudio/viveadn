@@ -16,15 +16,17 @@ begin execute q; return 'ok'; exception when others then return sqlstate; end $$
 grant execute on function pg_temp.igual(text, text, text), pg_temp.codigo(text) to authenticated, anon;
 
 insert into auth.users (id) values
-  ('0d000000-0000-0000-0000-000000000001'), ('0d000000-0000-0000-0000-000000000002'), ('0d000000-0000-0000-0000-000000000003'), ('0d000000-0000-0000-0000-000000000004');
+  ('0d000000-0000-0000-0000-000000000001'), ('0d000000-0000-0000-0000-000000000002'), ('0d000000-0000-0000-0000-000000000003'), ('0d000000-0000-0000-0000-000000000004'), ('0d000000-0000-0000-0000-000000000005');
 insert into public.iglesias (id, nombre, slug, pais, ciudad, plan) values
   ('0d100000-0000-0000-0000-00000000000a', 'Iglesia Prueba A', 'prueba-cred-a', 'ES', 'Sevilla', 'premium'),
-  ('0d100000-0000-0000-0000-00000000000b', 'Iglesia Prueba B', 'prueba-cred-b', 'ES', 'Sevilla', 'premium');
+  ('0d100000-0000-0000-0000-00000000000b', 'Iglesia Prueba B', 'prueba-cred-b', 'ES', 'Sevilla', 'premium'),
+  ('0d100000-0000-0000-0000-00000000000c', 'Iglesia Basico', 'prueba-cred-c', 'ES', 'Sevilla', 'basico');
 insert into public.perfiles (id, iglesia_id, nombre, apellido, email, rol, activo) values
   ('0d000000-0000-0000-0000-000000000001', '0d100000-0000-0000-0000-00000000000a', 'Pro', 'A', 'p@da.test', 'propietario', true),
   ('0d000000-0000-0000-0000-000000000002', '0d100000-0000-0000-0000-00000000000a', 'Lid', 'A', 'l@da.test', 'lider_casa', true),
   ('0d000000-0000-0000-0000-000000000003', '0d100000-0000-0000-0000-00000000000a', 'Mie', 'A', 'm@da.test', 'miembro', true),
-  ('0d000000-0000-0000-0000-000000000004', '0d100000-0000-0000-0000-00000000000b', 'Pro', 'B', 'p@db.test', 'propietario', true);
+  ('0d000000-0000-0000-0000-000000000004', '0d100000-0000-0000-0000-00000000000b', 'Pro', 'B', 'p@db.test', 'propietario', true),
+  ('0d000000-0000-0000-0000-000000000005', '0d100000-0000-0000-0000-00000000000c', 'Pro', 'C', 'p@dc.test', 'propietario', true);
 insert into public.casas_oracion (id, iglesia_id, codigo_zona, nombre, lider_id, pais, ciudad, direccion) values
   ('2d000000-0000-0000-0000-00000000000a', '0d100000-0000-0000-0000-00000000000a', 'ZN', 'Casa propia', '0d000000-0000-0000-0000-000000000002', 'ES', 'Sevilla', 'C1'),
   ('2d000000-0000-0000-0000-0000000000a2', '0d100000-0000-0000-0000-00000000000a', 'ZS', 'Casa ajena', null, 'ES', 'Sevilla', 'C2');
@@ -32,7 +34,8 @@ insert into public.miembros (id, iglesia_id, nombre, apellido, casa_oracion_id) 
   ('3d000000-0000-0000-0000-0000000000a1', '0d100000-0000-0000-0000-00000000000a', 'Ana', 'Gil', '2d000000-0000-0000-0000-00000000000a'),
   ('3d000000-0000-0000-0000-0000000000a2', '0d100000-0000-0000-0000-00000000000a', 'Luis', 'Perez', '2d000000-0000-0000-0000-0000000000a2'),
   ('3d000000-0000-0000-0000-0000000000a3', '0d100000-0000-0000-0000-00000000000a', 'Sin', 'Casa', null),
-  ('3d000000-0000-0000-0000-0000000000b1', '0d100000-0000-0000-0000-00000000000b', 'DeB', 'B', null);
+  ('3d000000-0000-0000-0000-0000000000b1', '0d100000-0000-0000-0000-00000000000b', 'DeB', 'B', null),
+  ('3d000000-0000-0000-0000-0000000000c1', '0d100000-0000-0000-0000-00000000000c', 'DeC', 'C', null);
 update public.miembros set activo = true where iglesia_id in ('0d100000-0000-0000-0000-00000000000a', '0d100000-0000-0000-0000-00000000000b');
 insert into public.miembros (id, iglesia_id, nombre, apellido, activo) values
   ('3d000000-0000-0000-0000-0000000000a4', '0d100000-0000-0000-0000-00000000000a', 'Baja', 'Inactiva', false);
@@ -40,10 +43,26 @@ insert into public.eventos (id, iglesia_id, titulo, tipo, inicia_en, casa_oracio
   ('4d000000-0000-0000-0000-000000000001', '0d100000-0000-0000-0000-00000000000a', 'Culto general', 'culto', now(), null, false),
   ('4d000000-0000-0000-0000-000000000002', '0d100000-0000-0000-0000-00000000000a', 'Casa propia', 'casa_oracion', now(), '2d000000-0000-0000-0000-00000000000a', false),
   ('4d000000-0000-0000-0000-000000000003', '0d100000-0000-0000-0000-00000000000a', 'Cancelado', 'culto', now(), null, true),
-  ('4d000000-0000-0000-0000-00000000000b', '0d100000-0000-0000-0000-00000000000b', 'Culto de B', 'culto', now(), null, false);
+  ('4d000000-0000-0000-0000-00000000000b', '0d100000-0000-0000-0000-00000000000b', 'Culto de B', 'culto', now(), null, false),
+  ('4d000000-0000-0000-0000-00000000000c', '0d100000-0000-0000-0000-00000000000c', 'Culto de C', 'culto', now(), null, false);
 
 select pg_temp.igual((select string_agg(r.clave, ',' order by r.clave) from public.roles r join public.rol_permisos rp on rp.rol_id = r.id
-  where r.iglesia_id = '0d100000-0000-0000-0000-00000000000a' and rp.permiso = 'miembros.credencial'), 'administrador,coadministrador', 'los roles de sistema reciben el permiso de credencial');
+  where r.iglesia_id = '0d100000-0000-0000-0000-00000000000a' and rp.permiso = 'credenciales.gestionar'), 'administrador,coadministrador', 'los roles de sistema reciben el permiso de credencial');
+
+-- Una iglesia sin el modulo de credenciales (plan basico) no emite ni escanea; con el complemento si
+select set_config('request.jwt.claim.sub', '0d000000-0000-0000-0000-000000000005', true);
+set local role authenticated;
+select pg_temp.igual(pg_temp.codigo($q$ select public.emitir_credencial('3d000000-0000-0000-0000-0000000000c1') $q$), '42501', 'sin el modulo de credenciales no se emite');
+select pg_temp.igual(pg_temp.codigo($q$ select public.registrar_asistencia_credencial('4d000000-0000-0000-0000-00000000000c', repeat('0', 32)) $q$), '42501', 'ni se escanea, aunque se tenga permiso de asistencia');
+reset role;
+insert into public.iglesia_modulos (iglesia_id, modulo) values ('0d100000-0000-0000-0000-00000000000c', 'credenciales');
+set local role authenticated;
+select pg_temp.igual(pg_temp.codigo($q$ select public.emitir_credencial('3d000000-0000-0000-0000-0000000000c1') $q$), 'ok', 'con el complemento contratado ya se emite');
+reset role;
+delete from public.iglesia_modulos where iglesia_id = '0d100000-0000-0000-0000-00000000000c' and modulo = 'credenciales';
+set local role authenticated;
+select pg_temp.igual(pg_temp.codigo($q$ select public.registrar_asistencia_credencial('4d000000-0000-0000-0000-00000000000c', repeat('0', 32)) $q$), '42501', 'al quitar el complemento deja de escanear');
+reset role;
 
 -- Credencial de B (la usara A mas tarde para comprobar que no vale fuera de su iglesia)
 select set_config('request.jwt.claim.sub', '0d000000-0000-0000-0000-000000000004', true);

@@ -3,16 +3,18 @@
 -- abre ninguna pagina publica: solo sirve dentro de la app, a quien tiene permiso para registrar asistencia en esa iglesia.
 -- La columna se llama token para que la exportacion de la iglesia la excluya como el resto de secretos.
 
--- 1. Permiso nuevo y su semilla en los roles de sistema, tambien en las iglesias que ya existen
+-- 1. Permiso nuevo y su semilla en los roles de sistema, tambien en las iglesias que ya existen.
+--    Cuelga del modulo "credenciales" del catalogo (especial, incluido en Premium y contratable como complemento): sin el modulo
+--    no se emite, no se lee y no se escanea, y la web lo muestra como complemento bloqueado.
 insert into public.permisos (clave, modulo, descripcion, sensible) values
-  ('miembros.credencial', 'miembros', 'Emitir, renovar y retirar la credencial QR de un miembro', false)
+  ('credenciales.gestionar', 'credenciales', 'Emitir, renovar y retirar la credencial QR de un miembro', false)
 on conflict (clave) do nothing;
 
 create or replace function private.sembrar_credencial(p_iglesia uuid)
 returns void language plpgsql security definer set search_path to '' as $$
 begin
   insert into public.rol_permisos (rol_id, permiso)
-    select r.id, 'miembros.credencial'
+    select r.id, 'credenciales.gestionar'
     from public.roles r
     where r.iglesia_id = p_iglesia and r.clave in ('administrador', 'coadministrador')
   on conflict do nothing;
@@ -49,7 +51,7 @@ create table public.credenciales_miembro (
 alter table public.credenciales_miembro enable row level security;
 -- Solo lectura directa, y solo para quien gestiona credenciales: el token permite marcar asistencia
 create policy credenciales_ver on public.credenciales_miembro for select to authenticated
-  using (iglesia_id = (select private.get_iglesia_id()) and (select private.tiene_permiso('miembros.credencial')));
+  using (iglesia_id = (select private.get_iglesia_id()) and (select private.tiene_permiso('credenciales.gestionar')));
 grant select on public.credenciales_miembro to authenticated;
 grant all on public.credenciales_miembro to service_role;
 
@@ -64,7 +66,7 @@ declare
   v_iglesia uuid := (select private.get_iglesia_id());
   v_id uuid;
 begin
-  if not (select private.tiene_permiso('miembros.credencial')) then
+  if not (select private.tiene_permiso('credenciales.gestionar')) then
     raise exception 'SIN_PERMISO' using errcode = '42501';
   end if;
   if not exists (select 1 from public.miembros m where m.id = p_miembro and m.iglesia_id = v_iglesia and m.activo) then
@@ -94,7 +96,7 @@ security definer
 set search_path to ''
 as $$
 begin
-  if not (select private.tiene_permiso('miembros.credencial')) then
+  if not (select private.tiene_permiso('credenciales.gestionar')) then
     raise exception 'SIN_PERMISO' using errcode = '42501';
   end if;
   delete from public.credenciales_miembro where miembro_id = p_miembro and iglesia_id = (select private.get_iglesia_id());
@@ -117,6 +119,10 @@ declare
   v_id uuid;
   v_todo boolean;
 begin
+  -- Sin el modulo de credenciales (o con la iglesia inactiva) no se escanea, aunque se tenga permiso de asistencia
+  if not (select private.tiene_modulo('credenciales')) then
+    raise exception 'SIN_PERMISO' using errcode = '42501';
+  end if;
   select ev.id, ev.cancelado, ev.casa_oracion_id into e
     from public.eventos ev where ev.id = p_evento and ev.iglesia_id = v_iglesia;
   if not found then raise exception 'EVENTO_NO_EXISTE' using errcode = 'P0002'; end if;

@@ -7,7 +7,7 @@
         <h1 class="text-2xl font-bold text-gray-900">{{ t('ficha.titulo') }}</h1>
         <p class="text-gray-500 text-sm">{{ miembro?.crm_id }}</p>
       </div>
-      <div v-if="miembro?.activo && auth.can('miembros.credencial')" class="ml-auto">
+      <div v-if="miembro?.activo && auth.can('credenciales.gestionar')" class="ml-auto">
         <CredencialMiembro :miembro="miembro" />
       </div>
     </div>
