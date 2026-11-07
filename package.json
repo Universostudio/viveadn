@@ -16,13 +16,15 @@
     "test:dar": "node scripts/probar-dar.mts",
     "test:registro": "node scripts/probar-registro.mts",
     "test:alertas": "node scripts/probar-alertas.mts",
-    "test:certificados": "node scripts/probar-certificados.mts"
+    "test:certificados": "node scripts/probar-certificados.mts",
+    "test:credencial": "node scripts/probar-credencial.mts"
   },
   "dependencies": {
     "@fontsource/dm-sans": "^5.3.0",
     "@fontsource/plus-jakarta-sans": "^5.3.0",
     "@lucide/vue": "1.54.0",
     "@supabase/supabase-js": "^2.118.0",
+    "jsqr": "^1.4.0",
     "pinia": "^4.0.3",
     "qrcode": "^1.5.4",
     "vue": "^3.5.42",

@@ -208,7 +208,21 @@
     "informacion": "Información",
     "registrado": "Registrado",
     "estado": "Estado",
-    "zona": "Zona"
+    "zona": "Zona",
+    "credencial": {
+      "boton": "Credencial",
+      "titulo": "Credencial de asistencia",
+      "uso": "Preséntala al llegar a un evento.",
+      "qrAlt": "Código QR de la credencial",
+      "imprimir": "Imprimir",
+      "renovar": "Renovar",
+      "retirar": "Retirar",
+      "cerrar": "Cerrar",
+      "aviso": "Quien tenga esta credencial puede marcar la asistencia de la persona. Si se pierde, renuévala y la anterior dejará de funcionar.",
+      "confirmarRenovar": "La credencial actual dejará de funcionar. ¿Continuar?",
+      "confirmarRetirar": "Se retirará la credencial y su QR dejará de funcionar. ¿Continuar?",
+      "error": "No se pudo completar la acción. Inténtalo de nuevo."
+    }
   },
   "casas": {
     "titulo": "Casas de Oración",
@@ -865,7 +879,27 @@
     "guardarCambios": "Guardar cambios",
     "aplicarSerie": "Aplicar también a las siguientes reuniones de la serie",
     "aplicarSerieAyuda": "Cambia título, tipo, lugar, casa y descripción. Las fechas de las demás reuniones no se modifican.",
-    "errorEditar": "No se pudieron guardar los cambios. Inténtalo de nuevo."
+    "errorEditar": "No se pudieron guardar los cambios. Inténtalo de nuevo.",
+    "escaner": {
+      "titulo": "Escanear credenciales",
+      "descripcion": "Escanea la credencial QR de cada persona al llegar para marcar su asistencia.",
+      "abrir": "Abrir cámara",
+      "cerrar": "Cerrar cámara",
+      "camara": "Vista de la cámara",
+      "manual": "O escribe el código de la credencial",
+      "enviar": "Registrar",
+      "errorCamara": "No se pudo usar la cámara. Revisa el permiso del navegador.",
+      "sinCamara": "Este navegador no permite usar la cámara aquí.",
+      "resultado": {
+        "registrado": "{nombre}: asistencia registrada.",
+        "ya_registrado": "{nombre} ya estaba registrado.",
+        "desconocida": "Credencial no reconocida.",
+        "cancelado": "El evento está cancelado.",
+        "fuera_de_casa": "Esta persona no es de tu casa.",
+        "inactivo": "Esta persona está dada de baja.",
+        "error": "No se pudo registrar. Inténtalo de nuevo."
+      }
+    }
   },
   "checkin": {
     "titulo": "Registro de asistencia",

@@ -35,6 +35,12 @@ bash tests/checkin_concurrencia.sh "$DB"
 "${PSQL[@]}" -d $DB -f tests/op72_avanzado.sql
 "${PSQL[@]}" -d $DB -f tests/motor_formacion.sql
 "${PSQL[@]}" -d $DB -f tests/certificados.sql
+"${PSQL[@]}" -d $DB -f tests/credenciales_miembro.sql
 "${PSQL[@]}" -d $DB -f tests/limites_plan.sql
 bash tests/limites_concurrencia.sh "$DB"
 bash tests/formacion_concurrencia.sh "$DB"
+# Al final: la reversion de credenciales deja la base como antes y la migracion se puede volver a aplicar
+"${PSQL[@]}" -d $DB -f reversiones/20261106020000_credenciales_miembro.down.sql
+"${PSQL[@]}" -d $DB -f tests/reversion_credenciales.sql
+"${PSQL[@]}" -d $DB -f migrations/20261106020000_credenciales_miembro.sql
+"${PSQL[@]}" -d $DB -f tests/credenciales_miembro.sql
