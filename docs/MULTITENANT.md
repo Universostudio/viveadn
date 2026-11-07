@@ -1,5 +1,7 @@
 # Infraestructura multi-iglesia de ViveADN
 
+El modelo de cobro, las pasarelas y la prueba de separación están en [`docs/COBRO.md`](COBRO.md).
+
 Estado verificado en producción el 5 de noviembre de 2026 (proyecto `viveadn-saas`, región eu-west-1). Este documento es la referencia única: si algo de aquí cambia, se cambia aquí en el mismo PR.
 
 ## 1. Modelo
