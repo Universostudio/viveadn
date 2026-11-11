@@ -49,11 +49,33 @@ Es el que usa la prueba, en `supabase/tests/exportacion/`. No se instala en prod
 
 La red de iglesias no se restaura sola: `iglesia_madre_id` apunta a otra iglesia que no viaja en el paquete.
 
+## Exportación por páginas
+
+El panel de plataforma ya no pide el paquete entero. La función `plataforma` ofrece dos acciones, `exportar_plan` (las tablas, sus columnas y sus cifras) y `exportar_pagina` (hasta 5000 filas de una tabla, con cursor por clave primaria). Cada página la calcula la base de datos: el texto JSON, el texto CSV y el md5 de cada fila, que es el mismo que usa `adn_verificar_carga`. El navegador recorre cada tabla dos veces, una en JSON para `datos.json` y otra en CSV para `csv/<tabla>.csv`, y escribe un ZIP en flujo (`src/lib/zipFlujo.ts`, método almacenado, con descriptores de datos) sin tener nunca el paquete entero en memoria. Solo retiene los md5 de las filas, unos 54 bytes por fila, para calcular la huella de cada tabla; el manifiesto se escribe al final con las cifras de lo que de verdad se leyó. Si una página falla, se repite con espera creciente (tres intentos); si la iglesia cambia mientras se exporta, el manifiesto lo marca en `cambios_durante_la_exportacion` y el panel avisa.
+
+`adn_exportar_paquete` sigue en la base como respaldo: el panel lo usa solo si la migración de las páginas no está desplegada.
+
+## Prueba de volumen
+
+`supabase/tests/volumen/exportacion_volumen.sh <personas>` crea una iglesia sintética (nueve filas por persona: ficha, correo alternativo, tres consentimientos y cuatro asistencias) y mide las dos vías sobre la misma base. Máquina de pruebas de 4 núcleos, PostgreSQL local, sin red entre la base y el cliente [E: repetible con el script].
+
+| Personas | Filas | Una sola respuesta | Por páginas de 1000 filas |
+|---|---|---|---|
+| 10.000 | 90.202 | 11,4 s; respuesta de 48,6 MB; cliente psql 101 MB | 20,9 s; ZIP de 48,3 MB; pico del proceso 133 MB |
+| 100.000 | 902.002 | **Falla** a los 100,6 s: `total size of jsonb object elements exceeds the maximum of 268435455 bytes` | 192,4 s; ZIP de 482,7 MB; pico del proceso 184 MB |
+
+Qué dicen las cifras:
+
+- La vía de una sola respuesta tiene un tope duro de 256 MB en la base, que alcanza una iglesia de unas 50.000 a 60.000 personas con este perfil de datos [H: se deduce de 48 MB por 10.000 personas]. Mucho antes toparía con la memoria de la función de borde [NV]. Por eso la vía por páginas es la que se ofrece.
+- La vía por páginas tarda más, porque calcula cada tabla dos veces, pero su coste es lineal: unos 100 ms por página a 10.000 y a 100.000 personas, de modo que el cursor por clave no se degrada con el tamaño. El pico de memoria crece solo con los md5 retenidos (unos 51 MB más al pasar de 90.000 a 902.000 filas, que cuadra con los 54 bytes por fila medidos aparte).
+- El número de filas del ZIP coincide con el recuento de la base y el ZIP pasa la comprobación de integridad de Python. La recarga completa en bases vacías con `adn_verificar_carga` se probó con la iglesia sintética pequeña (`tests/exportacion_paginada_carga.sh`, páginas de 2 y de 1000 filas), no con las 902.000 filas [NV a ese volumen].
+
 ## Límites
 
-- **Pendiente prioritaria antes de producción: paginación o generación del ZIP en el servidor.** Todo el paquete viaja en una sola respuesta de la función de borde, y el CSV duplica el JSON. Con iglesias de decenas de miles de filas la respuesta puede superar los límites de tamaño y de tiempo de la función [NV: no se midió; la prueba usa 150 filas]. Hasta que se resuelva, la exportación es fiable para iglesias pequeñas y medianas, y no debe ofrecerse a una iglesia grande.
-- La función de borde no se ejecutó de extremo a extremo (no hay entorno Supabase de prueba aquí) [NV]. Se comprobaron sus tipos en modo estricto, la base de datos y el empaquetado del ZIP (`npm run test:exportacion`, validado con el lector de Python).
+- Lo que no se midió: el tiempo real de la función de borde con la red de Supabase entre medias (cada página es una llamada), el tope de memoria del navegador de un teléfono con 180 MB de proceso, y la descarga de un ZIP de 480 MB en una conexión doméstica [NV: exige el entorno de pruebas desplegado]. Una iglesia de 100.000 personas es muy improbable en el producto; las cifras sirven para saber dónde está el límite, no como objetivo.
+- Si la iglesia escribe mientras se exporta, el paquete puede mezclar dos instantes: queda marcado en el manifiesto, y la recomendación es repetir la exportación.
+- La función de borde no se ejecutó de extremo a extremo (no hay entorno Supabase de prueba aquí) [NV]. Se comprobaron sus tipos en modo estricto, la base de datos, el recorrido del cliente contra PostgreSQL real y el empaquetado del ZIP (`npm run test:exportacion-paginada`, validado con el lector de Python).
 
 ## Orden de despliegue
 
-La migración `20261111130000_adn_exportacion` primero y la función de borde después. Su reversión está en `supabase/reversiones/` y se probó junto con la del ciclo de vida: esquema idéntico al anterior y sin pérdida de datos.
+La migración `20261111130000_adn_exportacion` y la `20261111260000_adn_exportacion_paginada` primero y la función de borde después. Su reversión está en `supabase/reversiones/` y se probó junto con la del ciclo de vida: esquema idéntico al anterior y sin pérdida de datos.
