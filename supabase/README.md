@@ -83,3 +83,7 @@ Nunca se concede nada a `anon`. Toda función nueva lleva su `grant execute` sol
 ## Aislamiento entre iglesias con dos usuarios (añadido el 11 de noviembre de 2026)
 
 `supabase/tests/adn_aislamiento_total.sql` ataca todas las tablas con `iglesia_id` desde dos usuarios de prueba y se ejecuta con `ejecutar.sh`. Para repetir los mismos ataques a través de la API, con PostgREST en marcha como en la sección anterior: `PGUSER=postgres supabase/tests/aislamiento_api.sh viveadn_pruebas`. Detalle, fugas inyectadas y límites en `docs/AISLAMIENTO.md`.
+
+## Cuentas creadas por SQL y el inicio de sesión (añadido el 11 de noviembre de 2026)
+
+Una cuenta insertada en `auth.users` por SQL con NULL en columnas de texto como `email_change`, `confirmation_token` o `phone_change` rompe el inicio de sesión del servicio de Supabase (GoTrue no convierte NULL a texto). Las cuentas creadas con la API de administración (`auth.admin.createUser`, que es lo que usan las funciones de borde) no tienen el problema. `supabase/tests/auth_usuarios_sin_nulos.sql` lo comprueba en una base con el esquema real, sin imprimir datos de usuarios, y se omite en la base local, que solo tiene la columna `id`; su autoprueba (`auth_usuarios_sin_nulos_autoprueba.sql`) simula las columnas y está en `ejecutar.sh`. En la rama de pruebas, ejecutarlo después de cualquier siembra por SQL. `aislamiento_api.sh` ya rellena con cadenas vacías las cuentas que siembra.

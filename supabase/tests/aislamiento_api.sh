@@ -33,4 +33,17 @@ SQL
 # origen.sql se niega a correr con iglesias reales y deja los datos sembrados gracias a conservar=1
 psql -q -At -v ON_ERROR_STOP=1 -v salida=/dev/null -v conservar=1 -f tests/exportacion/origen.sql > /dev/null
 trap limpiar EXIT
+# En una base con el esquema real de Supabase, las cuentas creadas por SQL dejan NULL en columnas de texto que GoTrue
+# no admite: se rellenan con cadenas vacias (las columnas que no existan en la base local se ignoran)
+psql -q -v ON_ERROR_STOP=1 <<'SQL'
+do $$
+declare col text;
+begin
+  foreach col in array array['confirmation_token', 'recovery_token', 'email_change_token_new', 'email_change', 'email_change_token_current', 'phone_change', 'phone_change_token', 'reauthentication_token'] loop
+    if exists (select 1 from information_schema.columns where table_schema = 'auth' and table_name = 'users' and column_name = col) then
+      execute format('update auth.users set %I = '''' where %I is null and id in (''ea000000-0000-0000-0000-000000000001'', ''ea000000-0000-0000-0000-000000000002'', ''ea000000-0000-0000-0000-000000000003'')', col, col);
+    end if;
+  end loop;
+end $$;
+SQL
 python3 tests/aislamiento_api.py "$API" ea000000-0000-0000-0000-000000000001 "$A" ea000000-0000-0000-0000-000000000003 "$B"
