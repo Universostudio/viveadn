@@ -35,6 +35,21 @@ select cron.schedule('adn-purga-vencidas', '0 */6 * * *', $$
 $$);
 ```
 
+Alerta de purga atrasada (apagada por defecto; ver `docs/COSTE-ENVIO.md`). Una segunda tarea, una vez al día, llama a la acción `avisar_purga`, que acepta la clave de la tarea. Solo envía si la purga va atrasada, como máximo un correo al día, solo a `ADN_EMAIL_ALERTAS`, solo con cifras, y nada si `ADN_ENVIO_ACTIVO` no vale `si`:
+
+```sql
+select cron.schedule('adn-avisar-purga', '30 8 * * *', $$
+  select net.http_post(
+    url := '<FUNCIONES>/functions/v1/plataforma',
+    headers := jsonb_build_object(
+      'Content-Type', 'application/json',
+      'apikey', (select decrypted_secret from vault.decrypted_secrets where name = 'adn_anon_key'),
+      'Authorization', 'Bearer ' || (select decrypted_secret from vault.decrypted_secrets where name = 'adn_anon_key'),
+      'x-adn-cron', (select decrypted_secret from vault.decrypted_secrets where name = 'adn_cron_secret')),
+    body := '{"accion":"avisar_purga"}'::jsonb);
+$$);
+```
+
 4. Se comprueba de extremo a extremo en la rama de pruebas con una iglesia ficticia de plazo vencido: que la tarea corre, que purga y que el estado (apartado 5) vuelve a cero. Solo entonces se plantea hacerlo en la base real, y eso requiere la aprobación de Harold.
 
 Una limitación de la opción A: `pg_net` guarda las respuestas en la propia base, de modo que **el libro externo (apartado 4) no puede ser la respuesta de la tarea**. Lo alimenta otro proceso, descrito allí.

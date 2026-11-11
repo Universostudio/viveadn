@@ -40,7 +40,11 @@ La ruta `/api/salud` lee `VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY` en tiemp
 | `ADN_WEB_URL` | Solo con la doble confirmación | Dirección de la web que va en los enlaces de los correos de confirmación. Por defecto es la de producción | `<WEB_PRUEBAS>` |
 | `ADN_EMAIL_SOPORTE` | No | Dirección de respuesta de los correos | Sin definir: usa la de reserva del código. Pendiente: «le diré» |
 | `BIRD_API_KEY` | No | Envío de correos de invitación y de confirmación | **Sin definir** en pruebas. Sin ella, las invitaciones no se envían y el enlace se copia a mano [E]. Para ensayar el envío, solo con una clave de pruebas y buzones controlados (apartado 8) |
-| `ADN_CONFIRMACION_ACTIVA` | No | Interruptor de la doble confirmación | **Sin definir**: apagada |
+| `ADN_CONFIRMACION_ACTIVA` | No | Interruptor de la doble confirmación | **Sin definir**: apagada. Solo se enciende con orden escrita de Gerencia |
+| `ADN_ENVIO_ACTIVO` | No | Interruptor de los avisos del sistema (baja pedida o cancelada, alerta de purga atrasada). Solo el valor `si` lo enciende | **Sin definir**: apagado, no sale ningún correo. Se enciende solo con orden de Gerencia y con `BIRD_API_KEY` de pruebas |
+| `ADN_ENVIO_PLAN` | No | `gratuito` (por defecto) o `pago`: fija el tope global de envíos al día, 40 o 5.000 | Sin definir: gratuito (40 al día, por debajo de los 50 del plan gratuito de Bird) |
+| `ADN_ENVIO_TOPE_GLOBAL` | No | Baja el tope global; nunca lo sube por encima del máximo del plan. Con `0` se apaga todo envío | Sin definir |
+| `ADN_EMAIL_ALERTAS` | Para la alerta de purga | Dirección que recibe la alerta de purga atrasada. Es la única dirección a la que sale esa alerta | **Sin definir**. Pendiente de elegir buzón |
 
 Nada de esto lleva claves de producción. Si una variable de producción coincide con una de pruebas, no se reutiliza el valor.
 

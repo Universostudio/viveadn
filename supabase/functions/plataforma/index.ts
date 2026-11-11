@@ -1,5 +1,6 @@
 import { createClient } from 'npm:@supabase/supabase-js@2'
 import { claveCronValida, errorDeCiclo, tamanoLote } from './ciclo.ts'
+import { avisoPurga, enviarAviso, leerConfig, type TipoEnvio } from './envio.ts'
 
 // Panel de plataforma: solo para usuarios en plataforma_admins.
 // Usa service_role, asi que cada entrada se valida aqui.
@@ -72,7 +73,7 @@ Deno.serve(async (req) => {
 
     const body = await req.json().catch(() => ({}))
     // La clave de la tarea solo abre la purga y dos lecturas sin datos de personas: el estado de la purga y el libro de purgadas
-    if (esCron && !['purgar_vencidas', 'estado_purga', 'libro_purgas'].includes(body.accion)) return json({ error: 'Sin permiso' }, 403)
+    if (esCron && !['purgar_vencidas', 'estado_purga', 'libro_purgas', 'avisar_purga'].includes(body.accion)) return json({ error: 'Sin permiso' }, 403)
 
     // La auditoria no debe perderse en silencio
     const auditar = async (accion: string, iglesia_id: string | null, detalle: Record<string, unknown> = {}) => {
@@ -488,6 +489,31 @@ Deno.serve(async (req) => {
         const { data, error } = await admin.rpc('adn_purga_estado', { p_horas: 48 })
         if (error || !data) return json({ error: 'No se pudo consultar el estado de la purga' }, 500)
         return json({ ok: true, ...(data as Record<string, unknown>) })
+      }
+
+      case 'avisar_purga': {
+        // Alerta por correo si la purga va atrasada (docs/COSTE-ENVIO.md): como maximo una al dia, apagada por defecto y solo a la direccion
+        // de alertas configurada (ADN_EMAIL_ALERTAS). El correo lleva solo cifras. Si el envio falla, la respuesta lo dice y no pasa nada mas
+        const { data, error } = await admin.rpc('adn_purga_estado', { p_horas: 48 })
+        if (error || !data) return json({ error: 'No se pudo consultar el estado de la purga' }, 500)
+        const e = data as { atrasada: boolean; vencidas: number; horas_mas_atrasada: number; en_borrado: number }
+        if (!e.atrasada) return json({ ok: true, aviso: 'no_hace_falta' })
+        const config = leerConfig(k => Deno.env.get(k))
+        const destino = Deno.env.get('ADN_EMAIL_ALERTAS')?.trim() ?? ''
+        const r = await enviarAviso({
+          tipo: 'purga', iglesia: null, destino, destinoRegistrado: destino !== '', ...avisoPurga(e),
+          idempotencia: `purga/${new Date().toISOString().slice(0, 10)}`,
+        }, {
+          config,
+          reservar: async (tipo: TipoEnvio, igl, topeI, topeT, topeG) => {
+            const { data: d, error: er } = await admin.rpc('adn_envio_reservar', { p_tipo: tipo, p_iglesia: igl, p_tope_iglesia: topeI, p_tope_tipo: topeT, p_tope_global: topeG })
+            if (er) throw new Error(er.message)
+            return String(d)
+          },
+          liberar: async (tipo: TipoEnvio, igl) => { await admin.rpc('adn_envio_liberar', { p_tipo: tipo, p_iglesia: igl }) },
+          fetchFn: fetch, log: (...a) => console.error('alerta de purga', ...a),
+        })
+        return json({ ok: true, aviso: r.estado, ...(r.estado === 'tope' ? { tope: r.cual } : {}) })
       }
 
       case 'libro_purgas': {

@@ -6,7 +6,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 DB=viveadn_reversion
 # Migraciones adn_* en el orden en que se aplican; se revierten en el orden contrario
-VERSIONES=(20261111120000_adn_ciclo_vida 20261111130000_adn_exportacion 20261111140000_adn_importar_contactos 20261111150000_adn_informes 20261111160000_adn_comunicacion 20261111170000_adn_panel_inicio 20261111180000_adn_descargas_informe 20261111190000_adn_consentimiento 20261111200000_adn_consentimiento_auditoria 20261111210000_adn_consentimiento_evidencia 20261111220000_adn_checkin_canales 20261111230000_adn_doble_confirmacion 20261111240000_adn_purga_estado 20261111250000_adn_purgas_libro 20261111260000_adn_exportacion_paginada 20261111270000_adn_autoservicio_datos)
+VERSIONES=(20261111120000_adn_ciclo_vida 20261111130000_adn_exportacion 20261111140000_adn_importar_contactos 20261111150000_adn_informes 20261111160000_adn_comunicacion 20261111170000_adn_panel_inicio 20261111180000_adn_descargas_informe 20261111190000_adn_consentimiento 20261111200000_adn_consentimiento_auditoria 20261111210000_adn_consentimiento_evidencia 20261111220000_adn_checkin_canales 20261111230000_adn_doble_confirmacion 20261111240000_adn_purga_estado 20261111250000_adn_purgas_libro 20261111260000_adn_exportacion_paginada 20261111270000_adn_autoservicio_datos 20261111280000_adn_envios_topes)
 subir()   { for v in "${VERSIONES[@]}"; do "${PSQL[@]}" -d $DB -f "migrations/$v.sql"; done; }
 bajar()   { for ((i=${#VERSIONES[@]}-1; i>=0; i--)); do "${PSQL[@]}" -d $DB -f "reversiones/${VERSIONES[$i]}.down.sql"; done; }
 es_adn()  { for v in "${VERSIONES[@]}"; do [ "$1" = "migrations/$v.sql" ] && return 0; done; return 1; }

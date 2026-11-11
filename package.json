@@ -31,7 +31,8 @@
     "test:entorno": "node scripts/probar-verificar-entorno.mts",
     "test:exportacion-paginada": "node --expose-gc scripts/probar-exportacion-paginada.mts",
     "test:autoservicio": "node scripts/probar-autoservicio.mts",
-    "test:datos-ui": "node scripts/probar-datos-iglesia-ui.mjs"
+    "test:datos-ui": "node scripts/probar-datos-iglesia-ui.mjs",
+    "test:envio": "node scripts/probar-envio.mts"
   },
   "dependencies": {
     "@fontsource/dm-sans": "^5.3.0",

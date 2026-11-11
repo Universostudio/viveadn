@@ -60,9 +60,21 @@ Los envíos que alguien puede provocar desde fuera son los de la doble confirmac
 3. En cualquiera de los dos, **antes de producción**: dominio de envío verificado con SPF, DKIM y DMARC, y decidir la región (la clave de Bird indica su región `eu1` [H]; en Resend no he leído sus regiones [NV]).
 4. **Nada de esto se enciende sin aprobación**: el envío quedaría detrás de una variable apagada por defecto y del contador de topes.
 
-## 6. Qué decide Gerencia
+## 6. Decisiones aprobadas por Gerencia (11 de noviembre de 2026)
 
-- Proveedor para los correos del sistema: Bird (ya integrado) o Resend.
-- Los topes de la sección 4, o los que prefiera.
-- Si la doble confirmación del check-in se enciende alguna vez, porque es la que más volumen y más riesgo añade.
+Proveedor: **Bird**. Topes: alerta de purga 1 al día; aviso de baja 2 por iglesia y día; doble confirmación 200 por iglesia y día y 2.000 en la plataforma; global 5.000 al día en un plan de pago y **40 al día mientras se use el plan gratuito de 50**, para que el servicio falle de forma limpia. La doble confirmación del check-in sigue **apagada** y solo se enciende con orden escrita de Gerencia. Los envíos solo salen a direcciones ya registradas. SPF, DKIM y DMARC del dominio quedan en pendientes de producción.
+
+## 7. Implementación (apagada en todos los entornos)
+
+- `supabase/migrations/20261111280000_adn_envios_topes.sql` (reversión escrita antes): tabla `adn_envios_dia` (día, tipo, iglesia, número; solo cuentas) y `adn_envio_reservar` / `adn_envio_liberar`. La reserva es atómica, comprueba primero el tope global, después el del tipo y después el de la iglesia, y solo suma si todos pasan.
+- `supabase/functions/*/envio.ts` (idéntico en `plataforma` y `datos-iglesia`): apagado salvo `ADN_ENVIO_ACTIVO=si`; solo a una dirección registrada (el correo del perfil de quien pide o cancela la baja; `ADN_EMAIL_ALERTAS` para la alerta); reserva el cupo antes de enviar y lo devuelve si Bird no acepta el correo; sin contador no envía; nunca lanza: un fallo se devuelve como resultado y **no rompe la baja**. La variable `ADN_ENVIO_TOPE_GLOBAL` solo puede bajar el tope.
+- Correos: aviso de baja pedida o cancelada al propietario, en cuatro idiomas, sin enlaces ni secretos; alerta de purga con solo cifras. La respuesta de la baja lleva el campo `aviso` (`enviado`, `apagado`, `tope`, `destino_no_valido`, `sin_clave` o `fallo`).
+- La alerta de purga la lanza la acción `avisar_purga` de `plataforma` desde una tarea diaria (`docs/PURGA.md`).
+- Pruebas: `supabase/tests/adn_envios_topes.sql` (29 comprobaciones, 6 mutaciones detectadas) y `npm run test:envio` (apagado, dirección no registrada o mal formada, tope por iglesia, por tipo y global, 40 al día en el plan gratuito, proveedor caído o en error sin romper nada, base caída sin envío; 12 mutaciones detectadas). [NV] No se ha enviado ningún correo real ni se ha probado contra Bird.
+
+## 8. Qué queda pendiente
+
+- Encender el envío en un entorno (`ADN_ENVIO_ACTIVO=si`) con una clave de pruebas de Bird: solo con orden de Gerencia.
+- Elegir el buzón de `ADN_EMAIL_ALERTAS`.
+- SPF, DKIM y DMARC del dominio de envío: pendientes de producción.
 - Cuándo se hace el análisis de la Comunicación masiva, con su propio coste y su propio tope.

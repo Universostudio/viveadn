@@ -31,7 +31,7 @@ Etiquetas de evidencia: **[E]** informado por Desarrollo con una prueba repetibl
 
 | Pendiente | Qué hay hecho | En pruebas | Estado |
 | --- | --- | --- | --- |
-| Dominio de envío verificado (SPF, DKIM y dirección de respuesta) | Ver `docs/COMUNICACION.md` | No sale ningún correo real: las pruebas usan buzones controlados o el buzón de pruebas del proveedor | «le diré» |
+| Dominio de envío verificado (SPF, DKIM, DMARC y dirección de respuesta) | Ver `docs/COMUNICACION.md` | No sale ningún correo real: las pruebas usan buzones controlados o el buzón de pruebas del proveedor | «le diré» |
 | Aprobación del envío real de mensajes a personas | El envío real y la doble confirmación están apagados por defecto | Apagados | «le diré» |
 | Buzón al que llegan los avisos de la monitorización y de purga atrasada | Ruta de salud, tarjeta de purga en el panel y script de verificación | El indicador del panel basta; quien ejecute la verificación ve el resultado | «le diré» |
 | Remitente propio de la plataforma para avisos por correo | Sin construir | El aviso por correo de purga atrasada espera a esto | «le diré» |

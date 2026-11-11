@@ -1,5 +1,6 @@
 import { createClient } from 'npm:@supabase/supabase-js@2'
 import { errorDeAutoservicio, validarBaja, validarPagina } from './autoservicio.ts'
+import { avisoBaja, enviarAviso, IDIOMAS, leerConfig, type ResultadoEnvio, type TipoEnvio } from './envio.ts'
 
 // Autoservicio del propietario de la iglesia: descargar todos sus datos y pedir o cancelar la baja.
 // Usa service_role, asi que cada entrada se valida aqui y otra vez en la base (adn_es_propietario).
@@ -72,6 +73,36 @@ Deno.serve(async (req) => {
       return salida
     }
 
+    // Aviso por correo al propietario (docs/COSTE-ENVIO.md). Nunca rompe la baja: devuelve el estado del envio y ya.
+    // Apagado por defecto; solo sale a la direccion del perfil de quien actua, que ya esta registrada
+    const avisarBaja = async (accion: 'pedida' | 'cancelada', purgaEl: string | null): Promise<ResultadoEnvio['estado']> => {
+      try {
+        const config = leerConfig(k => Deno.env.get(k))
+        const { data: yo } = await admin.from('perfiles').select('email').eq('id', user.id).maybeSingle()
+        const { data: ig } = await admin.from('iglesias').select('nombre').eq('id', iglesiaId).maybeSingle()
+        const idioma = IDIOMAS.includes(body.idioma) ? body.idioma : 'es'
+        const fecha = purgaEl ? new Date(purgaEl).toLocaleDateString(idioma, { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }) : undefined
+        const c = avisoBaja(accion, { idioma, iglesia: ig?.nombre ?? '', fecha, soporte: config.soporte })
+        const r = await enviarAviso({
+          tipo: 'baja', iglesia: iglesiaId, destino: String(yo?.email ?? ''), destinoRegistrado: !!yo?.email,
+          ...c, idempotencia: `baja/${iglesiaId}/${accion}/${purgaEl ?? new Date().toISOString().slice(0, 13)}`,
+        }, {
+          config,
+          reservar: async (tipo: TipoEnvio, igl, topeI, topeT, topeG) => {
+            const { data, error } = await admin.rpc('adn_envio_reservar', { p_tipo: tipo, p_iglesia: igl, p_tope_iglesia: topeI, p_tope_tipo: topeT, p_tope_global: topeG })
+            if (error) throw new Error(error.message)
+            return String(data)
+          },
+          liberar: async (tipo: TipoEnvio, igl) => { await admin.rpc('adn_envio_liberar', { p_tipo: tipo, p_iglesia: igl }) },
+          fetchFn: fetch, log: (...a) => console.error('aviso de baja', ...a),
+        })
+        return r.estado
+      } catch (e) {
+        console.error('aviso de baja', e instanceof Error ? e.message : e)
+        return 'fallo'
+      }
+    }
+
     switch (body.accion) {
       case 'estado': {
         const { data, error } = await admin.rpc('adn_autoservicio_estado', { p_iglesia: iglesiaId, p_actor: user.id })
@@ -115,14 +146,16 @@ Deno.serve(async (req) => {
         if (!v.ok) return json({ error: v.error }, 400)
         const { data: purgaEl, error } = await admin.rpc('adn_autoservicio_baja', { p_iglesia: iglesiaId, p_actor: user.id, p_motivo: v.motivo })
         if (error) return falloDe(error.message)
-        return json({ ok: true, purga_el: purgaEl })
+        const aviso = await avisarBaja('pedida', String(purgaEl))
+        return json({ ok: true, purga_el: purgaEl, aviso })
       }
 
       case 'cancelar_baja': {
         const motivo = String(body.motivo ?? '').trim().slice(0, 500) || null
         const { data: etapa, error } = await admin.rpc('adn_autoservicio_cancelar_baja', { p_iglesia: iglesiaId, p_actor: user.id, p_motivo: motivo })
         if (error) return falloDe(error.message)
-        return json({ ok: true, etapa })
+        const aviso = await avisarBaja('cancelada', null)
+        return json({ ok: true, etapa, aviso })
       }
 
       default:
