@@ -5,7 +5,9 @@ import { createClient } from 'npm:@supabase/supabase-js@2'
 // haya concedido: con 'ninguno' solo se muestra el nombre y la ciudad, nunca cifras ni personas.
 // Usa service_role, asi que cada entrada se valida aqui y solo salen conteos.
 
-const ORIGENES_PERMITIDOS = ['https://viveadn.com', 'https://www.viveadn.com', 'https://viveadn-web-app.vercel.app', 'http://localhost:5173']
+// Entornos de prueba: ADN_ORIGENES_EXTRA añade direcciones de la web (https exactas, separadas por comas, hasta 10). En producción no se define.
+const ORIGENES_EXTRA = (Deno.env.get('ADN_ORIGENES_EXTRA') ?? '').split(',').map(s => s.trim()).filter(s => /^https:\/\/[a-z0-9]([a-z0-9.-]*[a-z0-9])?(:\d{1,5})?$/.test(s)).slice(0, 10)
+const ORIGENES_PERMITIDOS = ['https://viveadn.com', 'https://www.viveadn.com', 'https://viveadn-web-app.vercel.app', 'http://localhost:5173', ...ORIGENES_EXTRA]
 
 const corsPara = (req: Request) => {
   const origen = req.headers.get('Origin') ?? ''

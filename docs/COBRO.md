@@ -43,7 +43,7 @@ Cifrado de sobre, por inquilino:
 
 ## 6. Cobro del plan (flujo 1) sin depender de Finance
 
-- Catálogo de precios en la base: planes fijos por tramos (recomendación de la gerencia, pendiente de Harold) y módulos como complementos. Los tres precios son una propuesta marcada hasta que Harold los fije.
+- Catálogo de precios en la base: planes fijos por tramos (recomendación de la gerencia, «le diré») y módulos como complementos. Los tres precios son una propuesta marcada hasta que se fijen («le diré», puerta B).
 - La iglesia paga con Stripe o PayPal de la entidad. Vive ADN guarda la suscripción, el cobro y un recibo numerado sin saltos.
 - Cada cobro escribe un evento en una cola de salida (`eventos_salida`) en la misma transacción. Un proceso aparte lo entrega a Finance con reintentos y se reconcilia al reconectar. Si Finance está apagado, el cobro no se detiene.
 - Vive ADN no comparte tablas ni funciones con otros negocios.
@@ -86,6 +86,6 @@ Criterio de terminado: con Finance y los vecinos apagados siete días, Vive ADN 
 
 ## 10. Pendiente
 
-- Harold: precios, moneda base, si los impuestos van incluidos, y cómo gana más Visualiza cuando el cliente vende más.
+- «le diré» (puerta B): precios, moneda base, si los impuestos van incluidos, y cómo gana más Visualiza cuando el cliente vende más.
 - Verificar en la documentación oficial que las claves restringidas de Stripe y las credenciales REST de PayPal cubren el caso.
 - Revisión de un abogado humano de términos, privacidad, reembolsos e impuestos [H, abogado].

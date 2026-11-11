@@ -36,7 +36,7 @@ Decisión de diseño: un fallo al pintar un componente concreto se anota en la c
 
 ## 3. Quién vigila
 
-Una ruta de salud no avisa de nada por sí sola: hace falta algo que la llame cada pocos minutos y avise si falla. Dos opciones sin coste. La elección es de Harold, porque decide quién recibe los avisos.
+Una ruta de salud no avisa de nada por sí sola: hace falta algo que la llame cada pocos minutos y avise si falla. Dos opciones sin coste. En pruebas basta con cualquiera de las dos; quién recibe los avisos en producción es «le diré» (puerta B).
 
 **Opción A. GitHub Actions programado.** El repositorio es público, y los minutos de Actions en repositorios públicos son gratuitos **[H: confirmar las condiciones vigentes]**. Un flujo programado llama a la web y a `/api/salud`; si falla, GitHub avisa por correo a quien lo mantiene. Ventajas: no hay cuenta nueva ni datos que compartir con un tercero. Inconvenientes: el intervalo mínimo es de 5 minutos y GitHub puede retrasarlo; un flujo programado solo corre desde la rama principal; y GitHub desactiva los flujos programados de un repositorio público sin actividad durante 60 días **[H]**, lo que dejaría la vigilancia apagada sin avisar. Para no depender de ello, conviene que alguien confirme de vez en cuando que sigue activo.
 
@@ -64,7 +64,7 @@ jobs:
 
 **Opción B. Un servicio externo de comprobación con plan gratuito** (hay varios que llaman a una dirección cada pocos minutos y avisan por correo o mensaje). Ventajas: intervalos más cortos y avisos más variados. Inconvenientes: una cuenta más que custodiar y condiciones de plan que cambian **[NV: no se han consultado los límites actuales de ninguno]**. Gerencia cita la monitorización de Vivepase como modelo (ruta de salud y pantalla de error propia); este repositorio no contiene nada de ese proyecto y por eso no sé qué vigilante usa ni cómo lo configura.
 
-Con cualquiera de las dos hay que decidir **a quién se avisa**: el correo de soporte y el legal están pendientes de Harold (`docs/REVISION-TRANSVERSAL.md`). Hasta entonces, el aviso iría a quien activó la vigilancia.
+Con cualquiera de las dos hay que decidir **a quién se avisa**: el correo de soporte y el legal son «le diré» (`docs/PENDIENTES-PRODUCCION.md`). Hasta entonces, el aviso iría a quien activó la vigilancia.
 
 ## 4. Funciones públicas de borde
 
@@ -78,7 +78,7 @@ Las funciones públicas son `dar-publico`, `checkin-evento`, `baja` y `verificar
 
 ## 6. Puesta en marcha
 
-1. Aprobación de Harold para desplegar esta rama (ruta de salud y pantalla de error). Hasta entonces, **no hay nada activo**.
+1. Aprobación para desplegar a producción: «le diré» (puerta B). En el entorno de pruebas se despliega sin ella (`docs/PUESTA-EN-MARCHA.md`); en producción **no hay nada activo**.
 2. `vercel.json` reenviaba todas las rutas a `index.html`; se ha cambiado esa regla para que no alcance a `/api/`, porque una regla que lo captura todo puede tapar la función. Que la ruta responde en Vercel como se espera es **[NV]**.
 3. Tras desplegar, confirmar que `https://<web>/api/salud` responde 200 con `{"ok":true}`. Es **[NV]**: no se ha probado en Vercel que la función vea las variables `VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY` en tiempo de ejecución ni cómo trata la caché; si no las ve, responderá 503 y habrá que ajustar el nombre de las variables.
 4. Elegir la opción A o la B y a quién se avisa.

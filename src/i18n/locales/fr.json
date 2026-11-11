@@ -710,8 +710,6 @@
     "porConfigurar": "À configurer",
     "zonaPeligrosa": "Zone sensible",
     "zonaPeligrosaTexto": "Ces actions sont irréversibles. Procédez avec la plus grande prudence.",
-    "exportar": "Exporter toutes les données",
-    "eliminarCuenta": "Supprimer le compte",
     "invitarTitulo": "Inviter un nouvel utilisateur",
     "email": "E-mail *",
     "ejemploEmail": "utilisateur{'@'}email.fr",
@@ -735,7 +733,16 @@
     "correoEnviado": "Nous avons envoyé l'invitation par e-mail à {email}. Demandez-lui de vérifier aussi les courriers indésirables. Si elle n'arrive pas, copiez le lien et envoyez-le vous-même.",
     "correoNoEnviado": "L'e-mail n'a pas pu être envoyé automatiquement. Copiez le lien et envoyez-le à {email}.",
     "modoAlias": "Enregistrer les personnes avec un alias",
-    "modoAliasAyuda": "Les nouvelles personnes sont enregistrées avec un alias ou un identifiant interne : sans nom de famille ni e-mail. Le téléphone est conservé pour le contact. Les membres existants ne changent pas."
+    "modoAliasAyuda": "Les nouvelles personnes sont enregistrées avec un alias ou un identifiant interne : sans nom de famille ni e-mail. Le téléphone est conservé pour le contact. Les membres existants ne changent pas.",
+    "datosYBaja": {
+      "titulo": "Vos données et la résiliation",
+      "exportarTitulo": "Exporter toutes les données.",
+      "exportarTexto": "Nous vous remettons un paquet avec toutes les données de l'église en JSON et CSV, avec une empreinte de chaque table pour vérifier qu'il est complet.",
+      "bajaTitulo": "Résilier l'église.",
+      "bajaTexto": "Le compte passe en suppression logique : il est suspendu et peut être récupéré pendant 30 jours ; passé ce délai, il est supprimé complètement. Il vaut mieux exporter les données avant.",
+      "contacto": "Pour demander l'une ou l'autre, écrivez à l'équipe de Vive ADN :",
+      "contactoPendiente": "l'adresse de support s'affichera ici une fois configurée."
+    }
   },
   "plataforma": {
     "titulo": "Plateforme",

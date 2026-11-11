@@ -710,8 +710,6 @@
     "porConfigurar": "A configurar",
     "zonaPeligrosa": "Zona de perigo",
     "zonaPeligrosaTexto": "Estas ações são irreversíveis. Prossiga com extrema cautela.",
-    "exportar": "Exportar todos os dados",
-    "eliminarCuenta": "Excluir conta",
     "invitarTitulo": "Convidar novo usuário",
     "email": "E-mail *",
     "ejemploEmail": "usuario{'@'}email.com",
@@ -735,7 +733,16 @@
     "correoEnviado": "Enviamos o convite por e-mail para {email}. Peça que verifique também a pasta de spam. Se não chegar, copie o link e envie você mesmo.",
     "correoNoEnviado": "Não foi possível enviar o e-mail automaticamente. Copie o link e envie para {email}.",
     "modoAlias": "Registrar as pessoas com um apelido",
-    "modoAliasAyuda": "As pessoas novas são salvas com um apelido ou ID interno: sem sobrenome nem e-mail. O telefone é mantido para contato. Os membros que já existem não mudam."
+    "modoAliasAyuda": "As pessoas novas são salvas com um apelido ou ID interno: sem sobrenome nem e-mail. O telefone é mantido para contato. Os membros que já existem não mudam.",
+    "datosYBaja": {
+      "titulo": "Seus dados e o cancelamento",
+      "exportarTitulo": "Exportar todos os dados.",
+      "exportarTexto": "Entregamos um pacote com todos os dados da igreja em JSON e CSV, com uma impressão digital de cada tabela para conferir que está completo.",
+      "bajaTitulo": "Cancelar a igreja.",
+      "bajaTexto": "A conta passa para exclusão suave: fica suspensa e pode ser recuperada por 30 dias; depois desse prazo é excluída por completo. Convém exportar os dados antes.",
+      "contacto": "Para pedir qualquer uma das duas coisas, escreva para a equipe da Vive ADN:",
+      "contactoPendiente": "o e-mail de suporte aparecerá aqui quando estiver configurado."
+    }
   },
   "plataforma": {
     "titulo": "Plataforma",

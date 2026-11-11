@@ -79,7 +79,7 @@ Se hace en una rama o un proyecto de pruebas **creado para esto**, vacío o con 
 - Una cuenta sintética inicia sesión, ve su iglesia y no ve la otra.
 - Cada archivo recuperado tiene el tamaño y la huella anotados.
 - Ninguna fila de `adn_mensajes` ha cambiado y no ha salido ningún correo.
-- **Condición para aceptar una restauración real: el libro externo de purgadas.** Antes de abrir la base restaurada, se aplica el libro (`repurgar_registradas` con todos los identificadores, después `purgar_vencidas` hasta que `restantes` sea cero) para que no reviva ninguna iglesia ya borrada; ver `docs/PURGA.md`, apartado 4. Sin el libro, o con un libro anterior a alguna purga, la restauración resucita datos que prometimos borrar y **no se acepta**. **Requisito de custodia (decisión de Gerencia, 11 de noviembre):** el archivo del libro lo custodia Harold, fuera de la plataforma y cifrado, y su clave se guarda en su gestor de contraseñas; sin esa custodia el libro no cuenta como existente. El archivo contiene solo identificadores y fechas, pero sin él no se puede garantizar el borrado tras una restauración. En el ensayo de la rama de pruebas se comprueba además que, tras aplicarlo, `estado_purga` marca cero vencidas.
+- **Condición para aceptar una restauración real: el libro externo de purgadas.** Antes de abrir la base restaurada, se aplica el libro (`repurgar_registradas` con todos los identificadores, después `purgar_vencidas` hasta que `restantes` sea cero) para que no reviva ninguna iglesia ya borrada; ver `docs/PURGA.md`, apartado 4. Sin el libro, o con un libro anterior a alguna purga, la restauración resucita datos que prometimos borrar y **no se acepta**. **Requisito de custodia:** el archivo del libro se guarda fuera de la plataforma y cifrado, y su clave se custodia aparte. Quién lo hace: «le diré» (puerta B, `docs/PENDIENTES-PRODUCCION.md`). En pruebas se ensaya con un archivo y una clave de prueba que se borran después. El archivo contiene solo identificadores y fechas, pero sin él no se puede garantizar el borrado tras una restauración.
 
 **Paso 8. Medir y registrar.** Rellenar la tabla de abajo y entregarla a Gerencia. Sin estas cifras no hay política de copias, solo intención.
 
@@ -92,7 +92,9 @@ Se hace en una rama o un proyecto de pruebas **creado para esto**, vacío o con 
 | Personas que tendrían que restablecer la contraseña | |
 | Pasos que hubo que improvisar | |
 
-## 5. Decisiones que no son de Desarrollo
+## 5. Decisiones pendientes de producción («le diré»)
+
+En pruebas no bloquean nada: se ensaya con datos y claves de prueba. Cuentan en la puerta B (`docs/PENDIENTES-PRODUCCION.md`).
 
 1. **Cuánta información se puede perder y cuánto tiempo puede estar caída la plataforma.** De ahí salen la frecuencia de las copias y el plan de la base de datos.
 2. **Dónde se guardan las copias lógicas y los archivos, y quién custodia la clave que las cifra.** Una copia contiene datos de pertenencia religiosa (categoría especial en el RGPD **[H]**), así que el sitio y quién accede lo debe decidir una persona con responsabilidad, no el script.

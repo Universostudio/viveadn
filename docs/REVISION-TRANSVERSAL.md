@@ -29,7 +29,9 @@ De los nueve puntos, dos están cerrados (consentimientos con su evidencia y nom
 | `docs/INFORMES.md` | Descargas de miembros registradas, solo altas; informes sin contraseñas | Leyenda de confidencialidad en el propio PDF y Excel de miembros; plazo de conservación del registro de descargas; ver quién descargó solo lo tiene quien gestiona usuarios |
 | `docs/COMUNICACION.md` | Consentimiento estricto, baja, auditoría, enlace de un solo uso; no envía nada real | Remitente, dominio de envío, pie legal con correo de contacto y dirección postal en cada mensaje **[H]**, texto de consentimiento versionado, proveedor aprobado, revisión jurídica |
 
-## Qué necesito de Gerencia y del dueño
+## Pendiente de Gerencia y de la puerta B
+
+Lo que depende de Harold consta como «le diré» en `docs/PENDIENTES-PRODUCCION.md` y no bloquea las pruebas. Lo demás:
 
 1. Valores finales de NIF, domicilio y correos de soporte y legal (`docs/LEGAL.md`, apartado 2).
 2. Comprobar en Supabase Auth las direcciones de retorno y la dirección del sitio (no se pueden leer desde el repositorio).

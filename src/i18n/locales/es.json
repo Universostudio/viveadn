@@ -710,8 +710,6 @@
     "porConfigurar": "Por configurar",
     "zonaPeligrosa": "Zona peligrosa",
     "zonaPeligrosaTexto": "Estas acciones son irreversibles. Proceda con extrema precaución.",
-    "exportar": "Exportar todos los datos",
-    "eliminarCuenta": "Eliminar cuenta",
     "invitarTitulo": "Invitar nuevo usuario",
     "email": "Email *",
     "ejemploEmail": "usuario{'@'}email.com",
@@ -735,7 +733,16 @@
     "correoEnviado": "Hemos enviado la invitación por correo a {email}. Pídele que revise también la carpeta de spam. Si no llega, copia el enlace y envíaselo tú.",
     "correoNoEnviado": "No se pudo enviar el correo automáticamente. Copia el enlace y envíaselo a {email}.",
     "modoAlias": "Registrar a las personas con un alias",
-    "modoAliasAyuda": "Las personas nuevas se guardan con un alias o ID interno: sin apellido ni correo. El teléfono se conserva para el contacto. Los miembros que ya existen no cambian."
+    "modoAliasAyuda": "Las personas nuevas se guardan con un alias o ID interno: sin apellido ni correo. El teléfono se conserva para el contacto. Los miembros que ya existen no cambian.",
+    "datosYBaja": {
+      "titulo": "Tus datos y la baja",
+      "exportarTitulo": "Exportar todos los datos.",
+      "exportarTexto": "Te entregamos un paquete con todos los datos de la iglesia en JSON y CSV, con una huella de cada tabla para comprobar que está completo.",
+      "bajaTitulo": "Dar de baja la iglesia.",
+      "bajaTexto": "La cuenta pasa a borrado suave: queda suspendida y se puede recuperar durante 30 días; pasado ese plazo se borra por completo. Conviene exportar antes los datos.",
+      "contacto": "Para pedir cualquiera de las dos cosas, escribe al equipo de Vive ADN:",
+      "contactoPendiente": "el correo de soporte se mostrará aquí cuando esté configurado."
+    }
   },
   "plataforma": {
     "titulo": "Plataforma",

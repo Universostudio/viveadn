@@ -22,10 +22,10 @@ El titular es **Visualiza Studio, Sevilla**, según Gerencia. El resto no consta
 | Variable de la web | Dato | Estado |
 | --- | --- | --- |
 | `VITE_LEGAL_TITULAR` | Nombre del titular | Visualiza Studio (valor por defecto) |
-| `VITE_LEGAL_NIF` | NIF | **Falta**, lo confirma Gerencia |
-| `VITE_LEGAL_DOMICILIO` | Domicilio completo | **Falta** |
-| `VITE_EMAIL_LEGAL` | Correo de privacidad y legal | **Falta** |
-| `VITE_EMAIL_SOPORTE` | Correo de soporte | **Falta** |
+| `VITE_LEGAL_NIF` | NIF | «le diré» (pendiente) |
+| `VITE_LEGAL_DOMICILIO` | Domicilio completo | «le diré» (pendiente) |
+| `VITE_EMAIL_LEGAL` | Correo de privacidad y legal | «le diré» (pendiente) |
+| `VITE_EMAIL_SOPORTE` | Correo de soporte | «le diré» (pendiente) |
 | `VITE_REGION_DATOS` | Región de la infraestructura donde se alojan los datos | `eu-west-1` (Irlanda, UE), indicada por Gerencia [V]; `check:config-legal` exige que empiece por `eu-` porque los textos afirman que está en la Unión Europea |
 | `VITE_LEGAL_REGISTRO` | Inscripción en un registro público, solo si existe | Vacío: el párrafo no se muestra |
 | `ADN_EMAIL_SOPORTE` | Correo de soporte de la función de invitaciones | Reserva: el valor que ya usaba la función |
@@ -83,7 +83,7 @@ Decisiones de redacción mías, sin respaldo en el repositorio ni en una instruc
 
 ## 6. Cómo se publica
 
-1. Gerencia confirma los valores del apartado 2 y alguien los define en la configuración de la web (y `ADN_EMAIL_SOPORTE` en la función de invitaciones).
+1. Los valores del apartado 2 son «le diré» (puerta B, `docs/PENDIENTES-PRODUCCION.md`); cuando lleguen, se definen en la configuración de la web (y `ADN_EMAIL_SOPORTE` en la función de invitaciones).
 2. `npm run check:config-legal`, `npm run check:legal` y `npm run check:textos` pasan.
-3. Aprobación de Harold para desplegar. Nada de esto está desplegado: está en la rama de Gerencia.
+3. Aprobación para desplegar a producción: «le diré» (puerta B). Nada de esto está en producción: está en la rama de Gerencia y en el entorno de pruebas.
 4. Tras desplegar, abrir los cuatro documentos en los cuatro idiomas y comprobar que no queda ningún aviso amarillo.

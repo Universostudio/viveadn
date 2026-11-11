@@ -26,7 +26,9 @@
     "test:salud": "node scripts/probar-salud.mts",
     "test:confirmacion": "node scripts/probar-confirmacion.mts",
     "test:error": "node scripts/probar-error-app.mts",
-    "test:informes": "node scripts/probar-informes.mts"
+    "test:informes": "node scripts/probar-informes.mts",
+    "check:entorno": "node scripts/verificar-entorno.mts",
+    "test:entorno": "node scripts/probar-verificar-entorno.mts"
   },
   "dependencies": {
     "@fontsource/dm-sans": "^5.3.0",

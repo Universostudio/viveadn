@@ -6,7 +6,9 @@ import { TOKEN_RE, validarRegistro, respuestaDe } from './validar.ts'
 // info_checkin y registrar_checkin, que solo ejecuta el servidor. Aqui se valida lo recibido, se
 // cifra la IP (solo se guarda su huella) y se traduce la respuesta sin revelar si la persona ya existia.
 
-const ORIGENES_PERMITIDOS = ['https://viveadn.com', 'https://www.viveadn.com', 'https://viveadn-web-app.vercel.app', 'http://localhost:5173']
+// Entornos de prueba: ADN_ORIGENES_EXTRA añade direcciones de la web (https exactas, separadas por comas, hasta 10). En producción no se define.
+const ORIGENES_EXTRA = (Deno.env.get('ADN_ORIGENES_EXTRA') ?? '').split(',').map(s => s.trim()).filter(s => /^https:\/\/[a-z0-9]([a-z0-9.-]*[a-z0-9])?(:\d{1,5})?$/.test(s)).slice(0, 10)
+const ORIGENES_PERMITIDOS = ['https://viveadn.com', 'https://www.viveadn.com', 'https://viveadn-web-app.vercel.app', 'http://localhost:5173', ...ORIGENES_EXTRA]
 const MAX_CUERPO = 4096
 
 const corsPara = (req: Request) => {

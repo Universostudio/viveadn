@@ -93,9 +93,9 @@ Los seis trabajos en curso, en orden:
 2. Desplegar la función de borde `baja` sin verificar el JWT, como `dar-publico`, y probarla de extremo a extremo.
 2b. Encender la doble confirmación por correo (`docs/COMUNICACION.md`, apartado «Doble confirmación»): hoy está construida y apagada, y sin ella una persona nueva queda suscrita con la dirección que alguien escribió.
 3. Límite de frecuencia en `baja` (opcional: no hace falta contra la fuerza bruta, pero frena el ruido).
-4. Un proveedor aprobado por el dueño, base legal revisada por un abogado (`docs/COMUNICACION.md`, apartado 5) y consentimientos registrados. Re-suscribir a alguien exige un registro explícito con origen: quitar una baja lo deja en «sin dato».
+4. Un proveedor aprobado («le diré», puerta B; ver `docs/PENDIENTES-PRODUCCION.md`), base legal revisada por un abogado (`docs/COMUNICACION.md`, apartado 5) y consentimientos registrados. Re-suscribir a alguien exige un registro explícito con origen: quitar una baja lo deja en «sin dato».
 
-**Textos legales:** versión 1 publicable en la rama, en cuatro idiomas (`docs/LEGAL.md`). Faltan los datos del titular (NIF, domicilio, correos), la revisión del abogado y la aprobación de Harold para desplegar. El registro por QR es la versión v2, con una casilla por canal (`docs/COMUNICACION.md`).
+**Textos legales:** versión 1 publicable en la rama, en cuatro idiomas (`docs/LEGAL.md`). Los datos del titular (NIF, domicilio, correos), la revisión del abogado y la aprobación para desplegar son de la puerta B: constan como «le diré» en `docs/PENDIENTES-PRODUCCION.md` y no bloquean las pruebas. El registro por QR es la versión v2, con una casilla por canal (`docs/COMUNICACION.md`).
 
 **Monitorización:** ruta de salud y pantalla de error propia, escritas y probadas pero sin desplegar; falta elegir el vigilante y a quién se avisa (`docs/MONITORIZACION.md`).
 
@@ -121,7 +121,7 @@ Todo lo marcado **[E]** se repite con estos comandos, desde la raíz del reposit
 
 | Qué | Comando |
 | --- | --- |
-| Batería SQL completa: permisos, aislamiento total, ciclo de vida, exportación, importación, informes, comunicación, consentimiento, evidencia, doble confirmación, purga programada, descargas, panel, reversión de las catorce migraciones `adn_*` y comprobación de NULL en `auth.users` | `PGUSER=postgres supabase/tests/ejecutar.sh` |
+| Batería SQL completa (904 comprobaciones): permisos, aislamiento total, ciclo de vida, exportación, importación, informes, comunicación, consentimiento, evidencia, doble confirmación, purga programada, libro de purgadas, descargas, panel, reversión de las catorce migraciones `adn_*` y comprobación de NULL en `auth.users` | `PGUSER=postgres supabase/tests/ejecutar.sh` |
 | Exportación recargada en dos bases vacías (JSON y CSV) | `PGUSER=postgres supabase/tests/exportacion_carga.sh viveadn_pruebas` |
 | Reversión de las migraciones `adn_*` | `PGUSER=postgres supabase/tests/adn_reversion.sh` |
 | Restauración de la base completa en una base vacía, con comparación fila a fila | `PGUSER=postgres supabase/tests/restauracion_base_completa.sh` |
@@ -134,6 +134,16 @@ Todo lo marcado **[E]** se repite con estos comandos, desde la raíz del reposit
 | Doble confirmación: correo, baja de un clic y lectura de la petición (no envía) | `npm run test:confirmacion` |
 | Ruta de salud y estado de error de la aplicación | `npm run test:salud`, `npm run test:error` |
 | Ensayo de un archivo de contactos real, solo cifras | `node scripts/resumen-contactos-google.mts <archivo fuera del repositorio>` |
+| Verificador del entorno de pruebas desplegado, con un entorno simulado y fallos provocados | `npm run test:entorno` (la prueba) y `npm run check:entorno` (contra un entorno real, **[NV]**: no se ha ejecutado) |
+| Montaje del esquema en una base vacía, idéntico al de la batería (probado en local con `--con-stub`) | `scripts/entorno/montar-rama.sh --rama-de-pruebas` con `DATABASE_URL` en el entorno |
 | Aislamiento por API (necesita PostgREST real y una base de pruebas) | `supabase/tests/aislamiento_api.sh <base>` (**[NV]**: no se ha ejecutado) |
 
 Sin prueba repetible no hay **[E]**: lo que no la tiene está marcado **[NV]** o **[H]**.
+
+## 10. Puesta en marcha, manuales y pendientes
+
+- `docs/PUESTA-EN-MARCHA.md`: variables, secretos y pasos exactos del entorno de pruebas.
+- `docs/MANUAL-IGLESIAS.md`: manual de operación para iglesias, con las guías de importación, informes y exportación.
+- `docs/MANUAL-PLATAFORMA.md`: manual de operación del equipo de la plataforma.
+- `docs/CONTRATACION-Y-OPERACION.md`: contratación y operación del servicio.
+- `docs/PENDIENTES-PRODUCCION.md`: todo lo que depende de Harold («le diré»), que solo cuenta en la puerta B.

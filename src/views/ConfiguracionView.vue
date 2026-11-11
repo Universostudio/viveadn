@@ -242,17 +242,18 @@
         </div>
       </div>
 
-      <div class="card border border-red-100 bg-red-50/50">
-        <h2 class="text-lg font-semibold text-red-700 mb-3 flex items-center gap-2"><TriangleAlert class="w-5 h-5" aria-hidden="true" /> {{ t('configuracion.zonaPeligrosa') }}</h2>
-        <p class="text-sm text-red-600 mb-4">{{ t('configuracion.zonaPeligrosaTexto') }}</p>
-        <div class="flex flex-wrap gap-3">
-          <button class="text-sm px-4 py-2 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 transition-colors">
-            {{ t('configuracion.exportar') }}
-          </button>
-          <button class="text-sm px-4 py-2 border border-red-300 text-red-700 rounded-lg hover:bg-red-100 transition-colors font-medium">
-            {{ t('configuracion.eliminarCuenta') }}
-          </button>
-        </div>
+      <!-- Exportar los datos y dar de baja la iglesia los hace hoy el equipo de la plataforma (docs/MANUAL-IGLESIAS.md); no hay botones que no hagan nada -->
+      <div class="card border border-gray-200" data-test="datos-y-baja">
+        <h2 class="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2"><Database class="w-5 h-5" aria-hidden="true" /> {{ t('configuracion.datosYBaja.titulo') }}</h2>
+        <ul class="space-y-3 text-sm text-gray-700">
+          <li><span class="font-medium text-gray-900">{{ t('configuracion.datosYBaja.exportarTitulo') }}</span> {{ t('configuracion.datosYBaja.exportarTexto') }}</li>
+          <li><span class="font-medium text-gray-900">{{ t('configuracion.datosYBaja.bajaTitulo') }}</span> {{ t('configuracion.datosYBaja.bajaTexto') }}</li>
+        </ul>
+        <p class="text-sm text-gray-600 mt-4">
+          {{ t('configuracion.datosYBaja.contacto') }}
+          <a v-if="soporte" :href="`mailto:${soporte}`" class="text-adn-verde underline">{{ soporte }}</a>
+          <span v-else class="text-gray-500">{{ t('configuracion.datosYBaja.contactoPendiente') }}</span>
+        </p>
       </div>
     </div>
 
@@ -339,9 +340,11 @@ import { supabase } from '@/lib/supabase'
 import ConfigDar from '@/components/ConfigDar.vue'
 import { useAuthStore } from '@/stores/auth'
 import { useI18n } from 'vue-i18n'
+import { CONFIG_LEGAL } from '@/lib/legalConfig'
 
 const auth = useAuthStore()
 const { t, te, locale } = useI18n()
+const soporte = CONFIG_LEGAL.emailSoporte
 const roles = ref<any[]>([])
 // Clave de traducción del aviso visible ('' = sin aviso)
 const mensajeIglesia = ref('')

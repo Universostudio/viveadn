@@ -6,7 +6,9 @@ import { validarRegistro, respuestaDeError } from './validar.ts'
 // el correo queda comprobado. En la etapa de pruebas exige un codigo de acceso (ver plataforma_ajustes).
 // Un correo que ya tiene cuenta recibe la misma respuesta que uno nuevo, para no revelar quien existe.
 
-const ORIGENES_INVITACION = ['https://viveadn.com', 'https://www.viveadn.com', 'https://viveadn-web-app.vercel.app']
+// Entornos de prueba: ADN_ORIGENES_EXTRA añade direcciones de la web (https exactas, separadas por comas, hasta 10). En producción no se define.
+const ORIGENES_EXTRA = (Deno.env.get('ADN_ORIGENES_EXTRA') ?? '').split(',').map(s => s.trim()).filter(s => /^https:\/\/[a-z0-9]([a-z0-9.-]*[a-z0-9])?(:\d{1,5})?$/.test(s)).slice(0, 10)
+const ORIGENES_INVITACION = ['https://viveadn.com', 'https://www.viveadn.com', 'https://viveadn-web-app.vercel.app', ...ORIGENES_EXTRA]
 const ORIGENES_PERMITIDOS = [...ORIGENES_INVITACION, 'http://localhost:5173']
 const MAX_CUERPO = 4096
 const MAX_INTENTOS = 5     // por dispositivo

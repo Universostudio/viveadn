@@ -710,8 +710,6 @@
     "porConfigurar": "Not set up",
     "zonaPeligrosa": "Danger zone",
     "zonaPeligrosaTexto": "These actions cannot be undone. Proceed with extreme caution.",
-    "exportar": "Export all data",
-    "eliminarCuenta": "Delete account",
     "invitarTitulo": "Invite a new user",
     "email": "Email *",
     "ejemploEmail": "user{'@'}email.com",
@@ -735,7 +733,16 @@
     "correoEnviado": "We emailed the invitation to {email}. Ask them to check the spam folder too. If it does not arrive, copy the link and send it yourself.",
     "correoNoEnviado": "The email could not be sent automatically. Copy the link and send it to {email}.",
     "modoAlias": "Register people with an alias",
-    "modoAliasAyuda": "New people are saved with an alias or internal ID: no last name or email. The phone number is kept for contact. Existing members do not change."
+    "modoAliasAyuda": "New people are saved with an alias or internal ID: no last name or email. The phone number is kept for contact. Existing members do not change.",
+    "datosYBaja": {
+      "titulo": "Your data and cancellation",
+      "exportarTitulo": "Export all data.",
+      "exportarTexto": "We deliver a package with all the church's data in JSON and CSV, with a fingerprint of each table to check it is complete.",
+      "bajaTitulo": "Cancel the church.",
+      "bajaTexto": "The account moves to soft deletion: it is suspended and can be recovered for 30 days; after that period it is deleted completely. It is best to export the data first.",
+      "contacto": "To request either of them, write to the Vive ADN team:",
+      "contactoPendiente": "the support email will be shown here once it is configured."
+    }
   },
   "plataforma": {
     "titulo": "Platform",

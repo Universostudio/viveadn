@@ -6,7 +6,9 @@ import { createClient } from 'npm:@supabase/supabase-js@2'
 // La respuesta no revela nada de la persona ni de la iglesia, ni si el consentimiento llegó a cambiar.
 // La doble confirmación está apagada por defecto (ajuste adn_doble_confirmacion): sin ella no existen solicitudes que confirmar.
 
-const ORIGENES_PERMITIDOS = ['https://viveadn.com', 'https://www.viveadn.com', 'https://viveadn-web-app.vercel.app', 'http://localhost:5173']
+// Entornos de prueba: ADN_ORIGENES_EXTRA añade direcciones de la web (https exactas, separadas por comas, hasta 10). En producción no se define.
+const ORIGENES_EXTRA = (Deno.env.get('ADN_ORIGENES_EXTRA') ?? '').split(',').map(s => s.trim()).filter(s => /^https:\/\/[a-z0-9]([a-z0-9.-]*[a-z0-9])?(:\d{1,5})?$/.test(s)).slice(0, 10)
+const ORIGENES_PERMITIDOS = ['https://viveadn.com', 'https://www.viveadn.com', 'https://viveadn-web-app.vercel.app', 'http://localhost:5173', ...ORIGENES_EXTRA]
 const TOKEN_RE = /^[0-9a-f]{64}$/
 
 const corsPara = (req: Request) => {

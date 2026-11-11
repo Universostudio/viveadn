@@ -15,16 +15,22 @@ Estado a 11 de noviembre de 2026. Etiquetas de evidencia: **[E]** informado por 
 
 **Cómo, con `pg_cron` y `pg_net` dentro de la propia base**, de modo que el secreto no sale de la plataforma. Reparto de tareas acordado con Gerencia:
 
-1. Gerencia **genera** el secreto (al menos 32 caracteres) y lo guarda en la bóveda de secretos de la plataforma con el nombre `adn_cron_secret`, y lo define también como `ADN_CRON_SECRET` en los secretos de la función. Desarrollo no lo genera, no lo ve y no se escribe en ningún archivo del repositorio.
+1. Gerencia **genera** el secreto (al menos 32 caracteres) y lo guarda en la bóveda de secretos de la plataforma con el nombre `adn_cron_secret`, y lo define también como `ADN_CRON_SECRET` en los secretos de la función. Guarda también la clave pública de la rama en la bóveda como `adn_anon_key` (es pública, pero la tarea la necesita; ver el fragmento de abajo). Desarrollo no lo genera, no lo ve y no se escribe en ningún archivo del repositorio.
 2. Gerencia verifica en la **rama de pruebas** que las extensiones están disponibles y activas **[NV]**: en la base local no existen, así que nada de esto se ha podido ejecutar aquí.
 3. Con esos dos pasos hechos, se programa la tarea con un esquema como este (**sin aplicar**; los marcadores se sustituyen en la rama de pruebas, no en el repositorio):
 
 ```sql
--- Cada 6 horas. <FUNCIONES> es la dirección de las funciones del proyecto; el secreto se lee de la bóveda.
+-- Cada 6 horas. <FUNCIONES> es la dirección de las funciones del proyecto; los secretos se leen de la bóveda.
+-- La clave pública (adn_anon_key) hace falta porque la pasarela exige un JWT válido a `plataforma` antes de que la función
+-- compruebe x-adn-cron; sin ella la tarea recibiría un 401 y no purgaría nunca.
 select cron.schedule('adn-purga-vencidas', '0 */6 * * *', $$
   select net.http_post(
     url := '<FUNCIONES>/functions/v1/plataforma',
-    headers := jsonb_build_object('Content-Type', 'application/json', 'x-adn-cron', (select decrypted_secret from vault.decrypted_secrets where name = 'adn_cron_secret')),
+    headers := jsonb_build_object(
+      'Content-Type', 'application/json',
+      'apikey', (select decrypted_secret from vault.decrypted_secrets where name = 'adn_anon_key'),
+      'Authorization', 'Bearer ' || (select decrypted_secret from vault.decrypted_secrets where name = 'adn_anon_key'),
+      'x-adn-cron', (select decrypted_secret from vault.decrypted_secrets where name = 'adn_cron_secret')),
     body := '{"accion":"purgar_vencidas"}'::jsonb);
 $$);
 ```
@@ -82,4 +88,4 @@ Restaurar una copia anterior a una purga resucita los datos de una iglesia ya bo
 | Rotación de 14 días de las copias propias y retención de las de la plataforma | **[NV]**; se lee y se configura en la plataforma |
 | Texto legal con los 14 días | Hecho: política de privacidad 1.2 y términos 1.1 [E, `npm run check:legal`] |
 
-Custodia decidida por Gerencia: Harold guarda el archivo del libro, con la clave en su gestor de contraseñas (`docs/RESTAURACION.md`, paso 7). Decisiones que siguen sin ser de Desarrollo: si el abogado acepta la rotación de copias como cumplimiento del 28.3.g; y quién recibe el aviso de purga atrasada cuando exista remitente.
+Custodia del archivo del libro y de su clave: «le diré» (puerta B, `docs/PENDIENTES-PRODUCCION.md`); en pruebas se ensaya con un archivo y una clave de prueba (`docs/RESTAURACION.md`, paso 7). Decisiones que siguen sin ser de Desarrollo: si el abogado acepta la rotación de copias como cumplimiento del 28.3.g; y quién recibe el aviso de purga atrasada cuando exista remitente.

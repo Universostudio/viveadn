@@ -4,11 +4,14 @@ import { claveCronValida, errorDeCiclo, tamanoLote } from './ciclo.ts'
 // Panel de plataforma: solo para usuarios en plataforma_admins.
 // Usa service_role, asi que cada entrada se valida aqui.
 
+// Entornos de prueba: ADN_ORIGENES_EXTRA añade direcciones de la web (https exactas, separadas por comas, hasta 10). En producción no se define.
+const ORIGENES_EXTRA = (Deno.env.get('ADN_ORIGENES_EXTRA') ?? '').split(',').map(s => s.trim()).filter(s => /^https:\/\/[a-z0-9]([a-z0-9.-]*[a-z0-9])?(:\d{1,5})?$/.test(s)).slice(0, 10)
 // Destinos validos del enlace de invitacion (nunca localhost)
 const ORIGENES_INVITACION = [
   'https://viveadn.com',
   'https://www.viveadn.com',
   'https://viveadn-web-app.vercel.app',
+  ...ORIGENES_EXTRA,
 ]
 // Origenes que pueden llamar a la funcion (localhost solo para desarrollo)
 const ORIGENES_PERMITIDOS = [...ORIGENES_INVITACION, 'http://localhost:5173']
