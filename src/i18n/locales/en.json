@@ -1296,5 +1296,77 @@
         "completadas": "Consol. completed"
       }
     }
+  },
+  "baja": {
+    "titulo": "Stop receiving messages",
+    "texto": "Confirm that you no longer want to receive messages through this channel. You can change this later by asking your church.",
+    "boton": "Confirm unsubscribe",
+    "hecho": "Done, you have been unsubscribed",
+    "hechoTexto": {
+      "email": "You will no longer receive emails from your church.",
+      "sms": "You will no longer receive text messages from your church.",
+      "whatsapp": "You will no longer receive WhatsApp messages from your church."
+    },
+    "invalido": "Invalid link",
+    "invalidoTexto": "This link is not correct. To unsubscribe, use the link in the last message you received.",
+    "usado": "This link was already used",
+    "usadoTexto": "You were already unsubscribed. There is nothing more to do.",
+    "caducado": "This link has expired",
+    "caducadoTexto": "Use the link in a more recent message or ask your church.",
+    "error": "The unsubscribe could not be completed",
+    "errorTexto": "Try again in a few minutes."
+  },
+  "consentimiento": {
+    "titulo": "Consent to receive messages",
+    "ayuda": "Only people recorded as subscribed on a channel receive messages there. An unsubscribe cannot be undone by an import: only someone with permission can remove it.",
+    "canal": {
+      "email": "Email",
+      "sms": "SMS",
+      "whatsapp": "WhatsApp"
+    },
+    "estado": {
+      "suscrito": "Subscribed",
+      "sin_dato": "No data",
+      "nunca": "Never subscribed",
+      "cancelado": "Unsubscribed"
+    },
+    "origen": {
+      "manual": "Manual entry",
+      "formulario": "Form",
+      "papel": "Signed paper",
+      "verbal": "Verbal",
+      "wix": "Imported from Wix",
+      "baja": "Unsubscribe recorded",
+      "enlace": "Unsubscribe link",
+      "otro": "Other source"
+    },
+    "darBaja": "Unsubscribe",
+    "quitarBaja": "Remove unsubscribe",
+    "seguroBaja": "Unsubscribe?",
+    "seguroQuitar": "Remove the unsubscribe? They will have no consent.",
+    "confirmar": "Confirm",
+    "errorCarga": "Could not load the consent.",
+    "errorGuardar": "Could not save the change.",
+    "pantalla": {
+      "titulo": "Consents",
+      "subtitulo": "Who has agreed to receive messages, by channel, with source and date",
+      "volver": "Back to Communication",
+      "enlace": "Manage consents",
+      "buscar": "Search by name or email",
+      "sinResultados": "No members match.",
+      "registrar": "Record consent",
+      "canal": "Channel",
+      "estado": "Status",
+      "origen": "Source",
+      "guardar": "Save",
+      "guardado": "Consent saved.",
+      "auditoria": "Change history",
+      "auditoriaAyuda": "Every change is recorded with who made it and from where. Nobody can edit or delete this history.",
+      "auditoriaVacia": "No changes yet.",
+      "sinRegistro": "no record",
+      "miembroBorrado": "Deleted member",
+      "equipo": "Team member",
+      "sinUsuario": "No user (public link)"
+    }
   }
 }

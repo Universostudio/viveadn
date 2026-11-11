@@ -12,6 +12,7 @@
     </div>
 
     <p v-if="!puedeEnviar" class="text-sm text-gray-500">{{ t('comunicacion.soloLectura') }}</p>
+    <p class="text-sm"><RouterLink to="/comunicacion/consentimientos" class="text-adn-verde hover:underline font-medium">{{ t('consentimiento.pantalla.enlace') }}</RouterLink></p>
 
     <!-- Canales -->
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">

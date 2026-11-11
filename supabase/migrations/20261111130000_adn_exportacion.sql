@@ -44,7 +44,8 @@ returns table (nombre text, filtro text) language sql stable set search_path to 
   from pg_class c
   where c.relnamespace = 'public'::regnamespace and c.relkind = 'r' and c.relname <> 'iglesias'
     -- La auditoria de la plataforma son acciones internas y puede llevar notas de administracion: no sale en la exportacion de la iglesia
-    and c.relname <> 'plataforma_auditoria'
+    and c.relname not in ('plataforma_auditoria', 'adn_bajas_enlaces')
+    -- (adn_bajas_enlaces: secretos efimeros de un solo uso, sin valor fuera de la base)
     and exists (select 1 from pg_attribute a where a.attrelid = c.oid and a.attname = 'iglesia_id' and a.attnum > 0 and not a.attisdropped)
   union all
   select 'rol_permisos', 'rol_id in (select id from public.roles where iglesia_id = $1)'

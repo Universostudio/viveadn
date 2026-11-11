@@ -35,14 +35,23 @@ Corre con los permisos de quien la llama, de modo que las políticas de segurida
 
 Los casos de calendario están probados: el 29 de febrero se celebra el último día de febrero en los años no bisiestos, y los cumpleaños de finales de diciembre aparecen a principios de enero [V].
 
+### Pantalla de consentimientos, baja por canal y enlace de baja
+
+- **Pantalla de consentimientos** (`/comunicacion/consentimientos`): busca miembros, muestra su estado por canal (correo, SMS, WhatsApp) con origen y fecha, y permite registrar un consentimiento eligiendo canal, estado y origen (formulario, papel firmado, de palabra, manual). Solo la ve quien tiene `comunicacion.ver` o `comunicacion.enviar`, y solo edita quien tiene `comunicacion.enviar`. Registrar exige ese mismo permiso en la base de datos, no solo en la pantalla [V, `adn_consentimiento.sql`].
+- **Auditoría de solo altas** (`adn_consentimiento_auditoria`): cada cambio de consentimiento, venga de la pantalla, de una importación, de una baja o de un enlace, deja una fila con quién, cuándo, canal, estado anterior y nuevo, y origen. Repetir el mismo estado no deja fila. Nadie la inserta, modifica ni borra desde la web, y un disparador impide modificarla incluso al servicio; solo desaparece al borrar la iglesia [V]. Se muestran las últimas 30 entradas en la pantalla.
+- **Interruptor de baja en la ficha del miembro**, por canal: deja el canal en `cancelado`. La importación no puede deshacerlo (solo endurece). Quitar una baja es una decisión de una persona con permiso, queda anotada y deja al miembro en «sin dato»: no recibe nada hasta que se registre un consentimiento nuevo [V].
+- **Enlace público de baja de un solo uso** (`/baja/<secreto>`): el secreto tiene 244 bits aleatorios y la base guarda solo su huella SHA-256 [V]. Solo el servicio los crea (`adn_baja_crear_enlace`) y los consume (`adn_baja_consumir`, a través de la función de borde pública `baja`); ni una persona autenticada ni un visitante pueden llamar a esas funciones ni leer la tabla [V]. El segundo uso, un secreto inválido o uno caducado se rechazan sin dar pistas sobre la persona ni la iglesia, y no cambian nada [V]. Abrir el enlace no lo gasta: la página pide una confirmación y es ella quien da de baja, para que un analizador de correo que «visita» los enlaces no dé de baja a nadie. La baja del enlace deja a la persona en `cancelado` en ese canal, anotado como enlace y sin usuario.
+- **No hay envío real**: nada crea ni envía todavía esos enlaces. Cuando exista un proveedor, el envío debe crear un enlace por destinatario y canal con `adn_baja_crear_enlace` y poner `https://<dirección de la web>/baja/<secreto>` en el mensaje. El secreto no se guarda, así que no se puede reconstruir después. El buzón de pruebas no incluye enlaces para no dejar secretos en un historial legible.
+- **[NV]** La función de borde `baja` solo pasó la comprobación de tipos; no se ejecutó de extremo a extremo. Hay que desplegarla sin verificar el JWT, como `dar-publico`, y la página de baja no se abrió en un navegador real. Tampoco hay límite de frecuencia: no hace falta frente a la fuerza bruta (244 bits), pero sí conviene si se quiere frenar el ruido.
+
 ### Efecto del consentimiento estricto
 
-Un miembro creado a mano no tiene registro de consentimiento, así que hoy **no recibiría nada** hasta que alguien lo registre. Es la opción prudente mientras se decide la base legal (apartado 5). El registro se hace con la función `adn_registrar_consentimiento`, que exige permiso para editar miembros y puede dejar cualquier estado; todavía no hay pantalla para llamarla [NV]. La vista previa avisa de cuántas personas se omiten por falta de consentimiento.
+Un miembro creado a mano no tiene registro de consentimiento, así que hoy **no recibiría nada** hasta que alguien lo registre. Es la opción prudente mientras se decide la base legal (apartado 5). El registro se hace desde la pantalla de consentimientos, con la función `adn_registrar_consentimiento`, que exige `comunicacion.enviar` y puede dejar cualquier estado. La vista previa avisa de cuántas personas se omiten por falta de consentimiento.
 
 ## 4. Límites
 
 - **[NV]** Las pantallas nuevas se compilaron y pasaron la comprobación de tipos, pero no se abrieron en un navegador contra una base real.
-- **Pendiente antes de cualquier envío real:** pantalla para registrar consentimientos y interruptor de baja en la ficha del miembro. **[NV]** No hay forma en la pantalla de dar de baja a un miembro: la tabla de bajas y sus permisos existen y están probados, pero falta el interruptor en la ficha del miembro.
+- **[NV]** (resuelto el 11-11: hay pantalla de consentimientos e interruptor de baja en la ficha) Ya no falta la forma de dar de baja a un miembro: la tabla de bajas y sus permisos existen y están probados, pero falta el interruptor en la ficha del miembro.
 - El buzón no registra aperturas, rebotes ni respuestas, porque no hay envío real.
 - El tope de 20 mensajes al día y el de 2.000 destinatarios son decisiones de seguridad mientras no haya proveedor. Un proveedor real puede exigir otros.
 

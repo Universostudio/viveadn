@@ -57,6 +57,13 @@ const router = createRouter({
       component: () => import('@/views/CheckinPublicoView.vue'),
       meta: { public: true, allowLoggedIn: true }
     },
+    // Baja de los mensajes por enlace de un solo uso: la abre cualquiera con el enlace del mensaje
+    {
+      path: '/baja/:token',
+      name: 'baja-publica',
+      component: () => import('@/views/BajaView.vue'),
+      meta: { public: true, allowLoggedIn: true }
+    },
     // Verificacion de un certificado de formacion: lo abre cualquiera con el codigo del QR
     {
       path: '/verificar/:codigo',
@@ -119,6 +126,11 @@ const router = createRouter({
           path: 'comunicacion',
           name: 'comunicacion',
           component: () => import('@/views/ComunicacionView.vue')
+        },
+        {
+          path: 'comunicacion/consentimientos',
+          name: 'consentimientos',
+          component: () => import('@/views/ConsentimientosView.vue')
         },
         {
           path: 'reportes',

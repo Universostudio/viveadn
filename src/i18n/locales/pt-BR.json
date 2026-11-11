@@ -1296,5 +1296,77 @@
         "completadas": "Consol. concluídas"
       }
     }
+  },
+  "baja": {
+    "titulo": "Deixar de receber mensagens",
+    "texto": "Confirme que você não quer mais receber mensagens por este canal. Você pode mudar isso depois pedindo à sua igreja.",
+    "boton": "Confirmar o cancelamento",
+    "hecho": "Pronto, você foi descadastrado",
+    "hechoTexto": {
+      "email": "Você não receberá mais e-mails da sua igreja.",
+      "sms": "Você não receberá mais SMS da sua igreja.",
+      "whatsapp": "Você não receberá mais mensagens de WhatsApp da sua igreja."
+    },
+    "invalido": "Link inválido",
+    "invalidoTexto": "Este link não está correto. Para cancelar, use o link da última mensagem que você recebeu.",
+    "usado": "Este link já foi usado",
+    "usadoTexto": "O cancelamento já estava feito. Não é preciso fazer mais nada.",
+    "caducado": "Este link expirou",
+    "caducadoTexto": "Use o link de uma mensagem mais recente ou peça à sua igreja.",
+    "error": "Não foi possível concluir o cancelamento",
+    "errorTexto": "Tente novamente em alguns minutos."
+  },
+  "consentimiento": {
+    "titulo": "Consentimento para receber mensagens",
+    "ayuda": "Só recebe mensagens quem consta como inscrito naquele canal. Um cancelamento não pode ser desfeito por uma importação: só alguém com permissão pode removê-lo.",
+    "canal": {
+      "email": "E-mail",
+      "sms": "SMS",
+      "whatsapp": "WhatsApp"
+    },
+    "estado": {
+      "suscrito": "Inscrito",
+      "sin_dato": "Sem dado",
+      "nunca": "Nunca inscrito",
+      "cancelado": "Inscrição cancelada"
+    },
+    "origen": {
+      "manual": "Registro manual",
+      "formulario": "Formulário",
+      "papel": "Papel assinado",
+      "verbal": "Verbal",
+      "wix": "Importado do Wix",
+      "baja": "Cancelamento registrado",
+      "enlace": "Link de cancelamento",
+      "otro": "Outra origem"
+    },
+    "darBaja": "Cancelar inscrição",
+    "quitarBaja": "Remover o cancelamento",
+    "seguroBaja": "Cancelar a inscrição?",
+    "seguroQuitar": "Remover o cancelamento? A pessoa ficará sem consentimento.",
+    "confirmar": "Confirmar",
+    "errorCarga": "Não foi possível carregar o consentimento.",
+    "errorGuardar": "Não foi possível salvar a alteração.",
+    "pantalla": {
+      "titulo": "Consentimentos",
+      "subtitulo": "Quem aceitou receber mensagens, por canal, com origem e data",
+      "volver": "Voltar a Comunicação",
+      "enlace": "Gerenciar consentimentos",
+      "buscar": "Buscar por nome ou e-mail",
+      "sinResultados": "Nenhum membro encontrado.",
+      "registrar": "Registrar consentimento",
+      "canal": "Canal",
+      "estado": "Estado",
+      "origen": "Origem",
+      "guardar": "Salvar",
+      "guardado": "Consentimento salvo.",
+      "auditoria": "Histórico de alterações",
+      "auditoriaAyuda": "Cada alteração fica registrada com quem a fez e de onde. Ninguém pode editar nem apagar este histórico.",
+      "auditoriaVacia": "Ainda não há alterações.",
+      "sinRegistro": "sem registro",
+      "miembroBorrado": "Membro excluído",
+      "equipo": "Pessoa da equipe",
+      "sinUsuario": "Sem usuário (link público)"
+    }
   }
 }

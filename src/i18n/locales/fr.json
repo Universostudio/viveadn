@@ -1296,5 +1296,77 @@
         "completadas": "Consol. terminées"
       }
     }
+  },
+  "baja": {
+    "titulo": "Ne plus recevoir de messages",
+    "texto": "Confirmez que vous ne souhaitez plus recevoir de messages par ce canal. Vous pourrez changer cela plus tard en le demandant à votre église.",
+    "boton": "Confirmer le désabonnement",
+    "hecho": "C'est fait, vous êtes désabonné",
+    "hechoTexto": {
+      "email": "Vous ne recevrez plus d'e-mails de votre église.",
+      "sms": "Vous ne recevrez plus de SMS de votre église.",
+      "whatsapp": "Vous ne recevrez plus de messages WhatsApp de votre église."
+    },
+    "invalido": "Lien non valide",
+    "invalidoTexto": "Ce lien n'est pas correct. Pour vous désabonner, utilisez le lien du dernier message reçu.",
+    "usado": "Ce lien a déjà été utilisé",
+    "usadoTexto": "Vous étiez déjà désabonné. Il n'y a rien d'autre à faire.",
+    "caducado": "Ce lien a expiré",
+    "caducadoTexto": "Utilisez le lien d'un message plus récent ou demandez-le à votre église.",
+    "error": "Le désabonnement n'a pas pu être effectué",
+    "errorTexto": "Réessayez dans quelques minutes."
+  },
+  "consentimiento": {
+    "titulo": "Consentement pour recevoir des messages",
+    "ayuda": "Seules les personnes enregistrées comme abonnées sur un canal y reçoivent des messages. Un désabonnement ne peut pas être annulé par une importation : seule une personne autorisée peut le retirer.",
+    "canal": {
+      "email": "E-mail",
+      "sms": "SMS",
+      "whatsapp": "WhatsApp"
+    },
+    "estado": {
+      "suscrito": "Abonné",
+      "sin_dato": "Sans donnée",
+      "nunca": "Jamais abonné",
+      "cancelado": "Désabonné"
+    },
+    "origen": {
+      "manual": "Saisie manuelle",
+      "formulario": "Formulaire",
+      "papel": "Papier signé",
+      "verbal": "Oral",
+      "wix": "Importé de Wix",
+      "baja": "Désabonnement enregistré",
+      "enlace": "Lien de désabonnement",
+      "otro": "Autre origine"
+    },
+    "darBaja": "Désabonner",
+    "quitarBaja": "Retirer le désabonnement",
+    "seguroBaja": "Désabonner ?",
+    "seguroQuitar": "Retirer le désabonnement ? La personne n'aura plus de consentement.",
+    "confirmar": "Confirmer",
+    "errorCarga": "Impossible de charger le consentement.",
+    "errorGuardar": "Impossible d'enregistrer la modification.",
+    "pantalla": {
+      "titulo": "Consentements",
+      "subtitulo": "Qui a accepté de recevoir des messages, par canal, avec son origine et sa date",
+      "volver": "Retour à Communication",
+      "enlace": "Gérer les consentements",
+      "buscar": "Rechercher par nom ou e-mail",
+      "sinResultados": "Aucun membre ne correspond.",
+      "registrar": "Enregistrer un consentement",
+      "canal": "Canal",
+      "estado": "Statut",
+      "origen": "Origine",
+      "guardar": "Enregistrer",
+      "guardado": "Consentement enregistré.",
+      "auditoria": "Historique des modifications",
+      "auditoriaAyuda": "Chaque modification est enregistrée avec son auteur et son origine. Personne ne peut modifier ni supprimer cet historique.",
+      "auditoriaVacia": "Aucune modification pour l'instant.",
+      "sinRegistro": "aucun enregistrement",
+      "miembroBorrado": "Membre supprimé",
+      "equipo": "Membre de l'équipe",
+      "sinUsuario": "Sans utilisateur (lien public)"
+    }
   }
 }

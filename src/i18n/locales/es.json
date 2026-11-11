@@ -1296,5 +1296,77 @@
         "completadas": "Consol. completadas"
       }
     }
+  },
+  "baja": {
+    "titulo": "Dejar de recibir mensajes",
+    "texto": "Confirma que no quieres recibir más mensajes por este canal. Puedes cambiarlo más adelante pidiéndolo a tu iglesia.",
+    "boton": "Confirmar la baja",
+    "hecho": "Listo, te hemos dado de baja",
+    "hechoTexto": {
+      "email": "No recibirás más correos de tu iglesia.",
+      "sms": "No recibirás más SMS de tu iglesia.",
+      "whatsapp": "No recibirás más mensajes de WhatsApp de tu iglesia."
+    },
+    "invalido": "Enlace no válido",
+    "invalidoTexto": "Este enlace no es correcto. Si quieres darte de baja, usa el enlace del último mensaje que recibiste.",
+    "usado": "Este enlace ya se usó",
+    "usadoTexto": "La baja ya estaba hecha. No tienes que hacer nada más.",
+    "caducado": "Este enlace ha caducado",
+    "caducadoTexto": "Usa el enlace de un mensaje más reciente o pídelo a tu iglesia.",
+    "error": "No se pudo completar la baja",
+    "errorTexto": "Inténtalo de nuevo en unos minutos."
+  },
+  "consentimiento": {
+    "titulo": "Consentimiento para recibir mensajes",
+    "ayuda": "Solo recibe mensajes quien consta como suscrito en ese canal. Una baja es definitiva para la importación: solo una persona con permiso puede quitarla.",
+    "canal": {
+      "email": "Correo",
+      "sms": "SMS",
+      "whatsapp": "WhatsApp"
+    },
+    "estado": {
+      "suscrito": "Suscrito",
+      "sin_dato": "Sin dato",
+      "nunca": "Nunca suscrito",
+      "cancelado": "Suscripción cancelada"
+    },
+    "origen": {
+      "manual": "Registro manual",
+      "formulario": "Formulario",
+      "papel": "Papel firmado",
+      "verbal": "De palabra",
+      "wix": "Importado de Wix",
+      "baja": "Baja registrada",
+      "enlace": "Enlace de baja",
+      "otro": "Otro origen"
+    },
+    "darBaja": "Dar de baja",
+    "quitarBaja": "Quitar la baja",
+    "seguroBaja": "¿Dar de baja?",
+    "seguroQuitar": "¿Quitar la baja? Quedará sin consentimiento.",
+    "confirmar": "Confirmar",
+    "errorCarga": "No se pudo cargar el consentimiento.",
+    "errorGuardar": "No se pudo guardar el cambio.",
+    "pantalla": {
+      "titulo": "Consentimientos",
+      "subtitulo": "Quién ha aceptado recibir mensajes, por canal, con su origen y su fecha",
+      "volver": "Volver a Comunicación",
+      "enlace": "Gestionar consentimientos",
+      "buscar": "Buscar por nombre o correo",
+      "sinResultados": "No hay miembros con ese criterio.",
+      "registrar": "Registrar consentimiento",
+      "canal": "Canal",
+      "estado": "Estado",
+      "origen": "Origen",
+      "guardar": "Guardar",
+      "guardado": "Consentimiento guardado.",
+      "auditoria": "Historial de cambios",
+      "auditoriaAyuda": "Cada cambio queda anotado con quién lo hizo y desde dónde. Nadie puede modificar ni borrar este historial.",
+      "auditoriaVacia": "Todavía no hay cambios.",
+      "sinRegistro": "sin registro",
+      "miembroBorrado": "Miembro eliminado",
+      "equipo": "Persona del equipo",
+      "sinUsuario": "Sin usuario (enlace público)"
+    }
   }
 }

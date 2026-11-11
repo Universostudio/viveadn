@@ -47,7 +47,7 @@ set local role authenticated;
 select pg_temp.igual((public.adn_vista_previa_envio('email', 'todos') = '{"baja": 0, "total": 4, "recibiran": 0, "repetido": 0, "sin_destino": 0, "sin_consentimiento": 4}'::jsonb)::text, 'true',
   'sin ningun registro de consentimiento nadie recibe: los 4 se omiten por falta de consentimiento');
 reset role;
--- 2. Registro manual por quien edita miembros (administrador de A)
+-- 2. Registro manual por quien tiene permiso de comunicacion (administrador de A)
 select set_config('request.jwt.claim.sub', 'ac000000-0000-0000-0000-000000000002', true);
 set local role authenticated;
 select public.adn_registrar_consentimiento('ac400000-0000-0000-0000-000000000001', 'email', 'suscrito');
@@ -63,7 +63,7 @@ select pg_temp.igual((public.adn_vista_previa_envio('email', 'todos') = '{"baja"
   'Ana cancela: ni ella ni Pia, que comparte su direccion, reciben nada');
 -- Un registro manual puede volver a suscribir: es una decision humana
 select public.adn_registrar_consentimiento('ac400000-0000-0000-0000-000000000001', 'email', 'suscrito');
-select pg_temp.igual(pg_temp.estado('ana@x.test', 'email'), 'suscrito', 'quien edita miembros puede volver a dejar a alguien suscrito');
+select pg_temp.igual(pg_temp.estado('ana@x.test', 'email'), 'suscrito', 'quien tiene permiso de comunicacion puede volver a dejar a alguien suscrito');
 -- Cada canal tiene el suyo: el de correo y el de SMS no valen para WhatsApp
 select public.adn_registrar_consentimiento('ac400000-0000-0000-0000-000000000002', 'sms', 'suscrito');
 select pg_temp.igual((public.adn_vista_previa_envio('whatsapp', 'todos') ->> 'recibiran'), '0', 'el consentimiento de correo y de SMS no habilita WhatsApp');
@@ -78,10 +78,10 @@ select pg_temp.falla($$insert into public.adn_consentimientos (miembro_id, canal
 select pg_temp.falla($$update public.adn_consentimientos set estado = 'suscrito'$$, '42501', 'nadie modifica consentimientos a mano');
 select pg_temp.falla($$delete from public.adn_consentimientos$$, '42501', 'nadie borra consentimientos a mano');
 reset role;
--- El colaborador no edita miembros
+-- El colaborador no tiene permiso de comunicacion
 select set_config('request.jwt.claim.sub', 'ac000000-0000-0000-0000-000000000003', true);
 set local role authenticated;
-select pg_temp.falla($$select public.adn_registrar_consentimiento('ac400000-0000-0000-0000-000000000004', 'email', 'suscrito')$$, 'ADN_SIN_PERMISO', 'quien no edita miembros no registra consentimientos');
+select pg_temp.falla($$select public.adn_registrar_consentimiento('ac400000-0000-0000-0000-000000000004', 'email', 'suscrito')$$, 'ADN_SIN_PERMISO', 'quien no tiene permiso de comunicacion no registra consentimientos');
 reset role;
 -- La otra iglesia no ve ni toca los de A
 select set_config('request.jwt.claim.sub', 'ac000000-0000-0000-0000-000000000004', true);
@@ -157,6 +157,102 @@ select pg_temp.igual((select string_agg(m.nombre, ',' order by m.nombre) from pu
 select pg_temp.igual((select string_agg(distinct d.motivo, ',' order by d.motivo) from public.adn_mensaje_destinatarios d where d.estado = 'omitido'), 'baja,sin_consentimiento', 'los demas se omiten por baja o por falta de consentimiento');
 select pg_temp.igual((select (r -> 'omitidos' ->> 'sin_consentimiento') from env), (select count(*)::text from public.adn_mensaje_destinatarios where motivo = 'sin_consentimiento'), 'el resultado del envio cuenta los omitidos por falta de consentimiento');
 select pg_temp.igual((select (total = enviados + omitidos)::text from public.adn_mensajes where clave = '22222222-2222-2222-2222-222222222222'), 'true', 'el total del mensaje cuadra con enviados y omitidos');
+
+
+-- 4b. Auditoria: todo cambio deja una fila, solo altas, con quien y desde donde
+select pg_temp.igual((select string_agg(coalesce(a.estado_anterior, '') || '>' || a.estado_nuevo || ':' || a.origen, ',' order by a.id)
+   from public.adn_consentimiento_auditoria a where a.miembro_id = 'ac400000-0000-0000-0000-000000000001' and a.canal = 'email'),
+  '>suscrito:manual,suscrito>cancelado:manual,cancelado>suscrito:manual,suscrito>cancelado:wix', 'la historia de Ana queda completa: quien la cambio y desde donde');
+select pg_temp.igual((select count(*)::text from public.adn_consentimiento_auditoria a where a.miembro_id = 'ac400000-0000-0000-0000-000000000001' and a.origen = 'manual' and a.usuario_id = 'ac000000-0000-0000-0000-000000000002'), '3', 'los cambios manuales llevan a la persona que los hizo');
+select set_config('request.jwt.claim.sub', 'ac000000-0000-0000-0000-000000000002', true);
+set local role authenticated;
+select public.adn_registrar_consentimiento('ac400000-0000-0000-0000-000000000004', 'email', 'suscrito');
+select public.adn_registrar_consentimiento('ac400000-0000-0000-0000-000000000004', 'email', 'suscrito');
+select public.adn_registrar_consentimiento('ac400000-0000-0000-0000-000000000004', 'sms', 'suscrito', 'papel');
+select pg_temp.falla($$select public.adn_registrar_consentimiento('ac400000-0000-0000-0000-000000000004', 'sms', 'suscrito', 'Mal Origen!')$$, 'ADN_DATOS_INVALIDOS', 'un origen con formato invalido se rechaza');
+select pg_temp.igual((select count(*)::text from public.adn_consentimiento_auditoria where miembro_id = 'ac400000-0000-0000-0000-000000000004' and canal = 'email' and estado_nuevo = 'suscrito'), '1', 'repetir el mismo estado no deja otra fila de auditoria');
+select pg_temp.igual((select origen || ' ' || actualizado_en::date::text from public.adn_consentimientos where miembro_id = 'ac400000-0000-0000-0000-000000000004' and canal = 'sms'), 'papel ' || current_date::text, 'el consentimiento guarda su origen y su fecha');
+-- Una baja por canal desde la ficha: cancelado; y la importacion no puede deshacerla
+select public.adn_registrar_consentimiento('ac400000-0000-0000-0000-000000000004', 'email', 'cancelado', 'baja');
+reset role;
+select set_config('request.jwt.claim.sub', 'ac000000-0000-0000-0000-000000000001', true);
+set local role authenticated;
+select public.adn_importar_miembros('[{"nombre": "Eva", "apellido": "Sol", "email": "eva@x.test", "consentimiento": {"email": "suscrito"}}]'::jsonb, 'wix');
+reset role;
+select pg_temp.igual(pg_temp.estado('eva@x.test', 'email'), 'cancelado', 'una baja registrada a mano no se deshace reimportando');
+-- La auditoria no se escribe ni se toca a mano
+select set_config('request.jwt.claim.sub', 'ac000000-0000-0000-0000-000000000002', true);
+set local role authenticated;
+select pg_temp.igual((select (count(*) > 0)::text from public.adn_consentimiento_auditoria), 'true', 'quien tiene permiso de comunicacion lee la auditoria de su iglesia');
+select pg_temp.falla($$insert into public.adn_consentimiento_auditoria (iglesia_id, miembro_id, canal, estado_nuevo, origen) values ('ac100000-0000-0000-0000-00000000000a', 'ac400000-0000-0000-0000-000000000001', 'email', 'suscrito', 'x')$$, '42501', 'nadie inserta en la auditoria a mano');
+select pg_temp.falla($$update public.adn_consentimiento_auditoria set estado_nuevo = 'suscrito'$$, '42501', 'nadie modifica la auditoria');
+select pg_temp.falla($$delete from public.adn_consentimiento_auditoria$$, '42501', 'nadie borra la auditoria');
+reset role;
+select pg_temp.falla($$update public.adn_consentimiento_auditoria set estado_nuevo = 'suscrito'$$, 'ADN_REGISTRO_INMUTABLE', 'ni el servicio modifica una fila de la auditoria');
+select set_config('request.jwt.claim.sub', 'ac000000-0000-0000-0000-000000000003', true);
+set local role authenticated;
+select pg_temp.igual((select count(*)::text from public.adn_consentimiento_auditoria), '0', 'el colaborador no lee la auditoria');
+reset role;
+select set_config('request.jwt.claim.sub', 'ac000000-0000-0000-0000-000000000004', true);
+set local role authenticated;
+select pg_temp.igual((select count(*)::text from public.adn_consentimiento_auditoria where iglesia_id <> 'ac100000-0000-0000-0000-00000000000b'), '0', 'B no lee la auditoria de A');
+reset role;
+select set_config('request.jwt.claim.sub', '', true);
+
+-- 4c. Enlace de baja de un solo uso: lo crea y lo consume solo el servicio
+set local role service_role;
+create temp table enl as select public.adn_baja_crear_enlace('ac400000-0000-0000-0000-000000000002', 'email') t;
+grant select on enl to authenticated, anon;
+reset role;
+select pg_temp.igual((select (t ~ '^[0-9a-f]{64}$')::text from enl), 'true', 'el secreto del enlace tiene 64 caracteres hexadecimales');
+select pg_temp.igual((select count(*)::text from public.adn_bajas_enlaces where token_hash = (select t from enl)), '0', 'la base no guarda el secreto, solo su huella');
+select pg_temp.igual((select (token_hash = encode(sha256(convert_to((select t from enl), 'UTF8')), 'hex'))::text from public.adn_bajas_enlaces limit 1), 'true', 'la huella es el SHA-256 del secreto');
+set local role authenticated;
+select pg_temp.falla($$select public.adn_baja_crear_enlace('ac400000-0000-0000-0000-000000000002', 'email')$$, '42501', 'quien no es el servicio no crea enlaces');
+reset role;
+set local role anon;
+select pg_temp.falla($$select public.adn_baja_consumir((select t from enl))$$, '42501', 'un visitante no consume enlaces directamente: lo hace la funcion de borde con el servicio');
+reset role;
+select set_config('request.jwt.claim.sub', 'ac000000-0000-0000-0000-000000000001', true);
+set local role authenticated;
+select pg_temp.falla($$select count(*) from public.adn_bajas_enlaces$$, '42501', 'ninguna persona autenticada lee los enlaces de baja');
+select pg_temp.falla($$select public.adn_baja_consumir((select t from enl))$$, '42501', 'ninguna persona autenticada consume enlaces');
+reset role;
+select set_config('request.jwt.claim.sub', '', true);
+-- Consumirlo: baja del canal, una sola vez
+select pg_temp.igual(pg_temp.estado('luis@x.test', 'email'), 'nunca', 'antes de usar el enlace, Luis consta como nunca suscrito');
+set local role service_role;
+create temp table c1 as select public.adn_baja_consumir((select t from enl)) r;
+create temp table c2 as select public.adn_baja_consumir((select t from enl)) r;
+reset role;
+select pg_temp.igual((select r::text from c1), '{"ok": true, "canal": "email"}', 'el primer uso da de baja');
+select pg_temp.igual(pg_temp.estado('luis@x.test', 'email'), 'cancelado', 'y deja a Luis en cancelado, el estado mas restrictivo');
+select pg_temp.igual((select r::text from c2), '{"ok": false, "motivo": "usado"}', 'el segundo uso se rechaza: es de un solo uso');
+select pg_temp.igual((select origen || ':' || coalesce(usuario_id::text, 'sin usuario') from public.adn_consentimiento_auditoria where miembro_id = 'ac400000-0000-0000-0000-000000000002' and canal = 'email' order by id desc limit 1), 'enlace:sin usuario', 'la auditoria anota que vino de un enlace y sin usuario');
+select pg_temp.igual((select (select count(*) from public.adn_comunicacion_bajas where miembro_id = 'ac400000-0000-0000-0000-000000000002')::text), '0', 'no hace falta la tabla de bajas antigua');
+-- Invalido, caducado y de otra iglesia
+set local role service_role;
+create temp table c3 as select public.adn_baja_consumir('no-es-un-token') r, public.adn_baja_consumir(repeat('0', 64)) r2, public.adn_baja_consumir(null) r3;
+create temp table enl2 as select public.adn_baja_crear_enlace('ac400000-0000-0000-0000-000000000003', 'email', 1) t;
+reset role;
+select pg_temp.igual((select r->>'motivo' || ',' || (r2->>'motivo') || ',' || (r3->>'motivo') from c3), 'invalido,invalido,invalido', 'un secreto invalido, inexistente o nulo se rechaza igual, sin pistas');
+update public.adn_bajas_enlaces set expira_en = now() - interval '1 minute' where token_hash = encode(sha256(convert_to((select t from enl2), 'UTF8')), 'hex');
+set local role service_role;
+create temp table c4 as select public.adn_baja_consumir((select t from enl2)) r;
+reset role;
+select pg_temp.igual((select r::text from c4), '{"ok": false, "motivo": "caducado"}', 'un enlace caducado se rechaza');
+select pg_temp.igual((select estado from public.adn_consentimientos where miembro_id = 'ac400000-0000-0000-0000-000000000003' and canal = 'email'), 'suscrito', 'y no cambia el consentimiento de Pia');
+set local role service_role;
+select pg_temp.falla($$select public.adn_baja_crear_enlace('ac400000-0000-0000-0000-000000000002', 'fax')$$, 'ADN_DATOS_INVALIDOS', 'un canal desconocido se rechaza');
+select pg_temp.falla($$select public.adn_baja_crear_enlace('ac400000-0000-0000-0000-000000000002', 'email', 0)$$, 'ADN_DATOS_INVALIDOS', 'una vigencia fuera de rango se rechaza');
+select pg_temp.falla($$select public.adn_baja_crear_enlace(gen_random_uuid(), 'email')$$, 'ADN_DATOS_INVALIDOS', 'un miembro que no existe se rechaza');
+create temp table enlb as select public.adn_baja_crear_enlace('ac400000-0000-0000-0000-0000000000b1', 'email') t;
+select public.adn_baja_consumir((select t from enlb));
+reset role;
+select pg_temp.igual((select estado from public.adn_consentimientos where miembro_id = 'ac400000-0000-0000-0000-0000000000b1' and canal = 'email'), 'cancelado', 'el enlace de un miembro de B da de baja a ese miembro');
+select pg_temp.igual((select estado from public.adn_consentimientos where miembro_id = 'ac400000-0000-0000-0000-000000000001' and canal = 'email'), 'cancelado', 'y no toca a nadie de A (Ana sigue como estaba)');
+delete from public.miembros where id = 'ac400000-0000-0000-0000-0000000000b1';
+select pg_temp.igual((select count(*)::text from public.adn_bajas_enlaces where miembro_id = 'ac400000-0000-0000-0000-0000000000b1'), '0', 'borrar al miembro borra sus enlaces');
 
 -- 5. Borrar al miembro borra su consentimiento
 delete from public.miembros where id = 'ac400000-0000-0000-0000-000000000001';

@@ -14,7 +14,7 @@ ViveADN es una aplicación web para gestionar iglesias: miembros, casas de oraci
 | --- | --- | --- |
 | Interfaz | Vue 3, Vite, Pinia, Vue Router, vue-i18n, Tailwind 3 | [V] `package.json` |
 | Datos y acceso | Supabase: Postgres con seguridad por filas, Auth, Storage | [V] |
-| Lógica de borde | Funciones Deno de Supabase en `supabase/functions` (seis) | [V] |
+| Lógica de borde | Funciones Deno de Supabase en `supabase/functions` (ocho) | [V] |
 | Despliegue de la web | Vercel (`vercel.json`) | [V] existe la configuración; [NV] el estado del despliegue |
 | Pruebas | SQL sobre un Postgres local (`supabase/tests`) y scripts de Node (`scripts/probar-*.mts`) | [V] |
 | Integración continua | GitHub Actions, un flujo con dos trabajos (base de datos y web) | [V] |
@@ -59,7 +59,7 @@ Tablas de la base pública, agrupadas. Todas llevan seguridad por filas [V, `doc
 - **Dar:** `dar_config`, `enlaces_dar`.
 - **Plataforma, solo servidor:** `plataforma_admins`, `plataforma_auditoria` (no sale en la exportación de la iglesia), `plataforma_ajustes`, `registro_codigos`, `registro_intentos`, `adn_ciclo_auditoria` (borrado suave, recuperación y purga; sobrevive a la purga).
 - **Informes:** leen de las tablas anteriores con las funciones `adn_informe_*`. Solo tienen `adn_informe_descargas`, el registro de solo altas de quién descargó el informe de miembros, cuándo y cuántas filas.
-- **Comunicación:** `adn_mensajes`, `adn_mensaje_destinatarios` (el buzón de pruebas), `adn_comunicacion_bajas` y `adn_consentimientos` (estado de suscripción por persona y canal). El panel de inicio lee de las tablas anteriores con `adn_panel_inicio`.
+- **Comunicación:** `adn_mensajes`, `adn_mensaje_destinatarios` (el buzón de pruebas), `adn_comunicacion_bajas` y `adn_consentimientos` (estado de suscripción por persona y canal), `adn_consentimiento_auditoria` (solo altas) y `adn_bajas_enlaces` (solo servidor, secretos de un solo uso que no salen en la exportación). El panel de inicio lee de las tablas anteriores con `adn_panel_inicio`.
 - **Datos de contacto adicionales:** `adn_miembro_contactos` (segundos correos, teléfonos extra, direcciones y etiquetas de un miembro, por ejemplo de una importación).
 
 Las tablas nuevas de esta línea de trabajo llevan el prefijo `adn_` [regla de Gerencia]. Las existentes no se renombran hasta que Gerencia lo ordene.
@@ -68,13 +68,13 @@ Reglas para toda tabla nueva: `docs/MULTITENANT.md`, sección 5.
 
 ## 5. Rutas de la web
 
-Públicas: `/bienvenida`, `/presentacion`, `/login`, `/registro`, `/reset-password`, `/aceptar` (invitación), `/dar/:slug`, `/checkin/:token` y `/verificar/:codigo` [V, `src/router/index.ts`].
+Públicas: `/bienvenida`, `/presentacion`, `/login`, `/registro`, `/reset-password`, `/aceptar` (invitación), `/dar/:slug`, `/checkin/:token` y `/verificar/:codigo` y `/baja/:token` [V, `src/router/index.ts`].
 
-Con sesión: `/` (panel), `/miembros`, `/miembros/:id`, `/eventos`, `/eventos/:id`, `/casas`, `/consolidacion`, `/formacion`, `/formacion/programas`, `/comunicacion`, `/reportes`, `/configuracion`, `/red` y `/plataforma` (solo administradores de plataforma) [V]. Cada entrada del menú aparece según los permisos del rol y los módulos de la iglesia [V, `AppLayout.vue`].
+Con sesión: `/` (panel), `/miembros`, `/miembros/:id`, `/eventos`, `/eventos/:id`, `/casas`, `/consolidacion`, `/formacion`, `/formacion/programas`, `/comunicacion`, `/comunicacion/consentimientos`, `/reportes`, `/configuracion`, `/red` y `/plataforma` (solo administradores de plataforma) [V]. Cada entrada del menú aparece según los permisos del rol y los módulos de la iglesia [V, `AppLayout.vue`].
 
 ## 6. Funciones de borde
 
-`plataforma` (gestión), `red-resumen`, `dar-publico`, `checkin-evento`, `registro-iglesia`, `invitaciones` y `verificar-certificado` [V]. Son la única vía que cruza iglesias y la única que usa la clave de servicio, que vive en los secretos de la función y no en el repositorio.
+`plataforma` (gestión), `red-resumen`, `dar-publico`, `checkin-evento`, `registro-iglesia`, `invitaciones`, `verificar-certificado` y `baja` [V]. Son la única vía que cruza iglesias y la única que usa la clave de servicio, que vive en los secretos de la función y no en el repositorio.
 
 ## 7. Pendientes
 
@@ -84,7 +84,7 @@ Los seis trabajos en curso, en orden:
 2. Exportación completa en CSV y JSON: hecho y verificado en base de datos (ver `docs/EXPORTACION.md`).
 3. Importador de miembros con formato Google Contacts: hecho con datos sintéticos; falta probarlo con los archivos reales que entregue Gerencia.
 4. Informes en PDF y Excel (miembros, asistencia, crecimiento): hecho y verificado (ver `docs/INFORMES.md`).
-5. Panel de inicio completo y Comunicación con envío al buzón de pruebas y consentimiento por canal: hecho y verificado en base de datos (ver `docs/COMUNICACION.md`). **Pendientes antes de cualquier envío real (Gerencia, 11-11):** la pantalla para registrar consentimientos de miembros creados a mano y el interruptor de baja en la ficha del miembro. El envío real sigue pendiente de proveedor, enlace de baja y aprobación del dueño.
+5. Panel de inicio completo y Comunicación con envío al buzón de pruebas y consentimiento por canal: hecho y verificado en base de datos (ver `docs/COMUNICACION.md`). Hechos el 11-11: pantalla de consentimientos con auditoría de solo altas, interruptor de baja por canal en la ficha y enlace público de baja de un solo uso, sin envío real (`docs/COMUNICACION.md`). El envío real sigue pendiente de proveedor, enlace de baja y aprobación del dueño.
 6. Pruebas de aislamiento con dos usuarios de prueba: hecha y verificada a nivel SQL con los roles reales; la versión a través de la API está escrita y pendiente de ejecutarse contra PostgREST (ver `docs/AISLAMIENTO.md`).
 
 **Prioritaria antes de producción:** paginar la exportación o generar el ZIP en el servidor, porque hoy todo el paquete viaja en una sola respuesta y no se ha medido con iglesias de decenas de miles de filas (`docs/EXPORTACION.md`).

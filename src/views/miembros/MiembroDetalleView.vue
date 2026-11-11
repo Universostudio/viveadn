@@ -154,6 +154,11 @@
           </div>
         </div>
 
+        <!-- Consentimiento de comunicación y baja por canal -->
+        <div v-if="auth.can('comunicacion.ver', 'comunicacion.enviar')" class="card">
+          <ConsentimientoMiembro :miembro-id="miembro.id" />
+        </div>
+
         <!-- Info adicional -->
         <div class="card">
           <h3 class="font-semibold text-gray-900 mb-3 flex items-center gap-2"><Info class="w-5 h-5 text-adn-verde" aria-hidden="true" /> {{ t('ficha.informacion') }}</h3>
@@ -189,12 +194,15 @@ import { supabase } from '@/lib/supabase'
 import { conAlerta } from '@/lib/alertas'
 import type { NivelCompromiso } from '@/lib/supabase'
 import EstadoAlerta from '@/components/EstadoAlerta.vue'
+import ConsentimientoMiembro from '@/components/ConsentimientoMiembro.vue'
 import { useI18n } from 'vue-i18n'
 import { formatoFecha } from '@/i18n'
+import { useAuthStore } from '@/stores/auth'
 
 const route = useRoute()
 const { t, te } = useI18n()
 const cargando = ref(true)
+const auth = useAuthStore()
 const miembro = ref<any>(null)
 const consolidaciones = ref<any[]>([])
 const progreso = ref<any[]>([])
