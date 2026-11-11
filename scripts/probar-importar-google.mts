@@ -194,10 +194,17 @@ const filaWix = (o: Record<string, string>) => CAB_WIX.map(c => o[c] ?? '')
   assert.ok(fila.contactos.some(c => c.tipo === 'etiqueta' && c.etiqueta === 'creado' && c.valor === '2023-01-15'))
   assert.equal('consentimiento' in aFilaImportacion(a.personas.find(p => p.nombre === 'Luis')!), false, 'sin estado no se envía consentimiento')
   assert.deepEqual(aFilaImportacion(a.personas.find(p => p.nombre === 'Pepe')!).consentimiento, { email: 'nunca' }, 'solo viajan los estados que dicen algo')
+  // El valor original de cada canal viaja como evidencia: el de la fila que decide el estado, y también el que no se entiende
+  assert.deepEqual(fila.consentimiento_original, { email: 'Suscripción cancelada', sms: 'Nunca suscrito' }, 'se conserva el texto de la fila que decide el estado final')
+  const filaEva = aFilaImportacion(a.personas.find(p => p.nombre === 'Eva')!)
+  assert.deepEqual(filaEva.consentimiento_original, { email: 'Pendiente' }, 'un valor desconocido no crea consentimiento, pero su texto se conserva')
+  assert.equal('consentimiento' in filaEva, false)
+  assert.equal('consentimiento_original' in aFilaImportacion(a.personas.find(p => p.nombre === 'Luis')!), false, 'sin valor no hay texto original')
   // Un archivo de Google no trae consentimiento
   const gg = analizarGoogle(csv([['First Name', 'Last Name', 'E-mail 1 - Value'], ['Ana', 'P', 'a@x.test']]))
   assert.equal(gg.resumen.formato, 'google')
   assert.equal('consentimiento' in aFilaImportacion(gg.personas[0]!), false)
+  assert.equal('consentimiento_original' in aFilaImportacion(gg.personas[0]!), false, 'ni texto original')
   // Nunca se leen contraseñas, tampoco en Wix
   const sens = analizarGoogle(csv([[...CAB_WIX, 'Contraseña'], [...filaWix({ Nombre: 'Ana', 'Email 1': 'a@x.test' }), 'SECRETO']]))
   assert.deepEqual(sens.columnasSensibles, ['Contraseña'])

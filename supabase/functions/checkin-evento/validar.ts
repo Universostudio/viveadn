@@ -11,11 +11,17 @@ export interface Datos {
   apellido: string
   telefono: string
   email: string
+  /** Versión del texto de consentimiento que mostraba la página y su idioma; vacíos si no constan o no son válidos */
+  textoVersion: string
+  idioma: string
 }
 
 export type Resultado =
   | { ok: true; datos: Datos }
   | { ok: false; error: 'bot' | 'consentimiento' | 'datos' }
+
+const VERSION_RE = /^[a-z0-9._-]{1,20}$/
+const IDIOMAS = ['es', 'en', 'fr', 'pt-BR']
 
 const texto = (v: unknown, max: number) => (typeof v === 'string' ? v.normalize('NFC').replace(/\s+/g, ' ').trim().slice(0, max + 1) : '')
 
@@ -32,7 +38,10 @@ export function validarRegistro(b: Record<string, unknown>): Resultado {
   if (RARO_RE.test(nombre) || RARO_RE.test(apellido) || RARO_RE.test(telefono) || RARO_RE.test(email)) return { ok: false, error: 'datos' }
   if (!TEL_RE.test(telefono) || telefono.replace(/\D/g, '').length < 7) return { ok: false, error: 'datos' }
   if (email && (email.length > 254 || !EMAIL_RE.test(email))) return { ok: false, error: 'datos' }
-  return { ok: true, datos: { nombre, apellido, telefono, email } }
+  // La versión del texto la afirma la página; la base la contrasta con su tabla de textos y, si no consta, no la da por buena
+  const textoVersion = typeof b.texto_version === 'string' && VERSION_RE.test(b.texto_version) ? b.texto_version : ''
+  const idioma = typeof b.idioma === 'string' && IDIOMAS.includes(b.idioma) ? b.idioma : ''
+  return { ok: true, datos: { nombre, apellido, telefono, email, textoVersion, idioma } }
 }
 
 // Respuesta al visitante segun lo que devuelve la base de datos. Nuevo y existente se responden igual.

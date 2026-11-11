@@ -88,12 +88,13 @@
 import { ref, reactive, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import { CHECKIN_TEXTO_VERSION } from '@/lib/consentimientoTextos'
 import { ClipboardCheck, CircleCheck, Clock, TriangleAlert, Users } from '@lucide/vue'
 import SelectorIdioma from '@/components/SelectorIdioma.vue'
 import { supabase } from '@/lib/supabase'
 
 const route = useRoute()
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 const estado = ref<'cargando' | 'abierto' | 'cerrado' | 'lleno' | 'noDisponible' | 'enviado'>('cargando')
 const info = ref<{ iglesia?: string; evento?: string; contacto?: string; alias?: boolean } | null>(null)
@@ -137,7 +138,7 @@ async function enviar() {
   if (!form.nombre.trim() || (!info.value?.alias && !form.apellido.trim()) || !form.telefono.trim()) { error.value = 'checkin.errorDatos'; return }
   if (!form.mayor14 || !form.consentimiento) { error.value = 'checkin.errorConsentimiento'; return }
   enviando.value = true
-  const { error: err } = await supabase.functions.invoke('checkin-evento', { body: { accion: 'registrar', token, ...form, ...(info.value?.alias ? { apellido: '', email: '' } : {}) } })
+  const { error: err } = await supabase.functions.invoke('checkin-evento', { body: { accion: 'registrar', token, ...form, texto_version: CHECKIN_TEXTO_VERSION, idioma: locale.value, ...(info.value?.alias ? { apellido: '', email: '' } : {}) } })
   enviando.value = false
   if (!err) { estado.value = 'enviado'; return }
   const codigo = await codigoDe(err)

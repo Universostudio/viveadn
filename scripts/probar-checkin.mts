@@ -5,7 +5,16 @@ const { validarRegistro, respuestaDe, TOKEN_RE } = await import('../supabase/fun
 const bueno = { nombre: 'María José', apellido: 'García  López', telefono: '+34 600 111 222', email: 'MARIA@Ejemplo.com', consentimiento: true, mayor14: true, web: '' }
 const r = validarRegistro(bueno)
 assert.ok(r.ok)
-assert.deepEqual(r.ok && r.datos, { nombre: 'María José', apellido: 'García López', telefono: '+34 600 111 222', email: 'maria@ejemplo.com' }, 'normaliza espacios y pasa el correo a minusculas')
+assert.deepEqual(r.ok && r.datos, { nombre: 'María José', apellido: 'García López', telefono: '+34 600 111 222', email: 'maria@ejemplo.com', textoVersion: '', idioma: '' }, 'normaliza espacios y pasa el correo a minusculas')
+
+// Versión del texto aceptado e idioma: solo pasan si tienen forma válida; si no, quedan vacíos y no impiden el registro
+const conVersion = validarRegistro({ ...bueno, texto_version: 'v1', idioma: 'pt-BR' })
+assert.ok(conVersion.ok && conVersion.datos.textoVersion === 'v1' && conVersion.datos.idioma === 'pt-BR', 'conserva versión e idioma válidos')
+for (const malo of [{ texto_version: 'V1' }, { texto_version: 'v1; drop table' }, { texto_version: 'x'.repeat(21) }, { texto_version: 1 }, { idioma: 'de' }, { idioma: 'es; x' }, { idioma: ['es'] }]) {
+  const x = validarRegistro({ ...bueno, ...malo })
+  assert.ok(x.ok, 'una versión o idioma inválidos no rechazan el registro: ' + JSON.stringify(malo))
+  assert.ok(x.ok && x.datos.textoVersion === '' && (malo.idioma === undefined || x.datos.idioma === ''), 'se descartan: ' + JSON.stringify(malo))
+}
 
 // El correo es opcional
 assert.ok(validarRegistro({ ...bueno, email: '' }).ok)

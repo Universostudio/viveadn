@@ -43,7 +43,7 @@ La escala es completo, parcial o inexistente.
 | Red de iglesias | Completo | Iglesia madre con sedes y cifras agregadas [E] |
 | Panel de plataforma | Completo | Altas, planes, módulos, etapas, exportación, borrado programado, red, códigos de registro, auditoría [E] |
 | Ciclo de vida de la iglesia | Completo en base de datos y función de borde; falta programar la purga | Etapas, receso, suspensión, borrado programado, borrado suave con plazo fijo de 30 días, recuperación dentro del plazo, purga completa y auditoría que sobrevive a la purga [E, 46 comprobaciones en `adn_ciclo_vida.sql` y reversión probada]. La purga automática necesita una tarea programada y el secreto `ADN_CRON_SECRET`: sin ellos la purga la lanza un administrador desde el panel [NV: la función de borde no se ejecutó de extremo a extremo, solo se comprobaron sus tipos y sus piezas puras] |
-| Exportación de una iglesia | Completo, verificado en base de datos | JSON y un CSV por tabla con manifiesto de cifras y huellas (`docs/EXPORTACION.md`). Recargado en dos bases vacías (desde JSON y desde CSV) con las 25 tablas coincidiendo en filas y contenido [E]. La función de borde y el ZIP del panel no se ejecutaron de extremo a extremo [NV] |
+| Exportación de una iglesia | Completo, verificado en base de datos | JSON y un CSV por tabla con manifiesto de cifras y huellas (`docs/EXPORTACION.md`). Recargado en dos bases vacías (desde JSON y desde CSV) con las 32 tablas coincidiendo en filas y contenido [E]. La función de borde y el ZIP del panel no se ejecutaron de extremo a extremo [NV] |
 | Cobro del plan | Inexistente | Solo hay diseño en `docs/COBRO.md`; no hay tablas ni código [E] |
 | Subdominio por iglesia, historial de cambios por iglesia, segundo factor obligatorio | Inexistente | Listados como brechas en `docs/MULTITENANT.md` [E] |
 
@@ -59,7 +59,7 @@ Tablas de la base pública, agrupadas. Todas llevan seguridad por filas [E, `doc
 - **Dar:** `dar_config`, `enlaces_dar`.
 - **Plataforma, solo servidor:** `plataforma_admins`, `plataforma_auditoria` (no sale en la exportación de la iglesia), `plataforma_ajustes`, `registro_codigos`, `registro_intentos`, `adn_ciclo_auditoria` (borrado suave, recuperación y purga; sobrevive a la purga).
 - **Informes:** leen de las tablas anteriores con las funciones `adn_informe_*`. Solo tienen `adn_informe_descargas`, el registro de solo altas de quién descargó el informe de miembros, cuándo y cuántas filas.
-- **Comunicación:** `adn_mensajes`, `adn_mensaje_destinatarios` (el buzón de pruebas), `adn_comunicacion_bajas` y `adn_consentimientos` (estado de suscripción por persona y canal), `adn_consentimiento_auditoria` (solo altas) y `adn_bajas_enlaces` (solo servidor, secretos de un solo uso que no salen en la exportación). El panel de inicio lee de las tablas anteriores con `adn_panel_inicio`.
+- **Comunicación:** `adn_mensajes`, `adn_mensaje_destinatarios` (el buzón de pruebas), `adn_comunicacion_bajas` y `adn_consentimientos` (estado de suscripción por persona y canal), `adn_consentimiento_auditoria` (solo altas), `adn_consentimiento_textos` (textos versionados e inmutables, sin datos de nadie) y `adn_consentimiento_evidencias` (solo altas: qué texto aceptó cada registro por QR y qué valor traía el archivo importado) y `adn_bajas_enlaces` (solo servidor, secretos de un solo uso que no salen en la exportación). El panel de inicio lee de las tablas anteriores con `adn_panel_inicio`.
 - **Datos de contacto adicionales:** `adn_miembro_contactos` (segundos correos, teléfonos extra, direcciones y etiquetas de un miembro, por ejemplo de una importación).
 
 Las tablas nuevas de esta línea de trabajo llevan el prefijo `adn_` [regla de Gerencia]. Las existentes no se renombran hasta que Gerencia lo ordene.
@@ -112,12 +112,13 @@ Todo lo marcado **[E]** se repite con estos comandos, desde la raíz del reposit
 
 | Qué | Comando |
 | --- | --- |
-| Batería SQL completa: permisos, aislamiento total, ciclo de vida, exportación, importación, informes, comunicación, consentimiento, descargas, panel, reversión de las ocho migraciones `adn_*` y comprobación de NULL en `auth.users` | `PGUSER=postgres supabase/tests/ejecutar.sh` |
+| Batería SQL completa: permisos, aislamiento total, ciclo de vida, exportación, importación, informes, comunicación, consentimiento, descargas, panel, reversión de las diez migraciones `adn_*` y comprobación de NULL en `auth.users` | `PGUSER=postgres supabase/tests/ejecutar.sh` |
 | Exportación recargada en dos bases vacías (JSON y CSV) | `PGUSER=postgres supabase/tests/exportacion_carga.sh viveadn_pruebas` |
 | Reversión de las migraciones `adn_*` | `PGUSER=postgres supabase/tests/adn_reversion.sh` |
 | Ciclo de vida, exportación, contactos de Google y Wix, informes (archivos con lectores independientes) | `npm run test:ciclo`, `test:exportacion`, `test:google`, `test:informes` |
 | Secretos en todo el historial y en los archivos actuales (solo imprime recuentos) | `scripts/buscar-secretos.sh` |
 | Tipos, compilación y los cuatro idiomas | `npm run type-check`, `npm run build-only`, `npm run check:idiomas` |
+| El texto de consentimiento de la web es el que consta en la base (versión v1, cuatro idiomas) | `npm run check:textos` |
 | Ensayo de un archivo de contactos real, solo cifras | `node scripts/resumen-contactos-google.mts <archivo fuera del repositorio>` |
 | Aislamiento por API (necesita PostgREST real y una base de pruebas) | `supabase/tests/aislamiento_api.sh <base>` (**[NV]**: no se ha ejecutado) |
 

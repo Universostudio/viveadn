@@ -52,6 +52,8 @@ export interface ContactoGoogle {
   etiquetas: string[]
   /** Estado de suscripción por canal (solo el formato Wix lo trae) */
   consentimiento: Partial<Record<CanalConsentimiento, EstadoConsentimiento>>
+  /** Valor tal como venía en el archivo para cada canal (hasta 60 caracteres), para dejarlo como evidencia */
+  consentimientoOriginal: Partial<Record<CanalConsentimiento, string>>
   /** Origen del contacto y fecha de alta en el sistema de origen (AAAA-MM-DD), si el archivo los trae */
   fuente: string | null
   creado: string | null
@@ -315,8 +317,11 @@ export function analizarGoogle(texto: string): AnalisisGoogle {
 
     // Consentimiento, fuente y fecha de alta (Wix)
     const consentimiento: ContactoGoogle['consentimiento'] = {}
+    const consentimientoOriginal: ContactoGoogle['consentimientoOriginal'] = {}
     for (const [canal, i] of [['email', iEstadoEmail], ['sms', iEstadoSms]] as const) {
       if (i < 0) continue
+      const bruto = recortar(celda(fila, i).replace(/\s+/g, ' '), 60)
+      if (bruto) consentimientoOriginal[canal] = bruto
       const e = estadoSuscripcion(celda(fila, i))
       if (e === null) { r.estadosDesconocidos++; consentimiento[canal] = 'sin_dato' } else consentimiento[canal] = e
     }
@@ -327,7 +332,7 @@ export function analizarGoogle(texto: string): AnalisisGoogle {
     const nueva: ContactoGoogle = {
       linea, nombre, apellido, nombreDerivado, emails, telefonos: telefonos.slice(0, 5), fecha_nacimiento: nacimiento, notas,
       direcciones: direcciones.slice(0, 3), etiquetas: etiquetas.slice(0, 20),
-      consentimiento, fuente: fuenteBruta || null, creado,
+      consentimiento, consentimientoOriginal, fuente: fuenteBruta || null, creado,
     }
 
     // Fusión: por cualquier correo; si no hay correo, por teléfono; si no hay ni uno ni otro, por nombre
@@ -346,6 +351,9 @@ export function analizarGoogle(texto: string): AnalisisGoogle {
       // Entre dos filas de la misma persona, el consentimiento más restrictivo
       for (const canal of ['email', 'sms'] as const) {
         const c = masRestrictivo(p.consentimiento[canal], nueva.consentimiento[canal])
+        // Se conserva el texto original de la fila que decide el estado final (la más restrictiva)
+        if (c !== undefined && c !== p.consentimiento[canal] && nueva.consentimientoOriginal[canal]) p.consentimientoOriginal[canal] = nueva.consentimientoOriginal[canal]
+        else if (!p.consentimientoOriginal[canal] && nueva.consentimientoOriginal[canal]) p.consentimientoOriginal[canal] = nueva.consentimientoOriginal[canal]
         if (c !== undefined) p.consentimiento[canal] = c
       }
       if (!p.fuente) p.fuente = nueva.fuente
@@ -387,6 +395,7 @@ export function aFilaImportacion(p: ContactoGoogle) {
     nombre: p.nombre, apellido: p.apellido, email: p.emails[0] ?? null, telefono: p.telefonos[0]?.valor ?? null,
     fecha_nacimiento: p.fecha_nacimiento, notas: p.notas, contactos,
     ...(Object.keys(consentimiento).length ? { consentimiento } : {}),
+    ...(Object.keys(p.consentimientoOriginal).length ? { consentimiento_original: p.consentimientoOriginal } : {}),
   }
 }
 

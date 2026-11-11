@@ -48,6 +48,10 @@ insert into public.adn_consentimientos (iglesia_id, miembro_id, canal, estado, o
   ('ea100000-0000-0000-0000-00000000000b', 'ea400000-0000-0000-0000-000000000009', 'email', 'suscrito', 'prueba');
 insert into public.adn_consentimiento_auditoria (iglesia_id, miembro_id, canal, estado_anterior, estado_nuevo, origen, usuario_id) values
   ('ea100000-0000-0000-0000-00000000000a', 'ea400000-0000-0000-0000-000000000001', 'email', null, 'suscrito', 'wix', 'ea000000-0000-0000-0000-000000000001');
+insert into public.adn_consentimiento_evidencias (iglesia_id, miembro_id, tipo, finalidad, texto_version, idioma, texto_hash, evento_id, origen) values
+  ('ea100000-0000-0000-0000-00000000000a', 'ea400000-0000-0000-0000-000000000001', 'checkin', 'checkin', 'v1', 'es', (select texto_hash from public.adn_consentimiento_textos where finalidad = 'checkin' and version = 'v1' and idioma = 'es'), 'ea600000-0000-0000-0000-000000000001', 'qr');
+insert into public.adn_consentimiento_evidencias (iglesia_id, miembro_id, tipo, canal, texto_original, estado_importado, aplicado, origen) values
+  ('ea100000-0000-0000-0000-00000000000a', 'ea400000-0000-0000-0000-000000000001', 'importacion', 'email', 'Suscrito', 'suscrito', true, 'wix');
 insert into public.adn_bajas_enlaces (iglesia_id, miembro_id, canal, token_hash, expira_en) values
   ('ea100000-0000-0000-0000-00000000000a', 'ea400000-0000-0000-0000-000000000001', 'email', repeat('a', 64), now() + interval '30 days');
 insert into public.consolidaciones (id, iglesia_id, miembro_id, consolidador_id, casa_oracion_id, fecha_conversion, primer_contacto_notas, completado) values

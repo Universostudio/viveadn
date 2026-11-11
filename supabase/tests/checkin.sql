@@ -126,10 +126,10 @@ update public.checkin_registros set created_at = now() - interval '11 minutes' w
 select pg_temp.igual(public.registrar_checkin(pg_temp.tk('49000000-0000-0000-0000-0000000000a5'), 'L8', 'Lim', 'l8@x.test', '+34 644 000 008', 'ip-fija'), 'ok_nuevo', 'pasados 10 minutos el dispositivo vuelve a poder');
 
 -- Permisos: solo el servidor ejecuta las funciones; solo quien gestiona eventos lee el enlace
-select pg_temp.igual(has_function_privilege('anon', 'public.registrar_checkin(text,text,text,text,text,text)', 'execute')::text, 'false', 'anon no ejecuta registrar_checkin');
-select pg_temp.igual(has_function_privilege('authenticated', 'public.registrar_checkin(text,text,text,text,text,text)', 'execute')::text, 'false', 'un usuario con sesion no ejecuta registrar_checkin');
+select pg_temp.igual(has_function_privilege('anon', 'public.registrar_checkin(text,text,text,text,text,text,text,text)', 'execute')::text, 'false', 'anon no ejecuta registrar_checkin');
+select pg_temp.igual(has_function_privilege('authenticated', 'public.registrar_checkin(text,text,text,text,text,text,text,text)', 'execute')::text, 'false', 'un usuario con sesion no ejecuta registrar_checkin');
 select pg_temp.igual(has_function_privilege('authenticated', 'public.info_checkin(text)', 'execute')::text, 'false', 'un usuario con sesion no ejecuta info_checkin');
-select pg_temp.igual(has_function_privilege('service_role', 'public.registrar_checkin(text,text,text,text,text,text)', 'execute')::text, 'true', 'el servidor si');
+select pg_temp.igual(has_function_privilege('service_role', 'public.registrar_checkin(text,text,text,text,text,text,text,text)', 'execute')::text, 'true', 'el servidor si');
 
 select set_config('request.jwt.claim.sub', 'e2000000-0000-0000-0000-000000000002', true);
 set local role authenticated;

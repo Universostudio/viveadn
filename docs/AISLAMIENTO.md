@@ -15,7 +15,7 @@ Dos usuarios de prueba, cada uno propietario de una iglesia sintética distinta.
 
 Además, la prueba SQL comprueba:
 
-- **Controles positivos.** Cada usuario sí ve sus propias filas (A en 26 tablas, B en 5). Sin ellos, una base que negara todo pasaría la prueba.
+- **Controles positivos.** Cada usuario sí ve sus propias filas (la última ejecución: A ve filas propias en 30 tablas y no tiene acceso a 2; B, en 6 y sin acceso a 2). Sin ellos, una base que negara todo pasaría la prueba.
 - **Sin sesión y sin iglesia.** El rol `anon` no lee nada en ninguna de las 38 tablas; un usuario autenticado sin perfil no ve miembros ni iglesias y no puede calcular un envío ni importar.
 - **Funciones.** Ninguna función pública que reciba una iglesia (exportar, borrar, purgar, recuperar, auditar) es ejecutable por usuarios ni por `anon`.
 - **Datos derivados.** El panel de inicio, los cuatro informes y la vista previa de envío de cada usuario solo contienen datos de su iglesia, y sí contienen los suyos.

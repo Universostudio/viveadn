@@ -20,6 +20,7 @@
     "test:ciclo": "node scripts/probar-ciclo.mts",
     "test:exportacion": "node scripts/probar-exportacion.mts",
     "test:google": "node scripts/probar-importar-google.mts",
+    "check:textos": "node scripts/comprobar-textos-consentimiento.mts",
     "test:informes": "node scripts/probar-informes.mts"
   },
   "dependencies": {

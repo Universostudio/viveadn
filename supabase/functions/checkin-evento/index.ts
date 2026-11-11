@@ -61,6 +61,7 @@ Deno.serve(async (req) => {
       const { data, error } = await admin.rpc('registrar_checkin', {
         p_token: token, p_nombre: v.datos.nombre, p_apellido: v.datos.apellido,
         p_email: v.datos.email, p_telefono: v.datos.telefono, p_ip_hash: await huellaIp(ip, servicio),
+        p_texto_version: v.datos.textoVersion || null, p_idioma: v.datos.idioma || null,
       })
       if (error) { console.error('registrar_checkin', error.message); return json({ error: 'interno' }, 500) }
       const r = respuestaDe(String(data))
