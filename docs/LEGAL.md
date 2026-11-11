@@ -26,10 +26,11 @@ El titular es **Visualiza Studio, Sevilla**, según Gerencia. El resto no consta
 | `VITE_LEGAL_DOMICILIO` | Domicilio completo | **Falta** |
 | `VITE_EMAIL_LEGAL` | Correo de privacidad y legal | **Falta** |
 | `VITE_EMAIL_SOPORTE` | Correo de soporte | **Falta** |
+| `VITE_REGION_DATOS` | Región de la infraestructura donde se alojan los datos | `eu-west-1` (Irlanda, UE), indicada por Gerencia [V]; `check:config-legal` exige que empiece por `eu-` porque los textos afirman que está en la Unión Europea |
 | `VITE_LEGAL_REGISTRO` | Inscripción en un registro público, solo si existe | Vacío: el párrafo no se muestra |
 | `ADN_EMAIL_SOPORTE` | Correo de soporte de la función de invitaciones | Reserva: el valor que ya usaba la función |
 
-Si falta un dato, el documento muestra un aviso amarillo y el marcador `[dato pendiente de configurar]` en lugar de un valor inventado **[E]**. Antes de publicar, `npm run check:config-legal` falla si falta alguno o si un correo no tiene forma de correo, y no imprime los valores.
+Si falta un dato, el documento muestra un aviso amarillo y el marcador `[dato pendiente de configurar]` en lugar de un valor inventado **[E]**. Los textos (privacidad 1.2 y términos 1.1, aún sin publicar, por eso no se renumeran) mencionan la región y describen las transferencias a proveedores en términos generales: garantías del capítulo V del RGPD y lista de subencargados a petición. Antes de publicar, `npm run check:config-legal` falla si falta alguno o si un correo no tiene forma de correo, y no imprime los valores.
 
 ## 3. Versiones y control de cambios
 

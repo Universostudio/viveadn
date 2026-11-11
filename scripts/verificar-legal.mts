@@ -17,7 +17,7 @@ interface Documento { titulo: string; resumen: string; secciones: Seccion[] }
 
 const textoDe = (p: Parrafo) => (typeof p === 'string' ? p : p.texto)
 const marcadores = (s: string) => [...s.matchAll(/\{(\w+)\}/g)].map(m => m[1]!).sort().join(',')
-const CONOCIDOS = new Set(['titular', 'nif', 'domicilio', 'emailLegal', 'emailSoporte', 'registro'])
+const CONOCIDOS = new Set(['titular', 'nif', 'domicilio', 'emailLegal', 'emailSoporte', 'registro', 'regionDatos'])
 
 const textos: Record<string, Record<string, Documento>> = {}
 for (const i of IDIOMAS) textos[i] = (await import(`../src/legal/${ARCHIVO[i]}.ts`)).default

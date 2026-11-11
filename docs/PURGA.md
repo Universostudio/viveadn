@@ -82,4 +82,4 @@ Restaurar una copia anterior a una purga resucita los datos de una iglesia ya bo
 | Rotación de 14 días de las copias propias y retención de las de la plataforma | **[NV]**; se lee y se configura en la plataforma |
 | Texto legal con los 14 días | Hecho: política de privacidad 1.2 y términos 1.1 [E, `npm run check:legal`] |
 
-Decisiones que siguen sin ser de Desarrollo: quién guarda el archivo del libro y su clave; si el abogado acepta la rotación de copias como cumplimiento del 28.3.g; y quién recibe el aviso de purga atrasada cuando exista remitente.
+Custodia decidida por Gerencia: Harold guarda el archivo del libro, con la clave en su gestor de contraseñas (`docs/RESTAURACION.md`, paso 7). Decisiones que siguen sin ser de Desarrollo: si el abogado acepta la rotación de copias como cumplimiento del 28.3.g; y quién recibe el aviso de purga atrasada cuando exista remitente.

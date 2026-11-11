@@ -64,6 +64,7 @@ const en: TextosLegales = {
         titulo: '6. Who else has access to the data',
         parrafos: [
           "To provide the service we use providers that act as sub-processors: the database, authentication and file storage infrastructure, the web hosting and the sending of invitation emails. We do not sell data or use it for advertising. We disclose it to third parties only when the law requires it or an authority orders it.",
+          "Church data is hosted in the {regionDatos} region of our infrastructure provider, located in the European Union.",
           "Some providers belong to groups headquartered outside the European Economic Area. In that case, transfers rely on the safeguards of Chapter V of the GDPR, such as an adequacy decision or the standard contractual clauses. Anyone who asks at {emailLegal} can obtain the updated list of sub-processors and the region where the data is hosted.",
         ],
       },
@@ -219,7 +220,7 @@ const en: TextosLegales = {
           "Confidentiality: the persons authorised to process the data have committed to keeping it confidential.",
           "Security: the processor applies the measures of Article 32 of the GDPR described in the privacy policy.",
           "Sub-processors: the church grants a general authorisation to use the providers necessary to provide the service. The processor imposes on them the same data protection obligations, remains liable to the church for their compliance and, if it adds or replaces any of them, will notify the church so that it can object.",
-          "International transfers: they are carried out only with the safeguards of Chapter V of the GDPR.",
+          "Data location and international transfers: the data is hosted in the {regionDatos} region, located in the European Union; any transfer outside the European Economic Area is carried out only with the safeguards of Chapter V of the GDPR.",
           "Data subjects' rights: the processor will assist the church in handling them, and will forward to the church any request it receives directly.",
           "Security breaches: the processor will notify the church of them without undue delay after becoming aware of them and will provide the necessary information.",
           "Assistance: the processor will assist the church with any data protection impact assessments and prior consultations that are necessary.",

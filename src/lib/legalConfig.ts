@@ -15,10 +15,12 @@ export const CONFIG_LEGAL: ConfigLegal = {
   emailLegal: limpio(env.VITE_EMAIL_LEGAL),
   emailSoporte: limpio(env.VITE_EMAIL_SOPORTE),
   registro: limpio(env.VITE_LEGAL_REGISTRO),
+  // Región de la infraestructura donde se alojan los datos (la indica Gerencia); debe ser una región de la UE, lo comprueba check:config-legal
+  regionDatos: limpio(env.VITE_REGION_DATOS),
 }
 
 /** Datos sin los cuales los textos no se pueden publicar. El registro público es opcional: solo si el titular está inscrito. */
-export const OBLIGATORIOS: ClaveConfig[] = ['titular', 'nif', 'domicilio', 'emailLegal', 'emailSoporte']
+export const OBLIGATORIOS: ClaveConfig[] = ['titular', 'nif', 'domicilio', 'emailLegal', 'emailSoporte', 'regionDatos']
 
 export const pendientes = (c: ConfigLegal = CONFIG_LEGAL): ClaveConfig[] => OBLIGATORIOS.filter(k => !c[k])
 

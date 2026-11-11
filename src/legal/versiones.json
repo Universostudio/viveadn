@@ -27,12 +27,12 @@
         {
           "version": "1.2",
           "fecha": "2026-11-11",
-          "cambios": "Fija el plazo de las copias de seguridad: los datos desaparecen de los sistemas activos a los 30 días de la baja y de las copias en un máximo de 14 días más.",
+          "cambios": "Fija el plazo de las copias de seguridad: los datos desaparecen de los sistemas activos a los 30 días de la baja y de las copias en un máximo de 14 días más. Añade la región donde se alojan los datos (UE), tomada de la configuración.",
           "huellas": {
-            "es": "720fc8c40ec3213c81dac9eba858f71d7f4c8f8688f33b28ee97f7c82f102dc9",
-            "en": "f0dbd4317c143d760b1df06c4d08e092943f260f70b2291b336e53bca2572f70",
-            "fr": "d2077ce0d2c0a7b01e67106bee52de40eac6c8f8032057d15cb87d8eeeb2200c",
-            "pt-BR": "d3cc3785c680933754a30912104b72eeea5755bed7729d593ed8f36bb863d8b8"
+            "es": "323e670a7e834c89306737d193ef7e1146621b01aefa84cd0d5e18c24d047795",
+            "en": "c924d2af7e4f5ac8a2e7fd949e262a376fbbebfb8adfbb0c1fb75eff208d1c6f",
+            "fr": "4f61a46b0725207a52e63550175b6948d928f68996729dc8406cc92e86a9b82a",
+            "pt-BR": "8e2124a456e515bb408fb7b786dfe80a96bc17b642eda70701faedd1ec7d2477"
           }
         }
       ]
@@ -53,12 +53,12 @@
         {
           "version": "1.1",
           "fecha": "2026-11-11",
-          "cambios": "Fija el plazo de las copias de seguridad: los datos desaparecen de los sistemas activos a los 30 días de la baja y de las copias en un máximo de 14 días más.",
+          "cambios": "Fija el plazo de las copias de seguridad: los datos desaparecen de los sistemas activos a los 30 días de la baja y de las copias en un máximo de 14 días más. Añade la ubicación de los datos (UE), tomada de la configuración.",
           "huellas": {
-            "es": "01e73d28a91fe314b5191ac748f37345d78d2518d9f6f0357875ce084bfdede3",
-            "en": "dfc1ecdde1c31bd02d86e7883ef0f7a4870d1b6b5acfc7d409d088f29b9a9aec",
-            "fr": "fcd559b39fae05afe64583f6dae4725c8c0f7ead0582b036a4191ef705dee967",
-            "pt-BR": "cd4ec359f1aaa14048567757c1c207e2d2c86be0edab91c3a667cbff97af37d3"
+            "es": "484d45822ff97565b1e83b1502a5ae83b120feb8a4f1003340033926da3fff08",
+            "en": "b6360269c10c9f31cb2e80e8d1db4ad8df2b3f29d182dea80baed0fb5ba53be1",
+            "fr": "70b01d2ee645957138ec2d5ab0437d13aa5e35104d67085b4441526c91a9a5b0",
+            "pt-BR": "4a6f90b93555581d6888a53549b7319608cb8f7a9e9af569fbdec84def65bd7d"
           }
         }
       ]

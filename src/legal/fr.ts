@@ -64,6 +64,7 @@ const fr: TextosLegales = {
         titulo: "6. Qui d'autre accède aux données",
         parrafos: [
           "Pour fournir le service, nous recourons à des prestataires qui agissent en tant que sous-traitants ultérieurs : l'infrastructure de base de données, d'authentification et de stockage de fichiers, l'hébergement du site web et l'envoi des courriers électroniques d'invitation. Nous ne vendons pas les données et ne les utilisons pas à des fins publicitaires. Nous ne les communiquons à des tiers que lorsque la loi l'exige ou qu'une autorité l'ordonne.",
+          "Les données des églises sont hébergées dans la région {regionDatos} de notre prestataire d'infrastructure, située dans l'Union européenne.",
           "Certains prestataires appartiennent à des groupes dont le siège se trouve en dehors de l'Espace économique européen. Dans ce cas, les transferts reposent sur les garanties du chapitre V du RGPD, comme une décision d'adéquation ou les clauses contractuelles types. Toute personne qui en fait la demande à {emailLegal} peut obtenir la liste à jour des sous-traitants ultérieurs et la région dans laquelle les données sont hébergées.",
         ],
       },
@@ -219,7 +220,7 @@ const fr: TextosLegales = {
           "Confidentialité : les personnes autorisées à traiter les données se sont engagées à en respecter la confidentialité.",
           "Sécurité : le sous-traitant applique les mesures de l'article 32 du RGPD décrites dans la politique de confidentialité.",
           "Sous-traitants ultérieurs : l'église donne une autorisation générale de recourir aux prestataires nécessaires à la fourniture du service. Le sous-traitant leur impose les mêmes obligations en matière de protection des données, répond devant l'église de leur respect et, s'il en ajoute ou en remplace un, le lui communiquera afin que l'église puisse s'y opposer.",
-          "Transferts internationaux : ils ne sont effectués qu'avec les garanties du chapitre V du RGPD.",
+          "Localisation des données et transferts internationaux : les données sont hébergées dans la région {regionDatos}, située dans l'Union européenne ; tout transfert hors de l'Espace économique européen n'est effectué qu'avec les garanties du chapitre V du RGPD.",
           "Droits des personnes concernées : le sous-traitant aidera l'église à y répondre, et transmettra à l'église toute demande qu'il reçoit directement.",
           "Violations de la sécurité : le sous-traitant les notifiera à l'église dans les meilleurs délais après en avoir pris connaissance et lui fournira les informations nécessaires.",
           "Assistance : le sous-traitant aidera l'église dans les analyses d'impact et les consultations préalables qui seraient nécessaires.",

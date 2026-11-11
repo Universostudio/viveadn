@@ -3,7 +3,7 @@
 // párrafos y listas y los mismos marcadores, y que ningún texto cambia sin una versión nueva.
 
 /** Datos de configuración que se sustituyen en el texto. Nunca se inventan: si falta uno, se ve un aviso. */
-export type ClaveConfig = 'titular' | 'nif' | 'domicilio' | 'emailLegal' | 'emailSoporte' | 'registro'
+export type ClaveConfig = 'titular' | 'nif' | 'domicilio' | 'emailLegal' | 'emailSoporte' | 'registro' | 'regionDatos'
 
 /** Un párrafo puede mostrarse solo si hay un dato configurado (por ejemplo, los datos del Registro Mercantil) */
 export type Parrafo = string | { texto: string; si: ClaveConfig }

@@ -64,6 +64,7 @@ const es: TextosLegales = {
         titulo: '6. Quién más accede a los datos',
         parrafos: [
           'Para prestar el servicio usamos proveedores que actúan como subencargados: la infraestructura de base de datos, autenticación y almacenamiento de archivos, el alojamiento de la web y el envío de correos de invitación. No vendemos datos ni los usamos para publicidad. Solo los comunicamos a terceros cuando lo exige la ley o lo ordena una autoridad.',
+          'Los datos de las iglesias se alojan en la región {regionDatos} de nuestro proveedor de infraestructura, situada en la Unión Europea.',
           'Algunos proveedores pertenecen a grupos con sede fuera del Espacio Económico Europeo. En ese caso, las transferencias se apoyan en las garantías del capítulo V del RGPD, como una decisión de adecuación o las cláusulas contractuales tipo. Quien lo pida a {emailLegal} puede obtener la lista actualizada de subencargados y la región en la que se alojan los datos.',
         ],
       },
@@ -219,7 +220,7 @@ const es: TextosLegales = {
           'Confidencialidad: las personas autorizadas para tratar los datos se han comprometido a mantener su confidencialidad.',
           'Seguridad: el encargado aplica las medidas del artículo 32 del RGPD descritas en la política de privacidad.',
           'Subencargados: la iglesia concede una autorización general para recurrir a los proveedores necesarios para prestar el servicio. El encargado les impone las mismas obligaciones de protección de datos, responde ante la iglesia de su cumplimiento y, si incorpora o sustituye alguno, lo comunicará para que la iglesia pueda oponerse.',
-          'Transferencias internacionales: solo se realizan con las garantías del capítulo V del RGPD.',
+          'Ubicación de los datos y transferencias internacionales: los datos se alojan en la región {regionDatos}, situada en la Unión Europea; cualquier transferencia fuera del Espacio Económico Europeo solo se realiza con las garantías del capítulo V del RGPD.',
           'Derechos de las personas: el encargado ayudará a la iglesia a atenderlos, y trasladará a la iglesia cualquier solicitud que reciba directamente.',
           'Violaciones de seguridad: el encargado las notificará a la iglesia sin dilación indebida tras tener conocimiento de ellas y le facilitará la información necesaria.',
           'Asistencia: el encargado ayudará a la iglesia con las evaluaciones de impacto y consultas previas que sean necesarias.',

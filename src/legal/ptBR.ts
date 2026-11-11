@@ -65,6 +65,7 @@ const ptBR: TextosLegales = {
         titulo: "6. Quem mais acessa os dados",
         parrafos: [
           "Para prestar o serviço, usamos fornecedores que atuam como subcontratantes ulteriores: a infraestrutura de banco de dados, autenticação e armazenamento de arquivos, a hospedagem do site e o envio de e-mails de convite. Não vendemos dados nem os usamos para publicidade. Só os comunicamos a terceiros quando a lei o exige ou uma autoridade o ordena.",
+          "Os dados das igrejas são hospedados na região {regionDatos} do nosso fornecedor de infraestrutura, situada na União Europeia.",
           "Alguns fornecedores pertencem a grupos com sede fora do Espaço Econômico Europeu. Nesse caso, as transferências se apoiam nas garantias do capítulo V do RGPD, como uma decisão de adequação ou as cláusulas contratuais-padrão. Quem solicitar a {emailLegal} pode obter a lista atualizada de subcontratantes ulteriores e a região em que os dados são hospedados.",
         ],
       },
@@ -220,7 +221,7 @@ const ptBR: TextosLegales = {
           "Confidencialidade: as pessoas autorizadas a tratar os dados se comprometeram a manter a sua confidencialidade.",
           "Segurança: o subcontratante aplica as medidas do artigo 32 do RGPD descritas na política de privacidade.",
           "Subcontratantes ulteriores: a igreja concede uma autorização geral para recorrer aos fornecedores necessários para prestar o serviço. O subcontratante impõe a eles as mesmas obrigações de proteção de dados, responde perante a igreja pelo seu cumprimento e, se incorporar ou substituir algum, comunicará isso para que a igreja possa se opor.",
-          "Transferências internacionais: só são realizadas com as garantias do capítulo V do RGPD.",
+          "Localização dos dados e transferências internacionais: os dados são hospedados na região {regionDatos}, situada na União Europeia; qualquer transferência para fora do Espaço Econômico Europeu só é realizada com as garantias do capítulo V do RGPD.",
           "Direitos dos titulares dos dados: o subcontratante ajudará a igreja a atendê-los e encaminhará à igreja qualquer solicitação que receba diretamente.",
           "Violações de segurança: o subcontratante as notificará à igreja sem demora injustificada após tomar conhecimento delas e lhe fornecerá a informação necessária.",
           "Assistência: o subcontratante ajudará a igreja com as avaliações de impacto e consultas prévias que sejam necessárias.",
