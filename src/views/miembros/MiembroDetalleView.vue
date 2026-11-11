@@ -50,6 +50,24 @@
           </div>
         </div>
 
+        <!-- Datos de contacto adicionales (segundo correo, otros teléfonos, direcciones y etiquetas), p. ej. de una importación -->
+        <div v-if="contactos.length" class="card">
+          <h3 class="font-semibold text-gray-900 mb-3 flex items-center gap-2"><ContactRound class="w-5 h-5 text-adn-verde" aria-hidden="true" /> {{ t('ficha.contactos') }}</h3>
+          <dl class="space-y-2 text-sm">
+            <div v-for="g in gruposContacto" :key="g.tipo" class="flex gap-3">
+              <dt class="text-gray-500 w-24 flex-shrink-0">{{ t('ficha.contactoTipo.' + g.tipo) }}</dt>
+              <dd class="text-gray-800 min-w-0">
+                <template v-if="g.tipo === 'etiqueta'">
+                  <span v-for="c in g.items" :key="c.id" class="inline-block text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full mr-1 mb-1">{{ c.valor }}</span>
+                </template>
+                <template v-else>
+                  <span v-for="c in g.items" :key="c.id" class="block break-words">{{ c.valor }}<span v-if="c.etiqueta" class="text-xs text-gray-400"> · {{ c.etiqueta }}</span></span>
+                </template>
+              </dd>
+            </div>
+          </dl>
+        </div>
+
         <!-- Historial de consolidación -->
         <div class="card">
           <h3 class="font-semibold text-gray-900 mb-4 flex items-center gap-2"><HeartHandshake class="w-5 h-5 text-adn-verde" aria-hidden="true" /> {{ t('ficha.historial') }}</h3>
@@ -164,7 +182,7 @@
 </template>
 
 <script setup lang="ts">
-import { Activity, ArrowLeft, Award, Check, Flame, GraduationCap, HeartHandshake, House, Info, LoaderCircle, Mail, Phone, Trophy, UserX } from '@lucide/vue'
+import { Activity, ArrowLeft, Award, Check, ContactRound, Flame, GraduationCap, HeartHandshake, House, Info, LoaderCircle, Mail, Phone, Trophy, UserX } from '@lucide/vue'
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { supabase } from '@/lib/supabase'
@@ -181,6 +199,14 @@ const miembro = ref<any>(null)
 const consolidaciones = ref<any[]>([])
 const progreso = ref<any[]>([])
 const logros = ref<any[]>([])
+const contactos = ref<any[]>([])
+
+// Agrupados por tipo y sin la marca de la importación, que no es un dato del miembro
+const gruposContacto = computed(() =>
+  (['correo', 'telefono', 'direccion', 'etiqueta'] as const)
+    .map(tipo => ({ tipo, items: contactos.value.filter(c => c.tipo === tipo && c.etiqueta !== 'importacion') }))
+    .filter(g => g.items.length)
+)
 
 const progresoOrdenado = computed(() =>
   [...progreso.value].sort((a, b) => (a.nivel ?? 9) - (b.nivel ?? 9))
@@ -213,7 +239,7 @@ function etiquetaNivel(nivel: string) {
 
 onMounted(async () => {
   const id = route.params.id as string
-  const [miembroRes, consolRes, progresoRes, logrosRes] = await Promise.all([
+  const [miembroRes, consolRes, progresoRes, logrosRes, contactosRes] = await Promise.all([
     supabase
       .from('miembros')
       .select('*, casas_oracion(nombre, codigo_zona)')
@@ -232,11 +258,17 @@ onMounted(async () => {
       .from('logros')
       .select('id, nombre, tipo')
       .eq('miembro_id', id),
+    supabase
+      .from('adn_miembro_contactos')
+      .select('id, tipo, etiqueta, valor, orden')
+      .eq('miembro_id', id)
+      .order('orden'),
   ])
   miembro.value = miembroRes.data
   consolidaciones.value = (consolRes.data ?? []).map(conAlerta)
   progreso.value = progresoRes.data ?? []
   logros.value = logrosRes.data ?? []
+  contactos.value = contactosRes.data ?? []
   cargando.value = false
 })
 </script>

@@ -31,7 +31,7 @@ La escala es completo, parcial o inexistente.
 | Aislamiento entre iglesias | Completo en base de datos | Seguridad por filas en todas las tablas, claves foráneas compuestas, pruebas en cada solicitud de unión [V]. Hay pruebas SQL; falta una prueba de extremo a extremo con dos usuarios reales a través de la API (trabajo 6) |
 | Roles y permisos | Completo | Roles por iglesia con permisos y módulos activables por plan [V] |
 | Miembros | Completo | Listado, ficha, alta, edición, importación desde CSV [V] |
-| Importador de miembros | Parcial | Lee CSV con columnas en español o inglés, máximo 2.000 filas, valida y detecta duplicados [V]. No mapea el formato de Google Contacts: no admite segundo correo, tres teléfonos, direcciones ni etiquetas, y exige apellido a cada fila [V, `src/lib/importarMiembros.ts`] |
+| Importador de miembros | Completo salvo validar con los archivos reales | Plantilla CSV propia y, desde el 11-11, contactos de Google y Outlook: segundo correo, tres teléfonos, cumpleaños, direcciones y etiquetas, con deduplicación por correo, descarte de filas vacías y sin importar nunca contraseñas (`docs/IMPORTACION.md`). Probado a la escala de Gerencia (6.100 filas) con datos sintéticos [V]; los archivos reales no se han visto [NV]. Falta decidir qué hacer con los contactos sin nombre (por defecto no se importan) |
 | Casas de oración y zonas | Completo | Listado, edición, líderes [V] |
 | Consolidación (OP72) | Completo | Seguimiento de las 72 horas con color de alerta, métricas avanzadas de pago [V]. Faltan las alertas automáticas, porque no existe canal de envío |
 | Eventos y asistencia | Completo | Eventos, asistencia manual y registro por QR con enlace secreto, cartel imprimible [V] |
@@ -57,7 +57,8 @@ Tablas de la base pública, agrupadas. Todas llevan seguridad por filas [V, `doc
 - **Eventos:** `eventos`, `asistencias`, `asistencia_evento`, `evento_checkin`, `checkin_registros`.
 - **Formación:** `progreso_formacion`, `programas_formacion`, `programa_lecciones`, `inscripciones_formacion`, `avance_formacion`, `certificados`.
 - **Dar:** `dar_config`, `enlaces_dar`.
-- **Plataforma, solo servidor:** `plataforma_admins`, `plataforma_auditoria`, `plataforma_ajustes`, `registro_codigos`, `registro_intentos`.
+- **Plataforma, solo servidor:** `plataforma_admins`, `plataforma_auditoria`, `plataforma_ajustes`, `registro_codigos`, `registro_intentos`, `adn_ciclo_auditoria` (borrado suave, recuperación y purga; sobrevive a la purga).
+- **Datos de contacto adicionales:** `adn_miembro_contactos` (segundos correos, teléfonos extra, direcciones y etiquetas de un miembro, por ejemplo de una importación).
 
 Las tablas nuevas de esta línea de trabajo llevan el prefijo `adn_` [regla de Gerencia]. Las existentes no se renombran hasta que Gerencia lo ordene.
 
@@ -79,7 +80,7 @@ Los seis trabajos en curso, en orden:
 
 1. Ciclo de vida de la iglesia: hecho salvo programar la purga automática (pendiente de aprobación del dueño).
 2. Exportación completa en CSV y JSON: hecho y verificado en base de datos (ver `docs/EXPORTACION.md`).
-3. Importador de miembros con formato Google Contacts.
+3. Importador de miembros con formato Google Contacts: hecho con datos sintéticos; falta probarlo con los archivos reales que entregue Gerencia.
 4. Informes en PDF y Excel (miembros, asistencia, crecimiento).
 5. Panel de inicio completo y envío real en Comunicación, en pruebas solo hacia un sumidero.
 6. Pruebas de aislamiento con dos usuarios de prueba a través de la API.

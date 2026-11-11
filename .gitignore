@@ -42,3 +42,9 @@ __screenshots__/
 
 # Vite
 *.timestamp-*-*.mjs
+
+# Datos reales de personas: nunca entran al repositorio (el repositorio es público)
+/datos-privados/
+contacts*.csv
+contactos*.csv
+*.vcf

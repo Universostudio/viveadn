@@ -173,7 +173,9 @@
         "sinColumnas": "The first row needs the columns nombre and apellido.",
         "demasiadasFilas": "The file has more than {n} rows. Split it into parts.",
         "grande": "The file is too large.",
-        "lectura": "The file could not be read. Check that it is a CSV."
+        "lectura": "The file could not be read. Check that it is a CSV.",
+        "googleAlias": "Importing Google contacts is not available in a church with alias mode, because it would store real names and emails.",
+        "demasiadasGoogle": "The file has more than {n} rows. Split it into parts."
       },
       "error": {
         "faltaNombre": "first name missing",
@@ -183,6 +185,36 @@
         "fechaInvalida": "invalid birth date",
         "nivelInvalido": "invalid commitment level",
         "demasiadoLargo": "a text is too long"
+      },
+      "google": {
+        "regla": "A Google Contacts (or Outlook) export is detected automatically: repeats are merged by email and passwords are never imported.",
+        "comprobando": "Checking the members that already exist...",
+        "detectado": "Google Contacts file detected. You will see a summary before importing, and nothing is saved until you confirm.",
+        "nuevos": "New",
+        "sinNombre": "No name",
+        "incluirSinNombre": "Also import contacts without a name, using their email or phone as the name",
+        "sinNombreAyuda": "{n} contacts have no name but do have an email or phone. They are not imported by default.",
+        "resumen": "What was done with the file",
+        "filasLeidas": "{n} rows read, {p} distinct people.",
+        "fusionadas": "{n} repeated rows were merged into another one because they share an email.",
+        "vacias": "{n} rows with no name and no email or phone were discarded.",
+        "telefonosInvalidos": "{n} invalid phone numbers were discarded; the person is still imported.",
+        "correosInvalidos": "{n} invalid emails were discarded.",
+        "fechasInvalidas": "{n} invalid birth dates were discarded.",
+        "cumpleanosSinAnio": "{n} birthdays without a year are not imported: a birth date needs the year.",
+        "notasConClave": "{n} notes looked like they contained a password and are not imported.",
+        "notasRecortadas": "{n} notes were cut to 1000 characters.",
+        "sensibles": "Passwords are never imported. These columns were ignored: {columnas}. You should delete them from the file.",
+        "ignoradas": "Columns that are not imported: {columnas}.",
+        "ejemplos": "Examples of what will be imported",
+        "importarN": "Import {n} contacts",
+        "importando": "Importing contacts...",
+        "hecho": "{n} contacts imported.",
+        "omitidos": "{n} already existed and were skipped.",
+        "errorImportar": "The import stopped because of an error. Contacts already imported are kept; upload the file again and repeats will be skipped.",
+        "errorPermiso": "You do not have permission to import members.",
+        "errorModoAlias": "This church uses alias mode: contacts with real names and emails cannot be imported.",
+        "errorLectura": "The existing members could not be read. Try again."
       }
     },
     "alias": "Alias",
@@ -205,6 +237,13 @@
     "dias": "{n} day | {n} days",
     "logros": "Achievements",
     "sinLogros": "No achievements yet",
+    "contactos": "Additional contact details",
+    "contactoTipo": {
+      "correo": "Other emails",
+      "telefono": "Other phones",
+      "direccion": "Addresses",
+      "etiqueta": "Labels"
+    },
     "informacion": "Information",
     "registrado": "Registered",
     "estado": "Status",

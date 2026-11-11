@@ -57,4 +57,5 @@ jobs:
       - run: npm run test:certificados
       - run: npm run test:ciclo
       - run: npm run test:exportacion
+      - run: npm run test:google
       - run: npm run build

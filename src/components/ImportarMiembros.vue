@@ -14,6 +14,7 @@
           <li>{{ t('miembros.importar.reglaFechas') }}</li>
           <li>{{ t('miembros.importar.reglaRepetidos') }}</li>
           <li>{{ t('miembros.importar.reglaLimite', { n: MAX_FILAS }) }}</li>
+          <li>{{ t('miembros.importar.google.regla') }}</li>
         </ul>
         <div class="flex flex-col sm:flex-row gap-3">
           <button type="button" @click="descargarPlantilla" class="btn-secondary inline-flex items-center justify-center gap-2 text-sm">
@@ -24,8 +25,17 @@
             <input type="file" accept=".csv,.txt,text/csv" class="sr-only" @change="leerArchivo" />
           </label>
         </div>
-        <p v-if="errorArchivo" role="alert" class="bg-red-50 text-red-700 text-sm px-4 py-3 rounded-lg border border-red-200">{{ t(errorArchivo, { n: MAX_FILAS }) }}</p>
+        <p v-if="errorArchivo" role="alert" class="bg-red-50 text-red-700 text-sm px-4 py-3 rounded-lg border border-red-200">{{ t(errorArchivo, { n: errorArchivo.endsWith('demasiadasGoogle') ? MAX_FILAS_GOOGLE : MAX_FILAS }) }}</p>
       </div>
+
+      <!-- Contactos de Google: su propia revisión e importación -->
+      <ImportarGoogleRevision
+        v-else-if="paso === 'google' && analisisGoogle"
+        :analisis="analisisGoogle"
+        @volver="reiniciar"
+        @cerrar="emit('cerrar')"
+        @importado="emit('importado')"
+      />
 
       <!-- Paso 2: revisar -->
       <div v-else-if="paso === 'revisar'" class="space-y-4">
@@ -82,15 +92,19 @@ import { Upload, X, Download, FileSpreadsheet, CircleCheck, TriangleAlert } from
 import { supabase } from '@/lib/supabase'
 import { esLimitePlan } from '@/lib/plan'
 import { useAuthStore } from '@/stores/auth'
-import { analizarCsv, marcarDuplicados, claveMiembro, MAX_FILAS, MAX_BYTES, PLANTILLA_CSV } from '@/lib/importarMiembros'
+import { analizarCsv, marcarDuplicados, claveMiembro, parseCsv, MAX_FILAS, MAX_BYTES, PLANTILLA_CSV } from '@/lib/importarMiembros'
 import type { FilaImportar } from '@/lib/importarMiembros'
+import { analizarGoogle, esFormatoGoogle, MAX_BYTES_GOOGLE, MAX_FILAS_GOOGLE } from '@/lib/importarGoogle'
+import type { AnalisisGoogle } from '@/lib/importarGoogle'
+import ImportarGoogleRevision from '@/components/ImportarGoogleRevision.vue'
 
 const emit = defineEmits<{ cerrar: []; importado: [] }>()
 const { t } = useI18n()
 const auth = useAuthStore()
 
 const LOTE = 200
-const paso = ref<'elegir' | 'revisar' | 'importando' | 'hecho'>('elegir')
+const paso = ref<'elegir' | 'revisar' | 'google' | 'importando' | 'hecho'>('elegir')
+const analisisGoogle = ref<AnalisisGoogle | null>(null)
 const filas = ref<FilaImportar[]>([])
 const ignoradas = ref<string[]>([])
 const errorArchivo = ref('')
@@ -135,9 +149,22 @@ async function leerArchivo(ev: Event) {
   input.value = ''
   errorArchivo.value = ''
   if (!archivo) return
+  if (archivo.size > MAX_BYTES_GOOGLE) { errorArchivo.value = 'miembros.importar.errorArchivo.grande'; return }
+  let texto: string
+  try { texto = await leerTexto(archivo) } catch { errorArchivo.value = 'miembros.importar.errorArchivo.lectura'; return }
+  // Un archivo de contactos de Google (o de Outlook) tiene su propia lectura, revisión e importación
+  const primeraLinea = texto.slice(0, 20000).split(/\r?\n/, 1)[0] ?? ''
+  if (esFormatoGoogle(parseCsv(primeraLinea)[0] ?? [])) {
+    if (auth.modoAlias) { errorArchivo.value = 'miembros.importar.errorArchivo.googleAlias'; return }
+    const g = analizarGoogle(texto)
+    if (g.error) { errorArchivo.value = g.error === 'demasiadasFilas' ? 'miembros.importar.errorArchivo.demasiadasGoogle' : `miembros.importar.errorArchivo.${g.error === 'vacio' ? 'vacio' : 'lectura'}`; return }
+    analisisGoogle.value = g
+    paso.value = 'google'
+    return
+  }
   if (archivo.size > MAX_BYTES) { errorArchivo.value = 'miembros.importar.errorArchivo.grande'; return }
   let analisis
-  try { analisis = analizarCsv(await leerTexto(archivo), auth.modoAlias) } catch { errorArchivo.value = 'miembros.importar.errorArchivo.lectura'; return }
+  try { analisis = analizarCsv(texto, auth.modoAlias) } catch { errorArchivo.value = 'miembros.importar.errorArchivo.lectura'; return }
   if (analisis.error) { errorArchivo.value = `miembros.importar.errorArchivo.${analisis.error}`; return }
   const existentes = await clavesExistentes()
   if (!existentes) { errorArchivo.value = 'miembros.importar.errorArchivo.lectura'; return }
@@ -164,6 +191,6 @@ async function importar() {
   if (importados.value > 0) emit('importado')
 }
 
-function reiniciar() { paso.value = 'elegir'; filas.value = []; errorArchivo.value = ''; errorImportar.value = '' }
+function reiniciar() { paso.value = 'elegir'; filas.value = []; analisisGoogle.value = null; errorArchivo.value = ''; errorImportar.value = '' }
 function cerrar() { if (paso.value !== 'importando') emit('cerrar') }
 </script>

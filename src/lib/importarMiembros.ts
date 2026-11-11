@@ -40,7 +40,7 @@ export interface Analisis {
   ignoradas: string[]
 }
 
-const normalizar = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[_\-.]+/g, ' ').replace(/\s+/g, ' ').trim()
+export const normalizar = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[_\-.]+/g, ' ').replace(/\s+/g, ' ').trim()
 
 // Nombres de columna aceptados, en español e inglés, ya normalizados
 const ALIAS: Record<string, Columna> = {

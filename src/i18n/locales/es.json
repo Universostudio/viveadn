@@ -173,7 +173,9 @@
         "sinColumnas": "Faltan las columnas nombre y apellido en la primera fila.",
         "demasiadasFilas": "El archivo tiene más de {n} filas. Divídelo en partes.",
         "grande": "El archivo es demasiado grande.",
-        "lectura": "No se pudo leer el archivo. Comprueba que sea un CSV."
+        "lectura": "No se pudo leer el archivo. Comprueba que sea un CSV.",
+        "googleAlias": "Importar contactos de Google no está disponible en una iglesia con modo alias, porque guardaría nombres y correos reales.",
+        "demasiadasGoogle": "El archivo tiene más de {n} filas. Divídelo en partes."
       },
       "error": {
         "faltaNombre": "falta el nombre",
@@ -183,6 +185,36 @@
         "fechaInvalida": "fecha de nacimiento no válida",
         "nivelInvalido": "nivel de compromiso no válido",
         "demasiadoLargo": "algún texto es demasiado largo"
+      },
+      "google": {
+        "regla": "Si el archivo es una exportación de Google Contactos (o de Outlook) se detecta solo: se fusionan los repetidos por correo y nunca se importan contraseñas.",
+        "comprobando": "Comprobando los miembros que ya existen...",
+        "detectado": "Archivo de contactos de Google detectado. Antes de importar verás un resumen y nada se guarda hasta que lo confirmes.",
+        "nuevos": "Nuevos",
+        "sinNombre": "Sin nombre",
+        "incluirSinNombre": "Importar también los contactos sin nombre, con su correo o teléfono como nombre",
+        "sinNombreAyuda": "{n} contactos no tienen nombre pero sí correo o teléfono. Por defecto no se importan.",
+        "resumen": "Qué se hizo con el archivo",
+        "filasLeidas": "{n} filas leídas, {p} personas distintas.",
+        "fusionadas": "{n} filas repetidas se fusionaron con otra por compartir un correo.",
+        "vacias": "{n} filas sin nombre y sin correo ni teléfono se descartaron.",
+        "telefonosInvalidos": "{n} teléfonos no válidos se descartaron; la persona se importa igual.",
+        "correosInvalidos": "{n} correos no válidos se descartaron.",
+        "fechasInvalidas": "{n} fechas de nacimiento no válidas se descartaron.",
+        "cumpleanosSinAnio": "{n} cumpleaños sin año no se importan: una fecha de nacimiento necesita el año.",
+        "notasConClave": "{n} notas parecían contener una contraseña y no se importan.",
+        "notasRecortadas": "{n} notas se recortaron a 1000 caracteres.",
+        "sensibles": "Nunca se importan contraseñas. Se ignoraron estas columnas: {columnas}. Conviene borrarlas del archivo.",
+        "ignoradas": "Columnas que no se importan: {columnas}.",
+        "ejemplos": "Ejemplos de lo que se importará",
+        "importarN": "Importar {n} contactos",
+        "importando": "Importando contactos...",
+        "hecho": "{n} contactos importados.",
+        "omitidos": "{n} ya existían y se omitieron.",
+        "errorImportar": "Se detuvo la importación por un error. Los contactos ya importados se conservan; vuelve a subir el archivo y los repetidos se omitirán.",
+        "errorPermiso": "No tienes permiso para importar miembros.",
+        "errorModoAlias": "Esta iglesia usa el modo alias: no se pueden importar contactos con nombres y correos reales.",
+        "errorLectura": "No se pudieron leer los miembros que ya existen. Inténtalo de nuevo."
       }
     },
     "alias": "Alias",
@@ -205,6 +237,13 @@
     "dias": "{n} día | {n} días",
     "logros": "Logros",
     "sinLogros": "Sin logros aún",
+    "contactos": "Datos de contacto adicionales",
+    "contactoTipo": {
+      "correo": "Otros correos",
+      "telefono": "Otros teléfonos",
+      "direccion": "Direcciones",
+      "etiqueta": "Etiquetas"
+    },
     "informacion": "Información",
     "registrado": "Registrado",
     "estado": "Estado",

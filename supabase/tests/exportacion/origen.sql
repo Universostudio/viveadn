@@ -33,6 +33,9 @@ insert into public.miembros (id, iglesia_id, crm_id, nombre, apellido, email, te
   ('ea400000-0000-0000-0000-000000000003', 'ea100000-0000-0000-0000-00000000000a', 'M-3', 'NULL', E'\\N', 'a@b.test', '', null, null, E'tab\there; punto y coma', 'maduro', false),
   ('ea400000-0000-0000-0000-000000000004', 'ea100000-0000-0000-0000-00000000000a', 'M-4', '=SUMA(1+1)', '@cmd', null, null, null, null, null, 'nuevo', true),
   ('ea400000-0000-0000-0000-000000000009', 'ea100000-0000-0000-0000-00000000000b', 'M-9', 'OTRA-IGLESIA-SECRETO', 'Otra', 'otra-secreto@prueba.test', null, null, null, null, 'nuevo', true);
+insert into public.adn_miembro_contactos (iglesia_id, miembro_id, tipo, etiqueta, valor, orden) values
+  ('ea100000-0000-0000-0000-00000000000a', 'ea400000-0000-0000-0000-000000000001', 'correo', null, 'zoe.otro@prueba.test', 1),
+  ('ea100000-0000-0000-0000-00000000000a', 'ea400000-0000-0000-0000-000000000001', 'direccion', 'Casa', E'Calle Falsa 123,\nSevilla', 2);
 insert into public.consolidaciones (id, iglesia_id, miembro_id, consolidador_id, casa_oracion_id, fecha_conversion, primer_contacto_notas, completado) values
   ('ea500000-0000-0000-0000-000000000001', 'ea100000-0000-0000-0000-00000000000a', 'ea400000-0000-0000-0000-000000000001', 'ea000000-0000-0000-0000-000000000001', 'ea300000-0000-0000-0000-000000000001', '2026-11-01 10:00:00+00', 'Llamado; "dijo que sí"', false);
 insert into public.asistencias (iglesia_id, casa_oracion_id, miembro_id, fecha, presente, notas) values

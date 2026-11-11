@@ -12,7 +12,7 @@ El panel de plataforma entrega un ZIP con tres tipos de archivo.
 | `datos.json` | Todos los datos de la iglesia: la fila de `iglesias` y, por tabla, sus filas. |
 | `csv/<tabla>.csv` | Un CSV por tabla. UTF-8 sin BOM, separador coma, fin de línea CRLF (RFC 4180). Un campo vacío sin comillas es NULL; una cadena vacía va entre comillas (`""`). Las fechas llevan zona (UTC) y los numéricos conservan su escala exacta. |
 
-Entran 25 tablas [V]: la iglesia, toda tabla con `iglesia_id` y `rol_permisos`. Una prueba compara el manifiesto con el catálogo de la base y falla si una tabla nueva queda fuera, igual que la clasificación de `permisos.sql`. Los archivos de Storage no viajan: la función de borde añade su listado (`archivos`) para pedirlos aparte.
+Entran 26 tablas [V]: la iglesia, toda tabla con `iglesia_id` y `rol_permisos`. Una prueba compara el manifiesto con el catálogo de la base y falla si una tabla nueva queda fuera, igual que la clasificación de `permisos.sql`. Los archivos de Storage no viajan: la función de borde añade su listado (`archivos`) para pedirlos aparte.
 
 ## Qué no sale, y por qué
 
@@ -30,11 +30,11 @@ Un caso conocido: la exportación incluye `plataforma_auditoria`, las acciones q
 
 `supabase/tests/exportacion_carga.sh` (parte de `ejecutar.sh` y del CI) [V, 12 comprobaciones]:
 
-1. Crea una iglesia sintética con filas en las 25 tablas y datos incómodos para un CSV: comas, comillas, saltos de línea CRLF, tabulaciones, emoji, caracteres japoneses, espacios al borde, la cadena `NULL`, una barra seguida de `N`, textos que parecen fórmulas, vacío frente a NULL y un numérico con ceros finales. Añade una segunda iglesia que no debe aparecer.
+1. Crea una iglesia sintética con filas en las 26 tablas y datos incómodos para un CSV: comas, comillas, saltos de línea CRLF, tabulaciones, emoji, caracteres japoneses, espacios al borde, la cadena `NULL`, una barra seguida de `N`, textos que parecen fórmulas, vacío frente a NULL y un numérico con ceros finales. Añade una segunda iglesia que no debe aparecer.
 2. Exporta, separa los archivos y comprueba que el md5 de cada CSV es el del manifiesto.
 3. Carga el JSON en una base vacía y los CSV en otra, ambas con el esquema y las migraciones.
-4. Compara, tabla a tabla, filas y contenido con el manifiesto mediante `adn_verificar_carga`: **las 25 tablas coinciden en las dos cargas** (149 filas).
-5. Comprueba que las 62 claves foráneas se cumplen en la base cargada, que solo entró una iglesia y que los secretos se regeneraron.
+4. Compara, tabla a tabla, filas y contenido con el manifiesto mediante `adn_verificar_carga`: **las 26 tablas coinciden en las dos cargas** (151 filas).
+5. Comprueba que las 64 claves foráneas se cumplen en la base cargada, que solo entró una iglesia y que los secretos se regeneraron.
 6. Demuestra que la comparación no es vacua: detecta un dato cambiado y una fila borrada, y no se alarma por un numérico equivalente.
 
 ## Procedimiento de restauración de referencia
@@ -51,7 +51,7 @@ La red de iglesias no se restaura sola: `iglesia_madre_id` apunta a otra iglesia
 
 ## Límites
 
-- Todo el paquete viaja en una respuesta de la función de borde, y el CSV duplica el JSON. Con iglesias de decenas de miles de filas habrá que paginar o generar el ZIP en el servidor [NV: no se midió; la prueba usa 149 filas].
+- Todo el paquete viaja en una respuesta de la función de borde, y el CSV duplica el JSON. Con iglesias de decenas de miles de filas habrá que paginar o generar el ZIP en el servidor [NV: no se midió; la prueba usa 151 filas].
 - La función de borde no se ejecutó de extremo a extremo (no hay entorno Supabase de prueba aquí) [NV]. Se comprobaron sus tipos en modo estricto, la base de datos y el empaquetado del ZIP (`npm run test:exportacion`, validado con el lector de Python).
 
 ## Orden de despliegue
