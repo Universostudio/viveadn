@@ -57,6 +57,16 @@ No se guarda ningún dato personal que el archivo de Google no guardara ya. Las 
 
 Límites: [NV] el archivo real no se ha importado nunca, solo se ha ejecutado el resumen por Gerencia. Los nombres exactos de algunas columnas de dirección se dedujeron de la descripción de Gerencia: el lector acepta «Dirección 1 - Calle», «Dirección 1 (Calle)» y sus variantes, pero conviene comprobar el resumen real antes de importar.
 
+### Ensayo real con los archivos de Wix (11-11, ejecutado por Gerencia con el commit 93b254c, solo cifras)
+
+Formato Wix detectado. 6.110 filas y 4.042 personas distintas tras fusionar (3.057 con nombre y 985 sin nombre pero con correo o teléfono, que quedan aparte y no se importan salvo que se marque la casilla). 2.067 filas fusionadas, 1 descartada por no tener nombre ni contacto, 2.218 correos únicos válidos y 0 inválidos, 793 teléfonos inválidos descartados, 1.290 personas con dirección, 4 con más de un correo y 32 con más de un teléfono, 0 notas descartadas por parecer contraseñas, ninguna columna sensible y 5 columnas que no se importan.
+
+Consentimiento por correo: suscritos 2.022, sin dato 1.829, nunca suscritos 141, cancelados 50. Por SMS: suscritos 0, sin dato 3.515, nunca suscritos 527, cancelados 0. Todos los estados se reconocieron. No se importó nada.
+
+**Por qué el modelo sintético se quedó corto.** La prueba a escala anticipaba 2.916 personas y la realidad son 4.042: en el archivo real muchas personas no tienen correo, y sin correo no se fusionan por correo, así que cuentan como personas distintas aunque algunas puedan ser la misma. Es una cota alta del número real de personas, no una cifra exacta [H].
+
+**Consecuencia para Comunicación.** Solo 2.022 de esas personas constan como suscritas por correo, y nadie por WhatsApp: el resto no recibiría nada.
+
 ## Verificación a escala
 
 `npm run test:google` genera un archivo sintético con las cifras de Gerencia: 6.100 filas, 1.934 sin nombre, 2.216 correos únicos y 960 teléfonos inválidos. El modelo que lo genera conoce la respuesta, de modo que la comprobación no depende del código que prueba [V]:

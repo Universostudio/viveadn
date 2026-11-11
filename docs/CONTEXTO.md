@@ -84,7 +84,7 @@ Los seis trabajos en curso, en orden:
 2. Exportación completa en CSV y JSON: hecho y verificado en base de datos (ver `docs/EXPORTACION.md`).
 3. Importador de miembros con formato Google Contacts: hecho con datos sintéticos; falta probarlo con los archivos reales que entregue Gerencia.
 4. Informes en PDF y Excel (miembros, asistencia, crecimiento): hecho y verificado (ver `docs/INFORMES.md`).
-5. Panel de inicio completo y Comunicación con envío al buzón de pruebas y consentimiento por canal: hecho y verificado en base de datos (ver `docs/COMUNICACION.md`). Falta una pantalla para registrar consentimientos de miembros creados a mano. El envío real sigue pendiente de proveedor, enlace de baja y aprobación del dueño.
+5. Panel de inicio completo y Comunicación con envío al buzón de pruebas y consentimiento por canal: hecho y verificado en base de datos (ver `docs/COMUNICACION.md`). **Pendientes antes de cualquier envío real (Gerencia, 11-11):** la pantalla para registrar consentimientos de miembros creados a mano y el interruptor de baja en la ficha del miembro. El envío real sigue pendiente de proveedor, enlace de baja y aprobación del dueño.
 6. Pruebas de aislamiento con dos usuarios de prueba: hecha y verificada a nivel SQL con los roles reales; la versión a través de la API está escrita y pendiente de ejecutarse contra PostgREST (ver `docs/AISLAMIENTO.md`).
 
 **Prioritaria antes de producción:** paginar la exportación o generar el ZIP en el servidor, porque hoy todo el paquete viaja en una sola respuesta y no se ha medido con iglesias de decenas de miles de filas (`docs/EXPORTACION.md`).

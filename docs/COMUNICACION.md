@@ -42,7 +42,7 @@ Un miembro creado a mano no tiene registro de consentimiento, así que hoy **no 
 ## 4. Límites
 
 - **[NV]** Las pantallas nuevas se compilaron y pasaron la comprobación de tipos, pero no se abrieron en un navegador contra una base real.
-- **[NV]** No hay forma en la pantalla de dar de baja a un miembro: la tabla de bajas y sus permisos existen y están probados, pero falta el interruptor en la ficha del miembro.
+- **Pendiente antes de cualquier envío real:** pantalla para registrar consentimientos y interruptor de baja en la ficha del miembro. **[NV]** No hay forma en la pantalla de dar de baja a un miembro: la tabla de bajas y sus permisos existen y están probados, pero falta el interruptor en la ficha del miembro.
 - El buzón no registra aperturas, rebotes ni respuestas, porque no hay envío real.
 - El tope de 20 mensajes al día y el de 2.000 destinatarios son decisiones de seguridad mientras no haya proveedor. Un proveedor real puede exigir otros.
 
