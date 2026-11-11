@@ -87,6 +87,13 @@ Los seis trabajos en curso, en orden:
 5. Panel de inicio completo y Comunicación con envío al buzón de pruebas y consentimiento por canal: hecho y verificado en base de datos (ver `docs/COMUNICACION.md`). Hechos el 11-11: pantalla de consentimientos con auditoría de solo altas, interruptor de baja por canal en la ficha y enlace público de baja de un solo uso, sin envío real (`docs/COMUNICACION.md`). El envío real sigue pendiente de proveedor, enlace de baja y aprobación del dueño.
 6. Pruebas de aislamiento con dos usuarios de prueba: hecha y verificada a nivel SQL con los roles reales; la versión a través de la API está escrita y pendiente de ejecutarse contra PostgREST (ver `docs/AISLAMIENTO.md`).
 
+**Requisitos previos al envío real de mensajes (Gerencia, 11-11):**
+
+1. Crear un enlace de baja por destinatario y canal al enviar, con `adn_baja_crear_enlace`, y poner `https://<web>/baja/<secreto>` en el mensaje.
+2. Desplegar la función de borde `baja` sin verificar el JWT, como `dar-publico`, y probarla de extremo a extremo.
+3. Límite de frecuencia en `baja` (opcional: no hace falta contra la fuerza bruta, pero frena el ruido).
+4. Un proveedor aprobado por el dueño, base legal revisada por un abogado (`docs/COMUNICACION.md`, apartado 5) y consentimientos registrados. Re-suscribir a alguien exige un registro explícito con origen: quitar una baja lo deja en «sin dato».
+
 **Prioritaria antes de producción:** paginar la exportación o generar el ZIP en el servidor, porque hoy todo el paquete viaja en una sola respuesta y no se ha medido con iglesias de decenas de miles de filas (`docs/EXPORTACION.md`).
 
 Del producto, sin fecha: cobro del plan, canal de envío real de mensajes y alertas, credencial con escáner, subdominio por iglesia, historial de cambios por iglesia y segundo factor obligatorio [V, `docs/MULTITENANT.md` y `docs/COBRO.md`].
