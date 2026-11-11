@@ -121,7 +121,7 @@ Todo lo marcado **[E]** se repite con estos comandos, desde la raíz del reposit
 
 | Qué | Comando |
 | --- | --- |
-| Batería SQL completa: permisos, aislamiento total, ciclo de vida, exportación, importación, informes, comunicación, consentimiento, evidencia, doble confirmación, purga programada, descargas, panel, reversión de las doce migraciones `adn_*` y comprobación de NULL en `auth.users` | `PGUSER=postgres supabase/tests/ejecutar.sh` |
+| Batería SQL completa: permisos, aislamiento total, ciclo de vida, exportación, importación, informes, comunicación, consentimiento, evidencia, doble confirmación, purga programada, descargas, panel, reversión de las trece migraciones `adn_*` y comprobación de NULL en `auth.users` | `PGUSER=postgres supabase/tests/ejecutar.sh` |
 | Exportación recargada en dos bases vacías (JSON y CSV) | `PGUSER=postgres supabase/tests/exportacion_carga.sh viveadn_pruebas` |
 | Reversión de las migraciones `adn_*` | `PGUSER=postgres supabase/tests/adn_reversion.sh` |
 | Restauración de la base completa en una base vacía, con comparación fila a fila | `PGUSER=postgres supabase/tests/restauracion_base_completa.sh` |
