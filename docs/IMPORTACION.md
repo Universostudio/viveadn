@@ -30,6 +30,33 @@ Complementa la importación por plantilla CSV. Se detecta sola: si la primera fi
 
 `adn_importar_miembros` importa un lote de hasta 1000 contactos de forma atómica, con los permisos de quien llama: exige `miembros.importar` además de las políticas de `miembros`, respeta el límite del plan y los disparadores, y si algo falla (por ejemplo el límite del plan) no entra nada de ese lote. La web envía lotes de 500. Devuelve conteos de importados y omitidos por correo, por teléfono y por nombre [V, 40 comprobaciones en `supabase/tests/adn_importar_contactos.sql`, incluido el aislamiento entre iglesias: el mismo correo en otra iglesia no es un duplicado].
 
+## Formato Wix y consentimiento
+
+El primer archivo real que se probó resultó ser una exportación de contactos de **Wix**, no de Google (la comprobación de Gerencia devolvió `noEsGoogle`). El importador lo reconoce por la cabecera «Estado de suscriptor por email» y lo lee con el mismo código que el de Google.
+
+| Columna de Wix | Dónde se guarda |
+| --- | --- |
+| Nombre, Apellido | Nombre y apellido |
+| Email 1 y 2 | Correo principal y adicional |
+| Teléfono 1 a 3 | Teléfono principal y adicionales |
+| Fecha de nacimiento | Fecha de nacimiento |
+| Dirección 1 a 3 (calle, ciudad, estado o región, código postal, país) | Direcciones, unidas en una línea |
+| Etiquetas (separadas por punto y coma) | Etiquetas |
+| Fuente | Etiqueta `fuente` del contacto (hasta 60 caracteres) |
+| Creado a las | Etiqueta `creado` del contacto, solo la fecha |
+| Estado de suscriptor por email y por SMS | **Consentimiento** (tabla `adn_consentimientos`) |
+| Compañía, Puesto, Última actividad y su fecha | No se importan |
+
+No se guarda ningún dato personal que el archivo de Google no guardara ya. Las contraseñas no se leen en ningún formato [V, prueba con una columna «Contraseña» en el formato Wix].
+
+**El estado de suscripción es consentimiento.** Se guarda por persona y canal: `suscrito`, `nunca` (nunca suscrito), `cancelado` (suscripción cancelada) y `sin_dato` (vacío). Un valor que no se reconoce, como «Pendiente», cuenta como sin dato y se informa. Entre dos filas de la misma persona gana el estado más restrictivo.
+
+**Al reimportar nunca se relaja.** El orden de restricción es suscrito, sin dato, nunca, cancelado. Sobre una persona que ya existe, la importación solo puede pasar a un estado más restrictivo: una baja del archivo se aplica aunque la persona ya estuviera, y un archivo que diga «Suscrito» no resucita una baja, no sube de «sin dato» a «suscrito» ni crea un consentimiento a quien no lo tenía [V, `adn_consentimiento.sql`]. Volver a suscribir a alguien es una decisión humana, con `adn_registrar_consentimiento` (permiso de editar miembros). Todavía no hay pantalla para ello.
+
+**El ensayo con el archivo real.** `node scripts/resumen-contactos-google.mts <archivo>` lee un archivo de Google, Outlook o Wix fuera del repositorio y escribe solo cifras: filas, personas, fusionadas, descartadas, datos inválidos y, en Wix, cuántas personas hay en cada estado de suscripción por canal. No imprime nombres, correos ni teléfonos [V]. Se probó con un archivo sintético con los nombres de columna de Wix y con 6.110 contactos que reproducen las cifras de suscripción de Gerencia (correo: suscritos 4.052, vacío 1.865, nunca 143, cancelados 50; SMS: vacío 5.412, nunca 698) [V, `npm run test:google`].
+
+Límites: [NV] el archivo real no se ha importado nunca, solo se ha ejecutado el resumen por Gerencia. Los nombres exactos de algunas columnas de dirección se dedujeron de la descripción de Gerencia: el lector acepta «Dirección 1 - Calle», «Dirección 1 (Calle)» y sus variantes, pero conviene comprobar el resumen real antes de importar.
+
 ## Verificación a escala
 
 `npm run test:google` genera un archivo sintético con las cifras de Gerencia: 6.100 filas, 1.934 sin nombre, 2.216 correos únicos y 960 teléfonos inválidos. El modelo que lo genera conoce la respuesta, de modo que la comprobación no depende del código que prueba [V]:

@@ -9,6 +9,9 @@
 //  * Se descartan las filas sin nombre y sin ningún dato de contacto. Las que no tienen nombre pero sí correo o
 //    teléfono quedan aparte: solo se importan si quien importa lo pide, con el correo o el teléfono como nombre.
 //  * Un teléfono o un correo inválido no invalida a la persona: se descarta ese dato y se cuenta.
+//  * Formato Wix (se detecta por la cabecera "Estado de suscriptor por email"): el estado de suscripción es el
+//    consentimiento de esa persona por canal. Se guarda tal cual, y entre dos filas de la misma persona gana el más
+//    restrictivo. Sin estado, o con uno desconocido, no hay consentimiento. La base de datos nunca lo relaja al reimportar.
 import { parseCsv, fechaIso, normalizar } from './importarMiembros.ts'
 
 export const MAX_FILAS_GOOGLE = 25000
@@ -17,6 +20,24 @@ export const LOTE_GOOGLE = 500
 
 export type TipoContacto = 'correo' | 'telefono' | 'direccion' | 'etiqueta'
 export interface Contacto { tipo: TipoContacto; etiqueta?: string; valor: string }
+
+// Orden de restricción: suscrito < sin_dato < nunca < cancelado. Entre dos estados gana el más restrictivo.
+export type EstadoConsentimiento = 'suscrito' | 'nunca' | 'cancelado' | 'sin_dato'
+export type CanalConsentimiento = 'email' | 'sms'
+const RANGO: Record<EstadoConsentimiento, number> = { suscrito: 0, sin_dato: 1, nunca: 2, cancelado: 3 }
+export const ESTADOS: EstadoConsentimiento[] = ['suscrito', 'sin_dato', 'nunca', 'cancelado']
+
+// Estado de suscripción de Wix (y su equivalente en inglés). null: valor no vacío que no se reconoce
+export function estadoSuscripcion(valor: string): EstadoConsentimiento | null {
+  const n = normalizar(valor)
+  if (n === '') return 'sin_dato'
+  if (n === 'suscrito' || n === 'subscribed') return 'suscrito'
+  if (n === 'nunca suscrito' || n === 'never subscribed') return 'nunca'
+  if (n === 'suscripcion cancelada' || n === 'unsubscribed' || n === 'cancelado') return 'cancelado'
+  return null
+}
+const masRestrictivo = (a: EstadoConsentimiento | undefined, b: EstadoConsentimiento | undefined): EstadoConsentimiento | undefined =>
+  a === undefined ? b : b === undefined ? a : RANGO[b] > RANGO[a] ? b : a
 
 export interface ContactoGoogle {
   linea: number
@@ -29,9 +50,19 @@ export interface ContactoGoogle {
   notas: string | null
   direcciones: { valor: string; etiqueta?: string }[]
   etiquetas: string[]
+  /** Estado de suscripción por canal (solo el formato Wix lo trae) */
+  consentimiento: Partial<Record<CanalConsentimiento, EstadoConsentimiento>>
+  /** Origen del contacto y fecha de alta en el sistema de origen (AAAA-MM-DD), si el archivo los trae */
+  fuente: string | null
+  creado: string | null
 }
 
 export interface ResumenGoogle {
+  formato: 'google' | 'wix'
+  /** Personas por estado de suscripción en cada canal, tras fusionar repetidos */
+  consentimiento: Record<CanalConsentimiento, Record<EstadoConsentimiento, number>>
+  /** Valores de estado de suscripción que no se reconocen (cuentan como sin consentimiento) */
+  estadosDesconocidos: number
   filas: number
   /** Sin nombre y sin correo ni teléfono: no hay nada que importar */
   descartadasVacias: number
@@ -59,7 +90,11 @@ export interface AnalisisGoogle {
   ignoradas: string[]
 }
 
+const consentimientoVacio = () => ({
+  email: { suscrito: 0, sin_dato: 0, nunca: 0, cancelado: 0 }, sms: { suscrito: 0, sin_dato: 0, nunca: 0, cancelado: 0 },
+})
 const RESUMEN_VACIO: ResumenGoogle = {
+  formato: 'google', consentimiento: consentimientoVacio(), estadosDesconocidos: 0,
   filas: 0, descartadasVacias: 0, sinNombre: 0, fusionadas: 0, correosInvalidos: 0, telefonosInvalidos: 0,
   fechasInvalidas: 0, cumpleanosSinAnio: 0, notasConClave: 0, notasRecortadas: 0, personas: 0,
 }
@@ -97,6 +132,32 @@ function partirMultiples(celda: string): string[] {
 
 interface Grupo { n: number; valor?: number; etiqueta?: number; formateada?: number; calle?: number; ciudad?: number; region?: number; cp?: number; pais?: number }
 
+// Wix: columnas en español, con el estado de suscripción por canal. Se reconoce por esa cabecera.
+const limpiarWix = (x: string) => x.replace(/[()/,+:]/g, ' ').replace(/\s+/g, ' ').trim()
+const esEstadoEmail = (x: string) => limpiarWix(x).startsWith('estado de suscriptor por email') || limpiarWix(x).startsWith('email subscriber status')
+const esEstadoSms = (x: string) => limpiarWix(x).startsWith('estado de suscriptor por sms') || limpiarWix(x).startsWith('sms subscriber status')
+export function esFormatoWix(cabecera: string[]): boolean {
+  const h = cabecera.map(normalizar)
+  return h.some(esEstadoEmail) && (h.includes('nombre') || h.includes('apellido'))
+}
+// Nombre de columna de Wix → el equivalente de Google, para reutilizar el mismo lector
+function aliasWix(normalizada: string): string {
+  const x = limpiarWix(normalizada)
+  if (x === 'nombre') return 'first name'
+  if (x === 'apellido') return 'last name'
+  if (x === 'fecha de nacimiento') return 'birthday'
+  if (x === 'etiquetas') return 'labels'
+  let m = /^e?mail (\d+)$/.exec(x)
+  if (m) return `e mail ${m[1]} value`
+  m = /^(?:telefono|phone) (\d+)$/.exec(x)
+  if (m) return `phone ${m[1]} value`
+  m = /^direccion (\d+) (calle|ciudad|estado region|estado|region|codigo postal|pais)$/.exec(x)
+  if (m) return `address ${m[1]} ${m[2] === 'calle' ? 'street' : m[2] === 'ciudad' ? 'city' : m[2] === 'codigo postal' ? 'postal code' : m[2] === 'pais' ? 'country' : 'region'}`
+  m = /^direccion (\d+)$/.exec(x)
+  if (m) return `address ${m[1]} formatted`
+  return normalizada
+}
+
 export function esFormatoGoogle(cabecera: string[]): boolean {
   const h = cabecera.map(normalizar)
   const tieneNombre = h.includes('first name') || h.includes('given name') || h.includes('family name') || h.includes('last name')
@@ -112,11 +173,13 @@ export function analizarGoogle(texto: string): AnalisisGoogle {
   const filas = parseCsv(texto)
   if (filas.length < 2) return vacio('vacio')
   const cabecera = filas[0] ?? []
-  if (!esFormatoGoogle(cabecera)) return vacio('noEsGoogle')
+  const wix = esFormatoWix(cabecera)
+  if (!wix && !esFormatoGoogle(cabecera)) return vacio('noEsGoogle')
   if (filas.length - 1 > MAX_FILAS_GOOGLE) return vacio('demasiadasFilas')
 
   // Mapa de columnas. Las sensibles se excluyen aquí, antes de leer ninguna celda.
-  const h = cabecera.map(normalizar)
+  const hOriginal = cabecera.map(normalizar)
+  const h = wix ? hOriginal.map(aliasWix) : hOriginal
   const sensibles = new Set<number>()
   h.forEach((x, i) => { if (SENSIBLE_RE.test(x)) sensibles.add(i) })
   const idx = (...nombres: string[]) => { for (const n of nombres) { const i = h.indexOf(n); if (i >= 0 && !sensibles.has(i)) return i } return -1 }
@@ -127,6 +190,12 @@ export function analizarGoogle(texto: string): AnalisisGoogle {
   const iNombreCompleto = idx('name'); const iAlias = idx('nickname')
   const iNac = idx('birthday'); const iNotas = idx('notes'); const iEtiquetas = idx('labels', 'group membership', 'categories')
   marca(iNombre, iMedio, iApellido, iNombreCompleto, iAlias, iNac, iNotas, iEtiquetas)
+  // Wix: estado de suscripción por canal, fuente y fecha de alta (nunca una columna sensible)
+  const buscar = (f: (x: string) => boolean) => hOriginal.findIndex((x, i) => wix && !sensibles.has(i) && f(x))
+  const iEstadoEmail = buscar(esEstadoEmail); const iEstadoSms = buscar(esEstadoSms)
+  const iFuente = buscar(x => limpiarWix(x) === 'fuente' || limpiarWix(x) === 'source')
+  const iCreado = buscar(x => limpiarWix(x).startsWith('creado a las') || limpiarWix(x).startsWith('created at'))
+  marca(iEstadoEmail, iEstadoSms, iFuente, iCreado)
 
   const grupos = (clave: RegExp) => {
     const m = new Map<number, Grupo>()
@@ -161,7 +230,7 @@ export function analizarGoogle(texto: string): AnalisisGoogle {
   const ignoradas = cabecera.map((x, i) => ({ x: x.trim(), i })).filter(({ x, i }) => x && !usadas.has(i) && !sensibles.has(i)).map(({ x }) => x)
   const columnasSensibles = [...sensibles].map(i => (cabecera[i] ?? '').trim()).filter(Boolean)
 
-  const r: ResumenGoogle = { ...RESUMEN_VACIO, filas: filas.length - 1 }
+  const r: ResumenGoogle = { ...RESUMEN_VACIO, consentimiento: consentimientoVacio(), formato: wix ? 'wix' : 'google', filas: filas.length - 1 }
   const celda = (fila: string[], i: number) => (i >= 0 ? (fila[i] ?? '').trim() : '')
 
   // Índices de lo ya visto, para fusionar a quien repite un correo (o un teléfono, si no tiene correo)
@@ -244,9 +313,21 @@ export function analizarGoogle(texto: string): AnalisisGoogle {
       if (!etiquetas.some(x => x.toLowerCase() === l.toLowerCase())) etiquetas.push(l)
     }
 
+    // Consentimiento, fuente y fecha de alta (Wix)
+    const consentimiento: ContactoGoogle['consentimiento'] = {}
+    for (const [canal, i] of [['email', iEstadoEmail], ['sms', iEstadoSms]] as const) {
+      if (i < 0) continue
+      const e = estadoSuscripcion(celda(fila, i))
+      if (e === null) { r.estadosDesconocidos++; consentimiento[canal] = 'sin_dato' } else consentimiento[canal] = e
+    }
+    const fuenteBruta = recortar(celda(fila, iFuente).replace(/\s+/g, ' '), 60)
+    const creadoBruto = celda(fila, iCreado)
+    const creado = creadoBruto ? (/^(\d{4}-\d{2}-\d{2})/.exec(creadoBruto)?.[1] ?? fechaIso(creadoBruto)) : null
+
     const nueva: ContactoGoogle = {
       linea, nombre, apellido, nombreDerivado, emails, telefonos: telefonos.slice(0, 5), fecha_nacimiento: nacimiento, notas,
       direcciones: direcciones.slice(0, 3), etiquetas: etiquetas.slice(0, 20),
+      consentimiento, fuente: fuenteBruta || null, creado,
     }
 
     // Fusión: por cualquier correo; si no hay correo, por teléfono; si no hay ni uno ni otro, por nombre
@@ -262,6 +343,13 @@ export function analizarGoogle(texto: string): AnalisisGoogle {
       for (const e of nueva.etiquetas) if (!p.etiquetas.some(x => x.toLowerCase() === e.toLowerCase()) && p.etiquetas.length < 20) p.etiquetas.push(e)
       if (!p.fecha_nacimiento) p.fecha_nacimiento = nueva.fecha_nacimiento
       if (!p.notas) p.notas = nueva.notas
+      // Entre dos filas de la misma persona, el consentimiento más restrictivo
+      for (const canal of ['email', 'sms'] as const) {
+        const c = masRestrictivo(p.consentimiento[canal], nueva.consentimiento[canal])
+        if (c !== undefined) p.consentimiento[canal] = c
+      }
+      if (!p.fuente) p.fuente = nueva.fuente
+      if (nueva.creado && (!p.creado || nueva.creado < p.creado)) p.creado = nueva.creado
       // Si la primera fila no tenía nombre y esta sí, se queda el nombre real
       if (p.nombreDerivado && !nueva.nombreDerivado) { p.nombre = nueva.nombre; p.apellido = nueva.apellido; p.nombreDerivado = false }
       for (const e of p.emails) porCorreo.set(e, destino)
@@ -279,6 +367,7 @@ export function analizarGoogle(texto: string): AnalisisGoogle {
   r.personas = personas.length
   // El recuento de "sin nombre" es de personas, no de filas: una fila sin nombre fusionada con una con nombre ya no lo es
   r.sinNombre = personas.filter(p => p.nombreDerivado).length
+  for (const p of personas) for (const canal of ['email', 'sms'] as const) r.consentimiento[canal][p.consentimiento[canal] ?? 'sin_dato']++
   return { personas, resumen: r, columnasSensibles, ignoradas }
 }
 
@@ -289,10 +378,15 @@ export function aFilaImportacion(p: ContactoGoogle) {
     ...p.telefonos.slice(1).map(t => ({ tipo: 'telefono' as const, valor: t.valor, ...(t.etiqueta ? { etiqueta: t.etiqueta } : {}) })),
     ...p.direcciones.map(d => ({ tipo: 'direccion' as const, valor: d.valor, ...(d.etiqueta ? { etiqueta: d.etiqueta } : {}) })),
     ...p.etiquetas.map(valor => ({ tipo: 'etiqueta' as const, valor })),
+    ...(p.fuente ? [{ tipo: 'etiqueta' as const, etiqueta: 'fuente', valor: p.fuente }] : []),
+    ...(p.creado ? [{ tipo: 'etiqueta' as const, etiqueta: 'creado', valor: p.creado }] : []),
   ]
+  // Solo viajan los estados que dicen algo: un canal sin estado no crea consentimiento
+  const consentimiento = Object.fromEntries(Object.entries(p.consentimiento).filter(([, e]) => e !== 'sin_dato'))
   return {
     nombre: p.nombre, apellido: p.apellido, email: p.emails[0] ?? null, telefono: p.telefonos[0]?.valor ?? null,
     fecha_nacimiento: p.fecha_nacimiento, notas: p.notas, contactos,
+    ...(Object.keys(consentimiento).length ? { consentimiento } : {}),
   }
 }
 

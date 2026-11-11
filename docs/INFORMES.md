@@ -29,9 +29,19 @@ Cuatro funciones de lectura (`adn_informe_crecimiento`, `adn_informe_asistencia`
 
 Un texto que empieza por `=`, `+`, `-` o `@` (por ejemplo un nombre mal puesto en un contacto importado) se guarda en el Excel como texto y no se evalúa como fórmula, a diferencia de lo que pasa con un CSV abierto en una hoja de cálculo [V: se lee de vuelta como texto]. El informe de miembros avisa en pantalla de que contiene datos personales.
 
+## Registro de descargas del informe de miembros
+
+Cada descarga del informe de miembros deja una fila en `adn_informe_descargas`: quién (identificador de la persona), cuándo, qué informe y cuántas filas tenía. La tabla no tiene ninguna columna capaz de guardar contenido [V, la prueba lista sus columnas]. Lo escribe el servidor cuando sirve el informe, no el navegador, de modo que no se puede omitir desde la web [V, `supabase/tests/adn_descargas_informe.sql`].
+
+- **Solo altas.** Ninguna persona autenticada inserta, modifica ni borra; un disparador impide modificar un registro incluso al servicio. Los registros solo desaparecen al borrar la iglesia entera.
+- **Quién lo lee.** Quien gestiona usuarios en su propia iglesia (`usuarios.gestionar`). Cada iglesia ve únicamente las suyas [V, también en `adn_aislamiento_total.sql`].
+- **Una fila por descarga.** El informe se pide por páginas de 1.000 filas, y una descarga del mismo informe por la misma persona dentro de dos minutos cuenta como una. Dos descargas distintas en menos de dos minutos (por ejemplo, PDF y luego Excel) quedan como una sola fila [H].
+- **Un intento rechazado no deja registro**, porque el permiso se comprueba antes.
+- **Límites.** Solo cubre el informe de miembros, que es el que lleva datos personales; los de asistencia y crecimiento son cifras agregadas. Todavía no hay pantalla para leer el registro: se consulta con la API o la base de datos. La reversión está en `supabase/reversiones/20261111180000_adn_descargas_informe.down.sql` y borra la tabla con sus filas [V].
+
 ## Límites, sin edulcorar
 
-- **PDF y alfabetos no latinos.** El PDF usa Helvetica estándar, sin incrustar tipografías: los caracteres que no son del alfabeto latino (chino, árabe, ruso, emoji) salen como `?`. El Excel conserva todo. Incrustar una tipografía Unicode lo arreglaría a costa de varios cientos de kilobytes por archivo.
+- **PDF y alfabetos no latinos.** El PDF usa Helvetica estándar, sin incrustar tipografías: los caracteres que no son del alfabeto latino (chino, árabe, ruso, emoji) salen como `?`. El Excel conserva todo. Incrustar una tipografía Unicode lo arreglaría a costa de varios cientos de kilobytes por archivo. Decisión de Gerencia (11-11): se mantiene Helvetica estándar, porque los idiomas actuales (español, inglés, francés y portugués) caben; solo se incrustará una fuente si aparece una iglesia que escriba en chino, árabe o ruso.
 - **Celdas largas.** En el PDF una celda que no cabe se recorta con `...`; el Excel lleva el texto completo.
 - **Tamaño.** Se generan en el navegador. Con 12.000 filas el PDF tarda unos segundos; una iglesia con muchas más puede necesitar generarse en el servidor [NV, no se midió en navegadores reales]. La lista de miembros se pide por páginas de 1000.
 - **Crecimiento y fechas de registro.** "Nuevos miembros" cuenta por la fecha en que se registró la persona en ViveADN. Quien se importó de golpe aparece en el mes de la importación aunque se convirtiera años antes; por eso el informe trae aparte las conversiones, que cuentan por la fecha de conversión cuando existe.

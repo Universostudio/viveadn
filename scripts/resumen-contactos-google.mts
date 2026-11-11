@@ -26,6 +26,7 @@ if (a.error) { console.error(`El archivo no se puede importar: ${a.error}`); pro
 const r = a.resumen
 const correos = new Set(a.personas.flatMap(p => p.emails))
 const lineas: [string, number | string][] = [
+  ['Formato detectado', r.formato === 'wix' ? 'Wix' : 'Google u Outlook'],
   ['Filas de datos', r.filas],
   ['Personas distintas tras fusionar repetidos', r.personas],
   ['  con nombre', r.personas - r.sinNombre],
@@ -45,5 +46,14 @@ const lineas: [string, number | string][] = [
   ['Con más de un teléfono', a.personas.filter(p => p.telefonos.length > 1).length],
 ]
 for (const [k, v] of lineas) console.log(`${k.padEnd(52)} ${v}`)
+if (r.formato === 'wix') {
+  // Estado de suscripción por canal: personas tras fusionar repetidos (la más restrictiva gana). Solo cifras.
+  for (const canal of ['email', 'sms'] as const) {
+    const c = r.consentimiento[canal]
+    console.log(`Suscripción por ${canal === 'email' ? 'correo' : 'SMS'}: suscritos ${c.suscrito}, sin dato ${c.sin_dato}, nunca suscritos ${c.nunca}, cancelados ${c.cancelado}`)
+  }
+  console.log(`Estados de suscripción que no se reconocen: ${r.estadosDesconocidos}`)
+  console.log(`Con fuente: ${a.personas.filter(p => p.fuente).length}; con fecha de alta: ${a.personas.filter(p => p.creado).length}`)
+}
 console.log(`Columnas sensibles (no se leyeron): ${a.columnasSensibles.length ? a.columnasSensibles.join(', ') : 'ninguna'}`)
 console.log(`Columnas que no se importan: ${a.ignoradas.length}`)

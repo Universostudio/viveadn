@@ -18,6 +18,8 @@ La garantía de que no sale nada no depende del código de la web: la columna `p
 | Personalización | `{{nombre}}`, `{{iglesia}}` y `{{dia}}` |
 | Bajas | Una baja por canal aplica a la persona y también a la dirección compartida con otra persona de la misma iglesia (por ejemplo, un correo familiar) [V] |
 | Repetidos | Si varias personas comparten una dirección, el mensaje se registra una sola vez para esa dirección |
+| Consentimiento | **Solo recibe quien consta como `suscrito` en ese canal** (tabla `adn_consentimientos`, por persona y canal). Quien no tiene registro, o consta como `nunca`, `cancelado` o `sin_dato`, se omite con el motivo `sin_consentimiento`. WhatsApp tiene su propio consentimiento: el de correo y el de SMS no lo habilitan, y ningún archivo importado trae el de WhatsApp [V, `adn_consentimiento.sql`] |
+| Suscripción cancelada | Como una baja, protege también a otra persona que comparta la dirección [V] |
 | Sin destino | Quien no tiene correo, o teléfono para WhatsApp, queda registrado como omitido con ese motivo |
 | Idempotencia | Cada envío lleva una clave. Repetir la misma petición devuelve el resultado anterior y no duplica nada [V] |
 | Topes | 20 mensajes al día por iglesia y 2.000 destinatarios por mensaje [V] |
@@ -32,6 +34,10 @@ La función `adn_panel_inicio` devuelve en una sola llamada: miembros activos, n
 Corre con los permisos de quien la llama, de modo que las políticas de seguridad por filas recortan las cifras según su rol. Un líder sin personas asignadas ve ceros, y un visitante recibe un rechazo [V]. La web además oculta cada bloque cuando el rol no tiene el permiso del módulo correspondiente.
 
 Los casos de calendario están probados: el 29 de febrero se celebra el último día de febrero en los años no bisiestos, y los cumpleaños de finales de diciembre aparecen a principios de enero [V].
+
+### Efecto del consentimiento estricto
+
+Un miembro creado a mano no tiene registro de consentimiento, así que hoy **no recibiría nada** hasta que alguien lo registre. Es la opción prudente mientras se decide la base legal (apartado 5). El registro se hace con la función `adn_registrar_consentimiento`, que exige permiso para editar miembros y puede dejar cualquier estado; todavía no hay pantalla para llamarla [NV]. La vista previa avisa de cuántas personas se omiten por falta de consentimiento.
 
 ## 4. Límites
 

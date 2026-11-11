@@ -42,6 +42,10 @@ insert into public.adn_mensaje_destinatarios (iglesia_id, mensaje_id, miembro_id
   ('ea100000-0000-0000-0000-00000000000a', 'ea800000-0000-0000-0000-000000000001', 'ea400000-0000-0000-0000-000000000001', 'zoe@prueba.test', E'Hola Zoë,\nbienvenido', 'enviado', null, 'sumidero:1', now()),
   ('ea100000-0000-0000-0000-00000000000a', 'ea800000-0000-0000-0000-000000000001', 'ea400000-0000-0000-0000-000000000002', null, null, 'omitido', 'sin_destino', null, null);
 insert into public.adn_comunicacion_bajas (iglesia_id, miembro_id, canal) values ('ea100000-0000-0000-0000-00000000000a', 'ea400000-0000-0000-0000-000000000002', 'email');
+insert into public.adn_consentimientos (iglesia_id, miembro_id, canal, estado, origen) values
+  ('ea100000-0000-0000-0000-00000000000a', 'ea400000-0000-0000-0000-000000000001', 'email', 'suscrito', 'wix'),
+  ('ea100000-0000-0000-0000-00000000000a', 'ea400000-0000-0000-0000-000000000002', 'sms', 'nunca', 'wix'),
+  ('ea100000-0000-0000-0000-00000000000b', 'ea400000-0000-0000-0000-000000000009', 'email', 'suscrito', 'prueba');
 insert into public.consolidaciones (id, iglesia_id, miembro_id, consolidador_id, casa_oracion_id, fecha_conversion, primer_contacto_notas, completado) values
   ('ea500000-0000-0000-0000-000000000001', 'ea100000-0000-0000-0000-00000000000a', 'ea400000-0000-0000-0000-000000000001', 'ea000000-0000-0000-0000-000000000001', 'ea300000-0000-0000-0000-000000000001', '2026-11-01 10:00:00+00', 'Llamado; "dijo que sí"', false);
 insert into public.asistencias (iglesia_id, casa_oracion_id, miembro_id, fecha, presente, notas) values
@@ -73,6 +77,8 @@ insert into public.iglesia_modulos (iglesia_id, modulo, origen) values ('ea10000
 insert into public.dar_config (iglesia_id, titulo, moneda) values ('ea100000-0000-0000-0000-00000000000a', 'Dar', 'EUR');
 insert into public.invitaciones (iglesia_id, email, nombre, apellido, rol, token_hash) values
   ('ea100000-0000-0000-0000-00000000000a', 'invitado@prueba.test', 'Inv', 'Itado', 'colaborador', 'cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc');
+insert into public.adn_informe_descargas (iglesia_id, usuario_id, informe, filas) values
+  ('ea100000-0000-0000-0000-00000000000a', 'ea000000-0000-0000-0000-000000000001', 'miembros', 4);
 insert into public.plataforma_auditoria (actor, accion, iglesia_id, detalle) values
   (null, 'crear_iglesia', 'ea100000-0000-0000-0000-00000000000a', '{"propietario": "maria@prueba.test", "ip_hash": "dddddddddddddddddddddddddddddddd", "nota": "con, coma y \"comillas\""}');
 reset session_replication_role;

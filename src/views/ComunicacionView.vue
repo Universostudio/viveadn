@@ -264,8 +264,8 @@ import { useAuthStore } from '@/stores/auth'
 import { useI18n } from 'vue-i18n'
 import { formatoHora, formatoFecha } from '@/i18n'
 
-interface Conteo { total: number; recibiran: number; sin_destino: number; baja: number; repetido: number }
-interface Omitidos { sin_destino: number; baja: number; repetido: number }
+interface Conteo { total: number; recibiran: number; sin_destino: number; baja: number; repetido: number; sin_consentimiento: number }
+interface Omitidos { sin_destino: number; baja: number; repetido: number; sin_consentimiento: number }
 interface Mensaje { id: string; canal: 'email' | 'whatsapp'; segmento: string; asunto: string | null; total: number; enviados: number; omitidos: number; created_at: string }
 interface Detalle { id: string; destino: string | null; texto_final: string | null; estado: 'enviado' | 'omitido'; motivo: string | null }
 
@@ -339,13 +339,14 @@ async function actualizarConteo() {
   conteo.value = data as Conteo
 }
 
-const omitidosTotal = computed(() => conteo.value ? conteo.value.sin_destino + conteo.value.baja + conteo.value.repetido : 0)
+const omitidosTotal = computed(() => conteo.value ? conteo.value.sin_destino + conteo.value.baja + conteo.value.repetido + conteo.value.sin_consentimiento : 0)
 
 function detalleOmitidos(o: Omitidos) {
   const partes: string[] = []
   if (o.sin_destino) partes.push(t('comunicacion.motivoN.sin_destino', { n: o.sin_destino }))
   if (o.baja) partes.push(t('comunicacion.motivoN.baja', { n: o.baja }))
   if (o.repetido) partes.push(t('comunicacion.motivoN.repetido', { n: o.repetido }))
+  if (o.sin_consentimiento) partes.push(t('comunicacion.motivoN.sin_consentimiento', { n: o.sin_consentimiento }))
   return partes.join(', ')
 }
 
@@ -385,7 +386,7 @@ async function enviar() {
   enviando.value = false
   if (error) { errorEnvio.value = textoError(error.message); return }
   const r = data as { enviados: number; omitidos: Omitidos }
-  resultado.value = { enviados: r.enviados, omitidos: r.omitidos, omitidosTotal: r.omitidos.sin_destino + r.omitidos.baja + r.omitidos.repetido }
+  resultado.value = { enviados: r.enviados, omitidos: r.omitidos, omitidosTotal: r.omitidos.sin_destino + r.omitidos.baja + r.omitidos.repetido + r.omitidos.sin_consentimiento }
   mensaje.value.texto = ''
   await Promise.all([cargarHistorial(), actualizarConteo()])
 }

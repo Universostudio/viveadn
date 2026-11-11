@@ -255,7 +255,21 @@
         "errorImportar": "L’importation s’est arrêtée à cause d’une erreur. Les contacts déjà importés sont conservés ; renvoyez le fichier et les doublons seront ignorés.",
         "errorPermiso": "Vous n’avez pas l’autorisation d’importer des membres.",
         "errorModoAlias": "Cette église utilise le mode alias : on ne peut pas importer de contacts avec de vrais noms et e-mails.",
-        "errorLectura": "Impossible de lire les membres existants. Réessayez."
+        "errorLectura": "Impossible de lire les membres existants. Réessayez.",
+        "detectadoWix": "Fichier de contacts Wix détecté. Vérifiez le résumé avant d'importer.",
+        "consentimientoTitulo": "Consentement pour recevoir des messages",
+        "canal": {
+          "email": "E-mail",
+          "sms": "SMS"
+        },
+        "estado": {
+          "suscrito": "{n} abonnés",
+          "sin_dato": "{n} sans donnée",
+          "nunca": "{n} jamais abonnés",
+          "cancelado": "{n} désabonnés"
+        },
+        "consentimientoAviso": "Le statut d'abonnement est enregistré comme consentement de chaque personne. Communication n'enverra qu'aux personnes enregistrées comme abonnées, et réimporter le fichier ne réabonne jamais quelqu'un qui s'est désabonné.",
+        "estadosDesconocidos": "{n} valeurs de statut ne sont pas reconnues et comptent comme sans consentement."
       }
     },
     "alias": "Alias",
@@ -540,12 +554,14 @@
     "motivo": {
       "sin_destino": "Sans adresse ni téléphone",
       "baja": "Désinscrit",
-      "repetido": "Adresse en double"
+      "repetido": "Adresse en double",
+      "sin_consentimiento": "Sans consentement pour ce canal"
     },
     "motivoN": {
       "sin_destino": "{n} sans adresse ni téléphone",
       "baja": "{n} désinscrits",
-      "repetido": "{n} en double"
+      "repetido": "{n} en double",
+      "sin_consentimiento": "{n} sans consentement pour ce canal"
     },
     "confirmarTitulo": "Confirmer l'envoi",
     "confirmarTexto": "Vous allez envoyer ce message par {canal} à {n} personnes du groupe « {segmento} ».",

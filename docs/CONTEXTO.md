@@ -31,7 +31,7 @@ La escala es completo, parcial o inexistente.
 | Aislamiento entre iglesias | Completo en base de datos | Seguridad por filas en todas las tablas, claves foráneas compuestas, pruebas en cada solicitud de unión [V]. Prueba SQL exhaustiva con dos usuarios sobre todas las tablas, que detecta fugas inyectadas a propósito [V, `adn_aislamiento_total.sql`]. El mismo ataque a través de la API (PostgREST) está escrito y su plomería probada con un servidor simulado, pero no se ha ejecutado contra PostgREST real [NV, `docs/AISLAMIENTO.md`] |
 | Roles y permisos | Completo | Roles por iglesia con permisos y módulos activables por plan [V] |
 | Miembros | Completo | Listado, ficha, alta, edición, importación desde CSV [V] |
-| Importador de miembros | Completo salvo validar con los archivos reales | Plantilla CSV propia y, desde el 11-11, contactos de Google y Outlook: segundo correo, tres teléfonos, cumpleaños, direcciones y etiquetas, con deduplicación por correo, descarte de filas vacías y sin importar nunca contraseñas (`docs/IMPORTACION.md`). Probado a la escala de Gerencia (6.100 filas) con datos sintéticos [V]; los archivos reales no se han visto [NV]. Falta decidir qué hacer con los contactos sin nombre (por defecto no se importan) |
+| Importador de miembros | Completo salvo validar con los archivos reales | Plantilla CSV propia y, desde el 11-11, contactos de Google, Outlook y Wix (el archivo real de Gerencia resultó ser de Wix; su estado de suscripción se guarda como consentimiento por canal y Comunicación solo envía a quien consta como suscrito): segundo correo, tres teléfonos, cumpleaños, direcciones y etiquetas, con deduplicación por correo, descarte de filas vacías y sin importar nunca contraseñas (`docs/IMPORTACION.md`). Probado a la escala de Gerencia (6.100 filas) con datos sintéticos [V]; el archivo real no se ha importado, solo se ha resumido desde el entorno de Gerencia [NV]. Falta decidir qué hacer con los contactos sin nombre (por defecto no se importan) |
 | Casas de oración y zonas | Completo | Listado, edición, líderes [V] |
 | Consolidación (OP72) | Completo | Seguimiento de las 72 horas con color de alerta, métricas avanzadas de pago [V]. Faltan las alertas automáticas, porque no existe canal de envío |
 | Eventos y asistencia | Completo | Eventos, asistencia manual y registro por QR con enlace secreto, cartel imprimible [V] |
@@ -57,9 +57,9 @@ Tablas de la base pública, agrupadas. Todas llevan seguridad por filas [V, `doc
 - **Eventos:** `eventos`, `asistencias`, `asistencia_evento`, `evento_checkin`, `checkin_registros`.
 - **Formación:** `progreso_formacion`, `programas_formacion`, `programa_lecciones`, `inscripciones_formacion`, `avance_formacion`, `certificados`.
 - **Dar:** `dar_config`, `enlaces_dar`.
-- **Plataforma, solo servidor:** `plataforma_admins`, `plataforma_auditoria`, `plataforma_ajustes`, `registro_codigos`, `registro_intentos`, `adn_ciclo_auditoria` (borrado suave, recuperación y purga; sobrevive a la purga).
-- **Informes:** no tienen tablas propias; leen de las anteriores con las funciones `adn_informe_*`.
-- **Comunicación:** `adn_mensajes`, `adn_mensaje_destinatarios` (el buzón de pruebas) y `adn_comunicacion_bajas`. El panel de inicio lee de las tablas anteriores con `adn_panel_inicio`.
+- **Plataforma, solo servidor:** `plataforma_admins`, `plataforma_auditoria` (no sale en la exportación de la iglesia), `plataforma_ajustes`, `registro_codigos`, `registro_intentos`, `adn_ciclo_auditoria` (borrado suave, recuperación y purga; sobrevive a la purga).
+- **Informes:** leen de las tablas anteriores con las funciones `adn_informe_*`. Solo tienen `adn_informe_descargas`, el registro de solo altas de quién descargó el informe de miembros, cuándo y cuántas filas.
+- **Comunicación:** `adn_mensajes`, `adn_mensaje_destinatarios` (el buzón de pruebas), `adn_comunicacion_bajas` y `adn_consentimientos` (estado de suscripción por persona y canal). El panel de inicio lee de las tablas anteriores con `adn_panel_inicio`.
 - **Datos de contacto adicionales:** `adn_miembro_contactos` (segundos correos, teléfonos extra, direcciones y etiquetas de un miembro, por ejemplo de una importación).
 
 Las tablas nuevas de esta línea de trabajo llevan el prefijo `adn_` [regla de Gerencia]. Las existentes no se renombran hasta que Gerencia lo ordene.
@@ -84,8 +84,10 @@ Los seis trabajos en curso, en orden:
 2. Exportación completa en CSV y JSON: hecho y verificado en base de datos (ver `docs/EXPORTACION.md`).
 3. Importador de miembros con formato Google Contacts: hecho con datos sintéticos; falta probarlo con los archivos reales que entregue Gerencia.
 4. Informes en PDF y Excel (miembros, asistencia, crecimiento): hecho y verificado (ver `docs/INFORMES.md`).
-5. Panel de inicio completo y Comunicación con envío al buzón de pruebas: hecho y verificado en base de datos (ver `docs/COMUNICACION.md`). El envío real sigue pendiente de proveedor, enlace de baja y aprobación del dueño.
+5. Panel de inicio completo y Comunicación con envío al buzón de pruebas y consentimiento por canal: hecho y verificado en base de datos (ver `docs/COMUNICACION.md`). Falta una pantalla para registrar consentimientos de miembros creados a mano. El envío real sigue pendiente de proveedor, enlace de baja y aprobación del dueño.
 6. Pruebas de aislamiento con dos usuarios de prueba: hecha y verificada a nivel SQL con los roles reales; la versión a través de la API está escrita y pendiente de ejecutarse contra PostgREST (ver `docs/AISLAMIENTO.md`).
+
+**Prioritaria antes de producción:** paginar la exportación o generar el ZIP en el servidor, porque hoy todo el paquete viaja en una sola respuesta y no se ha medido con iglesias de decenas de miles de filas (`docs/EXPORTACION.md`).
 
 Del producto, sin fecha: cobro del plan, canal de envío real de mensajes y alertas, credencial con escáner, subdominio por iglesia, historial de cambios por iglesia y segundo factor obligatorio [V, `docs/MULTITENANT.md` y `docs/COBRO.md`].
 

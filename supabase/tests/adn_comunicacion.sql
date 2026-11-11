@@ -51,6 +51,9 @@ insert into public.miembros (id, iglesia_id, nombre, apellido, email, telefono, 
   ('ab400000-0000-0000-0000-000000000006', 'ab100000-0000-0000-0000-00000000000a', 'Inactivo', 'X', 'inactivo@x.test', '600999888', 'lider', null, now() - interval '100 days', false),
   ('ab400000-0000-0000-0000-000000000007', 'ab100000-0000-0000-0000-00000000000a', 'Mal', 'Correo', 'no-es-correo', '0000000', 'maduro', null, now() - interval '100 days', true),
   ('ab400000-0000-0000-0000-0000000000b1', 'ab100000-0000-0000-0000-00000000000b', 'OTRA-IGLESIA', 'B', 'otra@x.test', '600777666', 'lider', null, now(), true);
+-- Consentimiento: en esta prueba todos los miembros constan como suscritos en correo y WhatsApp, salvo que un caso diga otra cosa
+insert into public.adn_consentimientos (iglesia_id, miembro_id, canal, estado, origen)
+  select m.iglesia_id, m.id, c, 'suscrito', 'prueba' from public.miembros m, unnest(array['email', 'whatsapp']) c;
 insert into public.consolidaciones (iglesia_id, miembro_id, fecha_conversion, completado) values
   ('ab100000-0000-0000-0000-00000000000a', 'ab400000-0000-0000-0000-000000000004', now(), false),
   ('ab100000-0000-0000-0000-00000000000a', 'ab400000-0000-0000-0000-000000000003', now(), true);
@@ -59,7 +62,7 @@ insert into public.adn_comunicacion_bajas (iglesia_id, miembro_id, canal) values
 -- 1. Vista previa y envio, como propietario de A
 select set_config('request.jwt.claim.sub', 'ab000000-0000-0000-0000-000000000001', true);
 set local role authenticated;
-select pg_temp.igual((select (public.adn_vista_previa_envio('email', 'todos') = '{"baja": 1, "total": 6, "recibiran": 2, "repetido": 1, "sin_destino": 2}'::jsonb)::text), 'true', 'vista previa por correo: 6 activos, 2 reciben, 2 sin correo valido, 1 de baja y 1 repetido');
+select pg_temp.igual((select (public.adn_vista_previa_envio('email', 'todos') = '{"baja": 1, "total": 6, "recibiran": 2, "repetido": 1, "sin_consentimiento": 0, "sin_destino": 2}'::jsonb)::text), 'true', 'vista previa por correo: 6 activos, 2 reciben, 2 sin correo valido, 1 de baja y 1 repetido');
 select pg_temp.igual((select public.adn_vista_previa_envio('whatsapp', 'todos') ->> 'recibiran'), '2', 'por WhatsApp reciben Ana y Max (el telefono de ceros no vale)');
 select pg_temp.igual((select public.adn_vista_previa_envio('email', 'nuevos') ->> 'recibiran'), '1', 'nuevos (ultimos 30 dias) por correo: Ana');
 select pg_temp.igual((select public.adn_vista_previa_envio('email', 'lideres') ->> 'recibiran'), '2', 'lideres por correo: Luis y Pia (Ana no esta en el segmento, asi que Pia ya no es repetida)');
@@ -67,7 +70,7 @@ select pg_temp.igual((select public.adn_vista_previa_envio('whatsapp', 'consolid
 create temp table env as select public.adn_enviar_mensaje('11111111-1111-1111-1111-111111111111', 'email', 'todos', 'Hola desde {{iglesia}}', 'Hola {{nombre}}, bienvenido a {{iglesia}}. Este {{dia}} nos vemos.', 'día acordado') r;
 reset role;
 select set_config('request.jwt.claim.sub', '', true);
-select pg_temp.igual((select ((r -> 'enviados') = '2'::jsonb and (r -> 'omitidos') = '{"baja": 1, "repetido": 1, "sin_destino": 2}'::jsonb)::text from env), 'true', 'el envio entrega a 2 y omite a 4, con su motivo');
+select pg_temp.igual((select ((r -> 'enviados') = '2'::jsonb and (r -> 'omitidos') = '{"baja": 1, "repetido": 1, "sin_consentimiento": 0, "sin_destino": 2}'::jsonb)::text from env), 'true', 'el envio entrega a 2 y omite a 4, con su motivo');
 select pg_temp.igual((select proveedor || ':' || estado || ':' || total || ':' || enviados || ':' || omitidos from public.adn_mensajes where clave = '11111111-1111-1111-1111-111111111111'), 'sumidero:enviado:6:2:4', 'el mensaje queda registrado en el sumidero');
 select pg_temp.igual((select destino || ' | ' || texto_final from public.adn_mensaje_destinatarios d join public.miembros m on m.id = d.miembro_id where m.nombre = 'Ana' and d.estado = 'enviado'), 'ana@x.test | Hola Ana, bienvenido a Prueba Com A. Este miércoles nos vemos.', 'personalizado: nombre, iglesia y el dia de su casa de oracion');
 select pg_temp.igual((select destino || ' | ' || texto_final from public.adn_mensaje_destinatarios d join public.miembros m on m.id = d.miembro_id where m.nombre = 'Luis' and d.estado = 'enviado'), 'luis@x.test | Hola Luis, bienvenido a Prueba Com A. Este día acordado nos vemos.', 'sin casa, usa el dia por defecto, y el correo se normaliza');
@@ -157,11 +160,11 @@ select pg_temp.igual((select count(*)::text from public.adn_mensaje_destinatario
 select set_config('request.jwt.claim.sub', 'ab000000-0000-0000-0000-000000000001', true);
 set local role authenticated;
 insert into public.adn_comunicacion_bajas (miembro_id, canal) values ('ab400000-0000-0000-0000-000000000001', 'email');
-select pg_temp.igual((select (public.adn_vista_previa_envio('email', 'todos') = '{"baja": 3, "total": 6, "recibiran": 1, "repetido": 0, "sin_destino": 2}'::jsonb)::text), 'true',
+select pg_temp.igual((select (public.adn_vista_previa_envio('email', 'todos') = '{"baja": 3, "total": 6, "recibiran": 1, "repetido": 0, "sin_consentimiento": 0, "sin_destino": 2}'::jsonb)::text), 'true',
   'Ana de baja del correo: ella, Eva y Pia (que comparte la direccion de Ana) quedan fuera; solo recibe Luis');
 select pg_temp.igual((select public.adn_vista_previa_envio('whatsapp', 'todos') ->> 'recibiran'), '2', 'la baja del correo no afecta a WhatsApp');
 delete from public.adn_comunicacion_bajas where miembro_id = 'ab400000-0000-0000-0000-000000000001' and canal = 'email';
-select pg_temp.igual((select (public.adn_vista_previa_envio('email', 'todos') = '{"baja": 1, "total": 6, "recibiran": 2, "repetido": 1, "sin_destino": 2}'::jsonb)::text), 'true', 'quitar la baja devuelve a Ana a la lista');
+select pg_temp.igual((select (public.adn_vista_previa_envio('email', 'todos') = '{"baja": 1, "total": 6, "recibiran": 2, "repetido": 1, "sin_consentimiento": 0, "sin_destino": 2}'::jsonb)::text), 'true', 'quitar la baja devuelve a Ana a la lista');
 reset role;
 select set_config('request.jwt.claim.sub', '', true);
 
@@ -179,6 +182,8 @@ select set_config('request.jwt.claim.sub', '', true);
 
 -- 10. Tope de destinatarios: 2000 por mensaje (iglesia E)
 insert into public.miembros (iglesia_id, nombre, apellido, email) select 'ab100000-0000-0000-0000-00000000000e', 'M' || i, 'E', 'm' || i || '@e.test' from generate_series(1, 2001) i;
+insert into public.adn_consentimientos (iglesia_id, miembro_id, canal, estado, origen)
+  select m.iglesia_id, m.id, 'email', 'suscrito', 'prueba' from public.miembros m where m.iglesia_id = 'ab100000-0000-0000-0000-00000000000e';
 select set_config('request.jwt.claim.sub', 'ab000000-0000-0000-0000-000000000007', true);
 set local role authenticated;
 select pg_temp.falla($$select public.adn_enviar_mensaje(gen_random_uuid(), 'email', 'todos', 'A', 'Hola')$$, 'ADN_DEMASIADOS_DESTINATARIOS', 'mas de 2000 destinatarios se rechaza');

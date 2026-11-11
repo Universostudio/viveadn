@@ -255,7 +255,21 @@
         "errorImportar": "The import stopped because of an error. Contacts already imported are kept; upload the file again and repeats will be skipped.",
         "errorPermiso": "You do not have permission to import members.",
         "errorModoAlias": "This church uses alias mode: contacts with real names and emails cannot be imported.",
-        "errorLectura": "The existing members could not be read. Try again."
+        "errorLectura": "The existing members could not be read. Try again.",
+        "detectadoWix": "Wix contacts file detected. Review the summary before importing.",
+        "consentimientoTitulo": "Consent to receive messages",
+        "canal": {
+          "email": "Email",
+          "sms": "SMS"
+        },
+        "estado": {
+          "suscrito": "{n} subscribed",
+          "sin_dato": "{n} no data",
+          "nunca": "{n} never subscribed",
+          "cancelado": "{n} unsubscribed"
+        },
+        "consentimientoAviso": "The subscription status is saved as each person's consent. Communication will only send to people recorded as subscribed, and re-importing the file never re-subscribes someone who has opted out.",
+        "estadosDesconocidos": "{n} status values are not recognised and count as no consent."
       }
     },
     "alias": "Alias",
@@ -540,12 +554,14 @@
     "motivo": {
       "sin_destino": "No address or phone",
       "baja": "Opted out",
-      "repetido": "Repeated address"
+      "repetido": "Repeated address",
+      "sin_consentimiento": "No consent for this channel"
     },
     "motivoN": {
       "sin_destino": "{n} without address or phone",
       "baja": "{n} opted out",
-      "repetido": "{n} repeated"
+      "repetido": "{n} repeated",
+      "sin_consentimiento": "{n} without consent for this channel"
     },
     "confirmarTitulo": "Confirm sending",
     "confirmarTexto": "You are about to send this message by {canal} to {n} people in the group \"{segmento}\".",

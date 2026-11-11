@@ -255,7 +255,21 @@
         "errorImportar": "Se detuvo la importación por un error. Los contactos ya importados se conservan; vuelve a subir el archivo y los repetidos se omitirán.",
         "errorPermiso": "No tienes permiso para importar miembros.",
         "errorModoAlias": "Esta iglesia usa el modo alias: no se pueden importar contactos con nombres y correos reales.",
-        "errorLectura": "No se pudieron leer los miembros que ya existen. Inténtalo de nuevo."
+        "errorLectura": "No se pudieron leer los miembros que ya existen. Inténtalo de nuevo.",
+        "detectadoWix": "Archivo de contactos de Wix detectado. Revisa el resumen antes de importar.",
+        "consentimientoTitulo": "Consentimiento para recibir mensajes",
+        "canal": {
+          "email": "Correo",
+          "sms": "SMS"
+        },
+        "estado": {
+          "suscrito": "{n} suscritos",
+          "sin_dato": "{n} sin dato",
+          "nunca": "{n} nunca suscritos",
+          "cancelado": "{n} con suscripción cancelada"
+        },
+        "consentimientoAviso": "El estado de suscripción se guarda como consentimiento de cada persona. Comunicación solo enviará a quien conste como suscrito, y reimportar el archivo nunca vuelve a suscribir a quien ya se dio de baja.",
+        "estadosDesconocidos": "{n} valores de estado no se reconocen y cuentan como sin consentimiento."
       }
     },
     "alias": "Alias",
@@ -540,12 +554,14 @@
     "motivo": {
       "sin_destino": "Sin dirección o teléfono",
       "baja": "Se dio de baja",
-      "repetido": "Dirección repetida"
+      "repetido": "Dirección repetida",
+      "sin_consentimiento": "Sin consentimiento para este canal"
     },
     "motivoN": {
       "sin_destino": "{n} sin dirección o teléfono",
       "baja": "{n} de baja",
-      "repetido": "{n} repetidos"
+      "repetido": "{n} repetidos",
+      "sin_consentimiento": "{n} sin consentimiento para este canal"
     },
     "confirmarTitulo": "Confirmar envío",
     "confirmarTexto": "Vas a enviar este mensaje por {canal} a {n} personas del grupo «{segmento}».",

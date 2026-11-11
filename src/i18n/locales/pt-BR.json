@@ -255,7 +255,21 @@
         "errorImportar": "A importação parou por causa de um erro. Os contatos já importados são mantidos; envie o arquivo de novo e os repetidos serão ignorados.",
         "errorPermiso": "Você não tem permissão para importar membros.",
         "errorModoAlias": "Esta igreja usa o modo alias: não é possível importar contatos com nomes e e-mails reais.",
-        "errorLectura": "Não foi possível ler os membros existentes. Tente novamente."
+        "errorLectura": "Não foi possível ler os membros existentes. Tente novamente.",
+        "detectadoWix": "Arquivo de contatos do Wix detectado. Revise o resumo antes de importar.",
+        "consentimientoTitulo": "Consentimento para receber mensagens",
+        "canal": {
+          "email": "E-mail",
+          "sms": "SMS"
+        },
+        "estado": {
+          "suscrito": "{n} inscritos",
+          "sin_dato": "{n} sem dado",
+          "nunca": "{n} nunca inscritos",
+          "cancelado": "{n} com inscrição cancelada"
+        },
+        "consentimientoAviso": "O estado da inscrição é guardado como consentimento de cada pessoa. A Comunicação só enviará a quem constar como inscrito, e reimportar o arquivo nunca reinscreve quem já cancelou.",
+        "estadosDesconocidos": "{n} valores de estado não são reconhecidos e contam como sem consentimento."
       }
     },
     "alias": "Apelido",
@@ -540,12 +554,14 @@
     "motivo": {
       "sin_destino": "Sem endereço ou telefone",
       "baja": "Cancelou o recebimento",
-      "repetido": "Endereço repetido"
+      "repetido": "Endereço repetido",
+      "sin_consentimiento": "Sem consentimento para este canal"
     },
     "motivoN": {
       "sin_destino": "{n} sem endereço ou telefone",
       "baja": "{n} cancelaram",
-      "repetido": "{n} repetidos"
+      "repetido": "{n} repetidos",
+      "sin_consentimiento": "{n} sem consentimento para este canal"
     },
     "confirmarTitulo": "Confirmar envio",
     "confirmarTexto": "Você vai enviar esta mensagem por {canal} a {n} pessoas do grupo \"{segmento}\".",

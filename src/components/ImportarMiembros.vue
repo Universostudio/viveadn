@@ -94,7 +94,7 @@ import { esLimitePlan } from '@/lib/plan'
 import { useAuthStore } from '@/stores/auth'
 import { analizarCsv, marcarDuplicados, claveMiembro, parseCsv, MAX_FILAS, MAX_BYTES, PLANTILLA_CSV } from '@/lib/importarMiembros'
 import type { FilaImportar } from '@/lib/importarMiembros'
-import { analizarGoogle, esFormatoGoogle, MAX_BYTES_GOOGLE, MAX_FILAS_GOOGLE } from '@/lib/importarGoogle'
+import { analizarGoogle, esFormatoGoogle, esFormatoWix, MAX_BYTES_GOOGLE, MAX_FILAS_GOOGLE } from '@/lib/importarGoogle'
 import type { AnalisisGoogle } from '@/lib/importarGoogle'
 import ImportarGoogleRevision from '@/components/ImportarGoogleRevision.vue'
 
@@ -152,9 +152,10 @@ async function leerArchivo(ev: Event) {
   if (archivo.size > MAX_BYTES_GOOGLE) { errorArchivo.value = 'miembros.importar.errorArchivo.grande'; return }
   let texto: string
   try { texto = await leerTexto(archivo) } catch { errorArchivo.value = 'miembros.importar.errorArchivo.lectura'; return }
-  // Un archivo de contactos de Google (o de Outlook) tiene su propia lectura, revisión e importación
+  // Un archivo de contactos de Google, de Outlook o de Wix tiene su propia lectura, revisión e importación
   const primeraLinea = texto.slice(0, 20000).split(/\r?\n/, 1)[0] ?? ''
-  if (esFormatoGoogle(parseCsv(primeraLinea)[0] ?? [])) {
+  const cabeceraCsv = parseCsv(primeraLinea)[0] ?? []
+  if (esFormatoGoogle(cabeceraCsv) || esFormatoWix(cabeceraCsv)) {
     if (auth.modoAlias) { errorArchivo.value = 'miembros.importar.errorArchivo.googleAlias'; return }
     const g = analizarGoogle(texto)
     if (g.error) { errorArchivo.value = g.error === 'demasiadasFilas' ? 'miembros.importar.errorArchivo.demasiadasGoogle' : `miembros.importar.errorArchivo.${g.error === 'vacio' ? 'vacio' : 'lectura'}`; return }

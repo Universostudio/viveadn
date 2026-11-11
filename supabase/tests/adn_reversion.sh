@@ -6,7 +6,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 DB=viveadn_reversion
 # Migraciones adn_* en el orden en que se aplican; se revierten en el orden contrario
-VERSIONES=(20261111120000_adn_ciclo_vida 20261111130000_adn_exportacion 20261111140000_adn_importar_contactos 20261111150000_adn_informes 20261111160000_adn_comunicacion 20261111170000_adn_panel_inicio)
+VERSIONES=(20261111120000_adn_ciclo_vida 20261111130000_adn_exportacion 20261111140000_adn_importar_contactos 20261111150000_adn_informes 20261111160000_adn_comunicacion 20261111170000_adn_panel_inicio 20261111180000_adn_descargas_informe 20261111190000_adn_consentimiento)
 subir()   { for v in "${VERSIONES[@]}"; do "${PSQL[@]}" -d $DB -f "migrations/$v.sql"; done; }
 bajar()   { for ((i=${#VERSIONES[@]}-1; i>=0; i--)); do "${PSQL[@]}" -d $DB -f "reversiones/${VERSIONES[$i]}.down.sql"; done; }
 es_adn()  { for v in "${VERSIONES[@]}"; do [ "$1" = "migrations/$v.sql" ] && return 0; done; return 1; }
@@ -38,6 +38,8 @@ insert into public.adn_miembro_contactos (iglesia_id, miembro_id, tipo, valor) s
 insert into public.adn_mensajes (iglesia_id, clave, canal, segmento, texto, total, enviados, omitidos) values ('ae100000-0000-0000-0000-00000000000a', gen_random_uuid(), 'whatsapp', 'todos', 'x', 0, 0, 0);
 insert into public.adn_comunicacion_bajas (iglesia_id, miembro_id, canal) select iglesia_id, id, 'email' from public.miembros;
 select public.adn_panel_inicio() is not null as panel;
+insert into public.adn_consentimientos (iglesia_id, miembro_id, canal, estado, origen) select iglesia_id, id, 'email', 'suscrito', 'prueba' from public.miembros;
+insert into public.adn_informe_descargas (iglesia_id, usuario_id, informe, filas) select id, gen_random_uuid(), 'miembros', 1 from public.iglesias;
 SQL
 bajar
 volcado > /tmp/adn_despues.$$.sql

@@ -309,6 +309,10 @@ Deno.serve(async (req) => {
           ;({ data, error } = await admin.rpc('exportar_iglesia', { p_iglesia: iglesiaId }))
         }
         if (error || !data) return json({ error: 'No se pudo exportar la iglesia' }, 500)
+        // La exportacion anterior (de reserva) incluia la auditoria de la plataforma: son acciones internas, no salen aqui
+        if (data && typeof data === 'object' && (data as { tablas?: Record<string, unknown> }).tablas) {
+          delete (data as { tablas: Record<string, unknown> }).tablas.plataforma_auditoria
+        }
         // Los archivos no viajan dentro del JSON: se entrega su listado para pedirlos aparte
         let archivos: Record<string, unknown> = {}
         try {
@@ -318,6 +322,21 @@ Deno.serve(async (req) => {
         }
         const auditado = await auditar('exportar_iglesia', iglesiaId)
         return json({ ok: true, exportacion: { ...data, archivos }, auditado })
+      }
+
+      case 'auditoria_iglesia': {
+        // La auditoria de la plataforma sobre una iglesia, aparte de su exportacion y solo para administradores de plataforma
+        const iglesiaId = await iglesiaValida(body.iglesia_id)
+        if (!iglesiaId) return json({ error: 'La iglesia no existe' }, 404)
+        const { data, error } = await admin.from('plataforma_auditoria')
+          .select('id, created_at, actor, accion, detalle').eq('iglesia_id', iglesiaId).order('created_at', { ascending: false }).limit(1000)
+        if (error) return json({ error: 'No se pudo leer la auditoria' }, 500)
+        const filas = (data ?? []).map((f) => {
+          const detalle = { ...((f.detalle ?? {}) as Record<string, unknown>) }
+          delete detalle.ip_hash
+          return { ...f, detalle }
+        })
+        return json({ ok: true, auditoria: filas, limitada: filas.length === 1000 })
       }
 
       case 'programar_borrado': {

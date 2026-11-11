@@ -24,7 +24,7 @@ Una advertencia que también va en el `LEEME.txt` del ZIP: los CSV conservan el 
 
 `adn_exportar_paquete(iglesia)` devuelve todo en una sola llamada, solo para `service_role`, desde la función de borde `plataforma` (acción `exportar`, restringida a administradores de plataforma y auditada). El CSV se construye en la base y no en el navegador para no perder la escala de los numéricos. `exportar_iglesia`, la función anterior, no se modificó: si la migración no está aplicada o se revierte, la función de borde vuelve a ella y el panel descarga el JSON de siempre [V en sus tipos; NV de extremo a extremo].
 
-Un caso conocido: la exportación incluye `plataforma_auditoria`, las acciones que la plataforma hizo sobre esa iglesia, porque la anterior ya lo hacía. Si Gerencia prefiere que sea solo de uso interno, se quita de `adn_tablas_exportables`.
+La exportación **no** incluye `plataforma_auditoria` (decisión de Gerencia, 11-11): son acciones internas de la plataforma y pueden llevar notas de administración. Queda disponible aparte, solo para administradores de plataforma, con la acción `auditoria_iglesia` de la función de borde `plataforma` (sin las huellas de IP). La exportación de reserva anterior, que sí la incluía, se filtra en la misma función. Por eso el manifiesto cubre 28 tablas y no 29 [V, `exportacion_carga.sh` comprueba que no sale].
 
 ## Prueba de carga en una base vacía
 
@@ -51,7 +51,7 @@ La red de iglesias no se restaura sola: `iglesia_madre_id` apunta a otra iglesia
 
 ## Límites
 
-- Todo el paquete viaja en una respuesta de la función de borde, y el CSV duplica el JSON. Con iglesias de decenas de miles de filas habrá que paginar o generar el ZIP en el servidor [NV: no se midió; la prueba usa 151 filas].
+- **Pendiente prioritaria antes de producción: paginación o generación del ZIP en el servidor.** Todo el paquete viaja en una sola respuesta de la función de borde, y el CSV duplica el JSON. Con iglesias de decenas de miles de filas la respuesta puede superar los límites de tamaño y de tiempo de la función [NV: no se midió; la prueba usa 150 filas]. Hasta que se resuelva, la exportación es fiable para iglesias pequeñas y medianas, y no debe ofrecerse a una iglesia grande.
 - La función de borde no se ejecutó de extremo a extremo (no hay entorno Supabase de prueba aquí) [NV]. Se comprobaron sus tipos en modo estricto, la base de datos y el empaquetado del ZIP (`npm run test:exportacion`, validado con el lector de Python).
 
 ## Orden de despliegue

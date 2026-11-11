@@ -3,7 +3,7 @@
 // (6.100 filas, 1.934 sin nombre, 2.216 correos únicos, 960 teléfonos inválidos) con un modelo que conoce la respuesta.
 import assert from 'node:assert/strict'
 const g = await import('../src/lib/importarGoogle.ts')
-const { analizarGoogle, telefonoCanonico, esFormatoGoogle, esSensible, aFilaImportacion, esDuplicadoDeExistente } = g
+const { analizarGoogle, telefonoCanonico, esFormatoGoogle, esFormatoWix, estadoSuscripcion, esSensible, aFilaImportacion, esDuplicadoDeExistente } = g
 const { analizarCsv, PLANTILLA_CSV } = await import('../src/lib/importarMiembros.ts')
 
 const csv = (filas: string[][]) => filas.map(f => f.map(c => /[",\r\n]/.test(c) ? `"${c.replace(/"/g, '""')}"` : c).join(',')).join('\r\n') + '\r\n'
@@ -137,6 +137,87 @@ assert.equal(analizarGoogle(csv([['First Name', 'E-mail 1 - Value'], ...Array.fr
   const largo = analizarGoogle(csv([['First Name', 'Last Name', 'E-mail 1 - Value', 'Notes'], ['A'.repeat(300), 'B'.repeat(300), 'a@x.test', 'n'.repeat(1500)]]))
   assert.equal(largo.personas[0]?.nombre.length, 100); assert.equal(largo.personas[0]?.apellido.length, 100)
   assert.equal(largo.personas[0]?.notas?.length, 1000); assert.equal(largo.resumen.notasRecortadas, 1)
+}
+
+// ---------- Formato Wix: el estado de suscripción es el consentimiento ----------
+const CAB_WIX = ['Nombre', 'Apellido', 'Email 1', 'Email 2', 'Teléfono 1', 'Teléfono 2', 'Teléfono 3', 'Fecha de nacimiento',
+  'Dirección 1 - Calle', 'Dirección 1 - Ciudad', 'Dirección 1 - Estado/Región', 'Dirección 1 - Código postal', 'Dirección 1 - País', 'Dirección 2 - Calle',
+  'Compañía', 'Puesto', 'Etiquetas', 'Creado a las (UTC+0)', 'Estado de suscriptor por email', 'Estado de suscriptor por SMS',
+  'Última actividad', 'Fecha de la última actividad (UTC+0)', 'Fuente']
+const filaWix = (o: Record<string, string>) => CAB_WIX.map(c => o[c] ?? '')
+{
+  assert.equal(esFormatoWix(CAB_WIX), true, 'la cabecera de Wix se reconoce')
+  assert.equal(esFormatoGoogle(CAB_WIX), false, 'y no se confunde con la de Google')
+  assert.equal(esFormatoWix(['First Name', 'Last Name', 'E-mail 1 - Value']), false, 'un archivo de Google no es de Wix')
+  assert.equal(esFormatoWix(['nombre', 'apellido', 'email', 'telefono']), false, 'la plantilla propia no es de Wix')
+  for (const [entrada, esperado] of [['Suscrito', 'suscrito'], ['  suscrito ', 'suscrito'], ['Nunca suscrito', 'nunca'], ['Suscripción cancelada', 'cancelado'], ['', 'sin_dato'],
+    ['Subscribed', 'suscrito'], ['Never subscribed', 'nunca'], ['Unsubscribed', 'cancelado'], ['Pendiente', null], ['Quizás', null]] as const) {
+    assert.equal(estadoSuscripcion(entrada), esperado, `estado ${JSON.stringify(entrada)}`)
+  }
+  const a = analizarGoogle(csv([
+    CAB_WIX,
+    filaWix({ Nombre: 'Ana', Apellido: 'Pérez', 'Email 1': 'ana@x.test', 'Email 2': 'ANA2@x.test', 'Teléfono 1': '+34 600 111 222', 'Fecha de nacimiento': '1990-05-21',
+      'Dirección 1 - Calle': 'Calle Falsa 1', 'Dirección 1 - Ciudad': 'Sevilla', 'Dirección 1 - Estado/Región': 'Andalucía', 'Dirección 1 - Código postal': '41001', 'Dirección 1 - País': 'España',
+      Compañía: 'Acme', Puesto: 'Jefa', Etiquetas: 'Célula Norte;Voluntarios', 'Creado a las (UTC+0)': '2024-05-01 10:30:00',
+      'Estado de suscriptor por email': 'Suscrito', 'Estado de suscriptor por SMS': 'Nunca suscrito', Fuente: 'Formulario web' }),
+    // La misma persona otra vez (comparte el segundo correo) y esta vez con la suscripción cancelada: gana la más restrictiva
+    filaWix({ Nombre: 'Ana', Apellido: 'Pérez', 'Email 1': 'ana2@x.test', 'Creado a las (UTC+0)': '2023-01-15 08:00:00', 'Estado de suscriptor por email': 'Suscripción cancelada', 'Estado de suscriptor por SMS': '' }),
+    filaWix({ Nombre: 'Luis', 'Email 1': 'luis@x.test', 'Teléfono 1': 'abc' }),
+    filaWix({ Compañía: 'Solo empresa' }),
+    filaWix({ 'Email 1': 'sin@x.test', 'Estado de suscriptor por email': 'Suscrito' }),
+    filaWix({ Nombre: 'Eva', Apellido: 'Sol', 'Email 1': 'eva@x.test', 'Estado de suscriptor por email': 'Pendiente' }),
+    filaWix({ Nombre: 'Pepe', Apellido: 'Gil', 'Email 1': 'pepe@x.test', 'Estado de suscriptor por email': 'Nunca suscrito' }),
+  ]))
+  assert.equal(a.error, undefined)
+  const r = a.resumen
+  assert.equal(r.formato, 'wix')
+  assert.deepEqual([r.filas, r.personas, r.fusionadas, r.descartadasVacias, r.sinNombre, r.telefonosInvalidos, r.estadosDesconocidos], [7, 5, 1, 1, 1, 1, 1])
+  const ana = a.personas.find(p => p.nombre === 'Ana')!
+  assert.deepEqual(ana.emails, ['ana@x.test', 'ana2@x.test'])
+  assert.deepEqual(ana.telefonos.map(t => t.valor), ['+34600111222'])
+  assert.deepEqual(ana.consentimiento, { email: 'cancelado', sms: 'nunca' }, 'entre dos filas de la misma persona gana el consentimiento más restrictivo')
+  assert.equal(ana.fuente, 'Formulario web')
+  assert.equal(ana.creado, '2023-01-15', 'de las fechas de alta se queda la más antigua')
+  assert.equal(ana.fecha_nacimiento, '1990-05-21')
+  assert.deepEqual(ana.direcciones.map(d => d.valor), ['Calle Falsa 1, Sevilla, Andalucía, 41001, España'])
+  assert.deepEqual(ana.etiquetas, ['Célula Norte', 'Voluntarios'])
+  assert.deepEqual(a.personas.find(p => p.nombre === 'Eva')!.consentimiento, { email: 'sin_dato', sms: 'sin_dato' }, 'un estado desconocido no es consentimiento')
+  assert.deepEqual(a.personas.find(p => p.nombre === 'Luis')!.consentimiento, { email: 'sin_dato', sms: 'sin_dato' })
+  assert.deepEqual(r.consentimiento.email, { suscrito: 1, sin_dato: 2, nunca: 1, cancelado: 1 })
+  assert.deepEqual(r.consentimiento.sms, { suscrito: 0, sin_dato: 4, nunca: 1, cancelado: 0 })
+  assert.ok(['Compañía', 'Puesto'].every(c => a.ignoradas.includes(c)), 'compañía y puesto no se importan')
+  assert.ok(!a.ignoradas.includes('Fuente') && !a.ignoradas.includes('Estado de suscriptor por email'), 'la fuente y el estado sí se leen')
+  // Lo que viaja a la base
+  const fila = aFilaImportacion(ana)
+  assert.deepEqual(fila.consentimiento, { email: 'cancelado', sms: 'nunca' })
+  assert.ok(fila.contactos.some(c => c.tipo === 'etiqueta' && c.etiqueta === 'fuente' && c.valor === 'Formulario web'))
+  assert.ok(fila.contactos.some(c => c.tipo === 'etiqueta' && c.etiqueta === 'creado' && c.valor === '2023-01-15'))
+  assert.equal('consentimiento' in aFilaImportacion(a.personas.find(p => p.nombre === 'Luis')!), false, 'sin estado no se envía consentimiento')
+  assert.deepEqual(aFilaImportacion(a.personas.find(p => p.nombre === 'Pepe')!).consentimiento, { email: 'nunca' }, 'solo viajan los estados que dicen algo')
+  // Un archivo de Google no trae consentimiento
+  const gg = analizarGoogle(csv([['First Name', 'Last Name', 'E-mail 1 - Value'], ['Ana', 'P', 'a@x.test']]))
+  assert.equal(gg.resumen.formato, 'google')
+  assert.equal('consentimiento' in aFilaImportacion(gg.personas[0]!), false)
+  // Nunca se leen contraseñas, tampoco en Wix
+  const sens = analizarGoogle(csv([[...CAB_WIX, 'Contraseña'], [...filaWix({ Nombre: 'Ana', 'Email 1': 'a@x.test' }), 'SECRETO']]))
+  assert.deepEqual(sens.columnasSensibles, ['Contraseña'])
+  assert.ok(!JSON.stringify(sens.personas).includes('SECRETO'), 'la contraseña no llega a ninguna persona')
+}
+
+// ---------- Wix a escala: las cifras de suscripción de Gerencia (6.110 contactos) ----------
+{
+  const email = [...Array(4052).fill('Suscrito'), ...Array(1865).fill(''), ...Array(143).fill('Nunca suscrito'), ...Array(50).fill('Suscripción cancelada')]
+  const sms = [...Array(5412).fill(''), ...Array(698).fill('Nunca suscrito')]
+  assert.equal(email.length, 6110); assert.equal(sms.length, 6110)
+  // Las asignaciones se cruzan de forma determinista; lo que importa es que los totales por canal sean exactos
+  const filas = email.map((e, i) => filaWix({ Nombre: `N${i}`, Apellido: 'W', 'Email 1': `c${i}@w.test`, 'Estado de suscriptor por email': e, 'Estado de suscriptor por SMS': sms[(i * 7) % 6110]! }))
+  const t0 = Date.now()
+  const a = analizarGoogle(csv([CAB_WIX, ...filas]))
+  assert.equal(a.error, undefined)
+  assert.equal(a.resumen.personas, 6110)
+  assert.deepEqual(a.resumen.consentimiento.email, { suscrito: 4052, sin_dato: 1865, nunca: 143, cancelado: 50 })
+  assert.deepEqual(a.resumen.consentimiento.sms, { suscrito: 0, sin_dato: 5412, nunca: 698, cancelado: 0 })
+  assert.ok(Date.now() - t0 < 10000, 'se analiza en menos de 10 segundos')
 }
 
 // ---------- A escala: las cifras de Gerencia, con un modelo que conoce la respuesta ----------
