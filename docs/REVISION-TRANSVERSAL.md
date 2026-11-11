@@ -25,7 +25,7 @@ De los nueve puntos, dos están cerrados (consentimientos con su evidencia y nom
 | Documento | Cumple | Falta |
 | --- | --- | --- |
 | `docs/IMPORTACION.md` | Nunca importa contraseñas, no guarda datos personales nuevos, ensayo solo con cifras, consentimiento por canal. Evidencia con prueba repetible | Informar a las personas importadas de que sus datos se cargaron y con qué base legal; guardar el texto y la fecha del consentimiento original; qué hacer si el archivo trae menores de edad **[H]** |
-| `docs/EXPORTACION.md` | Entrega todos los datos de una iglesia, sin secretos, con huellas de cada tabla y recarga probada | Paginación o ZIP en servidor (prioritaria); los archivos del almacenamiento no viajan; no sirve como copia de toda la base; quién puede pedirla y cómo se acredita que es la iglesia titular **[H]** |
+| `docs/EXPORTACION.md` | Entrega todos los datos de una iglesia, sin secretos, con huellas de cada tabla y recarga probada | Paginación resuelta y medida a 100.000 personas (falta medirla con la función desplegada [NV]); los archivos del almacenamiento no viajan; no sirve como copia de toda la base; quién puede pedirla y cómo se acredita que es la iglesia titular **[H]** |
 | `docs/INFORMES.md` | Descargas de miembros registradas, solo altas; informes sin contraseñas | Leyenda de confidencialidad en el propio PDF y Excel de miembros; plazo de conservación del registro de descargas; ver quién descargó solo lo tiene quien gestiona usuarios |
 | `docs/COMUNICACION.md` | Consentimiento estricto, baja, auditoría, enlace de un solo uso; no envía nada real | Remitente, dominio de envío, pie legal con correo de contacto y dirección postal en cada mensaje **[H]**, texto de consentimiento versionado, proveedor aprobado, revisión jurídica |
 

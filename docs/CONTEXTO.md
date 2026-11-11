@@ -103,7 +103,7 @@ Los seis trabajos en curso, en orden:
 
 **Copias y restauración:** hay un procedimiento para ensayar en la rama de pruebas y un ensayo local repetible de la base completa (`docs/RESTAURACION.md`). Falta ejecutarlo contra Supabase real y decidir la política de copias, la custodia de la clave y la copia de los archivos de Storage, que hoy no existe.
 
-**Prioritaria antes de producción:** paginar la exportación o generar el ZIP en el servidor, porque hoy todo el paquete viaja en una sola respuesta y no se ha medido con iglesias de decenas de miles de filas (`docs/EXPORTACION.md`).
+**Resuelto:** la exportación se pagina (5000 filas como máximo por llamada) y el navegador escribe un ZIP en flujo; se midió con 10.000 y 100.000 personas sintéticas y la vía de una sola respuesta falla a 100.000 por el tope de 256 MB de jsonb (`docs/EXPORTACION.md`). Queda sin medir contra la función de borde desplegada [NV].
 
 Del producto, sin fecha: cobro del plan, canal de envío real de mensajes y alertas, credencial con escáner, subdominio por iglesia, historial de cambios por iglesia y segundo factor obligatorio [E, `docs/MULTITENANT.md` y `docs/COBRO.md`].
 
