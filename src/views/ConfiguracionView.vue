@@ -242,13 +242,17 @@
         </div>
       </div>
 
-      <!-- Exportar los datos y dar de baja la iglesia los hace hoy el equipo de la plataforma (docs/MANUAL-IGLESIAS.md); no hay botones que no hagan nada -->
+      <!-- El propietario descarga los datos y pide la baja en /datos-iglesia (docs/EXPORTACION.md); quien no es propietario solo ve la explicación -->
       <div class="card border border-gray-200" data-test="datos-y-baja">
         <h2 class="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2"><Database class="w-5 h-5" aria-hidden="true" /> {{ t('configuracion.datosYBaja.titulo') }}</h2>
         <ul class="space-y-3 text-sm text-gray-700">
           <li><span class="font-medium text-gray-900">{{ t('configuracion.datosYBaja.exportarTitulo') }}</span> {{ t('configuracion.datosYBaja.exportarTexto') }}</li>
           <li><span class="font-medium text-gray-900">{{ t('configuracion.datosYBaja.bajaTitulo') }}</span> {{ t('configuracion.datosYBaja.bajaTexto') }}</li>
         </ul>
+        <p v-if="auth.rolInfo?.es_propietario" class="mt-4">
+          <RouterLink to="/datos-iglesia" class="btn-primary inline-block" data-test="abrir-datos">{{ t('configuracion.datosYBaja.abrir') }}</RouterLink>
+        </p>
+        <p v-else class="text-sm text-gray-600 mt-4" data-test="datos-solo-propietario">{{ t('configuracion.datosYBaja.soloPropietario') }}</p>
         <p class="text-sm text-gray-600 mt-4">
           {{ t('configuracion.datosYBaja.contacto') }}
           <a v-if="soporte" :href="`mailto:${soporte}`" class="text-adn-verde underline">{{ soporte }}</a>

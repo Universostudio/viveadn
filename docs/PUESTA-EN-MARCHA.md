@@ -67,7 +67,7 @@ El script aplica el esquema, el catálogo y las 45 migraciones en el orden de la
 
 **Paso 3. Poner los secretos de las funciones** (apartado 2.2): como mínimo `ADN_ORIGENES_EXTRA`. Con la CLI: `supabase secrets set ADN_ORIGENES_EXTRA=<WEB_PRUEBAS> --project-ref <REF_PRUEBAS>`.
 
-**Paso 4. Desplegar las diez funciones** desde `supabase/functions` (`supabase functions deploy <nombre> --project-ref <REF_PRUEBAS>`):
+**Paso 4. Desplegar las once funciones** desde `supabase/functions` (`supabase functions deploy <nombre> --project-ref <REF_PRUEBAS>`):
 
 | Función | Verificación de JWT | Motivo |
 | --- | --- | --- |
@@ -75,6 +75,7 @@ El script aplica el esquema, el catálogo y las 45 migraciones en el orden de la
 | `enviar-confirmaciones` | **Desactivada** (`--no-verify-jwt`) | La llama la tarea programada con `x-adn-cron`; ella misma lo exige |
 | `plataforma` | Activada, y la tarea de purga debe enviar la clave pública (apartado 5) | Valida ella misma a quien llama |
 | `dar-publico`, `checkin-evento`, `verificar-certificado`, `registro-iglesia`, `invitaciones`, `red-resumen` | Activada | La web envía la clave pública o la sesión |
+| `datos-iglesia` | Activada | Autoservicio del propietario (descarga y baja): necesita la sesión y comprueba ella misma que es el propietario. Requiere las migraciones `20261111260000` y `20261111270000` |
 
 La configuración real de producción no se puede leer desde el repositorio **[NV]**: esta tabla es el diseño. `npm run check:entorno` comprueba que las funciones sin JWT responden sin él y que `dar-publico` lo exige (paso 8).
 
@@ -109,9 +110,9 @@ Con el entorno verificado, este recorrido ejercita todo el producto. Cada punto 
 
 1. Registrar una iglesia nueva en `/registro` con un código de acceso creado en el panel de plataforma, y completar la invitación por `/aceptar`.
 2. Crear miembros, una casa de oración y un evento; abrir el QR del evento y registrar asistencia en `/checkin/<enlace>`, en los cuatro idiomas.
-3. Importar un archivo de contactos (`docs/IMPORTACION.md`), exportar la iglesia (`docs/EXPORTACION.md`) y descargar los tres informes (`docs/INFORMES.md`).
+3. Importar un archivo de contactos (`docs/IMPORTACION.md`), exportar la iglesia como propietario desde `/datos-iglesia` (`docs/EXPORTACION.md`) y descargar los tres informes (`docs/INFORMES.md`).
 4. Gestionar consentimientos, dar de baja un canal y abrir un enlace de baja en `/baja/<secreto>` (`docs/COMUNICACION.md`).
-5. Borrar una iglesia de prueba con borrado suave, recuperarla dentro del plazo, y borrar otra dejando vencer el plazo para ver la purga (apartado 5).
+5. Borrar una iglesia de prueba con borrado suave, recuperarla dentro del plazo, y borrar otra dejando vencer el plazo para ver la purga (apartado 5). Repetirlo como propietario desde `/datos-iglesia`: pedir la baja, ver el aviso rojo de iglesia suspendida, cancelarla, volver a pedirla y comprobar en el panel de plataforma que aparece en borrado suave.
 6. Consultar el panel de plataforma: la tarjeta «Purga programada» debe quedar al día.
 7. Ensayar la restauración de `docs/RESTAURACION.md` sobre otra rama.
 

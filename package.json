@@ -29,7 +29,9 @@
     "test:informes": "node scripts/probar-informes.mts",
     "check:entorno": "node scripts/verificar-entorno.mts",
     "test:entorno": "node scripts/probar-verificar-entorno.mts",
-    "test:exportacion-paginada": "node --expose-gc scripts/probar-exportacion-paginada.mts"
+    "test:exportacion-paginada": "node --expose-gc scripts/probar-exportacion-paginada.mts",
+    "test:autoservicio": "node scripts/probar-autoservicio.mts",
+    "test:datos-ui": "node scripts/probar-datos-iglesia-ui.mjs"
   },
   "dependencies": {
     "@fontsource/dm-sans": "^5.3.0",

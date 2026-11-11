@@ -55,6 +55,19 @@ El panel de plataforma ya no pide el paquete entero. La función `plataforma` of
 
 `adn_exportar_paquete` sigue en la base como respaldo: el panel lo usa solo si la migración de las páginas no está desplegada.
 
+## Autoservicio del propietario
+
+La pantalla `/datos-iglesia` (Configuración, pestaña Seguridad) deja al **propietario** descargar todos los datos y pedir o cancelar la baja, sin pasar por la plataforma. La atiende la función de borde `datos-iglesia`, que identifica a quien llama por su sesión y toma la iglesia de su perfil, nunca de lo que envíe el navegador. Cada entrada vuelve a comprobar en la base que quien llama es el propietario activo (`adn_es_propietario`): un administrador, el propietario de otra iglesia o un propietario desactivado reciben 403.
+
+- **Permiso.** Solo el rol marcado como propietario. No se creó un permiso nuevo a propósito: los permisos normales se reparten a los administradores al crear una iglesia, y este no debe llegarles.
+- **Auditoría.** Cada descarga completa, cada baja pedida y cada baja cancelada se anotan en `adn_datos_auditoria` (quién, cuándo, qué; sin datos de personas), una tabla de solo altas que sobrevive a la purga. El borrado suave que provoca la baja se anota además en la auditoría del ciclo de vida, con el motivo precedido de `autoservicio:`.
+- **Límite de descargas.** 6 descargas completas por hora y por iglesia, contadas al pedir el plan. [H] Quien se salte el plan y pida páginas sueltas no suma al contador: solo puede leer los datos de su propia iglesia, de 5000 filas en 5000, y el límite de peticiones de Supabase se aplica igualmente.
+- **Baja con plazo de gracia, nunca inmediata.** La baja reutiliza el borrado suave que ya existe y está probado: la iglesia queda suspendida y se purga a los 30 días. Hasta entonces el propietario puede cancelarla. La iglesia solo cancela una baja que ella misma pidió (se reconoce porque la anotación de autoservicio y el borrado comparten la misma fecha); una baja de la plataforma se cancela con `recuperar` desde el panel.
+- **Iglesia suspendida.** Como la baja suspende la iglesia, la aplicación no muestra sus datos, pero el propietario ve un aviso rojo con el camino a esta pantalla, desde la que puede seguir descargando sus datos y cancelar. Esto funciona porque la función de borde usa la clave de servicio, no los permisos de la iglesia.
+- **No se envía ningún correo** al pedir o cancelar la baja: hace falta un remitente configurado (pendiente de la cuenta de envío). Mientras tanto, la confirmación es la propia pantalla y el rastro de auditoría.
+
+Pruebas: `supabase/tests/adn_autoservicio.sql` (50 comprobaciones; 6 mutaciones del código detectadas), `npm run test:autoservicio` (validación de la función de borde) y `npm run test:datos-ui` (la pantalla en un navegador real con la red simulada, cuatro escenarios).
+
 ## Prueba de volumen
 
 `supabase/tests/volumen/exportacion_volumen.sh <personas>` crea una iglesia sintética (nueve filas por persona: ficha, correo alternativo, tres consentimientos y cuatro asistencias) y mide las dos vías sobre la misma base. Máquina de pruebas de 4 núcleos, PostgreSQL local, sin red entre la base y el cliente [E: repetible con el script].

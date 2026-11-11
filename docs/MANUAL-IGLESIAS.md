@@ -116,7 +116,7 @@ Si tu iglesia es la madre de otras sedes, la pantalla Red muestra cifras agregad
 
 ## 14. Exportar tus datos
 
-**Cómo se pide.** Hoy la exportación la entrega el equipo de Vive ADN: se pide desde Configuración, pestaña Seguridad, apartado «Tus datos y la baja». No hay todavía un botón que la genere por tu cuenta.
+**Cómo se hace.** La descarga la hace el **propietario** de la iglesia por su cuenta: Configuración, pestaña Seguridad, apartado «Tus datos y la baja», botón «Abrir datos y baja» y después «Descargar todos los datos». Nadie más, ni los administradores, ve ese botón. La descarga se monta en tu navegador y en una iglesia grande puede tardar varios minutos: deja la pestaña abierta hasta que termine. Se permiten 6 descargas completas por hora, y cada una queda anotada (quién y cuándo, sin datos de personas). Si la pantalla avisa de que la iglesia cambió mientras se descargaba, repite la descarga.
 
 **Qué recibes.** Un archivo ZIP con tres tipos de contenido:
 
@@ -128,7 +128,7 @@ Entran 32 tablas: tu iglesia y todo lo que le pertenece. **No salen** los enlace
 
 ## 15. Dar de baja la iglesia
 
-Se pide al equipo de Vive ADN, igual que la exportación. Conviene **exportar antes los datos**. Al darse de baja, la cuenta pasa a **borrado suave**: queda suspendida y se puede recuperar durante **30 días**. Pasado ese plazo, los datos de tu iglesia se borran por completo, con sus archivos y las cuentas de acceso del equipo. Según nuestros textos legales, los datos desaparecen de los sistemas activos a los 30 días de la baja y de las copias de seguridad en un máximo de 14 días más (esta cifra está pendiente de comprobarse con la configuración real de las copias). La plataforma conserva un registro de la fecha de baja, sin datos de personas.
+Solo el **propietario** puede pedirla, desde la misma pantalla que la exportación («Abrir datos y baja»). Conviene **descargar antes los datos**. La baja es una solicitud, no un borrado: para pedirla hay que escribir la dirección de la iglesia, marcar que entiendes sus efectos y, si quieres, indicar un motivo. Al pedirla, la cuenta pasa a **borrado suave**: queda suspendida en el acto (nadie puede usar la aplicación, pero el propietario sigue entrando a esa pantalla para descargar sus datos o cancelar) y se puede recuperar durante **30 días**. Hasta esa fecha, el propietario pulsa «Cancelar la baja» y la iglesia vuelve a la etapa que tenía. Una baja que abrió la plataforma no la cancela la iglesia: hay que escribir a soporte. Pasado ese plazo, los datos de tu iglesia se borran por completo, con sus archivos y las cuentas de acceso del equipo. Según nuestros textos legales, los datos desaparecen de los sistemas activos a los 30 días de la baja y de las copias de seguridad en un máximo de 14 días más (esta cifra está pendiente de comprobarse con la configuración real de las copias). La plataforma conserva un registro de la fecha de baja, sin datos de personas.
 
 ## 16. Tus datos personales y los de tu gente
 

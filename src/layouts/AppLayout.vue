@@ -87,6 +87,12 @@
         <span>{{ t('verComo.aviso', { rol: auth.verComo.nombre }) }}</span>
         <button type="button" class="underline font-medium" @click="auth.simularRol(null)">{{ t('verComo.salir') }}</button>
       </div>
+      <!-- Una iglesia suspendida (por ejemplo, con la baja pedida) no ve sus datos: el propietario encuentra aquí el camino a descargar o cancelar -->
+      <div v-if="auth.iglesia && auth.iglesia.activa === false && auth.rolInfo?.es_propietario && route.path !== '/datos-iglesia'" role="status" data-test="aviso-suspendida"
+        class="bg-red-100 text-red-900 text-xs px-4 py-2 flex items-center justify-between gap-3 flex-wrap">
+        <span>{{ t('layout.avisoSuspendida') }}</span>
+        <RouterLink to="/datos-iglesia" class="underline font-medium">{{ t('layout.avisoAbrir') }}</RouterLink>
+      </div>
       <main class="flex-1 overflow-y-auto">
         <RouterView />
       </main>

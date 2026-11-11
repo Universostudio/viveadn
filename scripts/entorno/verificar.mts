@@ -16,7 +16,7 @@ export interface Opciones {
 export interface Resultado { nombre: string; ok: boolean; detalle: string }
 
 const HTTPS_SIN_RUTA = /^https:\/\/[a-z0-9]([a-z0-9.-]*[a-z0-9])?(:\d{1,5})?\/?$/
-export const FUNCIONES_CON_CORS = ['plataforma', 'invitaciones', 'registro-iglesia', 'red-resumen', 'dar-publico', 'checkin-evento', 'verificar-certificado', 'baja', 'confirmar-suscripcion'] as const
+export const FUNCIONES_CON_CORS = ['plataforma', 'invitaciones', 'registro-iglesia', 'red-resumen', 'dar-publico', 'checkin-evento', 'verificar-certificado', 'baja', 'confirmar-suscripcion', 'datos-iglesia'] as const
 export const FUNCIONES_SIN_JWT = ['baja', 'confirmar-suscripcion'] as const
 export const RUTAS_LEGALES = ['/privacidad', '/terminos', '/aviso-legal', '/cookies'] as const
 

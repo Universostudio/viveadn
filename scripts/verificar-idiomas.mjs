@@ -4,6 +4,7 @@
 import { readFileSync, readdirSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { baseCompile } from '@intlify/message-compiler'
 
 const carpeta = join(dirname(fileURLToPath(import.meta.url)), '..', 'src', 'i18n', 'locales')
 const BASE = 'es.json'
@@ -37,10 +38,21 @@ const base = cargar(BASE)
 const clavesBase = Object.keys(base)
 const problemas = []
 
+// Un texto que vue-i18n no puede compilar falla en el navegador (por ejemplo, una @ suelta se toma por una referencia a otro texto): se escribe {'@'}
+function compila(valor) {
+  const errores = []
+  baseCompile(valor, { onError: e => errores.push(e.message.split('\n')[0]) })
+  return errores
+}
+
 function revisarValores(archivo, textos) {
   for (const [clave, valor] of Object.entries(textos)) {
     if (typeof valor !== 'string') problemas.push(`${archivo}: "${clave}" no es un texto`)
     else if (valor.trim() === '') problemas.push(`${archivo}: "${clave}" está vacío`)
+    else {
+      const errores = compila(valor)
+      if (errores.length) problemas.push(`${archivo}: "${clave}" no compila en vue-i18n (${errores[0]})`)
+    }
   }
 }
 
@@ -63,4 +75,4 @@ if (problemas.length) {
   process.exit(1)
 }
 
-console.log(`✓ ${archivos.length} idiomas con las mismas ${clavesBase.length} claves y ningún texto vacío: ${archivos.join(', ')}`)
+console.log(`✓ ${archivos.length} idiomas con las mismas ${clavesBase.length} claves y ningún texto vacío ni que no compile: ${archivos.join(', ')}`)

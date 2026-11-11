@@ -155,6 +155,11 @@ const router = createRouter({
           component: () => import('@/views/ConfiguracionView.vue')
         },
         {
+          path: 'datos-iglesia',
+          name: 'datos-iglesia',
+          component: () => import('@/views/DatosIglesiaView.vue')
+        },
+        {
           path: 'red',
           name: 'red',
           component: () => import('@/views/RedView.vue')

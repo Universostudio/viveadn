@@ -737,11 +737,13 @@
     "datosYBaja": {
       "titulo": "Seus dados e o cancelamento",
       "exportarTitulo": "Exportar todos os dados.",
-      "exportarTexto": "Entregamos um pacote com todos os dados da igreja em JSON e CSV, com uma impressão digital de cada tabela para conferir que está completo.",
+      "exportarTexto": "Um pacote com todos os dados da igreja em JSON e CSV, com um hash de cada tabela para conferir que está completo. Você mesmo faz o download.",
       "bajaTitulo": "Cancelar a igreja.",
-      "bajaTexto": "A conta passa para exclusão suave: fica suspensa e pode ser recuperada por 30 dias; depois desse prazo é excluída por completo. Convém exportar os dados antes.",
-      "contacto": "Para pedir qualquer uma das duas coisas, escreva para a equipe da Vive ADN:",
-      "contactoPendiente": "o e-mail de suporte aparecerá aqui quando estiver configurado."
+      "bajaTexto": "O cancelamento é um pedido: a conta fica suspensa e pode ser recuperada por 30 dias; depois do prazo é apagada por completo. Convém baixar os dados antes.",
+      "contacto": "Se precisar de ajuda com qualquer um dos dois, escreva à equipe do Vive ADN:",
+      "contactoPendiente": "o e-mail de suporte aparecerá aqui quando estiver configurado.",
+      "abrir": "Abrir dados e cancelamento",
+      "soloPropietario": "Somente o proprietário da igreja pode exportar os dados e pedir o cancelamento."
     }
   },
   "plataforma": {
@@ -828,7 +830,7 @@
     "pruebaHasta": "Teste até {fecha}",
     "exportar": "Exportar dados",
     "exportada": "Exportação de {iglesia} baixada.",
-    "exportLeeme": "Exportação do Vive ADN (formato viveadn-exportacion-2)\n\nmanifest.json  Números de cada tabela (linhas, colunas com seu tipo, impressão digital do conteúdo), ordem de carga e colunas omitidas.\ndatos.json     Todos os dados da igreja em JSON.\ncsv/           Um CSV por tabela: UTF-8 sem BOM, separador vírgula, fim de linha CRLF. Um campo vazio sem aspas é NULL; uma cadeia vazia vai entre aspas.\n\nPor segurança, os segredos não são exportados (tokens de QR e de convite, impressões digitais de IP). As contas de acesso não vão junto: as pessoas precisam ser convidadas de novo.\nCuidado: se abrir um CSV em uma planilha, uma célula que comece com = + - ou @ pode ser lida como fórmula.\n",
+    "exportLeeme": "Exportação do Vive ADN (formato viveadn-exportacion-2)\n\nmanifest.json  Números de cada tabela (linhas, colunas com seu tipo, impressão digital do conteúdo), ordem de carga e colunas omitidas.\ndatos.json     Todos os dados da igreja em JSON.\ncsv/           Um CSV por tabela: UTF-8 sem BOM, separador vírgula, fim de linha CRLF. Um campo vazio sem aspas é NULL; uma cadeia vazia vai entre aspas.\n\nPor segurança, os segredos não são exportados (tokens de QR e de convite, impressões digitais de IP). As contas de acesso não vão junto: as pessoas precisam ser convidadas de novo.\nCuidado: se abrir um CSV em uma planilha, uma célula que comece com = + - ou {'@'} pode ser lida como fórmula.\n",
     "programarBorrado": "Agendar exclusão",
     "pedirDias": "Em quantos dias {iglesia} será excluída? (de 7 a 90)",
     "pedirDireccion": "Para confirmar, digite o endereço da igreja: {slug}",
@@ -1433,5 +1435,38 @@
     "caducadoTexto": "Registre-se de novo ou peça à sua igreja para receber um novo link.",
     "error": "Não foi possível concluir a confirmação",
     "errorTexto": "Tente de novo em alguns minutos."
+  },
+  "datosIglesia": {
+    "volver": "Voltar às configurações",
+    "titulo": "Dados da igreja e cancelamento",
+    "cargando": "Carregando…",
+    "soloPropietario": "Esta página é só para o proprietário da igreja.",
+    "errorGenerico": "Não foi possível concluir a operação. Tente novamente.",
+    "descargaTitulo": "Baixar todos os dados",
+    "descargaTexto": "Um arquivo ZIP com todos os dados da igreja: o manifesto com os números e um hash de cada tabela, um arquivo JSON e um CSV por tabela. Não inclui os segredos nem as contas de acesso, e os arquivos enviados (logotipos e documentos) são listados, mas não vão no pacote.",
+    "tardaAviso": "Em igrejas grandes pode levar vários minutos: deixe esta aba aberta até terminar.",
+    "descargaRestantes": "Downloads completos restantes nesta hora: {n}.",
+    "descargar": "Baixar todos os dados",
+    "preparando": "Preparando o download…",
+    "descargando": "Baixando: tabela {indice} de {tablas} ({tabla})…",
+    "descargaLista": "Download pronto. Confira se o arquivo abre e guarde-o em um lugar seguro.",
+    "descargaConCambios": "Download pronto, mas a igreja mudou durante o download. Repita o download se precisar de uma cópia de um único momento.",
+    "bajaTitulo": "Cancelar a conta da igreja",
+    "bajaTexto": "O cancelamento não apaga nada na hora. A igreja fica suspensa, ninguém poderá usar o aplicativo e os dados são mantidos por {dias} dias. Até essa data você pode desfazer o cancelamento por esta página; depois do prazo tudo é apagado de vez e não pode mais ser recuperado.",
+    "bajaAntes": "Baixe antes todos os dados.",
+    "bajaMotivo": "Motivo (opcional)",
+    "bajaConfirmar": "Para confirmar, digite o endereço da igreja: {slug}",
+    "bajaEntiendo": "Entendo que a igreja ficará suspensa agora e será apagada em {dias} dias se eu não desfizer o cancelamento.",
+    "bajaPedir": "Pedir o cancelamento",
+    "bajaPedida": "Cancelamento pedido. A igreja está suspensa e será apagada em {fecha}.",
+    "bajaActiva": "Cancelamento pedido em {desde}. A igreja será apagada por completo em {hasta}.",
+    "bajaCancelar": "Desfazer o cancelamento",
+    "bajaCancelada": "Cancelamento desfeito. A igreja voltou a ficar ativa.",
+    "bajaDePlataforma": "Este cancelamento foi aberto pela equipe do Vive ADN. Para recuperá-lo, escreva ao suporte.",
+    "bajaVencida": "O prazo terminou: a igreja será apagada na próxima limpeza e não pode mais ser recuperada."
+  },
+  "layout": {
+    "avisoSuspendida": "Sua igreja está suspensa. Se você pediu o cancelamento, pode desfazê-lo ou baixar seus dados daqui.",
+    "avisoAbrir": "Abrir dados e cancelamento"
   }
 }

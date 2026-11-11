@@ -737,11 +737,13 @@
     "datosYBaja": {
       "titulo": "Your data and cancellation",
       "exportarTitulo": "Export all data.",
-      "exportarTexto": "We deliver a package with all the church's data in JSON and CSV, with a fingerprint of each table to check it is complete.",
+      "exportarTexto": "A package with all the church data in JSON and CSV, with a fingerprint of each table to check it is complete. You download it yourself.",
       "bajaTitulo": "Cancel the church.",
-      "bajaTexto": "The account moves to soft deletion: it is suspended and can be recovered for 30 days; after that period it is deleted completely. It is best to export the data first.",
-      "contacto": "To request either of them, write to the Vive ADN team:",
-      "contactoPendiente": "the support email will be shown here once it is configured."
+      "bajaTexto": "Cancellation is a request: the account is suspended and can be recovered for 30 days; after that it is deleted completely. It is best to download the data first.",
+      "contacto": "If you need help with either of them, write to the Vive ADN team:",
+      "contactoPendiente": "the support email will be shown here once it is configured.",
+      "abrir": "Open data and cancellation",
+      "soloPropietario": "Only the church owner can export the data and request cancellation."
     }
   },
   "plataforma": {
@@ -828,7 +830,7 @@
     "pruebaHasta": "Trial until {fecha}",
     "exportar": "Export data",
     "exportada": "Export of {iglesia} downloaded.",
-    "exportLeeme": "Vive ADN export (format viveadn-exportacion-2)\n\nmanifest.json  Figures for each table (rows, columns with their type, content fingerprint), load order and omitted columns.\ndatos.json     All the church data as JSON.\ncsv/           One CSV per table: UTF-8 without BOM, comma separator, CRLF line endings. An empty unquoted field is NULL; an empty string is written in quotes.\n\nFor security, secrets are not exported (QR and invitation tokens, IP fingerprints). Login accounts are not included: people must be invited again.\nCaution: if you open a CSV in a spreadsheet, a cell starting with = + - or @ may be read as a formula.\n",
+    "exportLeeme": "Vive ADN export (format viveadn-exportacion-2)\n\nmanifest.json  Figures for each table (rows, columns with their type, content fingerprint), load order and omitted columns.\ndatos.json     All the church data as JSON.\ncsv/           One CSV per table: UTF-8 without BOM, comma separator, CRLF line endings. An empty unquoted field is NULL; an empty string is written in quotes.\n\nFor security, secrets are not exported (QR and invitation tokens, IP fingerprints). Login accounts are not included: people must be invited again.\nCaution: if you open a CSV in a spreadsheet, a cell starting with = + - or {'@'} may be read as a formula.\n",
     "programarBorrado": "Schedule deletion",
     "pedirDias": "In how many days should {iglesia} be deleted? (7 to 90)",
     "pedirDireccion": "To confirm, type the church address: {slug}",
@@ -1433,5 +1435,38 @@
     "caducadoTexto": "Register again or ask your church to receive a new link.",
     "error": "The confirmation could not be completed",
     "errorTexto": "Please try again in a few minutes."
+  },
+  "datosIglesia": {
+    "volver": "Back to Settings",
+    "titulo": "Church data and cancellation",
+    "cargando": "Loading…",
+    "soloPropietario": "This page is only for the church owner.",
+    "errorGenerico": "The operation could not be completed. Please try again.",
+    "descargaTitulo": "Download all data",
+    "descargaTexto": "A ZIP file with all the church data: the manifest with the figures and a fingerprint of each table, a JSON file and one CSV per table. It does not include secrets or sign-in accounts, and uploaded files (logos and documents) are listed but not included.",
+    "tardaAviso": "For large churches it can take several minutes: keep this tab open until it finishes.",
+    "descargaRestantes": "Complete downloads left this hour: {n}.",
+    "descargar": "Download all data",
+    "preparando": "Preparing the download…",
+    "descargando": "Downloading: table {indice} of {tablas} ({tabla})…",
+    "descargaLista": "Download ready. Check that the file opens and keep it somewhere safe.",
+    "descargaConCambios": "Download ready, but the church changed while it was downloading. Repeat the download if you need a copy from a single moment.",
+    "bajaTitulo": "Cancel the church account",
+    "bajaTexto": "Cancelling does not delete anything right away. The church is suspended, nobody will be able to use the app, and the data is kept for {dias} days. Until then you can undo the cancellation from this page; after that everything is deleted for good and cannot be recovered.",
+    "bajaAntes": "Download all the data first.",
+    "bajaMotivo": "Reason (optional)",
+    "bajaConfirmar": "To confirm, type the church address: {slug}",
+    "bajaEntiendo": "I understand that the church will be suspended now and deleted in {dias} days unless I undo the cancellation.",
+    "bajaPedir": "Request cancellation",
+    "bajaPedida": "Cancellation requested. The church is suspended and will be deleted on {fecha}.",
+    "bajaActiva": "Cancellation requested on {desde}. The church will be deleted completely on {hasta}.",
+    "bajaCancelar": "Undo the cancellation",
+    "bajaCancelada": "Cancellation undone. The church is active again.",
+    "bajaDePlataforma": "This cancellation was opened by the Vive ADN team. To recover the church, write to support.",
+    "bajaVencida": "The period has ended: the church will be deleted in the next purge and can no longer be recovered."
+  },
+  "layout": {
+    "avisoSuspendida": "Your church is suspended. If you requested the cancellation, you can undo it or download your data from here.",
+    "avisoAbrir": "Open data and cancellation"
   }
 }
