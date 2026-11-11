@@ -1396,5 +1396,22 @@
     "historial": "Historique des versions",
     "noDisponible": "Nous n'avons pas pu charger ce document. Rechargez la page pour réessayer.",
     "datosPendientes": "Des données du titulaire doivent encore être configurées avant de publier ce document : {datos}."
+  },
+  "confirmar": {
+    "titulo": "Confirmer que vous souhaitez recevoir des messages",
+    "texto": "Confirmez que vous souhaitez recevoir les messages de votre église par e-mail. Vous pouvez vous désinscrire à tout moment.",
+    "boton": "Confirmer",
+    "hecho": "C'est fait, c'est confirmé",
+    "hechoTexto": {
+      "email": "Vous recevrez les messages de votre église par e-mail. Chacun indiquera comment vous désinscrire."
+    },
+    "invalido": "Lien non valide",
+    "invalidoTexto": "Ce lien n'est pas correct. Utilisez le lien du dernier e-mail de confirmation que vous avez reçu.",
+    "usado": "Ce lien a déjà été utilisé",
+    "usadoTexto": "La confirmation était déjà faite. Vous n'avez rien d'autre à faire.",
+    "caducado": "Ce lien a expiré",
+    "caducadoTexto": "Inscrivez-vous de nouveau ou demandez à votre église de recevoir un nouveau lien.",
+    "error": "La confirmation n'a pas pu être terminée",
+    "errorTexto": "Réessayez dans quelques minutes."
   }
 }

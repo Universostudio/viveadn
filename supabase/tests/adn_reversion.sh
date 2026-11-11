@@ -6,7 +6,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 DB=viveadn_reversion
 # Migraciones adn_* en el orden en que se aplican; se revierten en el orden contrario
-VERSIONES=(20261111120000_adn_ciclo_vida 20261111130000_adn_exportacion 20261111140000_adn_importar_contactos 20261111150000_adn_informes 20261111160000_adn_comunicacion 20261111170000_adn_panel_inicio 20261111180000_adn_descargas_informe 20261111190000_adn_consentimiento 20261111200000_adn_consentimiento_auditoria 20261111210000_adn_consentimiento_evidencia 20261111220000_adn_checkin_canales)
+VERSIONES=(20261111120000_adn_ciclo_vida 20261111130000_adn_exportacion 20261111140000_adn_importar_contactos 20261111150000_adn_informes 20261111160000_adn_comunicacion 20261111170000_adn_panel_inicio 20261111180000_adn_descargas_informe 20261111190000_adn_consentimiento 20261111200000_adn_consentimiento_auditoria 20261111210000_adn_consentimiento_evidencia 20261111220000_adn_checkin_canales 20261111230000_adn_doble_confirmacion)
 subir()   { for v in "${VERSIONES[@]}"; do "${PSQL[@]}" -d $DB -f "migrations/$v.sql"; done; }
 bajar()   { for ((i=${#VERSIONES[@]}-1; i>=0; i--)); do "${PSQL[@]}" -d $DB -f "reversiones/${VERSIONES[$i]}.down.sql"; done; }
 es_adn()  { for v in "${VERSIONES[@]}"; do [ "$1" = "migrations/$v.sql" ] && return 0; done; return 1; }
@@ -41,6 +41,8 @@ select public.adn_panel_inicio() is not null as panel;
 insert into public.adn_consentimientos (iglesia_id, miembro_id, canal, estado, origen) select iglesia_id, id, 'email', 'suscrito', 'prueba' from public.miembros;
 insert into public.adn_consentimiento_evidencias (iglesia_id, miembro_id, tipo, finalidad, texto_version, texto_hash, origen) select iglesia_id, id, 'checkin', 'checkin', 'v1', (select texto_hash from public.adn_consentimiento_textos where finalidad = 'checkin' and version = 'v1' and idioma = 'es'), 'qr' from public.miembros;
 insert into public.adn_consentimiento_evidencias (iglesia_id, miembro_id, tipo, canal, finalidad, texto_version, texto_hash, aplicado, origen) select iglesia_id, id, 'checkin', 'email', 'checkin_email', 'v2', (select texto_hash from public.adn_consentimiento_textos where finalidad = 'checkin_email' and idioma = 'es'), true, 'qr' from public.miembros;
+insert into public.adn_confirmaciones (iglesia_id, miembro_id, canal, destino, idioma, estado, token_hash, expira_en) select iglesia_id, id, 'email', 'zz@prueba.test', 'es', 'pendiente', repeat('d', 64), now() + interval '3 days' from public.miembros;
+insert into public.adn_consentimiento_evidencias (iglesia_id, miembro_id, tipo, canal, aplicado, origen) select iglesia_id, id, 'confirmacion', 'email', true, 'qr_confirmado' from public.miembros;
 insert into public.adn_informe_descargas (iglesia_id, usuario_id, informe, filas) select id, gen_random_uuid(), 'miembros', 1 from public.iglesias;
 SQL
 bajar

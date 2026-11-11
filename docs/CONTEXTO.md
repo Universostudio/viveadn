@@ -68,7 +68,7 @@ Reglas para toda tabla nueva: `docs/MULTITENANT.md`, sección 5.
 
 ## 5. Rutas de la web
 
-Públicas: `/bienvenida`, `/presentacion`, `/login`, `/registro`, `/reset-password`, `/aceptar` (invitación), `/dar/:slug`, `/checkin/:token` y `/verificar/:codigo`, `/baja/:token` y los textos legales `/privacidad`, `/terminos`, `/aviso-legal` y `/cookies` [E, `src/router/index.ts`].
+Públicas: `/bienvenida`, `/presentacion`, `/login`, `/registro`, `/reset-password`, `/aceptar` (invitación), `/dar/:slug`, `/checkin/:token` y `/verificar/:codigo`, `/baja/:token`, `/confirmar/:token` y los textos legales `/privacidad`, `/terminos`, `/aviso-legal` y `/cookies` [E, `src/router/index.ts`].
 
 Con sesión: `/` (panel), `/miembros`, `/miembros/:id`, `/eventos`, `/eventos/:id`, `/casas`, `/consolidacion`, `/formacion`, `/formacion/programas`, `/comunicacion`, `/comunicacion/consentimientos`, `/reportes`, `/configuracion`, `/red` y `/plataforma` (solo administradores de plataforma) [E]. Cada entrada del menú aparece según los permisos del rol y los módulos de la iglesia [E, `AppLayout.vue`].
 
@@ -91,6 +91,7 @@ Los seis trabajos en curso, en orden:
 
 1. Crear un enlace de baja por destinatario y canal al enviar, con `adn_baja_crear_enlace`, y poner `https://<web>/baja/<secreto>` en el mensaje.
 2. Desplegar la función de borde `baja` sin verificar el JWT, como `dar-publico`, y probarla de extremo a extremo.
+2b. Encender la doble confirmación por correo (`docs/COMUNICACION.md`, apartado «Doble confirmación»): hoy está construida y apagada, y sin ella una persona nueva queda suscrita con la dirección que alguien escribió.
 3. Límite de frecuencia en `baja` (opcional: no hace falta contra la fuerza bruta, pero frena el ruido).
 4. Un proveedor aprobado por el dueño, base legal revisada por un abogado (`docs/COMUNICACION.md`, apartado 5) y consentimientos registrados. Re-suscribir a alguien exige un registro explícito con origen: quitar una baja lo deja en «sin dato».
 
@@ -128,6 +129,7 @@ Todo lo marcado **[E]** se repite con estos comandos, desde la raíz del reposit
 | El texto de consentimiento de la web es el que consta en la base (versión v1, cuatro idiomas) | `npm run check:textos` |
 | Textos legales: mismos cuatro idiomas, estructura y huella de versión | `npm run check:legal` |
 | Datos del titular completos antes de publicar (no imprime valores) | `npm run check:config-legal` |
+| Doble confirmación: correo, baja de un clic y lectura de la petición (no envía) | `npm run test:confirmacion` |
 | Ruta de salud y estado de error de la aplicación | `npm run test:salud`, `npm run test:error` |
 | Ensayo de un archivo de contactos real, solo cifras | `node scripts/resumen-contactos-google.mts <archivo fuera del repositorio>` |
 | Aislamiento por API (necesita PostgREST real y una base de pruebas) | `supabase/tests/aislamiento_api.sh <base>` (**[NV]**: no se ha ejecutado) |

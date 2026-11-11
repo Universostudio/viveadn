@@ -24,6 +24,7 @@
     "check:legal": "node scripts/verificar-legal.mts",
     "check:config-legal": "node scripts/verificar-config-legal.mts",
     "test:salud": "node scripts/probar-salud.mts",
+    "test:confirmacion": "node scripts/probar-confirmacion.mts",
     "test:error": "node scripts/probar-error-app.mts",
     "test:informes": "node scripts/probar-informes.mts"
   },

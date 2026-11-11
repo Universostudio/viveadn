@@ -1396,5 +1396,22 @@
     "historial": "Historial de versiones",
     "noDisponible": "No hemos podido cargar este documento. Recarga la página para intentarlo de nuevo.",
     "datosPendientes": "Faltan datos del titular por configurar antes de publicar este documento: {datos}."
+  },
+  "confirmar": {
+    "titulo": "Confirmar que quieres recibir mensajes",
+    "texto": "Confirma que quieres recibir mensajes de tu iglesia por correo. Puedes darte de baja cuando quieras.",
+    "boton": "Confirmar",
+    "hecho": "Listo, quedó confirmado",
+    "hechoTexto": {
+      "email": "Recibirás los mensajes de tu iglesia por correo. En cada uno encontrarás cómo darte de baja."
+    },
+    "invalido": "Enlace no válido",
+    "invalidoTexto": "Este enlace no es correcto. Usa el enlace del último correo de confirmación que recibiste.",
+    "usado": "Este enlace ya se usó",
+    "usadoTexto": "La confirmación ya estaba hecha. No tienes que hacer nada más.",
+    "caducado": "Este enlace ha caducado",
+    "caducadoTexto": "Vuelve a registrarte o pídelo a tu iglesia para recibir un enlace nuevo.",
+    "error": "No se pudo completar la confirmación",
+    "errorTexto": "Inténtalo de nuevo en unos minutos."
   }
 }

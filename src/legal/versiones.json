@@ -12,6 +12,17 @@
             "fr": "b550abcf2cfb5b49867ac066ae5ebe1a74ff59413b067e962d6dd7f570fc0326",
             "pt-BR": "0406c683050ca54026788e6f375ec4798074ffa7d5ed95ebd5a095ae4da2b72c"
           }
+        },
+        {
+          "version": "1.1",
+          "fecha": "2026-11-11",
+          "cambios": "Corrige la cita del artículo 9.2.d del RGPD tras cotejarla con el texto oficial: sin ánimo de lucro, miembros actuales o antiguos o personas con contactos regulares, y con las debidas garantías.",
+          "huellas": {
+            "es": "81d2d4fadda28c36a9c78a44ca0cf6ac6e36a4196e490fac8f7ee40f022179ae",
+            "en": "6c15bde5e09a9c62575a70820aea59498d2c3e05a2e6059998dc8e5cb266a258",
+            "fr": "b7a07cb28bac7ab40a951b89ab7683476ddf697be660548c1dc9936f431f318f",
+            "pt-BR": "8bea213293f6cec1d043f66dec5df45705f4a6834f8dd2ad16b91d2626d9cb7b"
+          }
         }
       ]
     },

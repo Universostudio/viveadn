@@ -16,7 +16,7 @@ python3 tests/exportacion/desempaquetar.py "$OUT/paquete.json" "$OUT/exp"
 
 # 2. Cobertura: el manifiesto cubre todas las tablas con iglesia_id, mas iglesias y rol_permisos, y todas llevan filas
 esperadas=$("${PSQL[@]}" -At -d "$DB" -c "select string_agg(nombre, ',' order by nombre collate \"C\") from public.adn_tablas_exportables()")
-reales=$("${PSQL[@]}" -At -d "$DB" -c "select string_agg(relname, ',' order by relname collate \"C\") from (select c.relname from pg_class c where c.relnamespace='public'::regnamespace and c.relkind='r' and (c.relname in ('iglesias','rol_permisos') or c.relname not in ('plataforma_auditoria','adn_bajas_enlaces') and exists (select 1 from pg_attribute a where a.attrelid=c.oid and a.attname='iglesia_id' and not a.attisdropped))) t")
+reales=$("${PSQL[@]}" -At -d "$DB" -c "select string_agg(relname, ',' order by relname collate \"C\") from (select c.relname from pg_class c where c.relnamespace='public'::regnamespace and c.relkind='r' and (c.relname in ('iglesias','rol_permisos') or c.relname not in ('plataforma_auditoria','adn_bajas_enlaces','adn_confirmaciones') and exists (select 1 from pg_attribute a where a.attrelid=c.oid and a.attname='iglesia_id' and not a.attisdropped))) t")
 [ "$esperadas" = "$reales" ] || falla "adn_tablas_exportables no cubre todas las tablas de iglesia ($esperadas / $reales)"
 python3 - "$OUT/exp/manifest.json" <<'PY'
 import json, sys
@@ -24,7 +24,7 @@ m = json.load(open(sys.argv[1]))
 vacias = [t['nombre'] for t in m['tablas'] if t['filas'] == 0]
 assert not vacias, f"FALLO: tablas sin filas en la prueba, no se prueban de verdad: {vacias}"
 assert m['total_filas'] == sum(t['filas'] for t in m['tablas'])
-assert not {'plataforma_auditoria', 'adn_bajas_enlaces'} & {t['nombre'] for t in m['tablas']}, 'FALLO: una tabla interna sale en la exportacion de la iglesia'
+assert not {'plataforma_auditoria', 'adn_bajas_enlaces', 'adn_confirmaciones'} & {t['nombre'] for t in m['tablas']}, 'FALLO: una tabla interna sale en la exportacion de la iglesia'
 print(f"OK: el manifiesto cubre {len(m['tablas'])} tablas y {m['total_filas']} filas")
 PY
 

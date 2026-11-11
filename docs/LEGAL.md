@@ -1,6 +1,6 @@
 # Textos legales: versión 1, fuentes y pendientes
 
-Estado a 11 de noviembre de 2026. Etiquetas de evidencia: **[E]** informado por Desarrollo con una prueba repetible, **[H]** deducido o citado de memoria y sin contrastar en esta sesión, **[NV]** no verificable desde aquí. Esto **no es asesoría jurídica**: Gerencia ordenó publicar una versión 1 sin esperar al abogado, que la revisará después.
+Estado a 11 de noviembre de 2026. Etiquetas de evidencia: **[E]** informado por Desarrollo con una prueba repetible o contrastado con la fuente oficial, **[H]** deducido, **[NV]** no verificable desde aquí. Esto **no es asesoría jurídica**: Gerencia ordenó publicar una versión 1 sin esperar al abogado, que la revisará después.
 
 ## 1. Qué hay publicado en la web
 
@@ -42,14 +42,25 @@ Para publicar una versión nueva: añadir una entrada en `versiones.json` con su
 
 El texto del registro por QR tiene su propio control: `npm run check:textos` y las tablas `adn_consentimiento_textos` y `adn_consentimiento_evidencias` (`docs/COMUNICACION.md`).
 
-## 4. Fuentes consultadas
+## 4. Fuentes consultadas y cotejo
 
-Consultadas en esta sesión, con texto recuperado de la fuente oficial **[E]**:
+Todas se consultaron el **11 de noviembre de 2026** y el texto se obtuvo de la fuente oficial **[E]**. Los artículos del RGPD se cotejaron sobre una descarga íntegra del texto oficial en español, procesada con un script (no con extracción asistida, que mezclaba apartados); la descarga queda fuera del repositorio.
 
-- **Ley 34/2002, de 11 de julio (LSSI)**, BOE-A-2002-13758, texto consolidado con última actualización de 23 de enero de 2025. Artículo 10.1 (información general: denominación, domicilio, correo, inscripción registral, NIF, precios, códigos de conducta), artículo 21 (prohibición de comunicaciones comerciales no solicitadas y obligación de ofrecer una dirección válida para oponerse) y artículo 22.2 (almacenamiento en el terminal del usuario: excepción para lo técnico y estrictamente necesario para un servicio expresamente solicitado). https://www.boe.es/buscar/act.php?id=BOE-A-2002-13758
-- **Guía sobre el uso de las cookies, Agencia Española de Protección de Datos** (con ADIGITAL, Anunciantes, AUTOCONTROL e IAB Spain). Incluye entre las cookies exentas las de autenticación, las de seguridad, las de entrada del usuario y las de personalización de la interfaz, y recomienda informar de ellas aunque estén exentas. https://www.aepd.es/guias/guia-cookies.pdf
-- **Ley Orgánica 3/2018 (LOPDGDD)**, BOE-A-2018-16673, texto consolidado con última actualización de 27 de diciembre de 2025: comprobado que existe y su versión; el texto literal de los artículos 7 y 11 **no** se recuperó.
-- **Reglamento (UE) 2016/679 (RGPD)**, DOUE L 119, 4.5.2016, https://www.boe.es/doue/2016/119/L00001-00088.pdf y EUR-Lex CELEX 32016R0679: se descargó el documento, pero la extracción solo devolvió un fragmento (artículo 9.2.j). Los artículos 6.1, 9.2.d, 12.3, 13, 14, 28.3, 32 y 33 están citados de memoria **[H]**.
+| Norma | Fuente y versión | Artículos cotejados |
+| --- | --- | --- |
+| Reglamento (UE) 2016/679 (RGPD) | EUR-Lex, texto en español, https://eur-lex.europa.eu/legal-content/ES/TXT/HTML/?uri=CELEX:32016R0679 (la misma versión está en la publicación del Diario Oficial de la Unión Europea L 119, 4.5.2016, copia en el BOE: https://www.boe.es/doue/2016/119/L00001-00088.pdf) | 6.1 (letras a, b, c y f), 7.3, 9.1, 9.2.d, 12.3, 13.1 y 13.2, 14 (título), 15 a 22 (títulos, con 20 sobre portabilidad), 28 (apartados 1 a 10), 32.1, 33.1 y 33.2, 44, 45.1, 46.1 y 46.2.c |
+| Ley Orgánica 3/2018 (LOPDGDD) | BOE-A-2018-16673, texto consolidado con última actualización de 27 de diciembre de 2025, https://www.boe.es/buscar/doc.php?id=BOE-A-2018-16673 | 7 (consentimiento de menores) y 11 (transparencia por capas) |
+| Ley 34/2002 (LSSI) | BOE-A-2002-13758, texto consolidado con última actualización de 23 de enero de 2025, https://www.boe.es/buscar/act.php?id=BOE-A-2002-13758 | 10.1, 21 y 22.2 |
+| Guía sobre el uso de las cookies | Agencia Española de Protección de Datos con ADIGITAL, Anunciantes, AUTOCONTROL e IAB Spain, https://www.aepd.es/guias/guia-cookies.pdf | Cookies exentas: autenticación, seguridad, entrada del usuario y personalización de la interfaz |
+
+Resultado del cotejo, contra lo que dicen nuestros textos:
+
+- **Corregido**: la política citaba el artículo 9.2.d del RGPD de forma demasiado resumida. El texto oficial exige un organismo **sin ánimo de lucro**, que actúe en el ámbito de sus actividades legítimas y **con las debidas garantías**, que el tratamiento se refiera **exclusivamente a miembros actuales o antiguos o a personas con contactos regulares** y que los datos **no se comuniquen fuera sin consentimiento**. Ya está así en los cuatro idiomas (política de privacidad, versión 1.1).
+- **Coincide** sin cambios: base legal (6.1.b, 6.1.c y 6.1.f), retirada del consentimiento (7.3), plazo de un mes del 12.3 (el texto oficial añade que se puede prorrogar dos meses más, con aviso en el primer mes; nuestro texto dice «ampliable» y remite al artículo), contenido de la información del artículo 13, medidas del artículo 32, notificación del encargado «sin dilación indebida» (33.2), transferencias con decisión de adecuación (45.1) o cláusulas tipo (46.2.c), edad de 14 años (LOPDGDD 7) e información por capas (LOPDGDD 11), que es lo que hace el aviso breve del registro por QR con enlace a la política.
+- **El contrato de encargo recoge los apartados a a h del 28.3**, el párrafo final sobre instrucciones que infrinjan la norma y las condiciones de subencargados de los apartados 2 y 4. Dos observaciones:
+  1. Nuestro texto exige auditorías «razonables, previo aviso». El 28.3.h no pone esos límites (habla de auditorías, incluidas inspecciones, del responsable o de otro auditor autorizado por él). Es una restricción que añadí yo y el abogado debe decidir si la mantiene.
+  2. El 28.3.g obliga a suprimir o devolver los datos y **a suprimir las copias existentes**, salvo obligación legal de conservarlas. Nuestro texto dice que las copias de seguridad «pueden conservar datos durante un tiempo limitado más». Eso solo cuadra con el 28.3.g si el plazo de las copias es corto, está fijado y es el mecanismo de supresión de las copias: ver `docs/PURGA.md`.
+- **Traducciones**: se cotejaron contra el texto en español del RGPD, no contra su versión inglesa, francesa o portuguesa oficial; la terminología («sous-traitant», «subcontratante», «processor») sigue la de esas versiones por convención, sin haberla verificado artículo a artículo.
 
 Comprobación propia: la web no usa cookies ni conecta con servidores de terceros al cargar los cuatro documentos, en un Chromium real: 0 cookies y ningún servidor distinto del propio **[E]**. El inicio de sesión y el idioma usan el almacenamiento local del navegador (la clave de idioma está en `src/i18n/index.ts`; la sesión la guarda el cliente de autenticación) **[E]**.
 

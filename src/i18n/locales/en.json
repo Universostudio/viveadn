@@ -1396,5 +1396,22 @@
     "historial": "Version history",
     "noDisponible": "We could not load this document. Reload the page to try again.",
     "datosPendientes": "Holder details still need to be configured before this document is published: {datos}."
+  },
+  "confirmar": {
+    "titulo": "Confirm you want to receive messages",
+    "texto": "Confirm that you want to receive messages from your church by email. You can unsubscribe at any time.",
+    "boton": "Confirm",
+    "hecho": "Done, it is confirmed",
+    "hechoTexto": {
+      "email": "You will receive your church's messages by email. Each one will tell you how to unsubscribe."
+    },
+    "invalido": "Invalid link",
+    "invalidoTexto": "This link is not correct. Use the link in the last confirmation email you received.",
+    "usado": "This link has already been used",
+    "usadoTexto": "The confirmation was already done. You do not need to do anything else.",
+    "caducado": "This link has expired",
+    "caducadoTexto": "Register again or ask your church to receive a new link.",
+    "error": "The confirmation could not be completed",
+    "errorTexto": "Please try again in a few minutes."
   }
 }

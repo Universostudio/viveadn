@@ -65,6 +65,12 @@ const router = createRouter({
     },
     // Baja de los mensajes por enlace de un solo uso: la abre cualquiera con el enlace del mensaje
     {
+      path: '/confirmar/:token',
+      name: 'confirmar-suscripcion',
+      component: () => import('@/views/ConfirmarView.vue'),
+      meta: { public: true, allowLoggedIn: true },
+    },
+    {
       path: '/baja/:token',
       name: 'baja-publica',
       component: () => import('@/views/BajaView.vue'),

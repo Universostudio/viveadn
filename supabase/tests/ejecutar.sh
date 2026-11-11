@@ -44,6 +44,7 @@ bash tests/checkin_concurrencia.sh "$DB"
 "${PSQL[@]}" -d $DB -f tests/adn_consentimiento.sql
 "${PSQL[@]}" -d $DB -f tests/adn_consentimiento_evidencia.sql
 "${PSQL[@]}" -d $DB -f tests/adn_checkin_canales.sql
+"${PSQL[@]}" -d $DB -f tests/adn_doble_confirmacion.sql
 "${PSQL[@]}" -d $DB -f tests/auth_usuarios_sin_nulos_autoprueba.sql
 "${PSQL[@]}" -At -d $DB -f tests/auth_usuarios_sin_nulos.sql
 "${PSQL[@]}" -At -d $DB -v salida=/dev/null -v despues=tests/adn_aislamiento_total.sql -f tests/exportacion/origen.sql

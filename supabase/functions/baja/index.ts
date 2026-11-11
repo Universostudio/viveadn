@@ -1,10 +1,12 @@
 import { createClient } from 'npm:@supabase/supabase-js@2'
+import { leerPeticion } from './entrada.ts'
 
 // Baja por enlace (/baja/<secreto>): la persona que recibe un mensaje confirma que no quiere recibir más por ese canal.
 // Se despliega sin verificar JWT (la abre cualquiera con el enlace). Solo acepta POST: un GET de un analizador de correo
 // que "visita" el enlace no puede gastarlo; la página pide una confirmación explícita y es ella quien hace el POST.
 // El secreto tiene 244 bits aleatorios y la base guarda solo su huella. La respuesta no revela nada de la persona
 // ni de la iglesia: solo si se dio de baja, el canal, o por qué no (inválido, usado o caducado).
+// Tambien acepta la baja de un clic de los programas de correo (cabecera List-Unsubscribe, RFC 8058): ver entrada.ts.
 // Enviar de verdad los enlaces (correo con el enlace) NO existe todavía: esta función solo consume los que se creen con
 // adn_baja_crear_enlace.
 
@@ -20,8 +22,6 @@ const corsPara = (req: Request) => {
   }
 }
 
-const TOKEN_RE = /^[0-9a-f]{64}$/
-
 Deno.serve(async (req) => {
   const cors = corsPara(req)
   const json = (body: unknown, status = 200) =>
@@ -30,9 +30,9 @@ Deno.serve(async (req) => {
   if (req.method !== 'POST') return json({ error: 'Metodo no permitido' }, 405)
 
   try {
-    const body = await req.json().catch(() => ({}))
-    const token = String(body.token ?? '').trim().toLowerCase()
-    if (!TOKEN_RE.test(token)) return json({ ok: false, motivo: 'invalido' })
+    const peticion = leerPeticion(req.url, req.headers.get('Content-Type'), await req.text())
+    if (!peticion) return json({ ok: false, motivo: 'invalido' }, new URL(req.url).searchParams.has('t') ? 400 : 200)
+    const { token, modo } = peticion
 
     const admin = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
       { auth: { persistSession: false, autoRefreshToken: false } })
@@ -42,6 +42,8 @@ Deno.serve(async (req) => {
       return json({ error: 'Error interno' }, 500)
     }
     const r = data as { ok: boolean; canal?: string; motivo?: string }
+    // La baja de un clic de un programa de correo espera un 2xx si se hizo y no lee el cuerpo
+    if (modo === 'una_clic') return r.ok ? json({ ok: true }) : json({ ok: false, motivo: r.motivo ?? 'invalido' }, 400)
     return json(r.ok ? { ok: true, canal: r.canal } : { ok: false, motivo: r.motivo ?? 'invalido' })
   } catch (e) {
     console.error('baja', e instanceof Error ? e.message : e)
