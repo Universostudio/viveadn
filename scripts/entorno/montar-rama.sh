@@ -13,8 +13,14 @@ cd "$(dirname "$0")/../../supabase"
 [ "${1:-}" = "--rama-de-pruebas" ] || { echo "Falta la confirmación: --rama-de-pruebas (este script solo es para una base vacía de pruebas)." >&2; exit 2; }
 CON_STUB=0; [ "${2:-}" = "--con-stub" ] && CON_STUB=1
 : "${DATABASE_URL:?Falta DATABASE_URL en el entorno (cadena de conexión de la rama de pruebas)}"
+# El esquema usa uuid_generate_v4() de la extensión, que vive en el esquema `extensions`: la sesión debe encontrarlo aunque el rol de la
+# cadena de conexión no lo tenga en su search_path (un fallo real en una base vacía sin esta línea: «function uuid_generate_v4() does not exist»)
+export PGOPTIONS="${PGOPTIONS:-} -c search_path=public,extensions"
 PSQL=(psql "$DATABASE_URL" -q -v ON_ERROR_STOP=1)
 consulta() { "${PSQL[@]}" -tAc "$1"; }
+
+# Si el montaje se interrumpe, la base queda a medias y el script se niega a continuar sobre ella: hay que borrar la rama y crearla de nuevo
+trap 'rc=$?; [ $rc -ne 0 ] && [ $rc -ne 2 ] && [ $rc -ne 3 ] && echo "El montaje falló (código $rc). La base puede haber quedado a medias: bórrala y crea una rama vacía nueva antes de repetir. Revisa el último mensaje de error de arriba." >&2' EXIT
 
 [ "$(consulta "select to_regclass('public.iglesias') is not null")" = "f" ] \
   || { echo "La base ya tiene el esquema de Vive ADN: no se toca. Usa una rama o un proyecto vacío." >&2; exit 3; }

@@ -9,7 +9,7 @@ Estado a 11 de noviembre de 2026. Etiquetas de evidencia: **[E]** informado por 
 | Pieza | Qué es | Quién la habilita |
 | --- | --- | --- |
 | Base de datos y Auth | Rama o proyecto de Supabase de pruebas | Gerencia |
-| Funciones de borde | Diez funciones desplegadas desde `supabase/functions` | Gerencia o quien tenga el acceso |
+| Funciones de borde | Once funciones desplegadas desde `supabase/functions` | Gerencia o quien tenga el acceso |
 | Web | Despliegue de la rama en Vercel, con sus variables | Gerencia |
 | Secreto de la tarea de purga | Lo genera Gerencia y vive solo en las bóvedas de secretos | Gerencia [V] |
 
@@ -58,8 +58,8 @@ Nada de esto lleva claves de producción. Si una variable de producción coincid
 
 **Paso 1. Crear la base de pruebas.** Dos caminos:
 
-- *A. Rama de Supabase.* Crear la rama desde el panel o con la CLI. Aplica las migraciones de `supabase/migrations`. **[NV]** que el historial de migraciones aplicadas a mano en producción permita una rama que se construya sola: si no, se usa el camino B.
-- *B. Proyecto o rama vacíos con el script.* Con la cadena de conexión de la base vacía en la variable `DATABASE_URL`, tomada de Settings, Database, y sin escribirla en ningún archivo:
+- *A. Rama de Supabase que se construye sola.* **No funciona [E]**: las migraciones de `supabase/migrations` presuponen el esquema base, que está en `supabase/schema/esquema_completo.sql` y no es una migración. Aplicadas solas sobre una base vacía, la primera (`20261025080000`) falla con `schema "private" does not exist` (reproducido en local). Solo serviría si la rama se creara clonando el esquema de producción, lo que además arrastraría el historial real **[NV]**. Se usa el camino B.
+- *B. Proyecto o rama vacíos con el script (el camino elegido).* Con la cadena de conexión de la base vacía en la variable `DATABASE_URL`, tomada de Settings, Database, y sin escribirla en ningún archivo. Usa la conexión directa o el *session pooler* (puerto 5432), no el *transaction pooler* (6543) **[H]**. La conexión directa de Supabase puede ser solo IPv6: si la máquina desde la que se ejecuta no tiene IPv6, hay que usar el *session pooler* **[NV]**:
 
 ```bash
 DATABASE_URL='<cadena de conexión>' scripts/entorno/montar-rama.sh --rama-de-pruebas
@@ -97,7 +97,7 @@ insert into public.plataforma_admins (user_id) values ('<uuid del usuario>');
 psql "$DATABASE_URL" -v slug=iglesia-demo -v zonas=6 -v casas=18 -v personas=300 -v recientes=24 -v rojos=2 -f supabase/seeds/datos_demo_sinteticos.sql
 ```
 
-El script marca la iglesia como demostración y se niega a tocar una que no lo sea [E]. Después, entrar en `<WEB_PRUEBAS>/plataforma` con el administrador y vincular o invitar a un superadministrador de la iglesia demo con un buzón controlado.
+**La iglesia debe existir antes y ya estar marcada como demostración**: el script no la crea ni la marca, y se niega si no existe o si no es demo, o si ya tiene miembros [E: reproducido, sin la iglesia falla con «No existe la iglesia iglesia-demo»]. Por eso, antes del script: entrar en `<WEB_PRUEBAS>/plataforma` con el administrador, pulsar «Crear iglesia», escribir la dirección `iglesia-demo`, **marcar la casilla de demostración** y poner el nombre y el buzón controlado del propietario (sin `BIRD_API_KEY`, el enlace de invitación se copia a mano y se abre en el navegador). Con la iglesia creada, ejecutar el script (en local tarda menos de un segundo, 300 personas, 6 zonas, 18 casas [E]). Después, en `<WEB_PRUEBAS>/plataforma` con el administrador y vincular o invitar a un superadministrador de la iglesia demo con un buzón controlado.
 
 **Paso 8. Verificar el entorno desplegado.** Solo lee y hace peticiones inocuas; no crea ni borra nada ni envía correos:
 
@@ -143,6 +143,7 @@ Para ensayarla sin esperar 30 días, sobre una iglesia ficticia que se borró co
 
 - El envío real de mensajes a personas: no hay clave de proveedor de producción y no se pone.
 - La doble confirmación: apagada por defecto con tres cerrojos (`docs/COMUNICACION.md`).
+- Los avisos del sistema (baja pedida o cancelada, alerta de purga atrasada): apagados; solo `ADN_ENVIO_ACTIVO=si` los enciende, con orden escrita de Gerencia y con topes (`docs/COSTE-ENVIO.md`).
 - Cobros: no existen (`docs/COBRO.md`).
 - Los textos legales con los datos del titular: llevan marcadores visibles hasta que se rellenen en la puerta B.
 
@@ -153,3 +154,19 @@ Se cambia en el panel de Supabase o de Vercel, se vuelve a desplegar lo afectado
 ## 8. Ensayo del envío de correo con un buzón controlado
 
 Solo cuando Gerencia lo decida y con una clave de pruebas del proveedor, nunca de producción. Según la documentación oficial del proveedor (`https://bird.com/docs/guides/email/sending-email`, consultada el 11 de noviembre de 2026), `delivered@messagebird.dev` es una dirección de pruebas que siempre acepta correo, y antes de verificar un dominio solo se puede enviar desde su dominio de incorporación a miembros verificados del propio espacio y a esas direcciones de pruebas **[E, documentación; no probado]**. El remitente de las funciones es una dirección del dominio de la plataforma, que debe estar verificado para enviar: ese paso depende de la cuenta del proveedor **[NV]**. Para el ensayo de la doble confirmación: definir `BIRD_API_KEY`, `ADN_CONFIRMACION_ACTIVA=1` y `ADN_WEB_URL`, poner el ajuste `adn_doble_confirmacion` en `true` en la rama de pruebas, programar la llamada a `enviar-confirmaciones` y registrar una persona nueva por QR con un buzón controlado. Al terminar, quitar los tres secretos y apagar el ajuste.
+
+## 9. Revisión adversa del 11 de noviembre
+
+Pasos que dependen de algo que hoy solo se supone, con su etiqueta. Lo reproducible se probó contra una base vacía nueva.
+
+| Dato o supuesto | Etiqueta | Qué hacer |
+| --- | --- | --- |
+| `montar-rama.sh` sobre una base vacía fallaba con `function uuid_generate_v4() does not exist` si el rol de la conexión no tiene `extensions` en su `search_path`. Corregido: el script fija el `search_path` de su sesión | [E] | Nada; el montaje completo (48 migraciones, 47 tablas, 107 funciones) termina y su esquema es idéntico al de la batería (`pg_dump` comparado) |
+| Un montaje interrumpido deja la base a medias y el script se niega a continuar sobre ella | [E] | Ahora lo dice al fallar: borrar la rama y crear otra vacía. No hay reintento seguro |
+| Que el rol `postgres` de la rama pueda crear políticas sobre `storage.objects` y la extensión `uuid-ossp` (la migración de archivos y el esquema lo hacen) | [NV] | Si falla, el mensaje de `psql` lo dirá; ejecutar entonces esa sentencia desde el editor SQL del panel |
+| Que las funciones se desplieguen con la verificación de JWT como indica la tabla del paso 4: el repositorio no tiene `supabase/config.toml`, así que cada despliegue debe llevar el indicador (`--no-verify-jwt` en `baja`, `confirmar-suscripcion` y `enviar-confirmaciones`) | [E] que no hay configuración; [NV] cómo despliega quien lo haga | Tras desplegar, `npm run check:entorno` lo comprueba |
+| `<WEB_PRUEBAS>` debe ser una dirección estable. Si Vercel sirve cada despliegue en una dirección distinta, el CORS (`ADN_ORIGENES_EXTRA`, máximo 10 direcciones exactas) y la lista de Auth se rompen en cada despliegue | [H] | Usar un dominio de la rama fijo y ponerlo en los tres sitios |
+| `VITE_REGION_DATOS=eu-west-1`: debe coincidir con la región real de la rama; los textos legales la muestran | [V] sobre el valor; [NV] sobre la región de la rama | Comprobar en el panel de Supabase la región de la rama antes de publicar |
+| El servicio de correo por defecto de Supabase Auth solo envía a direcciones del equipo y con un límite muy bajo en proyectos alojados (restablecer contraseña, invitaciones de Auth) | [NV, por conocimiento general de la plataforma] | Usar solo buzones de miembros del equipo de Supabase para las pruebas |
+| `pg_cron`, `pg_net` y la bóveda de secretos habilitados en la rama (apartado 5) | [NV] | Activarlos en el panel antes de programar la tarea de purga |
+| El texto anterior decía que el script de datos de demostración marcaba la iglesia como demo: era falso, y faltaba crear la iglesia antes | [E] | Corregido en el paso 7 |
