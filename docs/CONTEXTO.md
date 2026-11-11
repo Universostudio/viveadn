@@ -94,6 +94,8 @@ Los seis trabajos en curso, en orden:
 3. Límite de frecuencia en `baja` (opcional: no hace falta contra la fuerza bruta, pero frena el ruido).
 4. Un proveedor aprobado por el dueño, base legal revisada por un abogado (`docs/COMUNICACION.md`, apartado 5) y consentimientos registrados. Re-suscribir a alguien exige un registro explícito con origen: quitar una baja lo deja en «sin dato».
 
+**Copias y restauración:** hay un procedimiento para ensayar en la rama de pruebas y un ensayo local repetible de la base completa (`docs/RESTAURACION.md`). Falta ejecutarlo contra Supabase real y decidir la política de copias, la custodia de la clave y la copia de los archivos de Storage, que hoy no existe.
+
 **Prioritaria antes de producción:** paginar la exportación o generar el ZIP en el servidor, porque hoy todo el paquete viaja en una sola respuesta y no se ha medido con iglesias de decenas de miles de filas (`docs/EXPORTACION.md`).
 
 Del producto, sin fecha: cobro del plan, canal de envío real de mensajes y alertas, credencial con escáner, subdominio por iglesia, historial de cambios por iglesia y segundo factor obligatorio [E, `docs/MULTITENANT.md` y `docs/COBRO.md`].
@@ -115,6 +117,7 @@ Todo lo marcado **[E]** se repite con estos comandos, desde la raíz del reposit
 | Batería SQL completa: permisos, aislamiento total, ciclo de vida, exportación, importación, informes, comunicación, consentimiento, descargas, panel, reversión de las diez migraciones `adn_*` y comprobación de NULL en `auth.users` | `PGUSER=postgres supabase/tests/ejecutar.sh` |
 | Exportación recargada en dos bases vacías (JSON y CSV) | `PGUSER=postgres supabase/tests/exportacion_carga.sh viveadn_pruebas` |
 | Reversión de las migraciones `adn_*` | `PGUSER=postgres supabase/tests/adn_reversion.sh` |
+| Restauración de la base completa en una base vacía, con comparación fila a fila | `PGUSER=postgres supabase/tests/restauracion_base_completa.sh` |
 | Ciclo de vida, exportación, contactos de Google y Wix, informes (archivos con lectores independientes) | `npm run test:ciclo`, `test:exportacion`, `test:google`, `test:informes` |
 | Secretos en todo el historial y en los archivos actuales (solo imprime recuentos) | `scripts/buscar-secretos.sh` |
 | Tipos, compilación y los cuatro idiomas | `npm run type-check`, `npm run build-only`, `npm run check:idiomas` |
