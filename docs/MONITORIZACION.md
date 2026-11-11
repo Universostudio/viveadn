@@ -74,7 +74,7 @@ Las funciones públicas son `dar-publico`, `checkin-evento`, `baja` y `verificar
 
 - Las funciones solo escriben con `console.error` en el registro de la plataforma **[E]**. Nadie lo mira. Propuesta mínima: que alguien lo revise de forma periódica (por ejemplo, una vez por semana) y que se anote cuándo. Cuánto tiempo conserva la plataforma ese registro depende del plan **[NV]**.
 - Los errores que ocurren en el navegador de una persona se quedan en su consola. Recogerlos exige una herramienta o una ruta propia que reciba datos de los visitantes, con lo que eso implica para la privacidad. **No se propone ahora**; si hace falta, se decide aparte.
-- La purga de iglesias sigue siendo manual. Cuando se programe, su resultado debe vigilarse como una tarea más.
+- La purga de iglesias sigue siendo manual. Cuando se programe, se vigila con `estado_purga` (tarjeta del panel de superadministración; la acción admite la clave de la tarea para que un vigilante la consulte) y falla si `atrasada` es verdadero (`docs/PURGA.md`, apartado 5).
 
 ## 6. Puesta en marcha
 

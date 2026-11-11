@@ -840,7 +840,18 @@
     "borradoSuaveHecho": "{iglesia} is in soft deletion: purged on {fecha}.",
     "recuperar": "Recover",
     "confirmarRecuperar": "Recover {iglesia}? It returns to the stage it had before deletion.",
-    "recuperada": "{iglesia} recovered."
+    "recuperada": "{iglesia} recovered.",
+    "purga": {
+      "titulo": "Scheduled purge",
+      "ayuda": "Status of the permanent deletion of cancelled churches once their 30-day period has ended.",
+      "sana": "Up to date: no overdue purges.",
+      "atrasada": "Warning: there are overdue purges. The scheduled task is not purging on time.",
+      "enBorrado": "Soft-deleted",
+      "vencidas": "Past their deadline",
+      "horas": "Hours of the most overdue",
+      "noDisponible": "The purge status could not be retrieved.",
+      "reintentar": "Check again"
+    }
   },
   "invitacion": {
     "comprobando": "Checking your invitation…",

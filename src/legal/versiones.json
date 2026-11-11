@@ -23,6 +23,17 @@
             "fr": "b7a07cb28bac7ab40a951b89ab7683476ddf697be660548c1dc9936f431f318f",
             "pt-BR": "8bea213293f6cec1d043f66dec5df45705f4a6834f8dd2ad16b91d2626d9cb7b"
           }
+        },
+        {
+          "version": "1.2",
+          "fecha": "2026-11-11",
+          "cambios": "Fija el plazo de las copias de seguridad: los datos desaparecen de los sistemas activos a los 30 días de la baja y de las copias en un máximo de 14 días más.",
+          "huellas": {
+            "es": "720fc8c40ec3213c81dac9eba858f71d7f4c8f8688f33b28ee97f7c82f102dc9",
+            "en": "f0dbd4317c143d760b1df06c4d08e092943f260f70b2291b336e53bca2572f70",
+            "fr": "d2077ce0d2c0a7b01e67106bee52de40eac6c8f8032057d15cb87d8eeeb2200c",
+            "pt-BR": "d3cc3785c680933754a30912104b72eeea5755bed7729d593ed8f36bb863d8b8"
+          }
         }
       ]
     },
@@ -37,6 +48,17 @@
             "en": "ee5587fc056fe46081c3098e72f11f2e264159fff72a878385512842518e14dd",
             "fr": "827b21c684a7e296531761f3d8df05e2b0fc733e4bb63a391300034a8f2ec3a1",
             "pt-BR": "fbe85bb4db4397562c173c6918c31189584313c8097229d7f9eaf1bcd1fe0715"
+          }
+        },
+        {
+          "version": "1.1",
+          "fecha": "2026-11-11",
+          "cambios": "Fija el plazo de las copias de seguridad: los datos desaparecen de los sistemas activos a los 30 días de la baja y de las copias en un máximo de 14 días más.",
+          "huellas": {
+            "es": "01e73d28a91fe314b5191ac748f37345d78d2518d9f6f0357875ce084bfdede3",
+            "en": "dfc1ecdde1c31bd02d86e7883ef0f7a4870d1b6b5acfc7d409d088f29b9a9aec",
+            "fr": "fcd559b39fae05afe64583f6dae4725c8c0f7ead0582b036a4191ef705dee967",
+            "pt-BR": "cd4ec359f1aaa14048567757c1c207e2d2c86be0edab91c3a667cbff97af37d3"
           }
         }
       ]

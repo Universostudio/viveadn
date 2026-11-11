@@ -73,7 +73,7 @@ const ptBR: TextosLegales = {
         titulo: "7. Por quanto tempo conservamos os dados das igrejas",
         parrafos: [
           "Os dados de cada igreja são conservados enquanto a sua conta estiver ativa. Quando uma igreja solicita o seu cancelamento, a conta passa pelas etapas de recesso e suspensão, e depois é programada a exclusão: primeiro uma exclusão lógica, com um prazo fixo de 30 dias durante o qual ainda pode ser recuperada, e depois a eliminação definitiva dos dados e dos arquivos.",
-          "As cópias de segurança são renovadas conforme o seu próprio ciclo e podem conservar dados por um tempo limitado após a exclusão. Antes do cancelamento, a igreja pode baixar todos os seus dados em formato JSON e CSV.",
+          "As cópias de segurança são renovadas conforme o seu próprio ciclo e não são mantidas além desse prazo. Os dados desaparecem dos sistemas ativos 30 dias após o cancelamento e das cópias de segurança em no máximo 14 dias adicionais. Antes do cancelamento, a igreja pode baixar todos os seus dados em formato JSON e CSV.",
         ],
       },
       {
@@ -189,7 +189,7 @@ const ptBR: TextosLegales = {
         id: 'baja-exportacion',
         titulo: "9. Cancelamento, exportação e exclusão",
         parrafos: [
-          "A igreja pode baixar a qualquer momento todos os seus dados em formato JSON e CSV, com um hash de cada tabela para comprovar que estão completos. Pode solicitar o cancelamento quando quiser. Após o cancelamento, a conta passa por recesso e suspensão, e depois é programada a sua exclusão: uma exclusão lógica com um prazo fixo de 30 dias, durante o qual pode ser recuperada, e a eliminação definitiva dos dados e dos arquivos. As cópias de segurança são renovadas conforme o seu ciclo e podem conservar dados por um tempo limitado adicional.",
+          "A igreja pode baixar a qualquer momento todos os seus dados em formato JSON e CSV, com um hash de cada tabela para comprovar que estão completos. Pode solicitar o cancelamento quando quiser. Após o cancelamento, a conta passa por recesso e suspensão, e depois é programada a sua exclusão: uma exclusão lógica com um prazo fixo de 30 dias, durante o qual pode ser recuperada, e a eliminação definitiva dos dados e dos arquivos. As cópias de segurança são renovadas conforme o seu ciclo. Os dados desaparecem dos sistemas ativos 30 dias após o cancelamento e das cópias de segurança em no máximo 14 dias adicionais.",
         ],
       },
       {

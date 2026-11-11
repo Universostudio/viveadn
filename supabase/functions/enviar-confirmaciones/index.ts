@@ -7,7 +7,10 @@ import { claveCronValida, construirCorreo } from './correo.ts'
 //  2. El interruptor ADN_CONFIRMACION_ACTIVA=1 de la función: si no está, responde {activo:false} sin tocar la base de datos.
 //  3. El ajuste adn_doble_confirmacion de la base: apagado, no hay solicitudes preparadas ni se crean.
 // Además necesita BIRD_API_KEY. Nadie la llama hoy: no hay tarea programada ni se ha desplegado.
-// [NV] Que el proveedor acepte las cabeceras List-Unsubscribe en este campo no está comprobado contra el proveedor real.
+// Cabeceras: la documentación oficial de Bird (guides/email/sending-email, consultada el 2026-11-11) dice que `headers` es un objeto
+// texto a texto (máximo 25, valores de hasta 998 caracteres, sin saltos de línea) y que los envíos `transactional` aceptan
+// List-Unsubscribe y List-Unsubscribe-Post; en `marketing` Bird pone las suyas. Por eso este envío fija category 'transactional'.
+// [NV] Que Gmail y Outlook muestren el botón de baja con este envío real no está comprobado: solo se puede ver con un buzón de pruebas.
 
 Deno.serve(async (req) => {
   const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } })

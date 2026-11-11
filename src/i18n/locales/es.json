@@ -840,7 +840,18 @@
     "borradoSuaveHecho": "{iglesia} queda en borrado suave: se purga el {fecha}.",
     "recuperar": "Recuperar",
     "confirmarRecuperar": "¿Recuperar {iglesia}? Vuelve a la etapa que tenía antes del borrado.",
-    "recuperada": "{iglesia} recuperada."
+    "recuperada": "{iglesia} recuperada.",
+    "purga": {
+      "titulo": "Purga programada",
+      "ayuda": "Estado del borrado definitivo de las iglesias dadas de baja, pasados sus 30 días de plazo.",
+      "sana": "Al día: no hay purgas atrasadas.",
+      "atrasada": "Atención: hay purgas atrasadas. La tarea programada no está purgando a tiempo.",
+      "enBorrado": "En borrado suave",
+      "vencidas": "Con el plazo vencido",
+      "horas": "Horas de la más atrasada",
+      "noDisponible": "No se pudo consultar el estado de la purga.",
+      "reintentar": "Volver a consultar"
+    }
   },
   "invitacion": {
     "comprobando": "Comprobando tu invitación…",

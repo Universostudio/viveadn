@@ -840,7 +840,18 @@
     "borradoSuaveHecho": "{iglesia} está em exclusão suave: eliminada em {fecha}.",
     "recuperar": "Recuperar",
     "confirmarRecuperar": "Recuperar {iglesia}? Ela volta à etapa que tinha antes da exclusão.",
-    "recuperada": "{iglesia} recuperada."
+    "recuperada": "{iglesia} recuperada.",
+    "purga": {
+      "titulo": "Exclusão programada",
+      "ayuda": "Situação da exclusão definitiva das igrejas canceladas depois de terminado o prazo de 30 dias.",
+      "sana": "Em dia: não há exclusões atrasadas.",
+      "atrasada": "Atenção: há exclusões atrasadas. A tarefa programada não está excluindo no prazo.",
+      "enBorrado": "Em exclusão suave",
+      "vencidas": "Com o prazo vencido",
+      "horas": "Horas da mais atrasada",
+      "noDisponible": "Não foi possível consultar a situação da exclusão.",
+      "reintentar": "Consultar novamente"
+    }
   },
   "invitacion": {
     "comprobando": "Verificando seu convite…",

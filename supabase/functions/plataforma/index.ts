@@ -68,7 +68,8 @@ Deno.serve(async (req) => {
     }
 
     const body = await req.json().catch(() => ({}))
-    if (esCron && body.accion !== 'purgar_vencidas') return json({ error: 'Sin permiso' }, 403)
+    // La clave de la tarea solo abre la purga y dos lecturas sin datos de personas: el estado de la purga y el libro de purgadas
+    if (esCron && !['purgar_vencidas', 'estado_purga', 'libro_purgas'].includes(body.accion)) return json({ error: 'Sin permiso' }, 403)
 
     // La auditoria no debe perderse en silencio
     const auditar = async (accion: string, iglesia_id: string | null, detalle: Record<string, unknown> = {}) => {
@@ -433,7 +434,44 @@ Deno.serve(async (req) => {
           if (p.error) { fallidas.push(id); console.error('purga fallida', id, p.error.mensaje) }
           else purgadas.push(id)
         }
-        return json({ ok: true, vencidas: todas.length, purgadas: purgadas.length, fallidas: fallidas.length, restantes: todas.length - lote.length })
+        // Libro de purgadas: solo identificador y fecha. Quien llama debe guardarlo FUERA de la base (docs/PURGA.md, apartado 4)
+        const purgada_en = new Date().toISOString()
+        return json({ ok: true, vencidas: todas.length, purgadas: purgadas.length, fallidas: fallidas.length, restantes: todas.length - lote.length,
+          registro: purgadas.map(iglesia => ({ iglesia, purgada_en })) })
+      }
+
+      case 'estado_purga': {
+        // Solo cifras: iglesias en borrado suave, vencidas, horas de la mas atrasada y si el retraso supera el umbral (48 horas)
+        const { data, error } = await admin.rpc('adn_purga_estado', { p_horas: 48 })
+        if (error || !data) return json({ error: 'No se pudo consultar el estado de la purga' }, 500)
+        return json({ ok: true, ...(data as Record<string, unknown>) })
+      }
+
+      case 'libro_purgas': {
+        // Exporta el libro de purgadas desde la auditoria (identificador y fecha). Con `desde` devuelve solo lo posterior o igual
+        let desde: string | null = null
+        if (body.desde !== undefined && body.desde !== null && body.desde !== '') {
+          if (typeof body.desde !== 'string' || Number.isNaN(Date.parse(body.desde))) return json({ error: 'La fecha no es valida' }, 400)
+          desde = new Date(body.desde).toISOString()
+        }
+        const { data, error } = await admin.rpc('adn_purgas_desde', { p_desde: desde })
+        if (error) return json({ error: 'No se pudo leer el libro de purgadas' }, 500)
+        return json({ ok: true, registro: (data ?? []).map((f: { iglesia_ref: string; purgada_en: string }) => ({ iglesia: f.iglesia_ref, purgada_en: f.purgada_en })) })
+      }
+
+      case 'repurgar_registradas': {
+        // Tras restaurar una copia anterior a unas purgas: vuelve a marcar como vencidas las iglesias del libro que reaparecen.
+        // No borra nada por si misma: la purga normal (purgar_vencidas) las elimina despues, con sus archivos y cuentas
+        if (body.confirmar !== 'REPURGAR') return json({ error: 'Falta la confirmacion' }, 400)
+        const ids: unknown = body.ids
+        if (!Array.isArray(ids) || ids.length === 0 || ids.length > 5000 || !ids.every(i => typeof i === 'string' && UUID_RE.test(i))) {
+          return json({ error: 'La lista de identificadores no es valida' }, 400)
+        }
+        const { data, error } = await admin.rpc('adn_repurgar_registradas', { p_ids: ids, p_actor: user?.id ?? null })
+        if (error) return json({ error: 'No se pudo aplicar el libro de purgadas' }, 500)
+        const marcadas = Array.isArray(data) ? data.length : 0
+        const auditado = await auditar('repurgar_registradas', null, { recibidas: ids.length, marcadas })
+        return json({ ok: true, recibidas: ids.length, marcadas, auditado })
       }
 
       case 'vincular_red': {

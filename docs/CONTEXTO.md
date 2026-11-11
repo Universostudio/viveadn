@@ -42,7 +42,7 @@ La escala es completo, parcial o inexistente.
 | Panel de inicio | Completo | Cifras de miembros, asistencia de ocho semanas, crecimiento de seis meses, próximos eventos, cumpleaños, formación y comunicación, desde una sola función que respeta los permisos del rol, además de consolidaciones críticas y miembros recientes [E, 24 comprobaciones en `adn_panel_inicio.sql`]. La pantalla no se abrió en un navegador real [NV] |
 | Red de iglesias | Completo | Iglesia madre con sedes y cifras agregadas [E] |
 | Panel de plataforma | Completo | Altas, planes, módulos, etapas, exportación, borrado programado, red, códigos de registro, auditoría [E] |
-| Ciclo de vida de la iglesia | Completo en base de datos y función de borde; falta programar la purga | Etapas, receso, suspensión, borrado programado, borrado suave con plazo fijo de 30 días, recuperación dentro del plazo, purga completa y auditoría que sobrevive a la purga [E, 46 comprobaciones en `adn_ciclo_vida.sql` y reversión probada]. La purga automática necesita una tarea programada y el secreto `ADN_CRON_SECRET`: sin ellos la purga la lanza un administrador desde el panel [NV: la función de borde no se ejecutó de extremo a extremo, solo se comprobaron sus tipos y sus piezas puras] |
+| Ciclo de vida de la iglesia | Completo en base de datos y función de borde; la purga programada está diseñada y aprobada, falta activarla | Etapas, receso, suspensión, borrado programado, borrado suave con plazo fijo de 30 días, recuperación dentro del plazo, purga completa y auditoría que sobrevive a la purga [E, 46 comprobaciones en `adn_ciclo_vida.sql` y reversión probada]. La purga automática (opción A, `pg_cron` y `pg_net`, aprobada) necesita que Gerencia genere el secreto `ADN_CRON_SECRET` y verifique las extensiones en la rama de pruebas: sin ello la purga la lanza un administrador desde el panel, que ahora muestra su estado (tarjeta «Purga programada»). El libro externo de purgadas, que se exige para aceptar una restauración, está hecho en local (`adn_libro_purgas.sql`) [NV: la función de borde no se ejecutó de extremo a extremo, solo se comprobaron sus tipos y sus piezas puras] |
 | Exportación de una iglesia | Completo, verificado en base de datos | JSON y un CSV por tabla con manifiesto de cifras y huellas (`docs/EXPORTACION.md`). Recargado en dos bases vacías (desde JSON y desde CSV) con las 32 tablas coincidiendo en filas y contenido [E]. La función de borde y el ZIP del panel no se ejecutaron de extremo a extremo [NV] |
 | Cobro del plan | Inexistente | Solo hay diseño en `docs/COBRO.md`; no hay tablas ni código [E] |
 | Subdominio por iglesia, historial de cambios por iglesia, segundo factor obligatorio | Inexistente | Listados como brechas en `docs/MULTITENANT.md` [E] |
@@ -80,7 +80,7 @@ Con sesión: `/` (panel), `/miembros`, `/miembros/:id`, `/eventos`, `/eventos/:i
 
 Los seis trabajos en curso, en orden:
 
-1. Ciclo de vida de la iglesia: hecho salvo programar la purga automática (pendiente de aprobación del dueño).
+1. Ciclo de vida de la iglesia: hecho salvo activar la purga automática (diseñada y aprobada por Gerencia el 11 de noviembre; falta el secreto y la prueba en la rama de pruebas).
 2. Exportación completa en CSV y JSON: hecho y verificado en base de datos (ver `docs/EXPORTACION.md`).
 3. Importador de miembros con formato Google Contacts: hecho con datos sintéticos; falta probarlo con los archivos reales que entregue Gerencia.
 4. Informes en PDF y Excel (miembros, asistencia, crecimiento): hecho y verificado (ver `docs/INFORMES.md`).
@@ -99,7 +99,7 @@ Los seis trabajos en curso, en orden:
 
 **Monitorización:** ruta de salud y pantalla de error propia, escritas y probadas pero sin desplegar; falta elegir el vigilante y a quién se avisa (`docs/MONITORIZACION.md`).
 
-**Purga programada y plazo de copias:** propuesta con prueba local en `docs/PURGA.md`; falta elegir el programador, crear el secreto, fijar el plazo de las copias y decidir el cambio del texto legal. Sin eso, la purga de los 30 días sigue siendo manual.
+**Purga programada y plazo de copias:** diseño aprobado en `docs/PURGA.md` (opción A, copias a 14 días, libro externo; texto legal en privacidad 1.2 y términos 1.1). Falta que Gerencia cree el secreto y verifique `pg_cron` y `pg_net` en la rama de pruebas, y configurar la rotación de copias. Sin eso, la purga de los 30 días sigue siendo manual.
 
 **Copias y restauración:** hay un procedimiento para ensayar en la rama de pruebas y un ensayo local repetible de la base completa (`docs/RESTAURACION.md`). Falta ejecutarlo contra Supabase real y decidir la política de copias, la custodia de la clave y la copia de los archivos de Storage, que hoy no existe.
 
@@ -121,7 +121,7 @@ Todo lo marcado **[E]** se repite con estos comandos, desde la raíz del reposit
 
 | Qué | Comando |
 | --- | --- |
-| Batería SQL completa: permisos, aislamiento total, ciclo de vida, exportación, importación, informes, comunicación, consentimiento, evidencia, doble confirmación, purga programada, descargas, panel, reversión de las trece migraciones `adn_*` y comprobación de NULL en `auth.users` | `PGUSER=postgres supabase/tests/ejecutar.sh` |
+| Batería SQL completa: permisos, aislamiento total, ciclo de vida, exportación, importación, informes, comunicación, consentimiento, evidencia, doble confirmación, purga programada, descargas, panel, reversión de las catorce migraciones `adn_*` y comprobación de NULL en `auth.users` | `PGUSER=postgres supabase/tests/ejecutar.sh` |
 | Exportación recargada en dos bases vacías (JSON y CSV) | `PGUSER=postgres supabase/tests/exportacion_carga.sh viveadn_pruebas` |
 | Reversión de las migraciones `adn_*` | `PGUSER=postgres supabase/tests/adn_reversion.sh` |
 | Restauración de la base completa en una base vacía, con comparación fila a fila | `PGUSER=postgres supabase/tests/restauracion_base_completa.sh` |

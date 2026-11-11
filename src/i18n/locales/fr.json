@@ -840,7 +840,18 @@
     "borradoSuaveHecho": "{iglesia} est en suppression douce : purge le {fecha}.",
     "recuperar": "Récupérer",
     "confirmarRecuperar": "Récupérer {iglesia} ? Elle retrouve l’étape qu’elle avait avant la suppression.",
-    "recuperada": "{iglesia} récupérée."
+    "recuperada": "{iglesia} récupérée.",
+    "purga": {
+      "titulo": "Purge programmée",
+      "ayuda": "État de la suppression définitive des églises résiliées, une fois leur délai de 30 jours écoulé.",
+      "sana": "À jour : aucune purge en retard.",
+      "atrasada": "Attention : des purges sont en retard. La tâche programmée ne purge pas à temps.",
+      "enBorrado": "En suppression logique",
+      "vencidas": "Délai dépassé",
+      "horas": "Heures de la plus en retard",
+      "noDisponible": "Impossible de consulter l’état de la purge.",
+      "reintentar": "Consulter à nouveau"
+    }
   },
   "invitacion": {
     "comprobando": "Vérification de votre invitation…",

@@ -12,6 +12,28 @@
       {{ mensaje() }}
     </p>
 
+    <!-- Estado de la purga programada: avisa si la tarea de borrado definitivo no corre (docs/PURGA.md) -->
+    <section v-if="!cargando" class="card space-y-3" :aria-label="t('plataforma.purga.titulo')" data-test="purga-estado">
+      <div class="flex items-start justify-between gap-3 flex-wrap">
+        <div>
+          <h2 class="text-lg font-semibold text-gray-900">{{ t('plataforma.purga.titulo') }}</h2>
+          <p class="text-sm text-gray-500 mt-0.5">{{ t('plataforma.purga.ayuda') }}</p>
+        </div>
+        <button type="button" @click="cargarPurga" class="btn-secondary text-sm">{{ t('plataforma.purga.reintentar') }}</button>
+      </div>
+      <p v-if="!purga" role="status" class="text-sm px-4 py-3 rounded-lg border bg-amber-50 text-amber-800 border-amber-200">{{ t('plataforma.purga.noDisponible') }}</p>
+      <template v-else>
+        <p role="status" :class="['text-sm px-4 py-3 rounded-lg border font-medium', purga.atrasada ? 'bg-red-50 text-red-700 border-red-200' : 'bg-green-50 text-green-700 border-green-200']">
+          {{ purga.atrasada ? t('plataforma.purga.atrasada') : t('plataforma.purga.sana') }}
+        </p>
+        <dl class="grid grid-cols-3 gap-3 text-center">
+          <div><dd class="text-2xl font-bold text-gray-900">{{ purga.en_borrado }}</dd><dt class="text-xs text-gray-500">{{ t('plataforma.purga.enBorrado') }}</dt></div>
+          <div><dd class="text-2xl font-bold text-gray-900">{{ purga.vencidas }}</dd><dt class="text-xs text-gray-500">{{ t('plataforma.purga.vencidas') }}</dt></div>
+          <div><dd class="text-2xl font-bold text-gray-900">{{ purga.horas_mas_atrasada }}</dd><dt class="text-xs text-gray-500">{{ t('plataforma.purga.horas') }}</dt></div>
+        </dl>
+      </template>
+    </section>
+
     <!-- Resumen global de todas las iglesias -->
     <section v-if="!cargando && iglesias.length" :aria-label="t('plataforma.resumen.titulo')" class="space-y-3">
       <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
@@ -287,6 +309,7 @@ const vincular = (ig: any, madre: string | null, acceso: string) =>
 // Registro de iglesias: ajustes y codigos de acceso a la beta
 const origen = window.location.origin
 const registro = ref<{ abierto: boolean; requiere_codigo: boolean; codigos: any[] }>({ abierto: false, requiere_codigo: true, codigos: [] })
+const purga = ref<{ atrasada: boolean; en_borrado: number; vencidas: number; horas_mas_atrasada: number } | null>(null)
 const nuevoCodigo = ref({ etiqueta: '', usos_max: 1, dias: 30 })
 const codigoCreado = ref('')
 const codigoCopiado = ref(false)
@@ -336,7 +359,16 @@ async function cargar() {
     const texto = e.message
     avisar(() => texto, true)
   }
+  await cargarPurga()
   cargando.value = false
+}
+
+// El estado de la purga no debe tumbar el panel: si falla, la tarjeta lo dice y el resto sigue funcionando
+async function cargarPurga() {
+  try {
+    const d = await llamar({ accion: 'estado_purga' })
+    purga.value = typeof d?.atrasada === 'boolean' ? { atrasada: d.atrasada, en_borrado: Number(d.en_borrado) || 0, vencidas: Number(d.vencidas) || 0, horas_mas_atrasada: Number(d.horas_mas_atrasada) || 0 } : null
+  } catch { purga.value = null }
 }
 
 function avisar(texto: () => string, error = false) {

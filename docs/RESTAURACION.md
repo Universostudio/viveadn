@@ -15,7 +15,7 @@ Una pérdida seria obliga a recuperar cinco cosas, y una copia de la base de dat
 | Código y funciones de borde | Git y el despliegue | No hace falta | Se vuelve a desplegar desde el repositorio |
 | Secretos y ajustes del proyecto | Panel de la plataforma y secretos de las funciones | **No** | Apartado 4, paso 6. **[NV]** quién los guarda y dónde |
 
-Los secretos que las funciones de borde esperan son estos, y solo estos **[E]** (`grep Deno.env.get`): la dirección del proyecto, la clave pública, la clave de servicio, `ADN_CRON_SECRET` (la purga, que por decisión de Gerencia es manual y no está definido) y `BIRD_API_KEY` (las invitaciones). Las dos primeras las inyecta la propia plataforma.
+Los secretos que las funciones de borde esperan son estos, y solo estos **[E]** (`grep Deno.env.get`): la dirección del proyecto, la clave pública, la clave de servicio, `ADN_CRON_SECRET` (la purga programada: Gerencia lo generará y guardará en la bóveda; hoy no está definido, `docs/PURGA.md`) y `BIRD_API_KEY` (las invitaciones). Las dos primeras las inyecta la propia plataforma.
 
 ## 2. Qué copias existen hoy
 
@@ -79,6 +79,7 @@ Se hace en una rama o un proyecto de pruebas **creado para esto**, vacío o con 
 - Una cuenta sintética inicia sesión, ve su iglesia y no ve la otra.
 - Cada archivo recuperado tiene el tamaño y la huella anotados.
 - Ninguna fila de `adn_mensajes` ha cambiado y no ha salido ningún correo.
+- **Condición para aceptar una restauración real: el libro externo de purgadas.** Antes de abrir la base restaurada, se aplica el libro (`repurgar_registradas` con todos los identificadores, después `purgar_vencidas` hasta que `restantes` sea cero) para que no reviva ninguna iglesia ya borrada; ver `docs/PURGA.md`, apartado 4. Sin el libro, o con un libro anterior a alguna purga, la restauración resucita datos que prometimos borrar y **no se acepta**. En el ensayo de la rama de pruebas se comprueba además que, tras aplicarlo, `estado_purga` marca cero vencidas.
 
 **Paso 8. Medir y registrar.** Rellenar la tabla de abajo y entregarla a Gerencia. Sin estas cifras no hay política de copias, solo intención.
 
@@ -95,11 +96,11 @@ Se hace en una rama o un proyecto de pruebas **creado para esto**, vacío o con 
 
 1. **Cuánta información se puede perder y cuánto tiempo puede estar caída la plataforma.** De ahí salen la frecuencia de las copias y el plan de la base de datos.
 2. **Dónde se guardan las copias lógicas y los archivos, y quién custodia la clave que las cifra.** Una copia contiene datos de pertenencia religiosa (categoría especial en el RGPD **[H]**), así que el sitio y quién accede lo debe decidir una persona con responsabilidad, no el script.
-3. **Cuánto tiempo se conservan las copias**, porque una iglesia que pide la supresión de sus datos sigue estando en las copias anteriores. Debe constar en la política de privacidad, y por eso depende del abogado.
+3. **Cuánto tiempo se conservan las copias**, porque una iglesia que pide la supresión de sus datos sigue estando en las copias anteriores. Decidido por Gerencia el 11 de noviembre: **14 días** para las copias propias, y consta en la política de privacidad 1.2 y los términos 1.1. Falta configurarlo y demostrarlo **[NV]**, leer la retención de las copias de la plataforma (si es mayor, manda la mayor) y que el abogado confirme que la rotación basta para el 28.3.g (`docs/LEGAL.md`).
 4. **Quién ejecuta una restauración real y quién la autoriza.** Restaurar sobre producción sobrescribe datos y requiere la aprobación de Harold.
 
 ## 6. Límites conocidos
 
-- La purga de iglesias no está programada y es manual. Una restauración posterior a una purga no devuelve a la iglesia borrada si el punto elegido es más reciente que la purga; solo la exportación de esa iglesia, si se entregó antes, o una copia anterior.
+- La purga de iglesias hoy es manual; la programada está diseñada y aprobada, sin activar (`docs/PURGA.md`). Una restauración posterior a una purga no devuelve a la iglesia borrada si el punto elegido es más reciente que la purga; solo la exportación de esa iglesia, si se entregó antes, o una copia anterior. Una restauración **anterior** a una purga sí la devuelve: de ahí el libro externo de la condición del paso 7.
 - La red de iglesias no se restaura sola desde una exportación: `iglesia_madre_id` apunta a otra iglesia que no viaja en el paquete.
 - Las copias de la plataforma no sustituyen una copia propia: si la cuenta de la plataforma se pierde o se bloquea, se pierden con ella.
