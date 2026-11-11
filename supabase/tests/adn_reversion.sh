@@ -6,7 +6,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 DB=viveadn_reversion
 # Migraciones adn_* en el orden en que se aplican; se revierten en el orden contrario
-VERSIONES=(20261111120000_adn_ciclo_vida 20261111130000_adn_exportacion 20261111140000_adn_importar_contactos 20261111150000_adn_informes)
+VERSIONES=(20261111120000_adn_ciclo_vida 20261111130000_adn_exportacion 20261111140000_adn_importar_contactos 20261111150000_adn_informes 20261111160000_adn_comunicacion 20261111170000_adn_panel_inicio)
 subir()   { for v in "${VERSIONES[@]}"; do "${PSQL[@]}" -d $DB -f "migrations/$v.sql"; done; }
 bajar()   { for ((i=${#VERSIONES[@]}-1; i>=0; i--)); do "${PSQL[@]}" -d $DB -f "reversiones/${VERSIONES[$i]}.down.sql"; done; }
 es_adn()  { for v in "${VERSIONES[@]}"; do [ "$1" = "migrations/$v.sql" ] && return 0; done; return 1; }
@@ -35,6 +35,9 @@ insert into public.miembros (iglesia_id, nombre, apellido) values ('ae100000-000
 select public.adn_borrar_suave('ae100000-0000-0000-0000-00000000000a', null, 'prueba de reversion');
 select (public.adn_exportar_paquete('ae100000-0000-0000-0000-00000000000a') -> 'manifiesto' ->> 'total_filas')::int > 0 as exporta;
 insert into public.adn_miembro_contactos (iglesia_id, miembro_id, tipo, valor) select iglesia_id, id, 'correo', 'extra@prueba.test' from public.miembros;
+insert into public.adn_mensajes (iglesia_id, clave, canal, segmento, texto, total, enviados, omitidos) values ('ae100000-0000-0000-0000-00000000000a', gen_random_uuid(), 'whatsapp', 'todos', 'x', 0, 0, 0);
+insert into public.adn_comunicacion_bajas (iglesia_id, miembro_id, canal) select iglesia_id, id, 'email' from public.miembros;
+select public.adn_panel_inicio() is not null as panel;
 SQL
 bajar
 volcado > /tmp/adn_despues.$$.sql

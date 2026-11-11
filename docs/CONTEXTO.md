@@ -37,9 +37,9 @@ La escala es completo, parcial o inexistente.
 | Eventos y asistencia | Completo | Eventos, asistencia manual y registro por QR con enlace secreto, cartel imprimible [V] |
 | Formación | Completo | Seguimiento por niveles, programas con lecciones, avance, certificados con QR y verificación pública [V]. Faltan la credencial personal con escáner y los reportes |
 | Dar | Parcial | Página pública `/dar/:slug` con enlaces de recaudo de la iglesia [V]. No cobra: solo enlaza a pasarelas externas |
-| Comunicación | Parcial, solo maqueta | Redactor, plantillas, segmentos y vista previa [V]. No guarda mensajes, no tiene historial real y no envía nada [V, `ComunicacionView.vue`] |
+| Comunicación | Completo hacia un buzón de pruebas; sin envío real | Redactor, plantillas, grupos, vista previa de destinatarios con las reglas de la base de datos (bajas, repetidos, sin destino), envío idempotente con topes diarios e historial. El mensaje se guarda en un buzón de pruebas y no sale de la plataforma: el proveedor solo admite `sumidero` por una restricción de la tabla [V, `adn_comunicacion.sql`, `docs/COMUNICACION.md`]. Activar un proveedor real exige una migración nueva con aprobación del dueño, un enlace público de baja y revisión jurídica [H]. La pantalla no se abrió en un navegador real [NV] |
 | Reportes | Completo | Cifras en pantalla (miembros, consolidación, formación, zonas) y, desde el 11-11, descarga de informes de miembros, asistencia y crecimiento en PDF y Excel, en los cuatro idiomas (`docs/INFORMES.md`). Probado con lectores independientes y datos sintéticos [V]; la pantalla no se ejecutó en un navegador real [NV]. Límite: el PDF no muestra alfabetos no latinos |
-| Panel de inicio | Parcial | Cuatro cifras, consolidaciones críticas y miembros recientes con datos reales [V]. No muestra asistencia, crecimiento ni eventos próximos |
+| Panel de inicio | Completo | Cifras de miembros, asistencia de ocho semanas, crecimiento de seis meses, próximos eventos, cumpleaños, formación y comunicación, desde una sola función que respeta los permisos del rol, además de consolidaciones críticas y miembros recientes [V, 24 comprobaciones en `adn_panel_inicio.sql`]. La pantalla no se abrió en un navegador real [NV] |
 | Red de iglesias | Completo | Iglesia madre con sedes y cifras agregadas [V] |
 | Panel de plataforma | Completo | Altas, planes, módulos, etapas, exportación, borrado programado, red, códigos de registro, auditoría [V] |
 | Ciclo de vida de la iglesia | Completo en base de datos y función de borde; falta programar la purga | Etapas, receso, suspensión, borrado programado, borrado suave con plazo fijo de 30 días, recuperación dentro del plazo, purga completa y auditoría que sobrevive a la purga [V, 46 comprobaciones en `adn_ciclo_vida.sql` y reversión probada]. La purga automática necesita una tarea programada y el secreto `ADN_CRON_SECRET`: sin ellos la purga la lanza un administrador desde el panel [NV: la función de borde no se ejecutó de extremo a extremo, solo se comprobaron sus tipos y sus piezas puras] |
@@ -59,6 +59,7 @@ Tablas de la base pública, agrupadas. Todas llevan seguridad por filas [V, `doc
 - **Dar:** `dar_config`, `enlaces_dar`.
 - **Plataforma, solo servidor:** `plataforma_admins`, `plataforma_auditoria`, `plataforma_ajustes`, `registro_codigos`, `registro_intentos`, `adn_ciclo_auditoria` (borrado suave, recuperación y purga; sobrevive a la purga).
 - **Informes:** no tienen tablas propias; leen de las anteriores con las funciones `adn_informe_*`.
+- **Comunicación:** `adn_mensajes`, `adn_mensaje_destinatarios` (el buzón de pruebas) y `adn_comunicacion_bajas`. El panel de inicio lee de las tablas anteriores con `adn_panel_inicio`.
 - **Datos de contacto adicionales:** `adn_miembro_contactos` (segundos correos, teléfonos extra, direcciones y etiquetas de un miembro, por ejemplo de una importación).
 
 Las tablas nuevas de esta línea de trabajo llevan el prefijo `adn_` [regla de Gerencia]. Las existentes no se renombran hasta que Gerencia lo ordene.
@@ -83,10 +84,10 @@ Los seis trabajos en curso, en orden:
 2. Exportación completa en CSV y JSON: hecho y verificado en base de datos (ver `docs/EXPORTACION.md`).
 3. Importador de miembros con formato Google Contacts: hecho con datos sintéticos; falta probarlo con los archivos reales que entregue Gerencia.
 4. Informes en PDF y Excel (miembros, asistencia, crecimiento): hecho y verificado (ver `docs/INFORMES.md`).
-5. Panel de inicio completo y envío real en Comunicación, en pruebas solo hacia un sumidero.
+5. Panel de inicio completo y Comunicación con envío al buzón de pruebas: hecho y verificado en base de datos (ver `docs/COMUNICACION.md`). El envío real sigue pendiente de proveedor, enlace de baja y aprobación del dueño.
 6. Pruebas de aislamiento con dos usuarios de prueba a través de la API.
 
-Del producto, sin fecha: cobro del plan, canal de envío de alertas, credencial con escáner, subdominio por iglesia, historial de cambios por iglesia y segundo factor obligatorio [V, `docs/MULTITENANT.md` y `docs/COBRO.md`].
+Del producto, sin fecha: cobro del plan, canal de envío real de mensajes y alertas, credencial con escáner, subdominio por iglesia, historial de cambios por iglesia y segundo factor obligatorio [V, `docs/MULTITENANT.md` y `docs/COBRO.md`].
 
 ## 8. Hallazgos de higiene del repositorio
 

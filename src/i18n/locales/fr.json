@@ -110,7 +110,48 @@
     "verTodos": "Tout voir →",
     "sinMiembros": "Aucun membre enregistré pour l'instant",
     "faltaSegundoSuper": "Le deuxième super-administrateur manque. La plateforme en exige toujours deux pour que l'église ne perde jamais l'accès.",
-    "faltaSegundoSuperAccion": "Inviter maintenant"
+    "faltaSegundoSuperAccion": "Inviter maintenant",
+    "errorPanel": "Impossible de charger les chiffres du tableau de bord.",
+    "variacion": {
+      "igual": "identique à la période précédente",
+      "sinBase": "aucune donnée pour la période précédente",
+      "sube": "{n} % de plus que la période précédente",
+      "baja": "{n} % de moins que la période précédente"
+    },
+    "asistencia": {
+      "titulo": "Présence",
+      "semanaActual": "personnes présentes cette semaine",
+      "grafico": "Présents par semaine, {n} dernières semaines",
+      "pie": "8 dernières semaines, du lundi au dimanche"
+    },
+    "crecimiento": {
+      "titulo": "Croissance",
+      "nuevos30": "nouveaux membres en 30 jours",
+      "grafico": "Nouveaux membres par mois, {n} derniers mois",
+      "detalle": "{sinCasa} sans maison de prière · {bautizados} baptisés"
+    },
+    "eventos": {
+      "titulo": "Événements à venir",
+      "vacio": "Aucun événement prévu"
+    },
+    "cumpleanos": {
+      "titulo": "Anniversaires, 14 prochains jours",
+      "vacio": "Aucun anniversaire dans les 14 prochains jours",
+      "hoy": "Aujourd'hui",
+      "enDias": "Dans {n} jours"
+    },
+    "formacion": {
+      "titulo": "Formation",
+      "enCurso": "En cours",
+      "completadas": "Terminées ce mois-ci",
+      "certificados": "Certificats ce mois-ci"
+    },
+    "comunicacion": {
+      "titulo": "Communication",
+      "mensajes": "Messages en 30 jours",
+      "enviados": "Enregistrés",
+      "nota": "Chiffres de la boîte de test : il n'y a pas encore d'envoi réel."
+    }
   },
   "miembros": {
     "titulo": "Membres",
@@ -427,7 +468,6 @@
   "comunicacion": {
     "titulo": "Communication",
     "subtitulo": "WhatsApp, e-mail et notifications à l'assemblée",
-    "aviso": "Les envois s'activent dès que chaque canal est connecté. En attendant, vous pouvez rédiger des messages, utiliser les modèles et voir comment chaque personne les recevra.",
     "canales": {
       "whatsapp": {
         "nombre": "WhatsApp",
@@ -436,13 +476,8 @@
       "email": {
         "nombre": "E-mail",
         "descripcion": "E-mail transactionnel"
-      },
-      "push": {
-        "nombre": "Notification",
-        "descripcion": "Alerte dans l'application"
       }
     },
-    "pendienteConectar": "En attente de connexion",
     "nuevoMensaje": "Nouveau message",
     "destinatarios": "Destinataires",
     "segmentos": {
@@ -451,7 +486,6 @@
       "lideres": "Responsables",
       "consolidacion": "En consolidation"
     },
-    "miembrosActivos": "Membres actifs :",
     "numeroExacto": "Le nombre exact sera calculé lors de la connexion du canal.",
     "mensaje": "Message",
     "plantillas": {
@@ -470,24 +504,64 @@
     },
     "placeholder": {
       "whatsapp": "Rédigez votre message WhatsApp. Utilisez {variable} pour le personnaliser.",
-      "email": "Rédigez le contenu de l'e-mail...",
-      "push": "Rédigez la notification..."
+      "email": "Rédigez le contenu de l'e-mail..."
     },
     "caracteres": "{n} caractère | {n} caractères",
     "limiteWhatsapp": "WhatsApp accepte jusqu'à 4096",
-    "recomendadoPush": "120 maximum recommandés",
     "vistaPrevia": "Aperçu",
     "enviar": "Envoyer",
-    "disponibleAlConectar": "Disponible dès que le canal sera connecté",
     "historial": "Historique des messages",
     "sinEnvios": "Aucun message n'a encore été envoyé.",
     "para": "À : {correo}",
     "correoEjemplo": "membre{'@'}exemple.fr",
-    "asunto": "Objet : Message de {iglesia}",
+    "asunto": "Objet : {asunto}",
     "tuIglesia": "votre église",
     "ejemploNombre": "Jean Dupont",
     "ejemploDia": "vendredi",
-    "datosEjemplo": "Aperçu avec des données d'exemple"
+    "datosEjemplo": "Aperçu avec des données d'exemple",
+    "avisoSumidero": "Les envois de cette version d'essai n'atteignent personne : ils sont enregistrés dans une boîte de test de la plateforme, pour vérifier destinataires, textes et limites. L'envoi réel vers des e-mails et des téléphones exige un fournisseur connecté et l'autorisation expresse du titulaire de la plateforme.",
+    "soloLectura": "Votre rôle peut consulter l'historique, mais pas envoyer de messages.",
+    "notificacionNoDisponible": "La notification dans l'application n'existe pas encore, elle n'est donc pas proposée comme canal.",
+    "recibiran": "{n} personnes le recevront",
+    "seOmitiran": "{n} seront ignorées",
+    "asuntoCampo": "Objet",
+    "resultadoTitulo": "Message enregistré pour {n} destinataires",
+    "resultadoOmitidos": "{n} ont été ignorées",
+    "resultadoBuzon": "Il est enregistré dans la boîte de test de l'historique ; il n'a été envoyé à personne.",
+    "enviando": "Envoi en cours...",
+    "sinAsunto": "Sans objet",
+    "enviadosDeTotal": "{enviados} sur {total} envoyés",
+    "buzonPruebas": "Boîte de test : voici ce que chaque personne aurait reçu.",
+    "sinDetalle": "Ce message n'a aucun destinataire enregistré.",
+    "sinDestinoEtiqueta": "Sans adresse",
+    "estado": {
+      "enviado": "Envoyé à la boîte"
+    },
+    "motivo": {
+      "sin_destino": "Sans adresse ni téléphone",
+      "baja": "Désinscrit",
+      "repetido": "Adresse en double"
+    },
+    "motivoN": {
+      "sin_destino": "{n} sans adresse ni téléphone",
+      "baja": "{n} désinscrits",
+      "repetido": "{n} en double"
+    },
+    "confirmarTitulo": "Confirmer l'envoi",
+    "confirmarTexto": "Vous allez envoyer ce message par {canal} à {n} personnes du groupe « {segmento} ».",
+    "confirmarSumidero": "Dans cette version d'essai, le message est enregistré dans la boîte de test et ne quitte pas la plateforme.",
+    "confirmarAccion": "Envoyer maintenant",
+    "errorConteo": "Impossible de calculer combien de personnes le recevraient.",
+    "errorHistorial": "Impossible de charger l'historique.",
+    "errores": {
+      "topeDiario": "Votre église a atteint la limite de messages d'aujourd'hui. Réessayez demain.",
+      "asunto": "L'objet de l'e-mail est obligatoire et ne peut pas être trop long.",
+      "texto": "Le texte du message est vide ou trop long.",
+      "demasiados": "Le groupe compte trop de destinataires pour un seul envoi. Choisissez un groupe plus petit.",
+      "sinPermiso": "Votre rôle ne peut pas envoyer de messages.",
+      "datos": "Les données du message ne sont pas valides.",
+      "generico": "Le message n'a pas pu être envoyé. Réessayez."
+    }
   },
   "reportes": {
     "titulo": "Rapports",

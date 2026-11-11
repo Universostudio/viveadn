@@ -129,7 +129,7 @@ const todosLosItems: { to: string; icon: Component; label: string; badge?: boole
   { to: '/casas',         icon: House, label: 'menu.casas', permisos: ['casas.ver', 'casas.ver_propia'] },
   { to: '/consolidacion', icon: HeartHandshake, label: 'menu.consolidacion', badge: true, permisos: ['consolidacion.ver', 'consolidacion.ver_asignados', 'consolidacion.ver_casa'] },
   { to: '/formacion',     icon: GraduationCap, label: 'menu.formacion', permisos: ['formacion.ver'] },
-  { to: '/comunicacion',  icon: MessageSquare, label: 'menu.comunicacion', modulo: 'comunicacion', permisos: ['miembros.ver'] },
+  { to: '/comunicacion',  icon: MessageSquare, label: 'menu.comunicacion', modulo: 'comunicacion', permisos: ['comunicacion.ver', 'comunicacion.enviar'] },
   { to: '/reportes',      icon: ChartColumn, label: 'menu.reportes', permisos: ['reportes.ver'] },
   { to: '/configuracion', icon: Settings, label: 'menu.configuracion', permisos: ['usuarios.gestionar', 'roles.gestionar', 'iglesia.configurar'] },
   { to: '/red',            icon: Network, label: 'menu.red', red: true, permisos: [] },

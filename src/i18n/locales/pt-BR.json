@@ -110,7 +110,48 @@
     "verTodos": "Ver todos →",
     "sinMiembros": "Ainda não há membros cadastrados",
     "faltaSegundoSuper": "Falta o segundo superadministrador. A plataforma exige sempre dois para que a igreja nunca perca o acesso.",
-    "faltaSegundoSuperAccion": "Convidar agora"
+    "faltaSegundoSuperAccion": "Convidar agora",
+    "errorPanel": "Não foi possível carregar os números do painel.",
+    "variacion": {
+      "igual": "igual ao período anterior",
+      "sinBase": "sem dados do período anterior",
+      "sube": "{n}% a mais que no período anterior",
+      "baja": "{n}% a menos que no período anterior"
+    },
+    "asistencia": {
+      "titulo": "Presença",
+      "semanaActual": "pessoas presentes nesta semana",
+      "grafico": "Presentes por semana, últimas {n} semanas",
+      "pie": "Últimas 8 semanas, de segunda a domingo"
+    },
+    "crecimiento": {
+      "titulo": "Crescimento",
+      "nuevos30": "novos membros em 30 dias",
+      "grafico": "Novos membros por mês, últimos {n} meses",
+      "detalle": "{sinCasa} sem casa de oração · {bautizados} batizados"
+    },
+    "eventos": {
+      "titulo": "Próximos eventos",
+      "vacio": "Não há eventos programados"
+    },
+    "cumpleanos": {
+      "titulo": "Aniversários, próximos 14 dias",
+      "vacio": "Ninguém faz aniversário nos próximos 14 dias",
+      "hoy": "Hoje",
+      "enDias": "Em {n} dias"
+    },
+    "formacion": {
+      "titulo": "Formação",
+      "enCurso": "Em andamento",
+      "completadas": "Concluídas neste mês",
+      "certificados": "Certificados neste mês"
+    },
+    "comunicacion": {
+      "titulo": "Comunicação",
+      "mensajes": "Mensagens em 30 dias",
+      "enviados": "Registrados",
+      "nota": "Números da caixa de testes: ainda não há envio real."
+    }
   },
   "miembros": {
     "titulo": "Membros",
@@ -427,7 +468,6 @@
   "comunicacion": {
     "titulo": "Comunicação",
     "subtitulo": "WhatsApp, e-mail e notificações para a congregação",
-    "aviso": "Os envios são ativados quando cada canal for conectado. Enquanto isso, você pode escrever mensagens, usar os modelos e ver como cada pessoa vai recebê-las.",
     "canales": {
       "whatsapp": {
         "nombre": "WhatsApp",
@@ -436,13 +476,8 @@
       "email": {
         "nombre": "E-mail",
         "descripcion": "E-mail transacional"
-      },
-      "push": {
-        "nombre": "Notificação",
-        "descripcion": "Aviso no aplicativo"
       }
     },
-    "pendienteConectar": "Aguardando conexão",
     "nuevoMensaje": "Nova mensagem",
     "destinatarios": "Destinatários",
     "segmentos": {
@@ -451,7 +486,6 @@
       "lideres": "Líderes",
       "consolidacion": "Em consolidação"
     },
-    "miembrosActivos": "Membros ativos:",
     "numeroExacto": "O número exato será calculado quando o canal for conectado.",
     "mensaje": "Mensagem",
     "plantillas": {
@@ -470,24 +504,64 @@
     },
     "placeholder": {
       "whatsapp": "Escreva sua mensagem de WhatsApp. Use {variable} para personalizá-la.",
-      "email": "Escreva o conteúdo do e-mail...",
-      "push": "Escreva a notificação..."
+      "email": "Escreva o conteúdo do e-mail..."
     },
     "caracteres": "{n} caractere | {n} caracteres",
     "limiteWhatsapp": "o WhatsApp permite até 4096",
-    "recomendadoPush": "recomendado até 120",
     "vistaPrevia": "Pré-visualização",
     "enviar": "Enviar",
-    "disponibleAlConectar": "Disponível quando o canal for conectado",
     "historial": "Histórico de mensagens",
     "sinEnvios": "Nenhuma mensagem foi enviada ainda.",
     "para": "Para: {correo}",
     "correoEjemplo": "membro{'@'}exemplo.com",
-    "asunto": "Assunto: Mensagem de {iglesia}",
+    "asunto": "Assunto: {asunto}",
     "tuIglesia": "sua igreja",
     "ejemploNombre": "João Silva",
     "ejemploDia": "sexta-feira",
-    "datosEjemplo": "Pré-visualização com dados de exemplo"
+    "datosEjemplo": "Pré-visualização com dados de exemplo",
+    "avisoSumidero": "Os envios desta versão de teste não chegam a ninguém: ficam guardados numa caixa de testes dentro da plataforma, para você conferir destinatários, textos e limites. O envio real para e-mails e telefones exige um provedor conectado e a autorização expressa do titular da plataforma.",
+    "soloLectura": "Seu perfil pode ver o histórico, mas não enviar mensagens.",
+    "notificacionNoDisponible": "A notificação dentro do app ainda não existe, por isso não aparece como canal.",
+    "recibiran": "{n} pessoas vão receber",
+    "seOmitiran": "{n} serão ignoradas",
+    "asuntoCampo": "Assunto",
+    "resultadoTitulo": "Mensagem registrada para {n} destinatários",
+    "resultadoOmitidos": "{n} foram ignoradas",
+    "resultadoBuzon": "Está guardada na caixa de testes do histórico; não foi enviada a ninguém.",
+    "enviando": "Enviando...",
+    "sinAsunto": "Sem assunto",
+    "enviadosDeTotal": "{enviados} de {total} enviados",
+    "buzonPruebas": "Caixa de testes: isto é o que cada pessoa teria recebido.",
+    "sinDetalle": "Esta mensagem não tem destinatários registrados.",
+    "sinDestinoEtiqueta": "Sem endereço",
+    "estado": {
+      "enviado": "Enviado à caixa"
+    },
+    "motivo": {
+      "sin_destino": "Sem endereço ou telefone",
+      "baja": "Cancelou o recebimento",
+      "repetido": "Endereço repetido"
+    },
+    "motivoN": {
+      "sin_destino": "{n} sem endereço ou telefone",
+      "baja": "{n} cancelaram",
+      "repetido": "{n} repetidos"
+    },
+    "confirmarTitulo": "Confirmar envio",
+    "confirmarTexto": "Você vai enviar esta mensagem por {canal} a {n} pessoas do grupo \"{segmento}\".",
+    "confirmarSumidero": "Nesta versão de teste a mensagem é guardada na caixa de testes e não sai da plataforma.",
+    "confirmarAccion": "Enviar agora",
+    "errorConteo": "Não foi possível calcular quantas pessoas receberiam.",
+    "errorHistorial": "Não foi possível carregar o histórico.",
+    "errores": {
+      "topeDiario": "Sua igreja atingiu o máximo de mensagens de hoje. Tente amanhã.",
+      "asunto": "O assunto do e-mail é obrigatório e não pode ser longo demais.",
+      "texto": "O texto da mensagem está vazio ou é longo demais.",
+      "demasiados": "O grupo tem destinatários demais para um único envio. Escolha um grupo menor.",
+      "sinPermiso": "Seu perfil não pode enviar mensagens.",
+      "datos": "Os dados da mensagem não são válidos.",
+      "generico": "Não foi possível enviar a mensagem. Tente novamente."
+    }
   },
   "reportes": {
     "titulo": "Relatórios",

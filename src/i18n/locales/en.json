@@ -110,7 +110,48 @@
     "verTodos": "View all →",
     "sinMiembros": "No members registered yet",
     "faltaSegundoSuper": "The second super administrator is missing. The platform always requires two so the church never loses access.",
-    "faltaSegundoSuperAccion": "Invite now"
+    "faltaSegundoSuperAccion": "Invite now",
+    "errorPanel": "The dashboard figures could not be loaded.",
+    "variacion": {
+      "igual": "same as the previous period",
+      "sinBase": "no data for the previous period",
+      "sube": "{n}% more than the previous period",
+      "baja": "{n}% less than the previous period"
+    },
+    "asistencia": {
+      "titulo": "Attendance",
+      "semanaActual": "people present this week",
+      "grafico": "Attendees per week, last {n} weeks",
+      "pie": "Last 8 weeks, Monday to Sunday"
+    },
+    "crecimiento": {
+      "titulo": "Growth",
+      "nuevos30": "new members in 30 days",
+      "grafico": "New members per month, last {n} months",
+      "detalle": "{sinCasa} without a prayer house · {bautizados} baptized"
+    },
+    "eventos": {
+      "titulo": "Upcoming events",
+      "vacio": "No scheduled events"
+    },
+    "cumpleanos": {
+      "titulo": "Birthdays, next 14 days",
+      "vacio": "No birthdays in the next 14 days",
+      "hoy": "Today",
+      "enDias": "In {n} days"
+    },
+    "formacion": {
+      "titulo": "Training",
+      "enCurso": "In progress",
+      "completadas": "Completed this month",
+      "certificados": "Certificates this month"
+    },
+    "comunicacion": {
+      "titulo": "Communication",
+      "mensajes": "Messages in 30 days",
+      "enviados": "Recorded",
+      "nota": "Test mailbox figures: there is no real sending yet."
+    }
   },
   "miembros": {
     "titulo": "Members",
@@ -427,7 +468,6 @@
   "comunicacion": {
     "titulo": "Communication",
     "subtitulo": "WhatsApp, email and notifications for your congregation",
-    "aviso": "Sending is enabled once each channel is connected. In the meantime you can write messages, use the templates and preview how each person will receive them.",
     "canales": {
       "whatsapp": {
         "nombre": "WhatsApp",
@@ -436,13 +476,8 @@
       "email": {
         "nombre": "Email",
         "descripcion": "Transactional email"
-      },
-      "push": {
-        "nombre": "Notification",
-        "descripcion": "In-app alert"
       }
     },
-    "pendienteConectar": "Not connected yet",
     "nuevoMensaje": "New message",
     "destinatarios": "Recipients",
     "segmentos": {
@@ -451,7 +486,6 @@
       "lideres": "Leaders",
       "consolidacion": "In consolidation"
     },
-    "miembrosActivos": "Active members:",
     "numeroExacto": "The exact number will be calculated once the channel is connected.",
     "mensaje": "Message",
     "plantillas": {
@@ -470,24 +504,64 @@
     },
     "placeholder": {
       "whatsapp": "Write your WhatsApp message. Use {variable} to personalize it.",
-      "email": "Write the email content...",
-      "push": "Write the notification..."
+      "email": "Write the email content..."
     },
     "caracteres": "{n} character | {n} characters",
     "limiteWhatsapp": "WhatsApp allows up to 4096",
-    "recomendadoPush": "up to 120 recommended",
     "vistaPrevia": "Preview",
     "enviar": "Send",
-    "disponibleAlConectar": "Available once the channel is connected",
     "historial": "Message history",
     "sinEnvios": "No messages have been sent yet.",
     "para": "To: {correo}",
     "correoEjemplo": "member{'@'}example.com",
-    "asunto": "Subject: Message from {iglesia}",
+    "asunto": "Subject: {asunto}",
     "tuIglesia": "your church",
     "ejemploNombre": "John Smith",
     "ejemploDia": "Friday",
-    "datosEjemplo": "Preview with sample data"
+    "datosEjemplo": "Preview with sample data",
+    "avisoSumidero": "Messages in this test version reach no one: they are saved in a test mailbox inside the platform so you can check recipients, texts and limits. Real sending to emails and phones needs a connected provider and explicit authorization from the platform owner.",
+    "soloLectura": "Your role can see the history but cannot send messages.",
+    "notificacionNoDisponible": "In-app notifications do not exist yet, so they are not offered as a channel.",
+    "recibiran": "{n} people will receive it",
+    "seOmitiran": "{n} will be skipped",
+    "asuntoCampo": "Subject",
+    "resultadoTitulo": "Message recorded for {n} recipients",
+    "resultadoOmitidos": "{n} were skipped",
+    "resultadoBuzon": "It is saved in the test mailbox in the history; it has not been sent to anyone.",
+    "enviando": "Sending...",
+    "sinAsunto": "No subject",
+    "enviadosDeTotal": "{enviados} of {total} sent",
+    "buzonPruebas": "Test mailbox: this is what each person would have received.",
+    "sinDetalle": "This message has no recorded recipients.",
+    "sinDestinoEtiqueta": "No address",
+    "estado": {
+      "enviado": "Sent to the mailbox"
+    },
+    "motivo": {
+      "sin_destino": "No address or phone",
+      "baja": "Opted out",
+      "repetido": "Repeated address"
+    },
+    "motivoN": {
+      "sin_destino": "{n} without address or phone",
+      "baja": "{n} opted out",
+      "repetido": "{n} repeated"
+    },
+    "confirmarTitulo": "Confirm sending",
+    "confirmarTexto": "You are about to send this message by {canal} to {n} people in the group \"{segmento}\".",
+    "confirmarSumidero": "In this test version the message is saved in the test mailbox and does not leave the platform.",
+    "confirmarAccion": "Send now",
+    "errorConteo": "Could not work out how many people would receive it.",
+    "errorHistorial": "Could not load the history.",
+    "errores": {
+      "topeDiario": "Your church has reached today's message limit. Try again tomorrow.",
+      "asunto": "The email subject is required and cannot be too long.",
+      "texto": "The message text is empty or too long.",
+      "demasiados": "The group has too many recipients for a single send. Choose a smaller group.",
+      "sinPermiso": "Your role cannot send messages.",
+      "datos": "The message data is not valid.",
+      "generico": "The message could not be sent. Try again."
+    }
   },
   "reportes": {
     "titulo": "Reports",

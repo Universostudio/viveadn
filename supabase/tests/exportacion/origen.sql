@@ -36,6 +36,12 @@ insert into public.miembros (id, iglesia_id, crm_id, nombre, apellido, email, te
 insert into public.adn_miembro_contactos (iglesia_id, miembro_id, tipo, etiqueta, valor, orden) values
   ('ea100000-0000-0000-0000-00000000000a', 'ea400000-0000-0000-0000-000000000001', 'correo', null, 'zoe.otro@prueba.test', 1),
   ('ea100000-0000-0000-0000-00000000000a', 'ea400000-0000-0000-0000-000000000001', 'direccion', 'Casa', E'Calle Falsa 123,\nSevilla', 2);
+insert into public.adn_mensajes (id, iglesia_id, clave, canal, segmento, asunto, texto, total, enviados, omitidos) values
+  ('ea800000-0000-0000-0000-000000000001', 'ea100000-0000-0000-0000-00000000000a', 'ea810000-0000-0000-0000-000000000001', 'email', 'todos', 'Hola, "amigos"', E'Hola {{nombre}},\nbienvenido', 2, 1, 1);
+insert into public.adn_mensaje_destinatarios (iglesia_id, mensaje_id, miembro_id, destino, texto_final, estado, motivo, referencia, enviado_en) values
+  ('ea100000-0000-0000-0000-00000000000a', 'ea800000-0000-0000-0000-000000000001', 'ea400000-0000-0000-0000-000000000001', 'zoe@prueba.test', E'Hola Zoë,\nbienvenido', 'enviado', null, 'sumidero:1', now()),
+  ('ea100000-0000-0000-0000-00000000000a', 'ea800000-0000-0000-0000-000000000001', 'ea400000-0000-0000-0000-000000000002', null, null, 'omitido', 'sin_destino', null, null);
+insert into public.adn_comunicacion_bajas (iglesia_id, miembro_id, canal) values ('ea100000-0000-0000-0000-00000000000a', 'ea400000-0000-0000-0000-000000000002', 'email');
 insert into public.consolidaciones (id, iglesia_id, miembro_id, consolidador_id, casa_oracion_id, fecha_conversion, primer_contacto_notas, completado) values
   ('ea500000-0000-0000-0000-000000000001', 'ea100000-0000-0000-0000-00000000000a', 'ea400000-0000-0000-0000-000000000001', 'ea000000-0000-0000-0000-000000000001', 'ea300000-0000-0000-0000-000000000001', '2026-11-01 10:00:00+00', 'Llamado; "dijo que sí"', false);
 insert into public.asistencias (iglesia_id, casa_oracion_id, miembro_id, fecha, presente, notas) values
