@@ -42,7 +42,7 @@ La escala es completo, parcial o inexistente.
 | Panel de inicio | Parcial | Cuatro cifras, consolidaciones críticas y miembros recientes con datos reales [V]. No muestra asistencia, crecimiento ni eventos próximos |
 | Red de iglesias | Completo | Iglesia madre con sedes y cifras agregadas [V] |
 | Panel de plataforma | Completo | Altas, planes, módulos, etapas, exportación, borrado programado, red, códigos de registro, auditoría [V] |
-| Ciclo de vida de la iglesia | Parcial, avanzado | Etapas, receso, suspensión, borrado programado con plazo de 7 a 90 días, cancelación y borrado definitivo con exportación previa existen [V]. Faltan un borrado suave en un solo paso con plazo fijo de 30 días, una recuperación explícita con registro, la purga automática de lo vencido y una auditoría que sobreviva a la purga (trabajo 1) |
+| Ciclo de vida de la iglesia | Completo en base de datos y función de borde; falta programar la purga | Etapas, receso, suspensión, borrado programado, borrado suave con plazo fijo de 30 días, recuperación dentro del plazo, purga completa y auditoría que sobrevive a la purga [V, 46 comprobaciones en `adn_ciclo_vida.sql` y reversión probada]. La purga automática necesita una tarea programada y el secreto `ADN_CRON_SECRET`: sin ellos la purga la lanza un administrador desde el panel [NV: la función de borde no se ejecutó de extremo a extremo, solo se comprobaron sus tipos y sus piezas puras] |
 | Exportación de una iglesia | Parcial | `exportar_iglesia` entrega un JSON con todas las tablas con `iglesia_id` y el listado de archivos, sin tokens ni huellas [V]. No hay CSV ni prueba de carga en una base vacía (trabajo 2) |
 | Cobro del plan | Inexistente | Solo hay diseño en `docs/COBRO.md`; no hay tablas ni código [V] |
 | Subdominio por iglesia, historial de cambios por iglesia, segundo factor obligatorio | Inexistente | Listados como brechas en `docs/MULTITENANT.md` [V] |
@@ -77,7 +77,7 @@ Con sesión: `/` (panel), `/miembros`, `/miembros/:id`, `/eventos`, `/eventos/:i
 
 Los seis trabajos en curso, en orden:
 
-1. Ciclo de vida de la iglesia: cerrar las cuatro carencias de la sección 3.
+1. Ciclo de vida de la iglesia: hecho salvo programar la purga automática (pendiente de aprobación del dueño).
 2. Exportación completa en CSV y JSON, con prueba de carga en una base vacía y comparación de cifras.
 3. Importador de miembros con formato Google Contacts.
 4. Informes en PDF y Excel (miembros, asistencia, crecimiento).

@@ -680,7 +680,15 @@
     "borradoCancelado": "Borrado de {iglesia} cancelado.",
     "borradoPlanificado": "Borrado de {iglesia} programado.",
     "iglesiaBorrada": "{iglesia} borrada por completo.",
-    "confirmarBorrarAhora": "Se borrarán de forma irreversible todos los datos y cuentas de {iglesia}."
+    "confirmarBorrarAhora": "Se borrarán de forma irreversible todos los datos y cuentas de {iglesia}.",
+    "borradaSuave": "Borrada: se purga el {fecha}",
+    "borrarSuave": "Borrar (30 días)",
+    "confirmarBorradoSuave": "¿Borrar {iglesia}? Se suspende ahora y se purga por completo en 30 días. Hasta entonces se puede recuperar.",
+    "pedirMotivo": "Motivo del borrado (opcional, sin datos personales):",
+    "borradoSuaveHecho": "{iglesia} queda en borrado suave: se purga el {fecha}.",
+    "recuperar": "Recuperar",
+    "confirmarRecuperar": "¿Recuperar {iglesia}? Vuelve a la etapa que tenía antes del borrado.",
+    "recuperada": "{iglesia} recuperada."
   },
   "invitacion": {
     "comprobando": "Comprobando tu invitación…",

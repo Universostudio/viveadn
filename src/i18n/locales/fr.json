@@ -680,7 +680,15 @@
     "borradoCancelado": "Suppression de {iglesia} annulée.",
     "borradoPlanificado": "Suppression de {iglesia} programmée.",
     "iglesiaBorrada": "{iglesia} supprimée complètement.",
-    "confirmarBorrarAhora": "Toutes les données et tous les comptes de {iglesia} seront supprimés de façon irréversible."
+    "confirmarBorrarAhora": "Toutes les données et tous les comptes de {iglesia} seront supprimés de façon irréversible.",
+    "borradaSuave": "Supprimée : purge le {fecha}",
+    "borrarSuave": "Supprimer (30 jours)",
+    "confirmarBorradoSuave": "Supprimer {iglesia} ? Elle est suspendue maintenant et purgée complètement dans 30 jours. D’ici là, elle peut être récupérée.",
+    "pedirMotivo": "Motif de la suppression (facultatif, sans données personnelles) :",
+    "borradoSuaveHecho": "{iglesia} est en suppression douce : purge le {fecha}.",
+    "recuperar": "Récupérer",
+    "confirmarRecuperar": "Récupérer {iglesia} ? Elle retrouve l’étape qu’elle avait avant la suppression.",
+    "recuperada": "{iglesia} récupérée."
   },
   "invitacion": {
     "comprobando": "Vérification de votre invitation…",

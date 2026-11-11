@@ -680,7 +680,15 @@
     "borradoCancelado": "Deletion of {iglesia} cancelled.",
     "borradoPlanificado": "Deletion of {iglesia} scheduled.",
     "iglesiaBorrada": "{iglesia} deleted completely.",
-    "confirmarBorrarAhora": "All data and accounts of {iglesia} will be deleted irreversibly."
+    "confirmarBorrarAhora": "All data and accounts of {iglesia} will be deleted irreversibly.",
+    "borradaSuave": "Deleted: purged on {fecha}",
+    "borrarSuave": "Delete (30 days)",
+    "confirmarBorradoSuave": "Delete {iglesia}? It is suspended now and fully purged in 30 days. Until then it can be recovered.",
+    "pedirMotivo": "Reason for deletion (optional, no personal data):",
+    "borradoSuaveHecho": "{iglesia} is in soft deletion: purged on {fecha}.",
+    "recuperar": "Recover",
+    "confirmarRecuperar": "Recover {iglesia}? It returns to the stage it had before deletion.",
+    "recuperada": "{iglesia} recovered."
   },
   "invitacion": {
     "comprobando": "Checking your invitation…",

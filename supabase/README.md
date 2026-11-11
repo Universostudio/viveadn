@@ -75,3 +75,7 @@ create policy ejemplo_ver on public.ejemplo for select to authenticated
 Nunca se concede nada a `anon`. Toda función nueva lleva su `grant execute` solo a los roles que la usen.
 
 `supabase/tests/permisos.sql` (incluido en `ejecutar.sh`) falla, con el nombre de la tabla, si falta cualquiera de las tres piezas, si `anon` tiene algún permiso, si queda un permiso por defecto que exponga objetos futuros, o si aparece una función `SECURITY DEFINER` en `public` o una vista sin `security_invoker`. Las pruebas se ejecutan solas en GitHub en cada solicitud de unión (`.github/workflows/pruebas.yml`).
+
+## Reversiones (desde el 11 de noviembre de 2026)
+
+`reversiones/` guarda, junto a cada migración nueva, el script que la deshace. No es una migración: el CLI no lo aplica y solo se ejecuta a mano por orden de Gerencia. Cada uno se prueba en `tests/`: aplica, revierte, compara el esquema con el anterior y comprueba que no se pierde ningún dato de negocio (`tests/adn_reversion.sh`). Los objetos nuevos llevan el prefijo `adn_`.

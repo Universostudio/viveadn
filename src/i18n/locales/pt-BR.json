@@ -680,7 +680,15 @@
     "borradoCancelado": "Exclusão de {iglesia} cancelada.",
     "borradoPlanificado": "Exclusão de {iglesia} agendada.",
     "iglesiaBorrada": "{iglesia} excluída por completo.",
-    "confirmarBorrarAhora": "Todos os dados e contas de {iglesia} serão excluídos de forma irreversível."
+    "confirmarBorrarAhora": "Todos os dados e contas de {iglesia} serão excluídos de forma irreversível.",
+    "borradaSuave": "Excluída: será eliminada em {fecha}",
+    "borrarSuave": "Excluir (30 dias)",
+    "confirmarBorradoSuave": "Excluir {iglesia}? Ela é suspensa agora e eliminada por completo em 30 dias. Até lá, pode ser recuperada.",
+    "pedirMotivo": "Motivo da exclusão (opcional, sem dados pessoais):",
+    "borradoSuaveHecho": "{iglesia} está em exclusão suave: eliminada em {fecha}.",
+    "recuperar": "Recuperar",
+    "confirmarRecuperar": "Recuperar {iglesia}? Ela volta à etapa que tinha antes da exclusão.",
+    "recuperada": "{iglesia} recuperada."
   },
   "invitacion": {
     "comprobando": "Verificando seu convite…",

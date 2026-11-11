@@ -1,4 +1,5 @@
 import { createClient } from 'npm:@supabase/supabase-js@2'
+import { claveCronValida, errorDeCiclo, tamanoLote } from './ciclo.ts'
 
 // Panel de plataforma: solo para usuarios en plataforma_admins.
 // Usa service_role, asi que cada entrada se valida aqui.
@@ -46,22 +47,32 @@ Deno.serve(async (req) => {
     const anon = Deno.env.get('SUPABASE_ANON_KEY')!
     const service = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 
-    // 1. Quien llama debe ser administrador de la plataforma
-    const userClient = createClient(url, anon, {
-      global: { headers: { Authorization: req.headers.get('Authorization') ?? '' } },
-    })
-    const { data: { user } } = await userClient.auth.getUser()
-    if (!user) return json({ error: 'No autenticado' }, 401)
-
     const admin = createClient(url, service, { auth: { persistSession: false, autoRefreshToken: false } })
-    const { data: esAdmin } = await admin.from('plataforma_admins').select('user_id').eq('user_id', user.id).maybeSingle()
-    if (!esAdmin) return json({ error: 'Sin permiso' }, 403)
+
+    // 1. Quien llama es un administrador de la plataforma o, solo para purgar lo vencido, la tarea programada
+    //    con la clave ADN_CRON_SECRET (si el secreto no existe, esa via esta cerrada)
+    let user: { id: string } | null = null
+    const claveCron = req.headers.get('x-adn-cron')
+    const esCron = claveCron !== null
+    if (esCron) {
+      if (!(await claveCronValida(claveCron, Deno.env.get('ADN_CRON_SECRET')))) return json({ error: 'Sin permiso' }, 403)
+    } else {
+      const userClient = createClient(url, anon, {
+        global: { headers: { Authorization: req.headers.get('Authorization') ?? '' } },
+      })
+      const { data: { user: autenticado } } = await userClient.auth.getUser()
+      if (!autenticado) return json({ error: 'No autenticado' }, 401)
+      const { data: esAdmin } = await admin.from('plataforma_admins').select('user_id').eq('user_id', autenticado.id).maybeSingle()
+      if (!esAdmin) return json({ error: 'Sin permiso' }, 403)
+      user = autenticado
+    }
 
     const body = await req.json().catch(() => ({}))
+    if (esCron && body.accion !== 'purgar_vencidas') return json({ error: 'Sin permiso' }, 403)
 
     // La auditoria no debe perderse en silencio
     const auditar = async (accion: string, iglesia_id: string | null, detalle: Record<string, unknown> = {}) => {
-      const { error } = await admin.from('plataforma_auditoria').insert({ actor: user.id, accion, iglesia_id, detalle })
+      const { error } = await admin.from('plataforma_auditoria').insert({ actor: user?.id ?? null, accion, iglesia_id, detalle })
       if (error) console.error('auditoria fallida', accion, iglesia_id, error.message)
       return !error
     }
@@ -93,10 +104,61 @@ Deno.serve(async (req) => {
       return salida
     }
 
+    // Tras borrar las filas de la iglesia: vacia sus archivos (Storage impide borrar una cuenta que todavia es
+    // propietaria de objetos) y retira sus cuentas de acceso. Lo que falle queda anotado para repetirlo a mano
+    const limpiarExterno = async (iglesiaId: string, usuarios: unknown) => {
+      let archivosBorrados = 0
+      let archivosPendientes = 0
+      for (const cubo of CUBOS_IGLESIA) {
+        try {
+          const rutas = (await listarArchivos(cubo, iglesiaId)).map(a => a.ruta)
+          for (let i = 0; i < rutas.length; i += 100) {
+            const lote = rutas.slice(i, i + 100)
+            const { error: eQuitar } = await admin.storage.from(cubo).remove(lote)
+            if (eQuitar) archivosPendientes += lote.length
+            else archivosBorrados += lote.length
+          }
+        } catch (e) {
+          archivosPendientes += 1
+          console.error('no se pudo vaciar el cubo', cubo, e instanceof Error ? e.message : e)
+        }
+      }
+      const ids: string[] = Array.isArray(usuarios) ? usuarios : []
+      const pendientes: string[] = []
+      for (const id of ids) {
+        const { error: eBorrar } = await admin.auth.admin.deleteUser(id)
+        if (eBorrar) { pendientes.push(id); console.error('no se pudo borrar el usuario', id, eBorrar.message) }
+      }
+      return { archivosBorrados, archivosPendientes, usuariosBorrados: ids.length - pendientes.length, usuariosPendientes: pendientes }
+    }
+
+    // Purga completa de una iglesia en borrado suave cuyo plazo ya vencio: base de datos (atomica y auditada),
+    // archivos y cuentas. Devuelve el error de la base si la purga no procede
+    const purgarIglesia = async (iglesiaId: string) => {
+      const { data: usuarios, error } = await admin.rpc('adn_purgar_iglesia', { p_iglesia: iglesiaId, p_actor: user?.id ?? null })
+      if (error) return { error: errorDeCiclo(error.message), resultado: null }
+      const r = await limpiarExterno(iglesiaId, usuarios)
+      await admin.rpc('adn_auditar_ciclo', {
+        p_iglesia: iglesiaId, p_accion: 'purga_externa', p_actor: user?.id ?? null,
+        p_detalle: {
+          usuarios_borrados: r.usuariosBorrados, usuarios_pendientes: r.usuariosPendientes.length,
+          archivos_borrados: r.archivosBorrados, archivos_pendientes: r.archivosPendientes,
+        },
+      })
+      const auditado = await auditar('purgar_iglesia', null, {
+        iglesia_id: iglesiaId, usuarios_borrados: r.usuariosBorrados, usuarios_pendientes: r.usuariosPendientes,
+        archivos_borrados: r.archivosBorrados, archivos_pendientes: r.archivosPendientes,
+      })
+      return { error: null, resultado: {
+        usuarios_borrados: r.usuariosBorrados, usuarios_pendientes: r.usuariosPendientes.length,
+        archivos_borrados: r.archivosBorrados, archivos_pendientes: r.archivosPendientes, auditado,
+      } }
+    }
+
     switch (body.accion) {
       case 'listar': {
         const [{ data: iglesias }, { data: addons }, { data: planes }, { data: modulos }, { data: planModulos }] = await Promise.all([
-          admin.from('iglesias').select('id, nombre, slug, plan, activa, etapa, prueba_hasta, borrado_programado_en, es_demo, pais, ciudad, created_at, iglesia_madre_id, red_acceso').order('created_at'),
+          admin.from('iglesias').select('id, nombre, slug, plan, activa, etapa, prueba_hasta, borrado_programado_en, adn_borrada_en, es_demo, pais, ciudad, created_at, iglesia_madre_id, red_acceso').order('created_at'),
           admin.from('iglesia_modulos').select('iglesia_id, modulo, activo, origen'),
           admin.from('planes').select('*').order('orden'),
           admin.from('modulos').select('*').order('orden'),
@@ -257,8 +319,9 @@ Deno.serve(async (req) => {
         // Solo desde receso o suspendida; deja un plazo para arrepentirse
         const iglesiaId = await iglesiaValida(body.iglesia_id)
         if (!iglesiaId) return json({ error: 'La iglesia no existe' }, 404)
-        const { data: ig } = await admin.from('iglesias').select('slug, etapa').eq('id', iglesiaId).single()
+        const { data: ig } = await admin.from('iglesias').select('slug, etapa, adn_borrada_en').eq('id', iglesiaId).single()
         if (!ig || body.confirmar !== ig.slug) return json({ error: 'La confirmacion no coincide con la direccion de la iglesia' }, 400)
+        if (ig.adn_borrada_en) return json({ error: 'La iglesia ya esta en borrado suave' }, 409)
         const dias = Number(body.dias ?? 30)
         if (!Number.isInteger(dias) || dias < 7 || dias > 90) return json({ error: 'El plazo debe estar entre 7 y 90 dias' }, 400)
         if (!['receso', 'suspendida'].includes(ig.etapa)) return json({ error: 'Solo se programa el borrado de una iglesia en receso o suspendida' }, 409)
@@ -272,6 +335,8 @@ Deno.serve(async (req) => {
       case 'cancelar_borrado': {
         const iglesiaId = await iglesiaValida(body.iglesia_id)
         if (!iglesiaId) return json({ error: 'La iglesia no existe' }, 404)
+        const { data: igBorrada } = await admin.from('iglesias').select('adn_borrada_en').eq('id', iglesiaId).single()
+        if (igBorrada?.adn_borrada_en) return json({ error: 'La iglesia esta en borrado suave: usa recuperar' }, 409)
         const { error } = await admin.from('iglesias').update({ borrado_programado_en: null }).eq('id', iglesiaId)
         if (error) return json({ error: 'No se pudo cancelar el borrado' }, 500)
         const auditado = await auditar('cancelar_borrado', iglesiaId)
@@ -282,46 +347,69 @@ Deno.serve(async (req) => {
         // Irreversible: exige la direccion escrita y que el plazo programado haya vencido
         const iglesiaId = await iglesiaValida(body.iglesia_id)
         if (!iglesiaId) return json({ error: 'La iglesia no existe' }, 404)
-        const { data: ig } = await admin.from('iglesias').select('slug').eq('id', iglesiaId).single()
+        const { data: ig } = await admin.from('iglesias').select('slug, adn_borrada_en').eq('id', iglesiaId).single()
         if (!ig || body.confirmar !== ig.slug) return json({ error: 'La confirmacion no coincide con la direccion de la iglesia' }, 400)
+        // Una iglesia en borrado suave se purga por la via auditada
+        if (ig.adn_borrada_en) {
+          const p = await purgarIglesia(iglesiaId)
+          if (p.error) return json({ error: p.error.mensaje }, p.error.estado)
+          return json({ ok: true, ...p.resultado })
+        }
         const { data: usuarios, error } = await admin.rpc('borrar_iglesia', { p_iglesia: iglesiaId })
         if (error) {
           const antes = /BORRADO_NO_VENCIDO/.test(error.message)
           return json({ error: antes ? 'El plazo de borrado programado todavia no ha vencido' : 'No se pudo borrar la iglesia' }, antes ? 409 : 500)
         }
-        // La base ya no tiene la iglesia. Primero se vacian sus archivos: Storage impide borrar una cuenta
-        // que todavia es propietaria de objetos. Lo que falle queda anotado para repetirlo a mano
-        let archivosBorrados = 0
-        let archivosPendientes = 0
-        for (const cubo of CUBOS_IGLESIA) {
-          try {
-            const rutas = (await listarArchivos(cubo, iglesiaId)).map(a => a.ruta)
-            for (let i = 0; i < rutas.length; i += 100) {
-              const lote = rutas.slice(i, i + 100)
-              const { error: eQuitar } = await admin.storage.from(cubo).remove(lote)
-              if (eQuitar) archivosPendientes += lote.length
-              else archivosBorrados += lote.length
-            }
-          } catch (e) {
-            archivosPendientes += 1
-            console.error('no se pudo vaciar el cubo', cubo, e instanceof Error ? e.message : e)
-          }
-        }
-        // Despues se retiran sus cuentas de acceso. Las que fallen quedan anotadas
-        const ids: string[] = Array.isArray(usuarios) ? usuarios : []
-        const pendientes: string[] = []
-        for (const id of ids) {
-          const { error: eBorrar } = await admin.auth.admin.deleteUser(id)
-          if (eBorrar) { pendientes.push(id); console.error('no se pudo borrar el usuario', id, eBorrar.message) }
-        }
+        // La base ya no tiene la iglesia: se vacian sus archivos y se retiran sus cuentas
+        const r = await limpiarExterno(iglesiaId, usuarios)
         const auditado = await auditar('borrar_iglesia', null, {
-          iglesia_id: iglesiaId, usuarios_borrados: ids.length - pendientes.length, usuarios_pendientes: pendientes,
-          archivos_borrados: archivosBorrados, archivos_pendientes: archivosPendientes,
+          iglesia_id: iglesiaId, usuarios_borrados: r.usuariosBorrados, usuarios_pendientes: r.usuariosPendientes,
+          archivos_borrados: r.archivosBorrados, archivos_pendientes: r.archivosPendientes,
         })
         return json({
-          ok: true, usuarios_borrados: ids.length - pendientes.length, usuarios_pendientes: pendientes.length,
-          archivos_borrados: archivosBorrados, archivos_pendientes: archivosPendientes, auditado,
+          ok: true, usuarios_borrados: r.usuariosBorrados, usuarios_pendientes: r.usuariosPendientes.length,
+          archivos_borrados: r.archivosBorrados, archivos_pendientes: r.archivosPendientes, auditado,
         })
+      }
+
+      case 'borrar_suave': {
+        // Suspende la iglesia y fija 30 dias de plazo; dentro del plazo se puede recuperar
+        const iglesiaId = await iglesiaValida(body.iglesia_id)
+        if (!iglesiaId) return json({ error: 'La iglesia no existe' }, 404)
+        const { data: ig } = await admin.from('iglesias').select('slug').eq('id', iglesiaId).single()
+        if (!ig || body.confirmar !== ig.slug) return json({ error: 'La confirmacion no coincide con la direccion de la iglesia' }, 400)
+        const motivo = texto(body.motivo, 500) || null
+        const { data: purgaEl, error } = await admin.rpc('adn_borrar_suave', { p_iglesia: iglesiaId, p_actor: user?.id ?? null, p_motivo: motivo })
+        if (error) { const e = errorDeCiclo(error.message); return json({ error: e.mensaje }, e.estado) }
+        const auditado = await auditar('borrar_suave', iglesiaId, { purga_el: purgaEl })
+        return json({ ok: true, purga_el: purgaEl, auditado })
+      }
+
+      case 'recuperar': {
+        const iglesiaId = await iglesiaValida(body.iglesia_id)
+        if (!iglesiaId) return json({ error: 'La iglesia no existe' }, 404)
+        const motivo = texto(body.motivo, 500) || null
+        const { data: etapa, error } = await admin.rpc('adn_recuperar_iglesia', { p_iglesia: iglesiaId, p_actor: user?.id ?? null, p_motivo: motivo })
+        if (error) { const e = errorDeCiclo(error.message); return json({ error: e.mensaje }, e.estado) }
+        const auditado = await auditar('recuperar_iglesia', iglesiaId, { etapa })
+        return json({ ok: true, etapa, auditado })
+      }
+
+      case 'purgar_vencidas': {
+        // Purga las iglesias cuyo plazo de gracia ya vencio, en lotes pequenos. La puede lanzar un administrador
+        // o la tarea programada; cada purga es completa (base, archivos y cuentas) y queda auditada
+        const { data: ids, error } = await admin.rpc('adn_iglesias_vencidas')
+        if (error) return json({ error: 'No se pudo consultar las iglesias vencidas' }, 500)
+        const todas: string[] = Array.isArray(ids) ? ids : []
+        const lote = todas.slice(0, tamanoLote(body.max))
+        const purgadas: string[] = []
+        const fallidas: string[] = []
+        for (const id of lote) {
+          const p = await purgarIglesia(id)
+          if (p.error) { fallidas.push(id); console.error('purga fallida', id, p.error.mensaje) }
+          else purgadas.push(id)
+        }
+        return json({ ok: true, vencidas: todas.length, purgadas: purgadas.length, fallidas: fallidas.length, restantes: todas.length - lote.length })
       }
 
       case 'vincular_red': {

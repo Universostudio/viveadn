@@ -157,11 +157,13 @@
 
         <div class="flex justify-end items-center gap-3 flex-wrap text-xs">
           <span v-if="ig.borrado_programado_en" :class="['font-medium', new Date(ig.borrado_programado_en) <= new Date() ? 'text-red-600' : 'text-amber-600']">
-            {{ new Date(ig.borrado_programado_en) <= new Date() ? t('plataforma.borradoVencido') : t('plataforma.borradoProgramado', { fecha: new Date(ig.borrado_programado_en).toLocaleDateString() }) }}
+            {{ new Date(ig.borrado_programado_en) <= new Date() ? t('plataforma.borradoVencido') : t(ig.adn_borrada_en ? 'plataforma.borradaSuave' : 'plataforma.borradoProgramado', { fecha: new Date(ig.borrado_programado_en).toLocaleDateString() }) }}
           </span>
           <button v-if="ig.borrado_programado_en && new Date(ig.borrado_programado_en) <= new Date()" @click="borrarAhora(ig)" class="text-red-600 hover:underline">{{ t('plataforma.borrarAhora') }}</button>
-          <button v-if="ig.borrado_programado_en" @click="cancelarBorrado(ig)" class="text-gray-500 hover:underline">{{ t('plataforma.cancelarBorrado') }}</button>
-          <button v-else-if="['receso', 'suspendida'].includes(ig.etapa)" @click="programarBorrado(ig)" class="text-gray-400 hover:text-red-600">{{ t('plataforma.programarBorrado') }}</button>
+          <button v-if="ig.adn_borrada_en && new Date(ig.borrado_programado_en) > new Date()" @click="recuperar(ig)" class="text-emerald-700 hover:underline">{{ t('plataforma.recuperar') }}</button>
+          <button v-if="ig.borrado_programado_en && !ig.adn_borrada_en" @click="cancelarBorrado(ig)" class="text-gray-500 hover:underline">{{ t('plataforma.cancelarBorrado') }}</button>
+          <button v-else-if="!ig.borrado_programado_en && ['receso', 'suspendida'].includes(ig.etapa)" @click="programarBorrado(ig)" class="text-gray-400 hover:text-red-600">{{ t('plataforma.programarBorrado') }}</button>
+          <button v-if="!ig.adn_borrada_en" @click="borrarSuave(ig)" class="text-gray-400 hover:text-red-600">{{ t('plataforma.borrarSuave') }}</button>
           <button @click="exportar(ig)" class="text-gray-500 hover:underline">{{ t('plataforma.exportar') }}</button>
           <select :value="ig.etapa" @change="cambiarEtapa(ig, ($event.target as HTMLSelectElement))"
             class="text-xs text-gray-500 border border-gray-200 rounded-lg px-2 py-1 bg-white">
@@ -411,6 +413,22 @@ function programarBorrado(ig: any) {
   if (!confirmar) return
   ejecutar({ accion: 'programar_borrado', iglesia_id: ig.id, dias: Number(dias), confirmar },
     () => t('plataforma.borradoPlanificado', { iglesia: ig.nombre }))
+}
+
+// Borrado suave: suspende la iglesia y la purga a los 30 dias; hasta entonces se recupera
+function borrarSuave(ig: any) {
+  if (!window.confirm(t('plataforma.confirmarBorradoSuave', { iglesia: ig.nombre }))) return
+  const confirmar = window.prompt(t('plataforma.pedirDireccion', { slug: ig.slug }))
+  if (!confirmar) return
+  const motivo = window.prompt(t('plataforma.pedirMotivo')) ?? ''
+  const fecha = new Date(Date.now() + 30 * 86400000).toLocaleDateString()
+  ejecutar({ accion: 'borrar_suave', iglesia_id: ig.id, confirmar, motivo },
+    () => t('plataforma.borradoSuaveHecho', { iglesia: ig.nombre, fecha }))
+}
+
+function recuperar(ig: any) {
+  if (!window.confirm(t('plataforma.confirmarRecuperar', { iglesia: ig.nombre }))) return
+  ejecutar({ accion: 'recuperar', iglesia_id: ig.id }, () => t('plataforma.recuperada', { iglesia: ig.nombre }))
 }
 
 const cancelarBorrado = (ig: any) =>
