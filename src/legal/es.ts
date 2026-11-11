@@ -72,8 +72,8 @@ const es: TextosLegales = {
         id: 'conservacion',
         titulo: '7. Cuánto tiempo conservamos los datos de las iglesias',
         parrafos: [
-          'Los datos de cada iglesia se conservan mientras su cuenta esté activa. Cuando una iglesia solicita su baja, su cuenta pasa por las etapas de receso y suspensión, y después se programa el borrado: primero un borrado suave, con un plazo fijo de 30 días durante el cual aún puede recuperarse, y después la purga definitiva de los datos y de los archivos.',
-          'Los datos desaparecen de los sistemas activos a los 30 días de la baja y de las copias de seguridad en un máximo de 14 días más, ya que las copias se renuevan según su propio ciclo y no se conservan más allá de ese plazo. Antes de la baja, la iglesia puede descargar todos sus datos en formato JSON y CSV.',
+          'Los datos de cada iglesia se conservan mientras su cuenta esté activa. Cuando una iglesia solicita su baja, su cuenta queda suspendida de inmediato y se inicia un borrado suave con un plazo fijo de 30 días, durante el cual el propietario de la iglesia puede cancelar la baja y recuperar la cuenta; pasado ese plazo se realiza la purga definitiva de los datos y de los archivos.',
+          'Los datos desaparecen de los sistemas activos a los 30 días de la baja y de las copias de seguridad en un máximo de 14 días más, ya que las copias se renuevan según su propio ciclo y no se conservan más allá de ese plazo. La iglesia puede descargar todos sus datos en formato JSON y CSV antes de solicitar la baja y también durante esos 30 días.',
         ],
       },
       {
@@ -189,7 +189,7 @@ const es: TextosLegales = {
         id: 'baja-exportacion',
         titulo: '9. Baja, exportación y borrado',
         parrafos: [
-          'La iglesia puede descargar en cualquier momento todos sus datos en formato JSON y CSV, con una huella de cada tabla para comprobar que están completos. Puede solicitar su baja cuando quiera. Tras la baja, la cuenta pasa por receso y suspensión, y después se programa su borrado: un borrado suave con un plazo fijo de 30 días, durante el cual puede recuperarse, y la purga definitiva de los datos y de los archivos. Los datos desaparecen de los sistemas activos a los 30 días de la baja y de las copias de seguridad en un máximo de 14 días más.',
+          'La iglesia puede descargar en cualquier momento todos sus datos en formato JSON y CSV, con una huella de cada tabla para comprobar que están completos. Puede solicitar su baja cuando quiera. Al solicitar la baja, la cuenta queda suspendida de inmediato y se inicia un borrado suave con un plazo fijo de 30 días, durante el cual el propietario de la iglesia puede cancelar la baja y recuperar la cuenta; pasado ese plazo se realiza la purga definitiva de los datos y de los archivos. Los datos desaparecen de los sistemas activos a los 30 días de la baja y de las copias de seguridad en un máximo de 14 días más.',
         ],
       },
       {

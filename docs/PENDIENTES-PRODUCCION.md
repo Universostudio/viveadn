@@ -22,7 +22,7 @@ Etiquetas de evidencia: **[E]** informado por Desarrollo con una prueba repetibl
 
 | Pendiente | Qué hay hecho | En pruebas | Estado |
 | --- | --- | --- | --- |
-| Revisión por un abogado de los cuatro textos de la versión 1 (privacidad 1.2, términos 1.1, aviso legal y cookies) | Textos completos en cuatro idiomas, cotejados con el RGPD y la LOPDGDD, con once puntos para el abogado en `docs/LEGAL.md` | Los textos se muestran como están, con el aviso de que esperan revisión | «le diré» |
+| Revisión por un abogado de los cuatro textos de la versión 1 (privacidad 1.3, términos 1.2, aviso legal y cookies) | Textos completos en cuatro idiomas, cotejados con el RGPD y la LOPDGDD, con once puntos para el abogado en `docs/LEGAL.md` | Los textos se muestran como están, con el aviso de que esperan revisión | «le diré» |
 | Pregunta del artículo 28.3.g sobre las copias | Formulada en `docs/LEGAL.md` | Sin efecto | «le diré» |
 | Base legal de los mensajes y del envío real | `docs/COMUNICACION.md`, apartado 5 | El envío real no está encendido en pruebas | «le diré» |
 | Retención de las copias de la plataforma y que la frase de 14 días sea cierta | Las copias de la plataforma dependen del plan; lo lee Gerencia en el panel **[V]** | La frase está en los textos y consta como no verificada | Gerencia lo confirma; si no se cumple, se corrige el texto antes de publicar |

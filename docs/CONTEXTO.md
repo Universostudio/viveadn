@@ -99,7 +99,7 @@ Los seis trabajos en curso, en orden:
 
 **Monitorización:** ruta de salud y pantalla de error propia, escritas y probadas pero sin desplegar; falta elegir el vigilante y a quién se avisa (`docs/MONITORIZACION.md`).
 
-**Purga programada y plazo de copias:** diseño aprobado en `docs/PURGA.md` (opción A, copias a 14 días, libro externo; texto legal en privacidad 1.2 y términos 1.1). Falta que Gerencia cree el secreto y verifique `pg_cron` y `pg_net` en la rama de pruebas, y configurar la rotación de copias. Sin eso, la purga de los 30 días sigue siendo manual.
+**Purga programada y plazo de copias:** diseño aprobado en `docs/PURGA.md` (opción A, copias a 14 días, libro externo; texto legal en privacidad 1.3 y términos 1.2). Falta que Gerencia cree el secreto y verifique `pg_cron` y `pg_net` en la rama de pruebas, y configurar la rotación de copias. Sin eso, la purga de los 30 días sigue siendo manual.
 
 **Copias y restauración:** hay un procedimiento para ensayar en la rama de pruebas y un ensayo local repetible de la base completa (`docs/RESTAURACION.md`). Falta ejecutarlo contra Supabase real y decidir la política de copias, la custodia de la clave y la copia de los archivos de Storage, que hoy no existe.
 

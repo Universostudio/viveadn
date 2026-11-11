@@ -86,6 +86,6 @@ Restaurar una copia anterior a una purga resucita los datos de una iglesia ya bo
 | Archivador del libro junto a las copias propias | Sin hacer; depende de que exista la copia propia |
 | Aviso por correo a Harold | Sin hacer; espera a que exista un remitente |
 | Rotación de 14 días de las copias propias y retención de las de la plataforma | **[NV]**; se lee y se configura en la plataforma |
-| Texto legal con los 14 días | Hecho: política de privacidad 1.2 y términos 1.1 [E, `npm run check:legal`] |
+| Texto legal con los 14 días | Hecho: política de privacidad 1.3 y términos 1.2 [E, `npm run check:legal`] |
 
 Custodia del archivo del libro y de su clave: «le diré» (puerta B, `docs/PENDIENTES-PRODUCCION.md`); en pruebas se ensaya con un archivo y una clave de prueba (`docs/RESTAURACION.md`, paso 7). Decisiones que siguen sin ser de Desarrollo: si el abogado acepta la rotación de copias como cumplimiento del 28.3.g; y quién recibe el aviso de purga atrasada cuando exista remitente.

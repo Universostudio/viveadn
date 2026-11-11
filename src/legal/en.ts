@@ -72,8 +72,8 @@ const en: TextosLegales = {
         id: 'conservacion',
         titulo: '7. How long we keep churches\' data',
         parrafos: [
-          "Each church's data is kept while its account is active. When a church requests to cancel, its account goes through the recess and suspension stages, and then deletion is scheduled: first a soft deletion, with a fixed period of 30 days during which it can still be recovered, and then the final purge of the data and the files.",
-          "The data disappears from the active systems 30 days after cancellation and from the backups within a maximum of 14 further days, since backups are renewed on their own cycle and are not kept beyond that period. Before cancellation, the church can download all its data in JSON and CSV format.",
+          "Each church's data is kept while its account is active. When a church requests to cancel, its account is suspended immediately and a soft deletion starts with a fixed period of 30 days, during which the church owner can cancel the request and recover the account; after that period the data and the files are permanently purged.",
+          "The data disappears from the active systems 30 days after cancellation and from the backups within a maximum of 14 further days, since backups are renewed on their own cycle and are not kept beyond that period. The church can download all its data in JSON and CSV format before requesting cancellation and also during those 30 days.",
         ],
       },
       {
@@ -189,7 +189,7 @@ const en: TextosLegales = {
         id: 'baja-exportacion',
         titulo: '9. Cancellation, export and deletion',
         parrafos: [
-          "The church can download all its data at any time in JSON and CSV format, with a fingerprint of each table to check that they are complete. It can request cancellation whenever it wishes. After cancellation, the account goes through recess and suspension, and then its deletion is scheduled: a soft deletion with a fixed period of 30 days, during which it can be recovered, and the final purge of the data and the files. The data disappears from the active systems 30 days after cancellation and from the backups within a maximum of 14 further days.",
+          "The church can download all its data at any time in JSON and CSV format, with a fingerprint of each table to check that they are complete. It can request cancellation whenever it wishes. When cancellation is requested, the account is suspended immediately and a soft deletion starts with a fixed period of 30 days, during which the church owner can cancel the request and recover the account; after that period the data and the files are permanently purged. The data disappears from the active systems 30 days after cancellation and from the backups within a maximum of 14 further days.",
         ],
       },
       {

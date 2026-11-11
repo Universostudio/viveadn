@@ -98,7 +98,7 @@ En pruebas no bloquean nada: se ensaya con datos y claves de prueba. Cuentan en 
 
 1. **Cuánta información se puede perder y cuánto tiempo puede estar caída la plataforma.** De ahí salen la frecuencia de las copias y el plan de la base de datos.
 2. **Dónde se guardan las copias lógicas y los archivos, y quién custodia la clave que las cifra.** Una copia contiene datos de pertenencia religiosa (categoría especial en el RGPD **[H]**), así que el sitio y quién accede lo debe decidir una persona con responsabilidad, no el script.
-3. **Cuánto tiempo se conservan las copias**, porque una iglesia que pide la supresión de sus datos sigue estando en las copias anteriores. Decidido por Gerencia el 11 de noviembre: **14 días** para las copias propias, y consta en la política de privacidad 1.2 y los términos 1.1. Falta configurarlo y demostrarlo **[NV]**, leer la retención de las copias de la plataforma (si es mayor, manda la mayor) y que el abogado confirme que la rotación basta para el 28.3.g (`docs/LEGAL.md`).
+3. **Cuánto tiempo se conservan las copias**, porque una iglesia que pide la supresión de sus datos sigue estando en las copias anteriores. Decidido por Gerencia el 11 de noviembre: **14 días** para las copias propias, y consta en la política de privacidad 1.3 y los términos 1.2. Falta configurarlo y demostrarlo **[NV]**, leer la retención de las copias de la plataforma (si es mayor, manda la mayor) y que el abogado confirme que la rotación basta para el 28.3.g (`docs/LEGAL.md`).
 4. **Quién ejecuta una restauración real y quién la autoriza.** Restaurar sobre producción sobrescribe datos y requiere la aprobación de Harold.
 
 ## 6. Límites conocidos

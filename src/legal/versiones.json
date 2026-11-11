@@ -34,6 +34,17 @@
             "fr": "4f61a46b0725207a52e63550175b6948d928f68996729dc8406cc92e86a9b82a",
             "pt-BR": "8e2124a456e515bb408fb7b786dfe80a96bc17b642eda70701faedd1ec7d2477"
           }
+        },
+        {
+          "version": "1.3",
+          "fecha": "2026-11-11",
+          "cambios": "Describe la baja como ocurre de verdad: suspensión inmediata y borrado suave de 30 días, con cancelación posible por el propietario de la iglesia. Pendiente de revisión por un abogado.",
+          "huellas": {
+            "es": "b1a00dba45def7f6989a75bbb17bbd21efcbc5cb5281c8157b2517e74cd5e2dd",
+            "en": "3b90b66868255ae3bbe9c9789d35d1432b614fe00d706718e6f3c8f3e9c06b4e",
+            "fr": "8ec58360faf196afeb2b87af0b2faf83b86ce10823d6c3c5ecbadbf6107fe9f0",
+            "pt-BR": "17503dbfc8462a5e4019ce898c6beee12420074921e80828479c5178192a0de2"
+          }
         }
       ]
     },
@@ -59,6 +70,17 @@
             "en": "b6360269c10c9f31cb2e80e8d1db4ad8df2b3f29d182dea80baed0fb5ba53be1",
             "fr": "70b01d2ee645957138ec2d5ab0437d13aa5e35104d67085b4441526c91a9a5b0",
             "pt-BR": "4a6f90b93555581d6888a53549b7319608cb8f7a9e9af569fbdec84def65bd7d"
+          }
+        },
+        {
+          "version": "1.2",
+          "fecha": "2026-11-11",
+          "cambios": "Describe la baja como ocurre de verdad: suspensión inmediata y borrado suave de 30 días, con cancelación posible por el propietario de la iglesia. Pendiente de revisión por un abogado.",
+          "huellas": {
+            "es": "8e688a35db99ac939150d6cf493fe396c66b77b739aa51cd4f39faa606a33f3b",
+            "en": "6c24794790b1683897755d6733ec73c7a9a8c0a82b26656d122c5800ff5904df",
+            "fr": "589f073a8ce3a00c8ef7608802850ed0b003219a34bf35402ffd78cf30582b97",
+            "pt-BR": "161913d520ccc46184983de6a81eabd24d82496eef8f7a467d009838803fc343"
           }
         }
       ]

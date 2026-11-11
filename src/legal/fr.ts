@@ -72,8 +72,8 @@ const fr: TextosLegales = {
         id: 'conservacion',
         titulo: "7. Combien de temps nous conservons les données des églises",
         parrafos: [
-          "Les données de chaque église sont conservées tant que son compte est actif. Lorsqu'une église demande sa résiliation, son compte passe par les étapes de mise en retrait et de suspension, puis la suppression est programmée : d'abord une suppression logique, avec un délai fixe de 30 jours pendant lequel les données peuvent encore être récupérées, puis la purge définitive des données et des fichiers.",
-          "Les données disparaissent des systèmes actifs 30 jours après la résiliation et des copies de sauvegarde dans un délai maximal de 14 jours supplémentaires, car les copies sont renouvelées selon leur propre cycle et ne sont pas conservées au-delà de ce délai. Avant la résiliation, l'église peut télécharger toutes ses données aux formats JSON et CSV.",
+          "Les données de chaque église sont conservées tant que son compte est actif. Lorsqu'une église demande sa résiliation, son compte est suspendu immédiatement et une suppression logique commence, avec un délai fixe de 30 jours pendant lequel le propriétaire de l'église peut annuler la demande et récupérer le compte ; passé ce délai, les données et les fichiers sont définitivement purgés.",
+          "Les données disparaissent des systèmes actifs 30 jours après la résiliation et des copies de sauvegarde dans un délai maximal de 14 jours supplémentaires, car les copies sont renouvelées selon leur propre cycle et ne sont pas conservées au-delà de ce délai. L'église peut télécharger toutes ses données aux formats JSON et CSV avant de demander la résiliation et aussi pendant ces 30 jours.",
         ],
       },
       {
@@ -189,7 +189,7 @@ const fr: TextosLegales = {
         id: 'baja-exportacion',
         titulo: "9. Résiliation, exportation et suppression",
         parrafos: [
-          "L'église peut télécharger à tout moment toutes ses données aux formats JSON et CSV, avec une empreinte de chaque table permettant de vérifier qu'elles sont complètes. Elle peut demander sa résiliation quand elle le souhaite. Après la résiliation, le compte passe par la mise en retrait et la suspension, puis sa suppression est programmée : une suppression logique avec un délai fixe de 30 jours, pendant lequel il peut être récupéré, et la purge définitive des données et des fichiers. Les données disparaissent des systèmes actifs 30 jours après la résiliation et des copies de sauvegarde dans un délai maximal de 14 jours supplémentaires.",
+          "L'église peut télécharger à tout moment toutes ses données aux formats JSON et CSV, avec une empreinte de chaque table permettant de vérifier qu'elles sont complètes. Elle peut demander sa résiliation quand elle le souhaite. Lorsque la résiliation est demandée, le compte est suspendu immédiatement et une suppression logique commence, avec un délai fixe de 30 jours pendant lequel le propriétaire de l'église peut annuler la demande et récupérer le compte ; passé ce délai, les données et les fichiers sont définitivement purgés. Les données disparaissent des systèmes actifs 30 jours après la résiliation et des copies de sauvegarde dans un délai maximal de 14 jours supplémentaires.",
         ],
       },
       {
