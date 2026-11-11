@@ -1,6 +1,6 @@
 # Exportación completa de una iglesia
 
-Formato `viveadn-exportacion-2`. Sirve para entregar a una iglesia todos sus datos (portabilidad y supresión, RGPD), para copias de seguridad que se puedan leer sin ViveADN y para mover una iglesia a otra base. Cada afirmación lleva su etiqueta: **[V]** verificado ejecutándolo en esta sesión, **[NV]** no verificable aquí.
+Formato `viveadn-exportacion-2`. Sirve para entregar a una iglesia todos sus datos (portabilidad y supresión, RGPD), para copias de seguridad que se puedan leer sin ViveADN y para mover una iglesia a otra base. Cada afirmación lleva su etiqueta: **[E]** verificado ejecutándolo en esta sesión, **[NV]** no verificable aquí.
 
 ## Qué contiene
 
@@ -12,23 +12,23 @@ El panel de plataforma entrega un ZIP con tres tipos de archivo.
 | `datos.json` | Todos los datos de la iglesia: la fila de `iglesias` y, por tabla, sus filas. |
 | `csv/<tabla>.csv` | Un CSV por tabla. UTF-8 sin BOM, separador coma, fin de línea CRLF (RFC 4180). Un campo vacío sin comillas es NULL; una cadena vacía va entre comillas (`""`). Las fechas llevan zona (UTC) y los numéricos conservan su escala exacta. |
 
-Entran 26 tablas [V]: la iglesia, toda tabla con `iglesia_id` y `rol_permisos`. Una prueba compara el manifiesto con el catálogo de la base y falla si una tabla nueva queda fuera, igual que la clasificación de `permisos.sql`. Los archivos de Storage no viajan: la función de borde añade su listado (`archivos`) para pedirlos aparte.
+Entran 26 tablas [E]: la iglesia, toda tabla con `iglesia_id` y `rol_permisos`. Una prueba compara el manifiesto con el catálogo de la base y falla si una tabla nueva queda fuera, igual que la clasificación de `permisos.sql`. Los archivos de Storage no viajan: la función de borde añade su listado (`archivos`) para pedirlos aparte.
 
 ## Qué no sale, y por qué
 
-Los tokens del QR de eventos y de invitaciones y las huellas de IP son secretos: quien tuviera el archivo podría registrar asistencia o aceptar invitaciones. Tampoco salen los secretos anidados en la auditoría ni las marcas internas del borrado suave. El manifiesto lista las columnas omitidas de cada tabla [V, la prueba busca los valores secretos en todos los archivos y no aparecen]. Los datos de otras iglesias tampoco salen [V]. Las cuentas de acceso (Auth) no viajan: las personas deben volver a ser invitadas.
+Los tokens del QR de eventos y de invitaciones y las huellas de IP son secretos: quien tuviera el archivo podría registrar asistencia o aceptar invitaciones. Tampoco salen los secretos anidados en la auditoría ni las marcas internas del borrado suave. El manifiesto lista las columnas omitidas de cada tabla [E, la prueba busca los valores secretos en todos los archivos y no aparecen]. Los datos de otras iglesias tampoco salen [E]. Las cuentas de acceso (Auth) no viajan: las personas deben volver a ser invitadas.
 
 Una advertencia que también va en el `LEEME.txt` del ZIP: los CSV conservan el texto tal cual, de modo que una celda que empiece por `=`, `+`, `-` o `@` puede interpretarse como fórmula si se abre en una hoja de cálculo. Los informes en Excel (trabajo 4) neutralizan esas celdas; la exportación no, porque debe devolver exactamente lo guardado.
 
 ## Cómo se genera
 
-`adn_exportar_paquete(iglesia)` devuelve todo en una sola llamada, solo para `service_role`, desde la función de borde `plataforma` (acción `exportar`, restringida a administradores de plataforma y auditada). El CSV se construye en la base y no en el navegador para no perder la escala de los numéricos. `exportar_iglesia`, la función anterior, no se modificó: si la migración no está aplicada o se revierte, la función de borde vuelve a ella y el panel descarga el JSON de siempre [V en sus tipos; NV de extremo a extremo].
+`adn_exportar_paquete(iglesia)` devuelve todo en una sola llamada, solo para `service_role`, desde la función de borde `plataforma` (acción `exportar`, restringida a administradores de plataforma y auditada). El CSV se construye en la base y no en el navegador para no perder la escala de los numéricos. `exportar_iglesia`, la función anterior, no se modificó: si la migración no está aplicada o se revierte, la función de borde vuelve a ella y el panel descarga el JSON de siempre [E en sus tipos; NV de extremo a extremo].
 
-La exportación **no** incluye `plataforma_auditoria` (decisión de Gerencia, 11-11): son acciones internas de la plataforma y pueden llevar notas de administración. Queda disponible aparte, solo para administradores de plataforma, con la acción `auditoria_iglesia` de la función de borde `plataforma` (sin las huellas de IP). La exportación de reserva anterior, que sí la incluía, se filtra en la misma función. Por eso el manifiesto cubre 28 tablas y no 29 [V, `exportacion_carga.sh` comprueba que no sale].
+La exportación **no** incluye `plataforma_auditoria` (decisión de Gerencia, 11-11): son acciones internas de la plataforma y pueden llevar notas de administración. Queda disponible aparte, solo para administradores de plataforma, con la acción `auditoria_iglesia` de la función de borde `plataforma` (sin las huellas de IP). La exportación de reserva anterior, que sí la incluía, se filtra en la misma función. Por eso el manifiesto cubre 28 tablas y no 29 [E, `exportacion_carga.sh` comprueba que no sale].
 
 ## Prueba de carga en una base vacía
 
-`supabase/tests/exportacion_carga.sh` (parte de `ejecutar.sh` y del CI) [V, 12 comprobaciones]:
+`supabase/tests/exportacion_carga.sh` (parte de `ejecutar.sh` y del CI) [E, 12 comprobaciones]:
 
 1. Crea una iglesia sintética con filas en las 26 tablas y datos incómodos para un CSV: comas, comillas, saltos de línea CRLF, tabulaciones, emoji, caracteres japoneses, espacios al borde, la cadena `NULL`, una barra seguida de `N`, textos que parecen fórmulas, vacío frente a NULL y un numérico con ceros finales. Añade una segunda iglesia que no debe aparecer.
 2. Exporta, separa los archivos y comprueba que el md5 de cada CSV es el del manifiesto.

@@ -1,6 +1,6 @@
 # Pruebas de aislamiento entre iglesias
 
-Estado a 11 de noviembre de 2026. Etiquetas: **[V]** verificado en esta sesión, **[H]** deducido, **[NV]** no verificable aquí.
+Estado a 11 de noviembre de 2026. Etiquetas de evidencia (carta de gerencia, 11-11): **[V]** comprobado por Gerencia, **[E]** informado por Desarrollo con una prueba repetible (el comando está en «Cómo repetir las pruebas», `docs/CONTEXTO.md`), **[H]** deducido, **[NV]** no verificable.
 
 ## 1. Qué se prueba
 
@@ -26,7 +26,7 @@ Además, la prueba SQL comprueba:
 
 ## 2. La prueba detecta fugas, no solo pasa
 
-Una prueba de aislamiento que nunca falla no prueba nada. Se inyectaron a propósito seis fugas dentro de la transacción de prueba, y cada una hizo fallar el script con el mensaje esperado [V]:
+Una prueba de aislamiento que nunca falla no prueba nada. Se inyectaron a propósito seis fugas dentro de la transacción de prueba, y cada una hizo fallar el script con el mensaje esperado [E]:
 
 | Fuga inyectada | Mensaje de fallo |
 | --- | --- |
@@ -41,7 +41,7 @@ Esto reveló dos debilidades de la primera versión, ya corregidas: una colisió
 
 ## 3. Cómo se ejecuta
 
-- **SQL (en CI).** `supabase/tests/ejecutar.sh` lanza `adn_aislamiento_total.sql` dentro de `exportacion/origen.sql`, que siembra las dos iglesias y deshace todo al terminar. Se niega a correr si hay iglesias reales [V].
+- **SQL (en CI).** `supabase/tests/ejecutar.sh` lanza `adn_aislamiento_total.sql` dentro de `exportacion/origen.sql`, que siembra las dos iglesias y deshace todo al terminar. Se niega a correr si hay iglesias reales [E].
 - **API (manual).** `supabase/tests/aislamiento_api.sh <base> [url]` siembra los datos, lanza `aislamiento_api.py` contra PostgREST y los borra aunque falle. El script repite los mismos ataques como peticiones HTTP firmadas con el secreto de `postgrest.conf`, llama a las funciones que no debe poder llamar, prueba a un visitante sin sesión y compara una instantánea de la base (filas y huella por iglesia y tabla) antes y después.
 
 ## 4. Límites

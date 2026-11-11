@@ -1,6 +1,6 @@
 # Informes en PDF y Excel
 
-Desde Reportes, quien tiene permiso descarga tres informes en PDF o en Excel: miembros, asistencia y crecimiento. Etiquetas: **[V]** verificado ejecutándolo en esta sesión, **[NV]** no verificable aquí. Todo lo verificado usa datos sintéticos.
+Desde Reportes, quien tiene permiso descarga tres informes en PDF o en Excel: miembros, asistencia y crecimiento. Etiquetas de evidencia (carta de gerencia, 11-11): **[V]** comprobado por Gerencia, **[E]** informado por Desarrollo con una prueba repetible (el comando está en «Cómo repetir las pruebas», `docs/CONTEXTO.md`), **[H]** deducido, **[NV]** no verificable.
 
 ## Qué contiene cada informe
 
@@ -14,30 +14,30 @@ El PDF lleva cabecera con el nombre de la iglesia y la fecha, tablas que repiten
 
 ## Cómo se garantiza que las cifras son las de la iglesia
 
-Cuatro funciones de lectura (`adn_informe_crecimiento`, `adn_informe_asistencia`, `adn_informe_miembros_resumen` y `adn_informe_miembros`) se ejecutan con los permisos de quien las llama. La seguridad por filas decide qué cuenta, así que un informe nunca incluye lo que esa persona no podría ver en pantalla, y cada función exige además el permiso de su informe [V, 48 comprobaciones en `supabase/tests/adn_informes.sql`: cifras exactas, ventanas de fechas, un colaborador y un líder de casa rechazados, un visitante rechazado, y aislamiento entre iglesias en las tres funciones]. Solo leen: la migración no toca tablas ni datos y su reversión solo borra las funciones.
+Cuatro funciones de lectura (`adn_informe_crecimiento`, `adn_informe_asistencia`, `adn_informe_miembros_resumen` y `adn_informe_miembros`) se ejecutan con los permisos de quien las llama. La seguridad por filas decide qué cuenta, así que un informe nunca incluye lo que esa persona no podría ver en pantalla, y cada función exige además el permiso de su informe [E, 48 comprobaciones en `supabase/tests/adn_informes.sql`: cifras exactas, ventanas de fechas, un colaborador y un líder de casa rechazados, un visitante rechazado, y aislamiento entre iglesias en las tres funciones]. Solo leen: la migración no toca tablas ni datos y su reversión solo borra las funciones.
 
 ## Cómo se verifican los archivos
 
-`npm run test:informes` genera los archivos y los abre con lectores independientes que no son los míos: `pypdf` en modo estricto y `pdfplumber` para el PDF, `openpyxl` para el Excel [V]:
+`npm run test:informes` genera los archivos y los abre con lectores independientes que no son los míos: `pypdf` en modo estricto y `pdfplumber` para el PDF, `openpyxl` para el Excel [E]:
 
 - Un informe de 420 miembros ocupa varias páginas apaisadas, cada miembro sale una sola vez, la cabecera de la tabla se repite, el pie dice "Página N de total" con el total real, las propiedades llevan el título y los paréntesis, las comillas, la barra invertida y los acentos sobreviven.
 - Un Excel de 12.000 filas se vuelve a leer con las 12.000 filas; las fechas son fechas, los números son números, el panel está congelado y el filtro cubre exactamente los datos.
 - Los tres informes se construyen en los cuatro idiomas sin que falte una clave. La prueba cazó dos defectos reales mientras se escribía: `Intl` usa en francés un espacio estrecho que WinAnsi no tiene (salía como `?`), y una columna demasiado estrecha recortaba el código del miembro.
-- También se miraron a ojo, renderizados a imagen, el PDF en español y en francés, y el Excel se abre en LibreOffice [V].
+- También se miraron a ojo, renderizados a imagen, el PDF en español y en francés, y el Excel se abre en LibreOffice [E].
 
 ## Seguridad de los archivos
 
-Un texto que empieza por `=`, `+`, `-` o `@` (por ejemplo un nombre mal puesto en un contacto importado) se guarda en el Excel como texto y no se evalúa como fórmula, a diferencia de lo que pasa con un CSV abierto en una hoja de cálculo [V: se lee de vuelta como texto]. El informe de miembros avisa en pantalla de que contiene datos personales.
+Un texto que empieza por `=`, `+`, `-` o `@` (por ejemplo un nombre mal puesto en un contacto importado) se guarda en el Excel como texto y no se evalúa como fórmula, a diferencia de lo que pasa con un CSV abierto en una hoja de cálculo [E: se lee de vuelta como texto]. El informe de miembros avisa en pantalla de que contiene datos personales.
 
 ## Registro de descargas del informe de miembros
 
-Cada descarga del informe de miembros deja una fila en `adn_informe_descargas`: quién (identificador de la persona), cuándo, qué informe y cuántas filas tenía. La tabla no tiene ninguna columna capaz de guardar contenido [V, la prueba lista sus columnas]. Lo escribe el servidor cuando sirve el informe, no el navegador, de modo que no se puede omitir desde la web [V, `supabase/tests/adn_descargas_informe.sql`].
+Cada descarga del informe de miembros deja una fila en `adn_informe_descargas`: quién (identificador de la persona), cuándo, qué informe y cuántas filas tenía. La tabla no tiene ninguna columna capaz de guardar contenido [E, la prueba lista sus columnas]. Lo escribe el servidor cuando sirve el informe, no el navegador, de modo que no se puede omitir desde la web [E, `supabase/tests/adn_descargas_informe.sql`].
 
 - **Solo altas.** Ninguna persona autenticada inserta, modifica ni borra; un disparador impide modificar un registro incluso al servicio. Los registros solo desaparecen al borrar la iglesia entera.
-- **Quién lo lee.** Quien gestiona usuarios en su propia iglesia (`usuarios.gestionar`). Cada iglesia ve únicamente las suyas [V, también en `adn_aislamiento_total.sql`].
+- **Quién lo lee.** Quien gestiona usuarios en su propia iglesia (`usuarios.gestionar`). Cada iglesia ve únicamente las suyas [E, también en `adn_aislamiento_total.sql`].
 - **Una fila por descarga.** El informe se pide por páginas de 1.000 filas, y una descarga del mismo informe por la misma persona dentro de dos minutos cuenta como una. Dos descargas distintas en menos de dos minutos (por ejemplo, PDF y luego Excel) quedan como una sola fila [H].
 - **Un intento rechazado no deja registro**, porque el permiso se comprueba antes.
-- **Límites.** Solo cubre el informe de miembros, que es el que lleva datos personales; los de asistencia y crecimiento son cifras agregadas. Todavía no hay pantalla para leer el registro: se consulta con la API o la base de datos. La reversión está en `supabase/reversiones/20261111180000_adn_descargas_informe.down.sql` y borra la tabla con sus filas [V].
+- **Límites.** Solo cubre el informe de miembros, que es el que lleva datos personales; los de asistencia y crecimiento son cifras agregadas. Todavía no hay pantalla para leer el registro: se consulta con la API o la base de datos. La reversión está en `supabase/reversiones/20261111180000_adn_descargas_informe.down.sql` y borra la tabla con sus filas [E].
 
 ## Límites, sin edulcorar
 
