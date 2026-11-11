@@ -99,6 +99,8 @@ Los seis trabajos en curso, en orden:
 
 **Monitorización:** ruta de salud y pantalla de error propia, escritas y probadas pero sin desplegar; falta elegir el vigilante y a quién se avisa (`docs/MONITORIZACION.md`).
 
+**Purga programada y plazo de copias:** propuesta con prueba local en `docs/PURGA.md`; falta elegir el programador, crear el secreto, fijar el plazo de las copias y decidir el cambio del texto legal. Sin eso, la purga de los 30 días sigue siendo manual.
+
 **Copias y restauración:** hay un procedimiento para ensayar en la rama de pruebas y un ensayo local repetible de la base completa (`docs/RESTAURACION.md`). Falta ejecutarlo contra Supabase real y decidir la política de copias, la custodia de la clave y la copia de los archivos de Storage, que hoy no existe.
 
 **Prioritaria antes de producción:** paginar la exportación o generar el ZIP en el servidor, porque hoy todo el paquete viaja en una sola respuesta y no se ha medido con iglesias de decenas de miles de filas (`docs/EXPORTACION.md`).
@@ -119,7 +121,7 @@ Todo lo marcado **[E]** se repite con estos comandos, desde la raíz del reposit
 
 | Qué | Comando |
 | --- | --- |
-| Batería SQL completa: permisos, aislamiento total, ciclo de vida, exportación, importación, informes, comunicación, consentimiento, descargas, panel, reversión de las diez migraciones `adn_*` y comprobación de NULL en `auth.users` | `PGUSER=postgres supabase/tests/ejecutar.sh` |
+| Batería SQL completa: permisos, aislamiento total, ciclo de vida, exportación, importación, informes, comunicación, consentimiento, evidencia, doble confirmación, purga programada, descargas, panel, reversión de las doce migraciones `adn_*` y comprobación de NULL en `auth.users` | `PGUSER=postgres supabase/tests/ejecutar.sh` |
 | Exportación recargada en dos bases vacías (JSON y CSV) | `PGUSER=postgres supabase/tests/exportacion_carga.sh viveadn_pruebas` |
 | Reversión de las migraciones `adn_*` | `PGUSER=postgres supabase/tests/adn_reversion.sh` |
 | Restauración de la base completa en una base vacía, con comparación fila a fila | `PGUSER=postgres supabase/tests/restauracion_base_completa.sh` |
