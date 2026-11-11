@@ -5,6 +5,9 @@
       <p class="text-gray-500 text-sm mt-0.5">{{ t('reportes.subtitulo') }}</p>
     </div>
 
+    <!-- Descarga de informes en PDF y Excel -->
+    <DescargarInformes />
+
     <!-- Selector de período -->
     <div class="card flex flex-wrap items-center gap-3">
       <span class="text-sm font-medium text-gray-700">{{ t('reportes.periodo') }}</span>
@@ -146,6 +149,7 @@ import { supabase } from '@/lib/supabase'
 import { alertaDe } from '@/lib/alertas'
 import { useI18n } from 'vue-i18n'
 import { formatoFecha } from '@/i18n'
+import DescargarInformes from '@/components/DescargarInformes.vue'
 
 const { t } = useI18n()
 

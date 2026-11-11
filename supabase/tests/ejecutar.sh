@@ -37,6 +37,7 @@ bash tests/checkin_concurrencia.sh "$DB"
 "${PSQL[@]}" -d $DB -f tests/certificados.sql
 "${PSQL[@]}" -d $DB -f tests/adn_ciclo_vida.sql
 "${PSQL[@]}" -d $DB -f tests/adn_importar_contactos.sql
+"${PSQL[@]}" -d $DB -f tests/adn_informes.sql
 "${PSQL[@]}" -d $DB -f tests/limites_plan.sql
 bash tests/limites_concurrencia.sh "$DB"
 bash tests/formacion_concurrencia.sh "$DB"

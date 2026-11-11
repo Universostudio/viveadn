@@ -19,7 +19,8 @@
     "test:certificados": "node scripts/probar-certificados.mts",
     "test:ciclo": "node scripts/probar-ciclo.mts",
     "test:exportacion": "node scripts/probar-exportacion.mts",
-    "test:google": "node scripts/probar-importar-google.mts"
+    "test:google": "node scripts/probar-importar-google.mts",
+    "test:informes": "node scripts/probar-informes.mts"
   },
   "dependencies": {
     "@fontsource/dm-sans": "^5.3.0",

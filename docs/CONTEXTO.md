@@ -38,7 +38,7 @@ La escala es completo, parcial o inexistente.
 | Formación | Completo | Seguimiento por niveles, programas con lecciones, avance, certificados con QR y verificación pública [V]. Faltan la credencial personal con escáner y los reportes |
 | Dar | Parcial | Página pública `/dar/:slug` con enlaces de recaudo de la iglesia [V]. No cobra: solo enlaza a pasarelas externas |
 | Comunicación | Parcial, solo maqueta | Redactor, plantillas, segmentos y vista previa [V]. No guarda mensajes, no tiene historial real y no envía nada [V, `ComunicacionView.vue`] |
-| Reportes | Parcial | Cifras en pantalla (miembros, consolidación, formación, zonas) [V]. No exporta a PDF ni a Excel, y no hay informe de asistencia ni de crecimiento por periodo |
+| Reportes | Completo | Cifras en pantalla (miembros, consolidación, formación, zonas) y, desde el 11-11, descarga de informes de miembros, asistencia y crecimiento en PDF y Excel, en los cuatro idiomas (`docs/INFORMES.md`). Probado con lectores independientes y datos sintéticos [V]; la pantalla no se ejecutó en un navegador real [NV]. Límite: el PDF no muestra alfabetos no latinos |
 | Panel de inicio | Parcial | Cuatro cifras, consolidaciones críticas y miembros recientes con datos reales [V]. No muestra asistencia, crecimiento ni eventos próximos |
 | Red de iglesias | Completo | Iglesia madre con sedes y cifras agregadas [V] |
 | Panel de plataforma | Completo | Altas, planes, módulos, etapas, exportación, borrado programado, red, códigos de registro, auditoría [V] |
@@ -58,6 +58,7 @@ Tablas de la base pública, agrupadas. Todas llevan seguridad por filas [V, `doc
 - **Formación:** `progreso_formacion`, `programas_formacion`, `programa_lecciones`, `inscripciones_formacion`, `avance_formacion`, `certificados`.
 - **Dar:** `dar_config`, `enlaces_dar`.
 - **Plataforma, solo servidor:** `plataforma_admins`, `plataforma_auditoria`, `plataforma_ajustes`, `registro_codigos`, `registro_intentos`, `adn_ciclo_auditoria` (borrado suave, recuperación y purga; sobrevive a la purga).
+- **Informes:** no tienen tablas propias; leen de las anteriores con las funciones `adn_informe_*`.
 - **Datos de contacto adicionales:** `adn_miembro_contactos` (segundos correos, teléfonos extra, direcciones y etiquetas de un miembro, por ejemplo de una importación).
 
 Las tablas nuevas de esta línea de trabajo llevan el prefijo `adn_` [regla de Gerencia]. Las existentes no se renombran hasta que Gerencia lo ordene.
@@ -81,7 +82,7 @@ Los seis trabajos en curso, en orden:
 1. Ciclo de vida de la iglesia: hecho salvo programar la purga automática (pendiente de aprobación del dueño).
 2. Exportación completa en CSV y JSON: hecho y verificado en base de datos (ver `docs/EXPORTACION.md`).
 3. Importador de miembros con formato Google Contacts: hecho con datos sintéticos; falta probarlo con los archivos reales que entregue Gerencia.
-4. Informes en PDF y Excel (miembros, asistencia, crecimiento).
+4. Informes en PDF y Excel (miembros, asistencia, crecimiento): hecho y verificado (ver `docs/INFORMES.md`).
 5. Panel de inicio completo y envío real en Comunicación, en pruebas solo hacia un sumidero.
 6. Pruebas de aislamiento con dos usuarios de prueba a través de la API.
 

@@ -512,7 +512,29 @@
     "casas": "house | houses",
     "miembros": "{n} member | {n} members",
     "completadasRecientes": "Recently completed consolidations",
-    "sinCompletadas": "No consolidations completed in this period"
+    "sinCompletadas": "No consolidations completed in this period",
+    "descargas": {
+      "titulo": "Download reports",
+      "descripcion": "PDF and Excel reports with your church data. They only include what your role can see.",
+      "informe": "Report",
+      "semanas": "Period",
+      "meses": "Period",
+      "sinPermiso": "Your role does not have permission to download reports.",
+      "tipos": {
+        "miembros": "Members",
+        "asistencia": "Attendance",
+        "crecimiento": "Growth"
+      },
+      "ultimasSemanas": "Last {n} weeks",
+      "ultimosMeses": "Last {n} months",
+      "generando": "Generating the report...",
+      "listo": "Downloaded: {archivo}",
+      "errorPermiso": "You do not have permission for this report.",
+      "errorPeriodo": "The chosen period is not valid.",
+      "errorGenerico": "The report could not be generated. Try again.",
+      "avisoMiembros": "This report contains members’ personal data: keep it somewhere safe and do not share it.",
+      "avisoPdf": "In the PDF, characters outside the Latin alphabet appear as ?. The Excel file keeps every character."
+    }
   },
   "configuracion": {
     "titulo": "Settings",
@@ -1095,5 +1117,94 @@
     "noEncontradoTexto": "This code does not match any certificate. Check the link or the QR.",
     "error": "Could not verify",
     "errorTexto": "Please try again in a few minutes."
+  },
+  "informes": {
+    "generadoEl": "Generated on {fecha}",
+    "pie": "ViveADN · {informe}",
+    "pagina": "Page {n} of {total}",
+    "si": "Yes",
+    "no": "No",
+    "hojaResumen": "Summary",
+    "miembros": {
+      "titulo": "Members report",
+      "resumen": "Summary",
+      "total": "Registered members",
+      "activos": "Active",
+      "inactivos": "Inactive",
+      "bautizados": "Baptized",
+      "conCorreo": "With email",
+      "conTelefono": "With phone",
+      "sinCasa": "Without a house of prayer",
+      "porNivel": "By commitment level",
+      "lista": "Member list",
+      "hoja": "Members",
+      "col": {
+        "codigo": "Code",
+        "nombre": "First name",
+        "apellido": "Last name",
+        "correo": "Email",
+        "telefono": "Phone",
+        "nacimiento": "Birth date",
+        "casa": "House of prayer",
+        "nivel": "Level",
+        "bautizado": "Baptized",
+        "conversion": "Conversion",
+        "activo": "Active",
+        "registrado": "Registered"
+      }
+    },
+    "asistencia": {
+      "titulo": "Attendance report",
+      "periodo": "From {desde} to {hasta}",
+      "resumen": "Summary",
+      "casasRegistros": "House meetings: records",
+      "casasPresentes": "House meetings: present",
+      "casasPorcentaje": "House meetings: attendance",
+      "eventosRegistros": "Events: records",
+      "eventosPresentes": "Events: present",
+      "eventosPorcentaje": "Events: attendance",
+      "graficoSemanal": "People present per week in houses of prayer",
+      "porSemana": "House meetings per week",
+      "porCasa": "By house of prayer",
+      "porEvento": "Events",
+      "hojaSemanal": "By week",
+      "hojaCasas": "By house",
+      "hojaEventos": "Events",
+      "col": {
+        "semana": "Week of",
+        "casa": "House of prayer",
+        "registros": "Records",
+        "presentes": "Present",
+        "personas": "Distinct people",
+        "porcentaje": "Attendance",
+        "fecha": "Date",
+        "evento": "Event",
+        "tipo": "Type"
+      }
+    },
+    "crecimiento": {
+      "titulo": "Growth report",
+      "periodo": "Last {n} months",
+      "resumen": "Summary",
+      "registrados": "Registered members",
+      "nuevos": "New members in the period",
+      "promedio": "Average new per month",
+      "conversiones": "Conversions",
+      "bautizos": "Baptisms",
+      "iniciadas": "Consolidations started",
+      "completadas": "Consolidations completed",
+      "grafico": "New members per month",
+      "detalle": "Monthly detail",
+      "hoja": "Monthly",
+      "col": {
+        "mes": "Month",
+        "nuevos": "New",
+        "acumulados": "Cumulative",
+        "conversiones": "Conversions",
+        "bautizos": "Baptisms",
+        "iniciadas": "Consol. started",
+        "completadas": "Consol. completed"
+      }
+    }
   }
 }

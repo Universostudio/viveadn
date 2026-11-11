@@ -512,7 +512,29 @@
     "casas": "maison | maisons",
     "miembros": "{n} membre | {n} membres",
     "completadasRecientes": "Consolidations terminées récemment",
-    "sinCompletadas": "Aucune consolidation terminée sur cette période"
+    "sinCompletadas": "Aucune consolidation terminée sur cette période",
+    "descargas": {
+      "titulo": "Télécharger des rapports",
+      "descripcion": "Rapports PDF et Excel avec les données de votre église. Ils n’incluent que ce que votre rôle peut voir.",
+      "informe": "Rapport",
+      "semanas": "Période",
+      "meses": "Période",
+      "sinPermiso": "Votre rôle n’a pas l’autorisation de télécharger des rapports.",
+      "tipos": {
+        "miembros": "Membres",
+        "asistencia": "Présence",
+        "crecimiento": "Croissance"
+      },
+      "ultimasSemanas": "{n} dernières semaines",
+      "ultimosMeses": "{n} derniers mois",
+      "generando": "Génération du rapport...",
+      "listo": "Téléchargé : {archivo}",
+      "errorPermiso": "Vous n’avez pas l’autorisation pour ce rapport.",
+      "errorPeriodo": "La période choisie n’est pas valide.",
+      "errorGenerico": "Le rapport n’a pas pu être généré. Réessayez.",
+      "avisoMiembros": "Ce rapport contient des données personnelles des membres : conservez-le en lieu sûr et ne le partagez pas.",
+      "avisoPdf": "Dans le PDF, les caractères hors alphabet latin apparaissent sous la forme ?. Le fichier Excel conserve tous les caractères."
+    }
   },
   "configuracion": {
     "titulo": "Paramètres",
@@ -1095,5 +1117,94 @@
     "noEncontradoTexto": "Ce code ne correspond à aucun certificat. Vérifiez le lien ou le QR.",
     "error": "Vérification impossible",
     "errorTexto": "Réessayez dans quelques minutes."
+  },
+  "informes": {
+    "generadoEl": "Généré le {fecha}",
+    "pie": "ViveADN · {informe}",
+    "pagina": "Page {n} sur {total}",
+    "si": "Oui",
+    "no": "Non",
+    "hojaResumen": "Résumé",
+    "miembros": {
+      "titulo": "Rapport des membres",
+      "resumen": "Résumé",
+      "total": "Membres enregistrés",
+      "activos": "Actifs",
+      "inactivos": "Inactifs",
+      "bautizados": "Baptisés",
+      "conCorreo": "Avec e-mail",
+      "conTelefono": "Avec téléphone",
+      "sinCasa": "Sans maison de prière",
+      "porNivel": "Par niveau d’engagement",
+      "lista": "Liste des membres",
+      "hoja": "Membres",
+      "col": {
+        "codigo": "Code",
+        "nombre": "Prénom",
+        "apellido": "Nom",
+        "correo": "E-mail",
+        "telefono": "Téléphone",
+        "nacimiento": "Naissance",
+        "casa": "Maison de prière",
+        "nivel": "Niveau",
+        "bautizado": "Baptisé",
+        "conversion": "Conversion",
+        "activo": "Actif",
+        "registrado": "Inscrit"
+      }
+    },
+    "asistencia": {
+      "titulo": "Rapport de présence",
+      "periodo": "Du {desde} au {hasta}",
+      "resumen": "Résumé",
+      "casasRegistros": "Réunions de maison : enregistrements",
+      "casasPresentes": "Réunions de maison : présents",
+      "casasPorcentaje": "Réunions de maison : présence",
+      "eventosRegistros": "Événements : enregistrements",
+      "eventosPresentes": "Événements : présents",
+      "eventosPorcentaje": "Événements : présence",
+      "graficoSemanal": "Présents par semaine dans les maisons de prière",
+      "porSemana": "Réunions de maison par semaine",
+      "porCasa": "Par maison de prière",
+      "porEvento": "Événements",
+      "hojaSemanal": "Par semaine",
+      "hojaCasas": "Par maison",
+      "hojaEventos": "Événements",
+      "col": {
+        "semana": "Semaine du",
+        "casa": "Maison de prière",
+        "registros": "Enregistrements",
+        "presentes": "Présents",
+        "personas": "Personnes distinctes",
+        "porcentaje": "Présence",
+        "fecha": "Date",
+        "evento": "Événement",
+        "tipo": "Type"
+      }
+    },
+    "crecimiento": {
+      "titulo": "Rapport de croissance",
+      "periodo": "{n} derniers mois",
+      "resumen": "Résumé",
+      "registrados": "Membres enregistrés",
+      "nuevos": "Nouveaux membres sur la période",
+      "promedio": "Moyenne de nouveaux par mois",
+      "conversiones": "Conversions",
+      "bautizos": "Baptêmes",
+      "iniciadas": "Consolidations commencées",
+      "completadas": "Consolidations terminées",
+      "grafico": "Nouveaux membres par mois",
+      "detalle": "Détail mensuel",
+      "hoja": "Mensuel",
+      "col": {
+        "mes": "Mois",
+        "nuevos": "Nouveaux",
+        "acumulados": "Cumul",
+        "conversiones": "Conversions",
+        "bautizos": "Baptêmes",
+        "iniciadas": "Consol. commencées",
+        "completadas": "Consol. terminées"
+      }
+    }
   }
 }

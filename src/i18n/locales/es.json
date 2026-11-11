@@ -512,7 +512,29 @@
     "casas": "casa | casas",
     "miembros": "{n} miembro | {n} miembros",
     "completadasRecientes": "Consolidaciones completadas recientemente",
-    "sinCompletadas": "Sin consolidaciones completadas en este período"
+    "sinCompletadas": "Sin consolidaciones completadas en este período",
+    "descargas": {
+      "titulo": "Descargar informes",
+      "descripcion": "Informes en PDF y Excel con los datos de tu iglesia. Solo incluyen lo que tu rol puede ver.",
+      "informe": "Informe",
+      "semanas": "Período",
+      "meses": "Período",
+      "sinPermiso": "Tu rol no tiene permiso para descargar informes.",
+      "tipos": {
+        "miembros": "Miembros",
+        "asistencia": "Asistencia",
+        "crecimiento": "Crecimiento"
+      },
+      "ultimasSemanas": "Últimas {n} semanas",
+      "ultimosMeses": "Últimos {n} meses",
+      "generando": "Generando el informe...",
+      "listo": "Descargado: {archivo}",
+      "errorPermiso": "No tienes permiso para este informe.",
+      "errorPeriodo": "El período elegido no es válido.",
+      "errorGenerico": "No se pudo generar el informe. Inténtalo de nuevo.",
+      "avisoMiembros": "Este informe contiene datos personales de los miembros: guárdalo en un lugar seguro y no lo compartas.",
+      "avisoPdf": "En el PDF, los caracteres que no son del alfabeto latino salen como ?. El Excel conserva todos los caracteres."
+    }
   },
   "configuracion": {
     "titulo": "Configuración",
@@ -1095,5 +1117,94 @@
     "noEncontradoTexto": "Este código no corresponde a ningún certificado. Comprueba el enlace o el QR.",
     "error": "No se pudo verificar",
     "errorTexto": "Inténtalo de nuevo en unos minutos."
+  },
+  "informes": {
+    "generadoEl": "Generado el {fecha}",
+    "pie": "ViveADN · {informe}",
+    "pagina": "Página {n} de {total}",
+    "si": "Sí",
+    "no": "No",
+    "hojaResumen": "Resumen",
+    "miembros": {
+      "titulo": "Informe de miembros",
+      "resumen": "Resumen",
+      "total": "Miembros registrados",
+      "activos": "Activos",
+      "inactivos": "Inactivos",
+      "bautizados": "Bautizados",
+      "conCorreo": "Con correo",
+      "conTelefono": "Con teléfono",
+      "sinCasa": "Sin casa de oración",
+      "porNivel": "Por nivel de compromiso",
+      "lista": "Lista de miembros",
+      "hoja": "Miembros",
+      "col": {
+        "codigo": "Código",
+        "nombre": "Nombre",
+        "apellido": "Apellido",
+        "correo": "Correo",
+        "telefono": "Teléfono",
+        "nacimiento": "Nacimiento",
+        "casa": "Casa de oración",
+        "nivel": "Nivel",
+        "bautizado": "Bautizado",
+        "conversion": "Conversión",
+        "activo": "Activo",
+        "registrado": "Registrado"
+      }
+    },
+    "asistencia": {
+      "titulo": "Informe de asistencia",
+      "periodo": "Del {desde} al {hasta}",
+      "resumen": "Resumen",
+      "casasRegistros": "Reuniones de casa: registros",
+      "casasPresentes": "Reuniones de casa: presentes",
+      "casasPorcentaje": "Reuniones de casa: asistencia",
+      "eventosRegistros": "Eventos: registros",
+      "eventosPresentes": "Eventos: presentes",
+      "eventosPorcentaje": "Eventos: asistencia",
+      "graficoSemanal": "Presentes por semana en las casas de oración",
+      "porSemana": "Reuniones de casa por semana",
+      "porCasa": "Por casa de oración",
+      "porEvento": "Eventos",
+      "hojaSemanal": "Por semana",
+      "hojaCasas": "Por casa",
+      "hojaEventos": "Eventos",
+      "col": {
+        "semana": "Semana del",
+        "casa": "Casa de oración",
+        "registros": "Registros",
+        "presentes": "Presentes",
+        "personas": "Personas distintas",
+        "porcentaje": "Asistencia",
+        "fecha": "Fecha",
+        "evento": "Evento",
+        "tipo": "Tipo"
+      }
+    },
+    "crecimiento": {
+      "titulo": "Informe de crecimiento",
+      "periodo": "Últimos {n} meses",
+      "resumen": "Resumen",
+      "registrados": "Miembros registrados",
+      "nuevos": "Nuevos miembros en el período",
+      "promedio": "Promedio de nuevos por mes",
+      "conversiones": "Conversiones",
+      "bautizos": "Bautizos",
+      "iniciadas": "Consolidaciones iniciadas",
+      "completadas": "Consolidaciones completadas",
+      "grafico": "Nuevos miembros por mes",
+      "detalle": "Detalle mensual",
+      "hoja": "Mensual",
+      "col": {
+        "mes": "Mes",
+        "nuevos": "Nuevos",
+        "acumulados": "Acumulados",
+        "conversiones": "Conversiones",
+        "bautizos": "Bautizos",
+        "iniciadas": "Consol. iniciadas",
+        "completadas": "Consol. completadas"
+      }
+    }
   }
 }

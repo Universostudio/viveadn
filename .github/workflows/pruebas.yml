@@ -58,4 +58,10 @@ jobs:
       - run: npm run test:ciclo
       - run: npm run test:exportacion
       - run: npm run test:google
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Lectores independientes para validar los informes (Python)
+        run: pip install openpyxl==3.1.5 pypdf==6.17.0 pdfplumber==0.11.10
+      - run: npm run test:informes
       - run: npm run build
