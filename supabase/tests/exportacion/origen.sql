@@ -77,7 +77,17 @@ insert into public.plataforma_auditoria (actor, accion, iglesia_id, detalle) val
   (null, 'crear_iglesia', 'ea100000-0000-0000-0000-00000000000a', '{"propietario": "maria@prueba.test", "ip_hash": "dddddddddddddddddddddddddddddddd", "nota": "con, coma y \"comillas\""}');
 reset session_replication_role;
 
+-- Gancho opcional: otras pruebas reutilizan estas dos iglesias (psql -v despues=ruta/del/script.sql)
+\if :{?despues}
+  \i :despues
+\endif
+
 \o :salida
 select public.adn_exportar_paquete('ea100000-0000-0000-0000-00000000000a');
 \o
-rollback;
+-- Con -v conservar=1 los datos quedan en la base (los usa tests/aislamiento_api.sh, que luego los borra)
+\if :{?conservar}
+  commit;
+\else
+  rollback;
+\endif

@@ -27,6 +27,8 @@ Estado verificado en producción el 5 de noviembre de 2026 (proyecto `viveadn-sa
 | Tablas de uso solo del servidor | `plataforma_auditoria`, `plataforma_ajustes`, `registro_codigos`, `registro_intentos` | CI |
 | Una iglesia no cambia su plan, estado, dirección ni red | Disparador `private.guardar_iglesia` | CI |
 | Aislamiento entre iglesias | `aislamiento.sql` | CI |
+| Aislamiento total con dos usuarios: lectura, modificación, borrado e inserción sobre todas las tablas con `iglesia_id`, funciones, informes, envío, importación y claves foráneas | `adn_aislamiento_total.sql` (dentro de `exportacion/origen.sql`) | CI |
+| El mismo aislamiento a través de la API (PostgREST) | `aislamiento_api.sh` y `aislamiento_api.py` | Manual, ver `docs/AISLAMIENTO.md` |
 
 ## 3. Únicas vías entre iglesias
 

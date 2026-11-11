@@ -28,7 +28,7 @@ La escala es completo, parcial o inexistente.
 | Área | Estado | Qué hay y qué falta |
 | --- | --- | --- |
 | Inicio de sesión, registro, invitaciones, recuperar contraseña | Completo | Alta de iglesia por registro con código de beta y alta de personas por invitación [V] |
-| Aislamiento entre iglesias | Completo en base de datos | Seguridad por filas en todas las tablas, claves foráneas compuestas, pruebas en cada solicitud de unión [V]. Hay pruebas SQL; falta una prueba de extremo a extremo con dos usuarios reales a través de la API (trabajo 6) |
+| Aislamiento entre iglesias | Completo en base de datos | Seguridad por filas en todas las tablas, claves foráneas compuestas, pruebas en cada solicitud de unión [V]. Prueba SQL exhaustiva con dos usuarios sobre todas las tablas, que detecta fugas inyectadas a propósito [V, `adn_aislamiento_total.sql`]. El mismo ataque a través de la API (PostgREST) está escrito y su plomería probada con un servidor simulado, pero no se ha ejecutado contra PostgREST real [NV, `docs/AISLAMIENTO.md`] |
 | Roles y permisos | Completo | Roles por iglesia con permisos y módulos activables por plan [V] |
 | Miembros | Completo | Listado, ficha, alta, edición, importación desde CSV [V] |
 | Importador de miembros | Completo salvo validar con los archivos reales | Plantilla CSV propia y, desde el 11-11, contactos de Google y Outlook: segundo correo, tres teléfonos, cumpleaños, direcciones y etiquetas, con deduplicación por correo, descarte de filas vacías y sin importar nunca contraseñas (`docs/IMPORTACION.md`). Probado a la escala de Gerencia (6.100 filas) con datos sintéticos [V]; los archivos reales no se han visto [NV]. Falta decidir qué hacer con los contactos sin nombre (por defecto no se importan) |
@@ -85,7 +85,7 @@ Los seis trabajos en curso, en orden:
 3. Importador de miembros con formato Google Contacts: hecho con datos sintéticos; falta probarlo con los archivos reales que entregue Gerencia.
 4. Informes en PDF y Excel (miembros, asistencia, crecimiento): hecho y verificado (ver `docs/INFORMES.md`).
 5. Panel de inicio completo y Comunicación con envío al buzón de pruebas: hecho y verificado en base de datos (ver `docs/COMUNICACION.md`). El envío real sigue pendiente de proveedor, enlace de baja y aprobación del dueño.
-6. Pruebas de aislamiento con dos usuarios de prueba a través de la API.
+6. Pruebas de aislamiento con dos usuarios de prueba: hecha y verificada a nivel SQL con los roles reales; la versión a través de la API está escrita y pendiente de ejecutarse contra PostgREST (ver `docs/AISLAMIENTO.md`).
 
 Del producto, sin fecha: cobro del plan, canal de envío real de mensajes y alertas, credencial con escáner, subdominio por iglesia, historial de cambios por iglesia y segundo factor obligatorio [V, `docs/MULTITENANT.md` y `docs/COBRO.md`].
 

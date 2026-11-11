@@ -79,3 +79,7 @@ Nunca se concede nada a `anon`. Toda función nueva lleva su `grant execute` sol
 ## Reversiones (desde el 11 de noviembre de 2026)
 
 `reversiones/` guarda, junto a cada migración nueva, el script que la deshace. No es una migración: el CLI no lo aplica y solo se ejecuta a mano por orden de Gerencia. Cada uno se prueba en `tests/`: aplica, revierte, compara el esquema con el anterior y comprueba que no se pierde ningún dato de negocio (`tests/adn_reversion.sh`). Los objetos nuevos llevan el prefijo `adn_`.
+
+## Aislamiento entre iglesias con dos usuarios (añadido el 11 de noviembre de 2026)
+
+`supabase/tests/adn_aislamiento_total.sql` ataca todas las tablas con `iglesia_id` desde dos usuarios de prueba y se ejecuta con `ejecutar.sh`. Para repetir los mismos ataques a través de la API, con PostgREST en marcha como en la sección anterior: `PGUSER=postgres supabase/tests/aislamiento_api.sh viveadn_pruebas`. Detalle, fugas inyectadas y límites en `docs/AISLAMIENTO.md`.

@@ -40,6 +40,7 @@ bash tests/checkin_concurrencia.sh "$DB"
 "${PSQL[@]}" -d $DB -f tests/adn_informes.sql
 "${PSQL[@]}" -d $DB -f tests/adn_comunicacion.sql
 "${PSQL[@]}" -d $DB -f tests/adn_panel_inicio.sql
+"${PSQL[@]}" -At -d $DB -v salida=/dev/null -v despues=tests/adn_aislamiento_total.sql -f tests/exportacion/origen.sql
 "${PSQL[@]}" -d $DB -f tests/limites_plan.sql
 bash tests/limites_concurrencia.sh "$DB"
 bash tests/formacion_concurrencia.sh "$DB"
