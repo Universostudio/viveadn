@@ -1,4 +1,4 @@
-# Base de datos de ViveADN
+# Base de datos de Vive ADN
 
 Proyecto de producción en Supabase: **viveadn-saas** (ref `xrjbvjqhpwjjtcfdlsbq`, región eu-west-1).
 La cuenta tiene otros proyectos de Supabase: comprueba siempre esta referencia antes de ejecutar nada.

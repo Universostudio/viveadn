@@ -1,5 +1,5 @@
 -- =====================================================================
--- ViveADN: datos de catalogo (modulos, planes, permisos)
+-- Vive ADN: datos de catalogo (modulos, planes, permisos)
 -- Extraidos de produccion el 24 de octubre de 2026.
 -- Se ejecutan despues de esquema_completo.sql. No contienen datos de
 -- personas ni de iglesias. Los roles de cada iglesia los crea el trigger

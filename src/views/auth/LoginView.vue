@@ -6,7 +6,7 @@
         <div class="w-16 h-16 bg-adn-verde rounded-2xl flex items-center justify-center mx-auto mb-4">
           <span class="text-white text-3xl font-bold">V</span>
         </div>
-        <h1 class="text-2xl font-bold text-adn-verde">ViveADN</h1>
+        <h1 class="text-2xl font-bold text-adn-verde">Vive ADN</h1>
         <p class="text-gray-500 text-sm mt-1">{{ t('login.subtitulo') }}</p>
       </div>
 
@@ -106,14 +106,13 @@
 
       <SelectorIdioma id="selector-idioma-login" class="mt-6 max-w-xs mx-auto" />
 
-      <p class="text-center text-xs text-gray-400 mt-4">
-        © 2026 ViveADN
-      </p>
+      <PieLegal class="mt-4" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import PieLegal from '@/components/PieLegal.vue'
 import { CircleCheck } from '@lucide/vue'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'

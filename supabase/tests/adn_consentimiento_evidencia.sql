@@ -48,7 +48,7 @@ grant execute on function pg_temp.tk() to service_role;
 
 -- 1. Los textos: cuatro idiomas, con su huella, que nadie edita ni borra
 select pg_temp.igual((select count(*)::text from public.adn_consentimiento_textos where finalidad = 'checkin' and version = 'v1'), '4', 'la version v1 del texto del registro por QR existe en los cuatro idiomas');
-select pg_temp.igual((select count(*)::text from public.adn_consentimiento_textos where texto_hash = encode(sha256(convert_to(texto, 'UTF8')), 'hex')), '4', 'cada texto lleva la huella SHA-256 de su contenido');
+select pg_temp.igual((select count(*)::text from public.adn_consentimiento_textos where texto_hash = encode(sha256(convert_to(texto, 'UTF8')), 'hex')), '20', 'cada texto lleva la huella SHA-256 de su contenido');
 select pg_temp.falla($$insert into public.adn_consentimiento_textos (finalidad, version, idioma, texto, texto_hash) values ('checkin', 'v9', 'es', 'x', repeat('a', 64))$$, '23514', 'una huella que no es la del texto se rechaza');
 select pg_temp.falla($$update public.adn_consentimiento_textos set texto = 'otro'$$, 'ADN_REGISTRO_INMUTABLE', 'ni el servicio edita un texto: se crea otra version');
 select pg_temp.falla($$delete from public.adn_consentimiento_textos$$, 'ADN_REGISTRO_INMUTABLE', 'ni el servicio borra un texto');
@@ -57,7 +57,7 @@ select pg_temp.falla($$select * from public.adn_consentimiento_textos$$, '42501'
 reset role;
 select set_config('request.jwt.claim.sub', 'ae500000-0000-0000-0000-000000000003', true);
 set local role authenticated;
-select pg_temp.igual((select count(*)::text from public.adn_consentimiento_textos), '4', 'una persona con sesion lee los textos');
+select pg_temp.igual((select count(*)::text from public.adn_consentimiento_textos), '20', 'una persona con sesion lee los textos');
 select pg_temp.falla($$insert into public.adn_consentimiento_textos (finalidad, version, idioma, texto, texto_hash) values ('checkin', 'v2', 'es', 'x', encode(sha256(convert_to('x', 'UTF8')), 'hex'))$$, '42501', 'nadie con sesion crea textos');
 reset role;
 

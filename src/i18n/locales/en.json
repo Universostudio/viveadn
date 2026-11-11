@@ -739,7 +739,7 @@
   },
   "plataforma": {
     "titulo": "Platform",
-    "subtitulo": "ViveADN churches, plans and add-ons",
+    "subtitulo": "Vive ADN churches, plans and add-ons",
     "nueva": "New church",
     "cargando": "Loading churches...",
     "demo": "Demo",
@@ -821,7 +821,7 @@
     "pruebaHasta": "Trial until {fecha}",
     "exportar": "Export data",
     "exportada": "Export of {iglesia} downloaded.",
-    "exportLeeme": "ViveADN export (format viveadn-exportacion-2)\n\nmanifest.json  Figures for each table (rows, columns with their type, content fingerprint), load order and omitted columns.\ndatos.json     All the church data as JSON.\ncsv/           One CSV per table: UTF-8 without BOM, comma separator, CRLF line endings. An empty unquoted field is NULL; an empty string is written in quotes.\n\nFor security, secrets are not exported (QR and invitation tokens, IP fingerprints). Login accounts are not included: people must be invited again.\nCaution: if you open a CSV in a spreadsheet, a cell starting with = + - or @ may be read as a formula.\n",
+    "exportLeeme": "Vive ADN export (format viveadn-exportacion-2)\n\nmanifest.json  Figures for each table (rows, columns with their type, content fingerprint), load order and omitted columns.\ndatos.json     All the church data as JSON.\ncsv/           One CSV per table: UTF-8 without BOM, comma separator, CRLF line endings. An empty unquoted field is NULL; an empty string is written in quotes.\n\nFor security, secrets are not exported (QR and invitation tokens, IP fingerprints). Login accounts are not included: people must be invited again.\nCaution: if you open a CSV in a spreadsheet, a cell starting with = + - or @ may be read as a formula.\n",
     "programarBorrado": "Schedule deletion",
     "pedirDias": "In how many days should {iglesia} be deleted? (7 to 90)",
     "pedirDireccion": "To confirm, type the church address: {slug}",
@@ -868,13 +868,13 @@
     "donacion": "Donate",
     "seAbreEnOtraPagina": "Opens in another page",
     "configTitulo": "Giving links",
-    "configDescripcion": "Enter the web address where your church receives each kind of gift. ViveADN does not process or store payments: it only shows a button that opens that site in a new tab. Leave a field empty to hide its button.",
+    "configDescripcion": "Enter the web address where your church receives each kind of gift. Vive ADN does not process or store payments: it only shows a button that opens that site in a new tab. Leave a field empty to hide its button.",
     "ejemploUrl": "https://your-church.org/tithes",
     "urlInvalida": "Enter an address that starts with https:// and has no spaces.",
     "sinPermiso": "Only people who manage the church settings can change these links.",
     "paginaNoDisponible": "There is nothing to show here for now.",
     "paginaDescripcion": "{iglesia} receives tithes, offerings and donations on its own website. Choose an option to continue.",
-    "paginaAviso": "You will be taken to the church giving site. ViveADN does not process or store payments.",
+    "paginaAviso": "You will be taken to the church giving site. Vive ADN does not process or store payments.",
     "publicaTitulo": "Public giving page",
     "publicaDescripcion": "Anyone with this link can see your church giving buttons, without signing in. Share it on social media, by WhatsApp or on your website.",
     "copiar": "Copy link",
@@ -913,7 +913,7 @@
     },
     "config": {
       "fondosTitulo": "Giving funds",
-      "fondosAyuda": "Each fund is a button that leads to the site where your church receives that gift. ViveADN does not process or store payments. A fund without a link is not shown.",
+      "fondosAyuda": "Each fund is a button that leads to the site where your church receives that gift. Vive ADN does not process or store payments. A fund without a link is not shown.",
       "nombre": "Fund name",
       "enlace": "Link",
       "descripcion": "Short description (optional)",
@@ -1031,8 +1031,8 @@
     "titulo": "Attendance check-in",
     "email": "Email (optional)",
     "mayor14": "I am 14 or older, or my parent or guardian authorizes this registration.",
-    "consentimiento": "I agree that {iglesia} stores this information to contact me and follow up after my visit.",
-    "privacidad": "Your information is used only by {iglesia} to greet you and follow up. It shows that you attend a religious community, a specially protected kind of data, so it is only stored with your consent. You can ask to access, correct or delete it, and withdraw your consent at any time.",
+    "consentimiento": "I agree that {iglesia} stores this information to record my attendance and follow up after my visit.",
+    "privacidad": "Your data is handled by {iglesia}, the controller, through the Vive ADN platform, which acts on its behalf. It shows that you attend a religious community, a specially protected kind of data, so it is only stored with your consent. You can ask to access, correct or delete it, and withdraw your consent at any time.",
     "privacidadContacto": "Write to {correo}.",
     "enviar": "Check me in",
     "enviando": "Sending...",
@@ -1077,19 +1077,25 @@
         "imprimir": "Print",
         "cerrar": "Close"
       }
-    }
+    },
+    "canalesTitulo": "Optional: receive messages",
+    "canalesAyuda": "Tick only the channels you want to receive messages from the church on. You can register without ticking any.",
+    "canalEmail": "I want to receive messages from {iglesia} by email. I can unsubscribe at any time.",
+    "canalWhatsapp": "I want to receive messages from {iglesia} on WhatsApp. I can unsubscribe at any time.",
+    "canalSms": "I want to receive messages from {iglesia} by SMS. I can unsubscribe at any time.",
+    "masInfo": "More information in the privacy policy"
   },
   "bienvenida": {
     "lema1": "Your purpose,",
     "lema2": "our essence.",
     "entrar": "Sign in",
-    "conocer": "About ViveADN"
+    "conocer": "About Vive ADN"
   },
   "presentacion": {
     "inicio": "Home",
     "titulo": "Every person in your church, cared for.",
-    "subtitulo": "ViveADN brings your members, prayer houses, follow-up and training together in one place, with your own identity.",
-    "queHaceTitulo": "What ViveADN does",
+    "subtitulo": "Vive ADN brings your members, prayer houses, follow-up and training together in one place, with your own identity.",
+    "queHaceTitulo": "What Vive ADN does",
     "queHaceTexto": "Modules built for the daily work of a church. Each church uses the ones its plan includes.",
     "modulos": {
       "miembros": {
@@ -1122,7 +1128,7 @@
     "niveles": {
       "plataforma": {
         "titulo": "Master Panel",
-        "texto": "Whoever runs ViveADN sees every church, its plan, modules and members."
+        "texto": "Whoever runs Vive ADN sees every church, its plan, modules and members."
       },
       "iglesia": {
         "titulo": "Church dashboard",
@@ -1135,7 +1141,7 @@
     },
     "dar": {
       "titulo": "Your money stays yours",
-      "texto": "ViveADN does not process or store payments. Gifts go straight to the sites your church already uses."
+      "texto": "Vive ADN does not process or store payments. Gifts go straight to the sites your church already uses."
     }
   },
   "red": {
@@ -1155,7 +1161,7 @@
   },
   "registro": {
     "titulo": "Register your church",
-    "subtitulo": "Create your church account and start trying ViveADN.",
+    "subtitulo": "Create your church account and start trying Vive ADN.",
     "cerradoTitulo": "Registration is not available right now",
     "cerradoTexto": "For now, churches are admitted by invitation only. If you already have an account, sign in.",
     "irAlAcceso": "Sign in",
@@ -1172,11 +1178,11 @@
     "correoAyuda": "We will send you a link to create your password.",
     "codigo": "Access code",
     "codigoAyuda": "During testing, registration needs a code. Ask whoever invited you.",
-    "consentimiento": "I agree that ViveADN processes this data to create my church account.",
+    "consentimiento": "I agree that Vive ADN processes this data to create my church account.",
     "enviar": "Register my church",
     "enviando": "Sending…",
     "yaTienes": "Already have an account?",
-    "enlaceLogin": "Is your church not on ViveADN yet?",
+    "enlaceLogin": "Is your church not on Vive ADN yet?",
     "enlaceLoginAccion": "Register my church",
     "enlaceBienvenida": "Register my church",
     "errores": {
@@ -1210,7 +1216,7 @@
   },
   "informes": {
     "generadoEl": "Generated on {fecha}",
-    "pie": "ViveADN · {informe}",
+    "pie": "Vive ADN · {informe}",
     "pagina": "Page {n} of {total}",
     "si": "Yes",
     "no": "No",
@@ -1376,5 +1382,19 @@
     "inesperado": "An unexpected error occurred. Reload the page to try again.",
     "reintentar": "Reload the page",
     "irInicio": "Go to the home page"
+  },
+  "legal": {
+    "privacidad": "Privacy policy",
+    "terminos": "Terms of use",
+    "aviso": "Legal notice",
+    "cookies": "Cookie policy",
+    "soporte": "Support",
+    "pie": "Legal information",
+    "version": "Version {v}",
+    "actualizado": "Updated on {fecha}",
+    "indice": "Contents",
+    "historial": "Version history",
+    "noDisponible": "We could not load this document. Reload the page to try again.",
+    "datosPendientes": "Holder details still need to be configured before this document is published: {datos}."
   }
 }

@@ -1,5 +1,5 @@
 -- =====================================================================
--- ViveADN: esquema completo de la base de datos (proyecto viveadn-saas)
+-- Vive ADN: esquema completo de la base de datos (proyecto viveadn-saas)
 -- Extraido del catalogo de Postgres de produccion el 24 de octubre de 2026.
 --
 -- Recoge todo lo aplicado hasta esa fecha, incluido lo que se hizo a mano

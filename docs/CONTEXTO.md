@@ -1,4 +1,4 @@
-# Contexto de ViveADN
+# Contexto de Vive ADN
 
 Documento de referencia para quien se incorpora al proyecto. No contiene datos de infraestructura (identificadores de proyectos, claves, dominios internos ni datos de personas), porque el repositorio es público.
 
@@ -6,7 +6,7 @@ Cada afirmación lleva su etiqueta de evidencia: **[V]** comprobado por Gerencia
 
 ## 1. Qué es
 
-ViveADN es una aplicación web para gestionar iglesias: miembros, casas de oración (células), consolidación de nuevos creyentes, eventos y asistencia, formación con certificados, dar (enlaces de ofrenda) y comunicación. Cada iglesia es un inquilino aislado dentro de una sola base de datos compartida [E]. La web sirve en español, inglés, francés y portugués de Brasil [E, `src/i18n/locales`]. El producto lo construye Visualiza Studio.
+Vive ADN es una aplicación web para gestionar iglesias: miembros, casas de oración (células), consolidación de nuevos creyentes, eventos y asistencia, formación con certificados, dar (enlaces de ofrenda) y comunicación. Cada iglesia es un inquilino aislado dentro de una sola base de datos compartida [E]. La web sirve en español, inglés, francés y portugués de Brasil [E, `src/i18n/locales`]. El producto lo construye Visualiza Studio.
 
 ## 2. Stack
 
@@ -68,7 +68,7 @@ Reglas para toda tabla nueva: `docs/MULTITENANT.md`, sección 5.
 
 ## 5. Rutas de la web
 
-Públicas: `/bienvenida`, `/presentacion`, `/login`, `/registro`, `/reset-password`, `/aceptar` (invitación), `/dar/:slug`, `/checkin/:token` y `/verificar/:codigo` y `/baja/:token` [E, `src/router/index.ts`].
+Públicas: `/bienvenida`, `/presentacion`, `/login`, `/registro`, `/reset-password`, `/aceptar` (invitación), `/dar/:slug`, `/checkin/:token` y `/verificar/:codigo`, `/baja/:token` y los textos legales `/privacidad`, `/terminos`, `/aviso-legal` y `/cookies` [E, `src/router/index.ts`].
 
 Con sesión: `/` (panel), `/miembros`, `/miembros/:id`, `/eventos`, `/eventos/:id`, `/casas`, `/consolidacion`, `/formacion`, `/formacion/programas`, `/comunicacion`, `/comunicacion/consentimientos`, `/reportes`, `/configuracion`, `/red` y `/plataforma` (solo administradores de plataforma) [E]. Cada entrada del menú aparece según los permisos del rol y los módulos de la iglesia [E, `AppLayout.vue`].
 
@@ -93,6 +93,8 @@ Los seis trabajos en curso, en orden:
 2. Desplegar la función de borde `baja` sin verificar el JWT, como `dar-publico`, y probarla de extremo a extremo.
 3. Límite de frecuencia en `baja` (opcional: no hace falta contra la fuerza bruta, pero frena el ruido).
 4. Un proveedor aprobado por el dueño, base legal revisada por un abogado (`docs/COMUNICACION.md`, apartado 5) y consentimientos registrados. Re-suscribir a alguien exige un registro explícito con origen: quitar una baja lo deja en «sin dato».
+
+**Textos legales:** versión 1 publicable en la rama, en cuatro idiomas (`docs/LEGAL.md`). Faltan los datos del titular (NIF, domicilio, correos), la revisión del abogado y la aprobación de Harold para desplegar. El registro por QR es la versión v2, con una casilla por canal (`docs/COMUNICACION.md`).
 
 **Monitorización:** ruta de salud y pantalla de error propia, escritas y probadas pero sin desplegar; falta elegir el vigilante y a quién se avisa (`docs/MONITORIZACION.md`).
 
@@ -124,6 +126,8 @@ Todo lo marcado **[E]** se repite con estos comandos, desde la raíz del reposit
 | Secretos en todo el historial y en los archivos actuales (solo imprime recuentos) | `scripts/buscar-secretos.sh` |
 | Tipos, compilación y los cuatro idiomas | `npm run type-check`, `npm run build-only`, `npm run check:idiomas` |
 | El texto de consentimiento de la web es el que consta en la base (versión v1, cuatro idiomas) | `npm run check:textos` |
+| Textos legales: mismos cuatro idiomas, estructura y huella de versión | `npm run check:legal` |
+| Datos del titular completos antes de publicar (no imprime valores) | `npm run check:config-legal` |
 | Ruta de salud y estado de error de la aplicación | `npm run test:salud`, `npm run test:error` |
 | Ensayo de un archivo de contactos real, solo cifras | `node scripts/resumen-contactos-google.mts <archivo fuera del repositorio>` |
 | Aislamiento por API (necesita PostgREST real y una base de pruebas) | `supabase/tests/aislamiento_api.sh <base>` (**[NV]**: no se ha ejecutado) |

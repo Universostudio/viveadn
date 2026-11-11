@@ -739,7 +739,7 @@
   },
   "plataforma": {
     "titulo": "Plataforma",
-    "subtitulo": "Iglesias, planes y complementos de ViveADN",
+    "subtitulo": "Iglesias, planes y complementos de Vive ADN",
     "nueva": "Nueva iglesia",
     "cargando": "Cargando iglesias...",
     "demo": "Demo",
@@ -821,7 +821,7 @@
     "pruebaHasta": "Prueba hasta {fecha}",
     "exportar": "Exportar datos",
     "exportada": "Exportación de {iglesia} descargada.",
-    "exportLeeme": "Exportación de ViveADN (formato viveadn-exportacion-2)\n\nmanifest.json  Cifras de cada tabla (filas, columnas con su tipo, huella del contenido), orden de carga y columnas omitidas.\ndatos.json     Todos los datos de la iglesia en JSON.\ncsv/           Un CSV por tabla: UTF-8 sin BOM, separador coma, fin de línea CRLF. Un campo vacío sin comillas es NULL; una cadena vacía va entre comillas.\n\nPor seguridad no se exportan los secretos (tokens de QR y de invitación, huellas de IP). Las cuentas de acceso no viajan: las personas deben volver a ser invitadas.\nCuidado: si abres un CSV en una hoja de cálculo, una celda que empiece por = + - o @ puede interpretarse como fórmula.\n",
+    "exportLeeme": "Exportación de Vive ADN (formato viveadn-exportacion-2)\n\nmanifest.json  Cifras de cada tabla (filas, columnas con su tipo, huella del contenido), orden de carga y columnas omitidas.\ndatos.json     Todos los datos de la iglesia en JSON.\ncsv/           Un CSV por tabla: UTF-8 sin BOM, separador coma, fin de línea CRLF. Un campo vacío sin comillas es NULL; una cadena vacía va entre comillas.\n\nPor seguridad no se exportan los secretos (tokens de QR y de invitación, huellas de IP). Las cuentas de acceso no viajan: las personas deben volver a ser invitadas.\nCuidado: si abres un CSV en una hoja de cálculo, una celda que empiece por = + - o @ puede interpretarse como fórmula.\n",
     "programarBorrado": "Programar borrado",
     "pedirDias": "¿En cuántos días se borrará {iglesia}? (de 7 a 90)",
     "pedirDireccion": "Para confirmar, escribe la dirección de la iglesia: {slug}",
@@ -868,13 +868,13 @@
     "donacion": "Donar",
     "seAbreEnOtraPagina": "Se abre en otra página",
     "configTitulo": "Enlaces para dar",
-    "configDescripcion": "Escribe la dirección web donde tu iglesia recibe cada aporte. ViveADN no procesa ni guarda pagos: solo muestra un botón que abre ese sitio en otra pestaña. Deja un campo vacío para ocultar su botón.",
+    "configDescripcion": "Escribe la dirección web donde tu iglesia recibe cada aporte. Vive ADN no procesa ni guarda pagos: solo muestra un botón que abre ese sitio en otra pestaña. Deja un campo vacío para ocultar su botón.",
     "ejemploUrl": "https://tu-iglesia.org/diezmos",
     "urlInvalida": "Escribe una dirección que empiece por https:// y no tenga espacios.",
     "sinPermiso": "Solo quien configura la iglesia puede cambiar estos enlaces.",
     "paginaNoDisponible": "No hay nada para mostrar aquí por ahora.",
     "paginaDescripcion": "{iglesia} recibe diezmos, ofrendas y donaciones en su propio sitio web. Elige una opción para continuar.",
-    "paginaAviso": "Serás llevado al sitio de recaudo de la iglesia. ViveADN no procesa ni guarda pagos.",
+    "paginaAviso": "Serás llevado al sitio de recaudo de la iglesia. Vive ADN no procesa ni guarda pagos.",
     "publicaTitulo": "Página pública para dar",
     "publicaDescripcion": "Cualquier persona con este enlace puede ver los botones de dar de tu iglesia, sin iniciar sesión. Compártelo en redes, por WhatsApp o en tu web.",
     "copiar": "Copiar enlace",
@@ -913,7 +913,7 @@
     },
     "config": {
       "fondosTitulo": "Fondos para dar",
-      "fondosAyuda": "Cada fondo es un botón que lleva al sitio donde tu iglesia recibe ese aporte. ViveADN no procesa ni guarda pagos. Un fondo sin enlace no se muestra.",
+      "fondosAyuda": "Cada fondo es un botón que lleva al sitio donde tu iglesia recibe ese aporte. Vive ADN no procesa ni guarda pagos. Un fondo sin enlace no se muestra.",
       "nombre": "Nombre del fondo",
       "enlace": "Enlace",
       "descripcion": "Descripción breve (opcional)",
@@ -1031,8 +1031,8 @@
     "titulo": "Registro de asistencia",
     "email": "Correo electrónico (opcional)",
     "mayor14": "Tengo 14 años o más, o mi padre, madre o tutor autoriza este registro.",
-    "consentimiento": "Acepto que {iglesia} guarde estos datos para contactarme y acompañarme tras mi visita.",
-    "privacidad": "Tus datos los usa solo {iglesia} para saludarte y darte seguimiento. Indican que asistes a una comunidad religiosa, un dato especialmente protegido, por eso solo se guardan con tu consentimiento. Puedes pedir acceder a ellos, corregirlos o borrarlos, y retirar tu consentimiento en cualquier momento.",
+    "consentimiento": "Acepto que {iglesia} guarde estos datos para registrar mi asistencia y acompañarme tras mi visita.",
+    "privacidad": "Tus datos los trata {iglesia}, que es la responsable, a través de la plataforma Vive ADN, que actúa por su cuenta. Indican que asistes a una comunidad religiosa, un dato especialmente protegido, por eso solo se guardan con tu consentimiento. Puedes pedir acceder a ellos, corregirlos o borrarlos, y retirar tu consentimiento en cualquier momento.",
     "privacidadContacto": "Escribe a {correo}.",
     "enviar": "Registrarme",
     "enviando": "Enviando...",
@@ -1077,19 +1077,25 @@
         "imprimir": "Imprimir",
         "cerrar": "Cerrar"
       }
-    }
+    },
+    "canalesTitulo": "Opcional: recibir mensajes",
+    "canalesAyuda": "Marca solo los canales por los que quieres recibir mensajes de la iglesia. Puedes registrarte sin marcar ninguno.",
+    "canalEmail": "Quiero recibir mensajes de {iglesia} por correo electrónico. Puedo darme de baja cuando quiera.",
+    "canalWhatsapp": "Quiero recibir mensajes de {iglesia} por WhatsApp. Puedo darme de baja cuando quiera.",
+    "canalSms": "Quiero recibir mensajes de {iglesia} por SMS. Puedo darme de baja cuando quiera.",
+    "masInfo": "Más información en la política de privacidad"
   },
   "bienvenida": {
     "lema1": "Tu propósito,",
     "lema2": "nuestra esencia.",
     "entrar": "Entrar al sistema",
-    "conocer": "Conocer ViveADN"
+    "conocer": "Conocer Vive ADN"
   },
   "presentacion": {
     "inicio": "Inicio",
     "titulo": "Cada persona de tu iglesia, acompañada.",
-    "subtitulo": "ViveADN reúne a los miembros, las casas de oración, la consolidación y la formación de tu iglesia en un solo lugar, con su propia identidad.",
-    "queHaceTitulo": "Lo que hace ViveADN",
+    "subtitulo": "Vive ADN reúne a los miembros, las casas de oración, la consolidación y la formación de tu iglesia en un solo lugar, con su propia identidad.",
+    "queHaceTitulo": "Lo que hace Vive ADN",
     "queHaceTexto": "Módulos pensados para el trabajo diario de una iglesia. Cada iglesia usa los que incluye su plan.",
     "modulos": {
       "miembros": {
@@ -1122,7 +1128,7 @@
     "niveles": {
       "plataforma": {
         "titulo": "Panel Maestro",
-        "texto": "Quien administra ViveADN ve todas las iglesias, sus planes, módulos y miembros."
+        "texto": "Quien administra Vive ADN ve todas las iglesias, sus planes, módulos y miembros."
       },
       "iglesia": {
         "titulo": "Panel de la iglesia",
@@ -1135,7 +1141,7 @@
     },
     "dar": {
       "titulo": "Sin tocar tu dinero",
-      "texto": "ViveADN no procesa ni guarda pagos. Las ofrendas llegan directamente a los sitios que tu iglesia ya usa."
+      "texto": "Vive ADN no procesa ni guarda pagos. Las ofrendas llegan directamente a los sitios que tu iglesia ya usa."
     }
   },
   "red": {
@@ -1155,7 +1161,7 @@
   },
   "registro": {
     "titulo": "Registra tu iglesia",
-    "subtitulo": "Crea la cuenta de tu iglesia y empieza a probar ViveADN.",
+    "subtitulo": "Crea la cuenta de tu iglesia y empieza a probar Vive ADN.",
     "cerradoTitulo": "El registro no está disponible ahora",
     "cerradoTexto": "Por el momento solo se admiten iglesias por invitación. Si ya tienes cuenta, inicia sesión.",
     "irAlAcceso": "Iniciar sesión",
@@ -1172,11 +1178,11 @@
     "correoAyuda": "Te enviaremos un enlace para crear tu contraseña.",
     "codigo": "Código de acceso",
     "codigoAyuda": "Durante las pruebas el registro es solo con código. Pídelo a quien te invitó.",
-    "consentimiento": "Acepto que ViveADN trate estos datos para crear la cuenta de mi iglesia.",
+    "consentimiento": "Acepto que Vive ADN trate estos datos para crear la cuenta de mi iglesia.",
     "enviar": "Registrar mi iglesia",
     "enviando": "Enviando…",
     "yaTienes": "¿Ya tienes cuenta?",
-    "enlaceLogin": "¿Tu iglesia aún no está en ViveADN?",
+    "enlaceLogin": "¿Tu iglesia aún no está en Vive ADN?",
     "enlaceLoginAccion": "Registrar mi iglesia",
     "enlaceBienvenida": "Registrar mi iglesia",
     "errores": {
@@ -1210,7 +1216,7 @@
   },
   "informes": {
     "generadoEl": "Generado el {fecha}",
-    "pie": "ViveADN · {informe}",
+    "pie": "Vive ADN · {informe}",
     "pagina": "Página {n} de {total}",
     "si": "Sí",
     "no": "No",
@@ -1376,5 +1382,19 @@
     "inesperado": "Ha ocurrido un error inesperado. Recarga la página para intentarlo de nuevo.",
     "reintentar": "Recargar la página",
     "irInicio": "Ir al inicio"
+  },
+  "legal": {
+    "privacidad": "Política de privacidad",
+    "terminos": "Términos de uso",
+    "aviso": "Aviso legal",
+    "cookies": "Política de cookies",
+    "soporte": "Soporte",
+    "pie": "Información legal",
+    "version": "Versión {v}",
+    "actualizado": "Actualizada el {fecha}",
+    "indice": "Contenido",
+    "historial": "Historial de versiones",
+    "noDisponible": "No hemos podido cargar este documento. Recarga la página para intentarlo de nuevo.",
+    "datosPendientes": "Faltan datos del titular por configurar antes de publicar este documento: {datos}."
   }
 }

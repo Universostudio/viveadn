@@ -81,7 +81,7 @@
         </section>
 
         <SelectorIdioma id="selector-idioma-dar" class="max-w-xs mx-auto" />
-        <p class="text-center text-xs text-gray-400">© 2026 ViveADN</p>
+        <PieLegal class="mt-4" />
       </main>
 
       <!-- Calculadora en ventana (estilo «ingreso de un día») -->
@@ -99,6 +99,7 @@
 </template>
 
 <script setup lang="ts">
+import PieLegal from '@/components/PieLegal.vue'
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'

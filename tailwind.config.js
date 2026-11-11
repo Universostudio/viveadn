@@ -7,7 +7,7 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Marca ViveADN: paleta "ADN Vital"
+        // Marca Vive ADN: paleta "ADN Vital"
         adn: {
           verde:    '#00523c',
           oscuro:   '#003828',

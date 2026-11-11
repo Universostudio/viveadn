@@ -22,11 +22,13 @@
         <h1 class="text-xl font-bold text-gray-900">{{ t(`baja.${estado}`) }}</h1>
         <p class="text-sm text-gray-500 mt-1">{{ t(`baja.${estado}Texto`) }}</p>
       </template>
+      <PieLegal class="mt-6" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import PieLegal from '@/components/PieLegal.vue'
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'

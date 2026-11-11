@@ -1,16 +1,16 @@
-# Modelo de cobro de ViveADN
+# Modelo de cobro de Vive ADN
 
 Estado: diseño aprobado por la gerencia el 7 de noviembre de 2026; nada de esto está aplicado en producción y todo se construye en modo de prueba, sin claves reales. Lo marcado [H, abogado] necesita revisión humana antes de salir de prueba. Este documento es la referencia del cobro; si algo cambia, se cambia aquí en el mismo PR.
 
 ## 1. Principio
 
-Visualiza cobra solo su software, por suscripción o mantenimiento. El dinero de terceros nunca pasa por Visualiza ni por su libro. ViveADN debe poder vender, cobrar, emitir recibos y exportar sus libros sin depender de Visualiza Finance ni de ningún negocio vecino: Finance es la gerencia, publica políticas y consolida, y nunca es camino obligatorio del cobro. Primero se cobra, después se emite el evento.
+Visualiza cobra solo su software, por suscripción o mantenimiento. El dinero de terceros nunca pasa por Visualiza ni por su libro. Vive ADN debe poder vender, cobrar, emitir recibos y exportar sus libros sin depender de Visualiza Finance ni de ningún negocio vecino: Finance es la gerencia, publica políticas y consolida, y nunca es camino obligatorio del cobro. Primero se cobra, después se emite el evento.
 
 ## 2. Dos flujos separados
 
 | Flujo | Quién paga | A quién | Pasarela y credenciales | Dónde se registra |
 | --- | --- | --- | --- | --- |
-| 1. Plan de ViveADN | La iglesia | Visualiza | Las de la entidad: Stripe y PayPal | En ViveADN y, después, en Finance |
+| 1. Plan de Vive ADN | La iglesia | Visualiza | Las de la entidad: Stripe y PayPal | En Vive ADN y, después, en Finance |
 | 2. Dinero de la iglesia (ofrendas, cuotas, pagos de miembros) | Miembros y visitantes | La iglesia | Las de la propia iglesia, conectadas desde su panel | Solo en el sistema de la iglesia |
 
 Las seis cuentas de pasarela de Finance son de Visualiza y sirven únicamente al flujo 1. No son un catálogo para las iglesias.
@@ -44,9 +44,9 @@ Cifrado de sobre, por inquilino:
 ## 6. Cobro del plan (flujo 1) sin depender de Finance
 
 - Catálogo de precios en la base: planes fijos por tramos (recomendación de la gerencia, pendiente de Harold) y módulos como complementos. Los tres precios son una propuesta marcada hasta que Harold los fije.
-- La iglesia paga con Stripe o PayPal de la entidad. ViveADN guarda la suscripción, el cobro y un recibo numerado sin saltos.
+- La iglesia paga con Stripe o PayPal de la entidad. Vive ADN guarda la suscripción, el cobro y un recibo numerado sin saltos.
 - Cada cobro escribe un evento en una cola de salida (`eventos_salida`) en la misma transacción. Un proceso aparte lo entrega a Finance con reintentos y se reconcilia al reconectar. Si Finance está apagado, el cobro no se detiene.
-- ViveADN no comparte tablas ni funciones con otros negocios.
+- Vive ADN no comparte tablas ni funciones con otros negocios.
 - Los términos dicen que Visualiza es proveedor de software y que reembolsos y disputas se gestionan en la pasarela del cliente [H, abogado].
 
 ## 7. Modelo de datos (propuesta)
@@ -63,7 +63,7 @@ Cifrado de sobre, por inquilino:
 
 ## 8. Prueba de separación
 
-Criterio de terminado: con Finance y los vecinos apagados siete días, ViveADN puede vender, cobrar, emitir recibos y exportar sus libros, y se reconcilia al reconectar.
+Criterio de terminado: con Finance y los vecinos apagados siete días, Vive ADN puede vender, cobrar, emitir recibos y exportar sus libros, y se reconcilia al reconectar.
 
 | Capacidad | Hoy | Falta |
 | --- | --- | --- |

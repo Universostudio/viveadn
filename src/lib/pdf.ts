@@ -228,7 +228,7 @@ export function crearPdf(informe: Informe): Uint8Array {
   const f = informe.generado
   const p2 = (n: number) => String(n).padStart(2, '0')
   const fecha = `D:${f.getUTCFullYear()}${p2(f.getUTCMonth() + 1)}${p2(f.getUTCDate())}${p2(f.getUTCHours())}${p2(f.getUTCMinutes())}${p2(f.getUTCSeconds())}Z`
-  objeto(5, `<< /Title ${utf16Hex(informe.titulo)} /Producer (ViveADN) /Creator (ViveADN) /CreationDate (${fecha}) >>`)
+  objeto(5, `<< /Title ${utf16Hex(informe.titulo)} /Producer (Vive ADN) /Creator (Vive ADN) /CreationDate (${fecha}) >>`)
   paginas.forEach((p, i) => {
     const contenido = p.ops.join('\n')
     objeto(idPagina(i), `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${num(ancho)} ${num(alto)}] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents ${idPagina(i) + 1} 0 R >>`)

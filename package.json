@@ -21,6 +21,8 @@
     "test:exportacion": "node scripts/probar-exportacion.mts",
     "test:google": "node scripts/probar-importar-google.mts",
     "check:textos": "node scripts/comprobar-textos-consentimiento.mts",
+    "check:legal": "node scripts/verificar-legal.mts",
+    "check:config-legal": "node scripts/verificar-config-legal.mts",
     "test:salud": "node scripts/probar-salud.mts",
     "test:error": "node scripts/probar-error-app.mts",
     "test:informes": "node scripts/probar-informes.mts"

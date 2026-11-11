@@ -14,6 +14,8 @@ export interface Datos {
   /** Versión del texto de consentimiento que mostraba la página y su idioma; vacíos si no constan o no son válidos */
   textoVersion: string
   idioma: string
+  /** Canales de comunicación cuya casilla marcó la persona (cada una por separado, sin marcar de antemano) */
+  canales: string[]
 }
 
 export type Resultado =
@@ -22,6 +24,7 @@ export type Resultado =
 
 const VERSION_RE = /^[a-z0-9._-]{1,20}$/
 const IDIOMAS = ['es', 'en', 'fr', 'pt-BR']
+const CANALES = ['email', 'whatsapp', 'sms']
 
 const texto = (v: unknown, max: number) => (typeof v === 'string' ? v.normalize('NFC').replace(/\s+/g, ' ').trim().slice(0, max + 1) : '')
 
@@ -41,7 +44,11 @@ export function validarRegistro(b: Record<string, unknown>): Resultado {
   // La versión del texto la afirma la página; la base la contrasta con su tabla de textos y, si no consta, no la da por buena
   const textoVersion = typeof b.texto_version === 'string' && VERSION_RE.test(b.texto_version) ? b.texto_version : ''
   const idioma = typeof b.idioma === 'string' && IDIOMAS.includes(b.idioma) ? b.idioma : ''
-  return { ok: true, datos: { nombre, apellido, telefono, email, textoVersion, idioma } }
+  // Solo cuenta una casilla que llega exactamente como true. Marcar el correo sin escribir un correo es un dato incompleto.
+  const marcadas = typeof b.canales === 'object' && b.canales !== null && !Array.isArray(b.canales) ? (b.canales as Record<string, unknown>) : {}
+  const canales = CANALES.filter(c => marcadas[c] === true)
+  if (canales.includes('email') && !email) return { ok: false, error: 'datos' }
+  return { ok: true, datos: { nombre, apellido, telefono, email, textoVersion, idioma, canales } }
 }
 
 // Respuesta al visitante segun lo que devuelve la base de datos. Nuevo y existente se responden igual.

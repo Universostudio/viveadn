@@ -69,8 +69,25 @@
           <input v-model="form.consentimiento" type="checkbox" required class="mt-0.5 rounded border-gray-300 text-adn-verde" />
           <span>{{ t('checkin.consentimiento', { iglesia: info?.iglesia ?? '' }) }}</span>
         </label>
+        <fieldset class="space-y-2 rounded-lg border border-gray-200 px-4 py-3">
+          <legend class="px-1 text-sm font-medium text-gray-700">{{ t('checkin.canalesTitulo') }}</legend>
+          <p class="text-xs text-gray-500">{{ t('checkin.canalesAyuda') }}</p>
+          <label class="flex items-start gap-2 text-sm text-gray-700">
+            <input v-model="canales.email" type="checkbox" :disabled="!form.email.trim()" class="mt-0.5 rounded border-gray-300 text-adn-verde disabled:opacity-50" />
+            <span>{{ t('checkin.canalEmail', { iglesia: info?.iglesia ?? '' }) }}</span>
+          </label>
+          <label class="flex items-start gap-2 text-sm text-gray-700">
+            <input v-model="canales.whatsapp" type="checkbox" class="mt-0.5 rounded border-gray-300 text-adn-verde" />
+            <span>{{ t('checkin.canalWhatsapp', { iglesia: info?.iglesia ?? '' }) }}</span>
+          </label>
+          <label class="flex items-start gap-2 text-sm text-gray-700">
+            <input v-model="canales.sms" type="checkbox" class="mt-0.5 rounded border-gray-300 text-adn-verde" />
+            <span>{{ t('checkin.canalSms', { iglesia: info?.iglesia ?? '' }) }}</span>
+          </label>
+        </fieldset>
         <p class="text-xs text-gray-400">
           {{ t('checkin.privacidad', { iglesia: info?.iglesia ?? '' }) }}
+          <RouterLink to="/privacidad" target="_blank" class="underline">{{ t('checkin.masInfo') }}</RouterLink>.
           <template v-if="info?.contacto"> {{ t('checkin.privacidadContacto', { correo: info.contacto }) }}</template>
         </p>
 
@@ -79,12 +96,13 @@
       </form>
 
       <SelectorIdioma id="selector-idioma-checkin" class="mt-6 max-w-xs mx-auto" />
-      <p class="text-center text-xs text-gray-400 mt-6">© 2026 ViveADN</p>
+      <PieLegal class="mt-4" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import PieLegal from '@/components/PieLegal.vue'
 import { ref, reactive, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
@@ -101,6 +119,8 @@ const info = ref<{ iglesia?: string; evento?: string; contacto?: string; alias?:
 const enviando = ref(false)
 const error = ref('')
 const form = reactive({ nombre: '', apellido: '', telefono: '', email: '', mayor14: false, consentimiento: false, web: '' })
+// Una casilla por canal, sin marcar de antemano: la persona decide cada una y puede registrarse sin marcar ninguna
+const canales = reactive({ email: false, whatsapp: false, sms: false })
 const token = String(route.params.token ?? '')
 
 // La pagina lleva el enlace secreto en la direccion: que no se indexe ni se pase a otros sitios
@@ -138,7 +158,7 @@ async function enviar() {
   if (!form.nombre.trim() || (!info.value?.alias && !form.apellido.trim()) || !form.telefono.trim()) { error.value = 'checkin.errorDatos'; return }
   if (!form.mayor14 || !form.consentimiento) { error.value = 'checkin.errorConsentimiento'; return }
   enviando.value = true
-  const { error: err } = await supabase.functions.invoke('checkin-evento', { body: { accion: 'registrar', token, ...form, texto_version: CHECKIN_TEXTO_VERSION, idioma: locale.value, ...(info.value?.alias ? { apellido: '', email: '' } : {}) } })
+  const { error: err } = await supabase.functions.invoke('checkin-evento', { body: { accion: 'registrar', token, ...form, texto_version: CHECKIN_TEXTO_VERSION, idioma: locale.value, canales: { ...canales, email: canales.email && !!form.email.trim() }, ...(info.value?.alias ? { apellido: '', email: '' } : {}) } })
   enviando.value = false
   if (!err) { estado.value = 'enviado'; return }
   const codigo = await codigoDe(err)

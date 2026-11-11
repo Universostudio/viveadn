@@ -22,7 +22,7 @@
             <span class="text-white text-lg font-bold">V</span>
           </div>
           <div>
-            <p class="font-display font-bold text-adn-verde text-sm leading-tight">ViveADN</p>
+            <p class="font-display font-bold text-adn-verde text-sm leading-tight">Vive ADN</p>
             <p class="text-xs text-gray-400">{{ iglesiaName }}</p>
           </div>
         </div>
@@ -67,6 +67,7 @@
           </select>
         </div>
         <SelectorIdioma id="selector-idioma-menu" class="px-3 pt-2" ocultar-etiqueta />
+        <PieLegal class="px-3 pt-3" />
       </div>
     </aside>
 
@@ -79,7 +80,7 @@
           class="w-10 h-10 -ml-2 flex items-center justify-center rounded-lg text-adn-verde hover:bg-adn-arena"
           :aria-label="t('menu.abrirMenu')"
         ><Menu class="w-6 h-6" aria-hidden="true" /></button>
-        <p class="font-display font-bold text-adn-verde">ViveADN</p>
+        <p class="font-display font-bold text-adn-verde">Vive ADN</p>
       </header>
 
       <div v-if="auth.verComo" role="status" class="bg-amber-100 text-amber-900 text-xs px-4 py-2 flex items-center justify-between gap-3 flex-wrap">
@@ -102,6 +103,7 @@ import {
 import { useRouter, useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import SelectorIdioma from '@/components/SelectorIdioma.vue'
+import PieLegal from '@/components/PieLegal.vue'
 import { useAuthStore } from '@/stores/auth'
 import { supabase } from '@/lib/supabase'
 import { haceHoras } from '@/lib/alertas'

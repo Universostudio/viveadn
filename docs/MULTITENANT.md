@@ -1,4 +1,4 @@
-# Infraestructura multi-iglesia de ViveADN
+# Infraestructura multi-iglesia de Vive ADN
 
 El modelo de cobro, las pasarelas y la prueba de separación están en [`docs/COBRO.md`](COBRO.md).
 

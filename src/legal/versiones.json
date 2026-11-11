@@ -1,0 +1,64 @@
+{
+  "documentos": {
+    "privacidad": {
+      "versiones": [
+        {
+          "version": "1.0",
+          "fecha": "2026-11-11",
+          "cambios": "Primera versión publicable, pendiente de revisión por un abogado.",
+          "huellas": {
+            "es": "0f9e1b20561b6acaa19d63397f78b00dda125ac22f705d67ed0671de00239647",
+            "en": "165553f9b7e7cb8ebb5e1eaa50b01f9db996cc88e09baa45465b76738f1e9a9c",
+            "fr": "b550abcf2cfb5b49867ac066ae5ebe1a74ff59413b067e962d6dd7f570fc0326",
+            "pt-BR": "0406c683050ca54026788e6f375ec4798074ffa7d5ed95ebd5a095ae4da2b72c"
+          }
+        }
+      ]
+    },
+    "terminos": {
+      "versiones": [
+        {
+          "version": "1.0",
+          "fecha": "2026-11-11",
+          "cambios": "Primera versión publicable, con el contrato de encargo del tratamiento. Pendiente de revisión por un abogado.",
+          "huellas": {
+            "es": "e2dffaae416f53953440ee350717def1c3c979627a093435f560023a1b446c3e",
+            "en": "ee5587fc056fe46081c3098e72f11f2e264159fff72a878385512842518e14dd",
+            "fr": "827b21c684a7e296531761f3d8df05e2b0fc733e4bb63a391300034a8f2ec3a1",
+            "pt-BR": "fbe85bb4db4397562c173c6918c31189584313c8097229d7f9eaf1bcd1fe0715"
+          }
+        }
+      ]
+    },
+    "aviso": {
+      "versiones": [
+        {
+          "version": "1.0",
+          "fecha": "2026-11-11",
+          "cambios": "Primera versión publicable, pendiente de revisión por un abogado.",
+          "huellas": {
+            "es": "01432e15ad6e31004e41a34a460b753afae700bdef6bb33de939b29d8aae998d",
+            "en": "c73f8c040468a1b149d620d9e57f02f8a63ed5af0166d58dd00e5f7e736e1779",
+            "fr": "8ee204b6c3a31ce8cf4856893835dbcace001960a1d79b38fc3c87c3bfb39626",
+            "pt-BR": "bd2232d5c7337644a4fb6d945e3d9baee982ff05f05ec79d688413d5b4d34158"
+          }
+        }
+      ]
+    },
+    "cookies": {
+      "versiones": [
+        {
+          "version": "1.0",
+          "fecha": "2026-11-11",
+          "cambios": "Primera versión publicable, pendiente de revisión por un abogado.",
+          "huellas": {
+            "es": "ae887fed677537d207b72f6ce625d7810f5383cf469ee107c92a6980058de83a",
+            "en": "8e3599e49bda625f95e5f01c789877fb1c77bd9cdc5da701346872bd82d00947",
+            "fr": "2e90f27f971ddb00cc63909b48efdc837313203e119de50c72f24cbf04dc983b",
+            "pt-BR": "443cfca744c592401e7ddfdca552c203c65e060e0f2862b70cbc0bbfb1eef68c"
+          }
+        }
+      ]
+    }
+  }
+}

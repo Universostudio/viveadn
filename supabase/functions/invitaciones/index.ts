@@ -32,14 +32,16 @@ const huella = async (t: string) => {
 }
 
 // ---------- Correo de invitacion (Bird) ----------
-const SOPORTE = 'soporte@viveadn.com'
+// Correo de soporte que ve quien recibe una invitación: se configura con ADN_EMAIL_SOPORTE. El valor de reserva es el que
+// ya usaba la función; Gerencia confirma el definitivo.
+const SOPORTE = Deno.env.get('ADN_EMAIL_SOPORTE')?.trim() || 'soporte@viveadn.com'
 type Idioma = 'es' | 'en' | 'fr' | 'pt-BR'
 const IDIOMAS: Idioma[] = ['es', 'en', 'fr', 'pt-BR']
 const TEXTOS: Record<Idioma, { asunto: (i: string) => string; hola: (n: string) => string; cuerpo: (q: string, i: string, r: string) => string; boton: string; caduca: string; ignora: string; copia: string; spam: string; auto: (c: string) => string }> = {
-  es: { asunto: i => `Te han invitado a ${i} en ViveADN`, hola: n => `Hola ${n},`, cuerpo: (q, i, r) => `${q} te ha invitado a unirte a ${i} en ViveADN con el rol de ${r}.`, boton: 'Aceptar la invitacion', caduca: 'El enlace caduca en 15 dias y solo se puede usar una vez.', ignora: 'Si no esperabas este correo, puedes ignorarlo.', copia: 'Si el boton no funciona, copia este enlace en tu navegador:', spam: 'Si no ves este correo en tu bandeja de entrada, revisa la carpeta de spam y marcalo como "No es spam".', auto: c => `Este es un mensaje automatico. Para recibir ayuda escribe a ${c}.` },
-  en: { asunto: i => `You have been invited to ${i} on ViveADN`, hola: n => `Hello ${n},`, cuerpo: (q, i, r) => `${q} has invited you to join ${i} on ViveADN as ${r}.`, boton: 'Accept the invitation', caduca: 'The link expires in 15 days and can only be used once.', ignora: 'If you were not expecting this email, you can ignore it.', copia: 'If the button does not work, copy this link into your browser:', spam: 'If you cannot find this email in your inbox, check your spam folder and mark it as "Not spam".', auto: c => `This is an automated message. For help, write to ${c}.` },
-  fr: { asunto: i => `Vous etes invite a rejoindre ${i} sur ViveADN`, hola: n => `Bonjour ${n},`, cuerpo: (q, i, r) => `${q} vous invite a rejoindre ${i} sur ViveADN avec le role de ${r}.`, boton: "Accepter l'invitation", caduca: 'Le lien expire dans 15 jours et ne peut etre utilise qu une seule fois.', ignora: "Si vous n'attendiez pas ce message, vous pouvez l'ignorer.", copia: 'Si le bouton ne fonctionne pas, copiez ce lien dans votre navigateur :', spam: 'Si vous ne trouvez pas cet e-mail dans votre boite de reception, verifiez vos courriers indesirables et marquez-le comme "Non spam".', auto: c => `Ceci est un message automatique. Pour obtenir de l'aide, ecrivez a ${c}.` },
-  'pt-BR': { asunto: i => `Voce foi convidado para ${i} no ViveADN`, hola: n => `Ola ${n},`, cuerpo: (q, i, r) => `${q} convidou voce para participar de ${i} no ViveADN com a funcao de ${r}.`, boton: 'Aceitar o convite', caduca: 'O link expira em 15 dias e so pode ser usado uma vez.', ignora: 'Se voce nao esperava este e-mail, pode ignora-lo.', copia: 'Se o botao nao funcionar, copie este link no navegador:', spam: 'Se voce nao encontrar este e-mail na caixa de entrada, verifique a pasta de spam e marque como "Nao e spam".', auto: c => `Esta e uma mensagem automatica. Para obter ajuda, escreva para ${c}.` },
+  es: { asunto: i => `Te han invitado a ${i} en Vive ADN`, hola: n => `Hola ${n},`, cuerpo: (q, i, r) => `${q} te ha invitado a unirte a ${i} en Vive ADN con el rol de ${r}.`, boton: 'Aceptar la invitacion', caduca: 'El enlace caduca en 15 dias y solo se puede usar una vez.', ignora: 'Si no esperabas este correo, puedes ignorarlo.', copia: 'Si el boton no funciona, copia este enlace en tu navegador:', spam: 'Si no ves este correo en tu bandeja de entrada, revisa la carpeta de spam y marcalo como "No es spam".', auto: c => `Este es un mensaje automatico. Para recibir ayuda escribe a ${c}.` },
+  en: { asunto: i => `You have been invited to ${i} on Vive ADN`, hola: n => `Hello ${n},`, cuerpo: (q, i, r) => `${q} has invited you to join ${i} on Vive ADN as ${r}.`, boton: 'Accept the invitation', caduca: 'The link expires in 15 days and can only be used once.', ignora: 'If you were not expecting this email, you can ignore it.', copia: 'If the button does not work, copy this link into your browser:', spam: 'If you cannot find this email in your inbox, check your spam folder and mark it as "Not spam".', auto: c => `This is an automated message. For help, write to ${c}.` },
+  fr: { asunto: i => `Vous etes invite a rejoindre ${i} sur Vive ADN`, hola: n => `Bonjour ${n},`, cuerpo: (q, i, r) => `${q} vous invite a rejoindre ${i} sur Vive ADN avec le role de ${r}.`, boton: "Accepter l'invitation", caduca: 'Le lien expire dans 15 jours et ne peut etre utilise qu une seule fois.', ignora: "Si vous n'attendiez pas ce message, vous pouvez l'ignorer.", copia: 'Si le bouton ne fonctionne pas, copiez ce lien dans votre navigateur :', spam: 'Si vous ne trouvez pas cet e-mail dans votre boite de reception, verifiez vos courriers indesirables et marquez-le comme "Non spam".', auto: c => `Ceci est un message automatique. Pour obtenir de l'aide, ecrivez a ${c}.` },
+  'pt-BR': { asunto: i => `Voce foi convidado para ${i} no Vive ADN`, hola: n => `Ola ${n},`, cuerpo: (q, i, r) => `${q} convidou voce para participar de ${i} no Vive ADN com a funcao de ${r}.`, boton: 'Aceitar o convite', caduca: 'O link expira em 15 dias e so pode ser usado uma vez.', ignora: 'Se voce nao esperava este e-mail, pode ignora-lo.', copia: 'Se o botao nao funcionar, copie este link no navegador:', spam: 'Se voce nao encontrar este e-mail na caixa de entrada, verifique a pasta de spam e marque como "Nao e spam".', auto: c => `Esta e uma mensagem automatica. Para obter ajuda, escreva para ${c}.` },
 }
 const esc = (s: string) => s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]!))
 
@@ -50,7 +52,7 @@ async function enviarCorreo(p: { para: string; nombre: string; quien: string; ig
   const region = /^bk_([a-z0-9]+)_/.exec(clave)?.[1] ?? 'eu1'
   const t = TEXTOS[p.idioma]
   const html = `<div style="font-family:Arial,Helvetica,sans-serif;max-width:520px;margin:0 auto;color:#1f2937">
-<h2 style="color:#00523c;margin:0 0 16px">ViveADN</h2>
+<h2 style="color:#00523c;margin:0 0 16px">Vive ADN</h2>
 <p>${esc(t.hola(p.nombre))}</p>
 <p>${esc(t.cuerpo(p.quien, p.iglesia, p.rol))}</p>
 <p style="margin:24px 0"><a href="${esc(p.enlace)}" style="background:#00523c;color:#ffffff;padding:12px 22px;border-radius:8px;text-decoration:none;font-weight:bold">${esc(t.boton)}</a></p>
@@ -65,9 +67,9 @@ async function enviarCorreo(p: { para: string; nombre: string; quien: string; ig
       method: 'POST',
       headers: { 'Authorization': `Bearer ${clave}`, 'Content-Type': 'application/json', 'Idempotency-Key': `invitacion/${p.idInvitacion}` },
       body: JSON.stringify({
-        from: { email: 'no-responder@viveadn.com', name: 'ViveADN' },
+        from: { email: 'no-responder@viveadn.com', name: 'Vive ADN' },
         to: [{ email: p.para, name: p.nombre }],
-        reply_to: [{ email: SOPORTE, name: 'Soporte ViveADN' }],
+        reply_to: [{ email: SOPORTE, name: 'Soporte Vive ADN' }],
         subject: t.asunto(p.iglesia), html, text: texto,
         category: 'transactional', track_clicks: false, track_opens: false,
       }),
@@ -186,8 +188,8 @@ Deno.serve(async (req) => {
         admin.from('roles').select('nombre').eq('iglesia_id', yo.iglesia_id).eq('clave', i.rol).maybeSingle(),
       ])
       return await enviarCorreo({
-        para: i.email, nombre: i.nombre, quien: `${yo.nombre ?? ''} ${yo.apellido ?? ''}`.trim() || 'ViveADN',
-        iglesia: ig?.nombre ?? 'ViveADN', rol: rl?.nombre ?? i.rol, enlace: r.enlace, idioma, idInvitacion: r.id,
+        para: i.email, nombre: i.nombre, quien: `${yo.nombre ?? ''} ${yo.apellido ?? ''}`.trim() || 'Vive ADN',
+        iglesia: ig?.nombre ?? 'Vive ADN', rol: rl?.nombre ?? i.rol, enlace: r.enlace, idioma, idInvitacion: r.id,
       })
     }
 

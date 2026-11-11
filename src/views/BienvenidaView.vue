@@ -25,9 +25,10 @@
         <RouterLink :to="{ name: 'registro' }" class="underline underline-offset-4 hover:text-adn-oro">{{ t('registro.enlaceBienvenida') }}</RouterLink>
       </p>
       <div class="mt-10 flex justify-center"><SelectorIdioma ocultar-etiqueta /></div>
+      <PieLegal claro class="mt-5 mb-8" />
     </div>
     <p class="absolute bottom-5 inset-x-0 text-center text-[10px] tracking-widest uppercase text-white/30 aparece" style="animation-delay: 2.5s">
-      ViveADN · viveadn.com · {{ t('bienvenida.lema1') }} {{ t('bienvenida.lema2') }} · 2026
+      Vive ADN · viveadn.com · {{ t('bienvenida.lema1') }} {{ t('bienvenida.lema2') }} · 2026
     </p>
   </main>
 </template>
@@ -37,6 +38,7 @@ import { useI18n } from 'vue-i18n'
 import { ArrowRight } from '@lucide/vue'
 import LogoAdn from '@/components/LogoAdn.vue'
 import SelectorIdioma from '@/components/SelectorIdioma.vue'
+import PieLegal from '@/components/PieLegal.vue'
 
 const { t } = useI18n()
 </script>

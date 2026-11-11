@@ -1,6 +1,6 @@
 # Exportación completa de una iglesia
 
-Formato `viveadn-exportacion-2`. Sirve para entregar a una iglesia todos sus datos (portabilidad y supresión, RGPD), para copias de seguridad que se puedan leer sin ViveADN y para mover una iglesia a otra base. Cada afirmación lleva su etiqueta: **[E]** verificado ejecutándolo en esta sesión, **[NV]** no verificable aquí.
+Formato `viveadn-exportacion-2`. Sirve para entregar a una iglesia todos sus datos (portabilidad y supresión, RGPD), para copias de seguridad que se puedan leer sin Vive ADN y para mover una iglesia a otra base. Cada afirmación lleva su etiqueta: **[E]** verificado ejecutándolo en esta sesión, **[NV]** no verificable aquí.
 
 ## Qué contiene
 

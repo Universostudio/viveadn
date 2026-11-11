@@ -79,7 +79,7 @@
 
         <label class="flex items-start gap-2 text-sm text-gray-700">
           <input v-model="form.consentimiento" type="checkbox" class="mt-1" />
-          <span>{{ t('registro.consentimiento') }}</span>
+          <span>{{ t('registro.consentimiento') }} <RouterLink to="/privacidad" target="_blank" class="underline text-adn-verde">{{ t('legal.privacidad') }}</RouterLink> · <RouterLink to="/terminos" target="_blank" class="underline text-adn-verde">{{ t('legal.terminos') }}</RouterLink></span>
         </label>
 
         <p v-if="error" role="alert" class="bg-red-50 text-red-700 text-sm px-4 py-3 rounded-lg border border-red-200">{{ t(error) }}</p>
@@ -93,6 +93,7 @@
       </form>
 
       <div class="mt-6 flex justify-center"><SelectorIdioma /></div>
+      <PieLegal class="mt-4" />
     </div>
   </div>
 </template>
@@ -104,6 +105,7 @@ import { MailCheck } from '@lucide/vue'
 import { supabase } from '@/lib/supabase'
 import LogoAdn from '@/components/LogoAdn.vue'
 import SelectorIdioma from '@/components/SelectorIdioma.vue'
+import PieLegal from '@/components/PieLegal.vue'
 
 const { t } = useI18n()
 const estado = ref<'cargando' | 'abierto' | 'cerrado' | 'enviado'>('cargando')

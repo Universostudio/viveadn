@@ -60,8 +60,9 @@
       <p class="text-gray-600 mt-2">{{ t('presentacion.dar.texto') }}</p>
     </section>
 
-    <footer class="bg-adn-oscuro text-white/60 text-xs text-center py-6">
-      ViveADN · viveadn.com · {{ t('bienvenida.lema1') }} {{ t('bienvenida.lema2') }} · 2026
+    <footer class="bg-adn-oscuro text-white/60 text-xs text-center py-6 space-y-2">
+      <PieLegal claro />
+      Vive ADN · viveadn.com · {{ t('bienvenida.lema1') }} {{ t('bienvenida.lema2') }} · 2026
     </footer>
   </div>
 </template>
@@ -71,6 +72,7 @@ import { useI18n } from 'vue-i18n'
 import { ArrowRight, BookOpen, CalendarCheck, HandHeart, HeartHandshake, House, Users } from '@lucide/vue'
 import LogoAdn from '@/components/LogoAdn.vue'
 import SelectorIdioma from '@/components/SelectorIdioma.vue'
+import PieLegal from '@/components/PieLegal.vue'
 
 const { t } = useI18n()
 

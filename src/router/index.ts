@@ -11,6 +11,12 @@ const router = createRouter({
       component: () => import('@/views/BienvenidaView.vue'),
       meta: { public: true }
     },
+    ...(['privacidad', 'terminos', 'aviso-legal', 'cookies'] as const).map(ruta => ({
+      path: `/${ruta}`,
+      name: `legal-${ruta}`,
+      component: () => import('@/views/LegalView.vue'),
+      meta: { public: true, allowLoggedIn: true, documentoLegal: ruta === 'aviso-legal' ? 'aviso' : ruta },
+    })),
     {
       path: '/presentacion',
       name: 'presentacion',
