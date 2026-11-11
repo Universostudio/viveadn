@@ -670,6 +670,7 @@
     "pruebaHasta": "Prueba hasta {fecha}",
     "exportar": "Exportar datos",
     "exportada": "Exportación de {iglesia} descargada.",
+    "exportLeeme": "Exportación de ViveADN (formato viveadn-exportacion-2)\n\nmanifest.json  Cifras de cada tabla (filas, columnas con su tipo, huella del contenido), orden de carga y columnas omitidas.\ndatos.json     Todos los datos de la iglesia en JSON.\ncsv/           Un CSV por tabla: UTF-8 sin BOM, separador coma, fin de línea CRLF. Un campo vacío sin comillas es NULL; una cadena vacía va entre comillas.\n\nPor seguridad no se exportan los secretos (tokens de QR y de invitación, huellas de IP). Las cuentas de acceso no viajan: las personas deben volver a ser invitadas.\nCuidado: si abres un CSV en una hoja de cálculo, una celda que empiece por = + - o @ puede interpretarse como fórmula.\n",
     "programarBorrado": "Programar borrado",
     "pedirDias": "¿En cuántos días se borrará {iglesia}? (de 7 a 90)",
     "pedirDireccion": "Para confirmar, escribe la dirección de la iglesia: {slug}",

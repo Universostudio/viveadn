@@ -229,6 +229,7 @@
 
 <script setup lang="ts">
 import { Check, Circle, CircleCheck, Plus } from '@lucide/vue'
+import { construirPaquete } from '@/lib/exportacion'
 import { ref, computed, onMounted } from 'vue'
 import { supabase } from '@/lib/supabase'
 import { useI18n } from 'vue-i18n'
@@ -393,10 +394,12 @@ function cambiarEtapa(ig: any, el: HTMLSelectElement) {
 async function exportar(ig: any) {
   try {
     const r = await llamar({ accion: 'exportar', iglesia_id: ig.id })
-    const blob = new Blob([JSON.stringify(r.exportacion, null, 2)], { type: 'application/json' })
+    // Con el formato nuevo sale un ZIP (manifiesto, JSON y un CSV por tabla); con el anterior, el JSON de siempre
+    const p = construirPaquete(r.exportacion, ig.slug, new Date(), t('plataforma.exportLeeme'))
+    const blob = p.tipo === 'zip' ? new Blob([p.bytes as BlobPart], { type: p.mime }) : new Blob([p.texto], { type: p.mime })
     const a = document.createElement('a')
     a.href = URL.createObjectURL(blob)
-    a.download = `viveadn-${ig.slug}-${new Date().toISOString().slice(0, 10)}.json`
+    a.download = p.nombre
     a.click()
     URL.revokeObjectURL(a.href)
     avisar(() => t('plataforma.exportada', { iglesia: ig.nombre }))

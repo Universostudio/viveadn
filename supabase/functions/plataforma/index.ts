@@ -302,7 +302,12 @@ Deno.serve(async (req) => {
       case 'exportar': {
         const iglesiaId = await iglesiaValida(body.iglesia_id)
         if (!iglesiaId) return json({ error: 'La iglesia no existe' }, 404)
-        const { data, error } = await admin.rpc('exportar_iglesia', { p_iglesia: iglesiaId })
+        // Formato 2 (JSON, un CSV por tabla y manifiesto de cifras). Si la migracion adn_exportacion aun no esta
+        // aplicada, o se revirtio, se usa la exportacion anterior en JSON
+        let { data, error } = await admin.rpc('adn_exportar_paquete', { p_iglesia: iglesiaId })
+        if (error && (error.code === 'PGRST202' || /adn_exportar_paquete/.test(error.message))) {
+          ;({ data, error } = await admin.rpc('exportar_iglesia', { p_iglesia: iglesiaId }))
+        }
         if (error || !data) return json({ error: 'No se pudo exportar la iglesia' }, 500)
         // Los archivos no viajan dentro del JSON: se entrega su listado para pedirlos aparte
         let archivos: Record<string, unknown> = {}

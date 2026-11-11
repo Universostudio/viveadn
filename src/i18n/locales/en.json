@@ -670,6 +670,7 @@
     "pruebaHasta": "Trial until {fecha}",
     "exportar": "Export data",
     "exportada": "Export of {iglesia} downloaded.",
+    "exportLeeme": "ViveADN export (format viveadn-exportacion-2)\n\nmanifest.json  Figures for each table (rows, columns with their type, content fingerprint), load order and omitted columns.\ndatos.json     All the church data as JSON.\ncsv/           One CSV per table: UTF-8 without BOM, comma separator, CRLF line endings. An empty unquoted field is NULL; an empty string is written in quotes.\n\nFor security, secrets are not exported (QR and invitation tokens, IP fingerprints). Login accounts are not included: people must be invited again.\nCaution: if you open a CSV in a spreadsheet, a cell starting with = + - or @ may be read as a formula.\n",
     "programarBorrado": "Schedule deletion",
     "pedirDias": "In how many days should {iglesia} be deleted? (7 to 90)",
     "pedirDireccion": "To confirm, type the church address: {slug}",
