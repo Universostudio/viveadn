@@ -94,6 +94,8 @@ Los seis trabajos en curso, en orden:
 3. Límite de frecuencia en `baja` (opcional: no hace falta contra la fuerza bruta, pero frena el ruido).
 4. Un proveedor aprobado por el dueño, base legal revisada por un abogado (`docs/COMUNICACION.md`, apartado 5) y consentimientos registrados. Re-suscribir a alguien exige un registro explícito con origen: quitar una baja lo deja en «sin dato».
 
+**Monitorización:** ruta de salud y pantalla de error propia, escritas y probadas pero sin desplegar; falta elegir el vigilante y a quién se avisa (`docs/MONITORIZACION.md`).
+
 **Copias y restauración:** hay un procedimiento para ensayar en la rama de pruebas y un ensayo local repetible de la base completa (`docs/RESTAURACION.md`). Falta ejecutarlo contra Supabase real y decidir la política de copias, la custodia de la clave y la copia de los archivos de Storage, que hoy no existe.
 
 **Prioritaria antes de producción:** paginar la exportación o generar el ZIP en el servidor, porque hoy todo el paquete viaja en una sola respuesta y no se ha medido con iglesias de decenas de miles de filas (`docs/EXPORTACION.md`).
@@ -122,6 +124,7 @@ Todo lo marcado **[E]** se repite con estos comandos, desde la raíz del reposit
 | Secretos en todo el historial y en los archivos actuales (solo imprime recuentos) | `scripts/buscar-secretos.sh` |
 | Tipos, compilación y los cuatro idiomas | `npm run type-check`, `npm run build-only`, `npm run check:idiomas` |
 | El texto de consentimiento de la web es el que consta en la base (versión v1, cuatro idiomas) | `npm run check:textos` |
+| Ruta de salud y estado de error de la aplicación | `npm run test:salud`, `npm run test:error` |
 | Ensayo de un archivo de contactos real, solo cifras | `node scripts/resumen-contactos-google.mts <archivo fuera del repositorio>` |
 | Aislamiento por API (necesita PostgREST real y una base de pruebas) | `supabase/tests/aislamiento_api.sh <base>` (**[NV]**: no se ha ejecutado) |
 

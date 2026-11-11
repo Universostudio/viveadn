@@ -1368,5 +1368,13 @@
       "equipo": "Team member",
       "sinUsuario": "No user (public link)"
     }
+  },
+  "errorApp": {
+    "titulo": "Something went wrong",
+    "inicio": "We couldn't reach the service to open your session. This usually clears up within a few minutes.",
+    "carga": "The app was updated while you had it open. Reload the page to continue.",
+    "inesperado": "An unexpected error occurred. Reload the page to try again.",
+    "reintentar": "Reload the page",
+    "irInicio": "Go to the home page"
   }
 }

@@ -1368,5 +1368,13 @@
       "equipo": "Pessoa da equipe",
       "sinUsuario": "Sem usuário (link público)"
     }
+  },
+  "errorApp": {
+    "titulo": "Algo deu errado",
+    "inicio": "Não conseguimos conectar ao serviço para abrir a sua sessão. Costuma se resolver em poucos minutos.",
+    "carga": "O aplicativo foi atualizado enquanto você o mantinha aberto. Recarregue a página para continuar.",
+    "inesperado": "Ocorreu um erro inesperado. Recarregue a página para tentar de novo.",
+    "reintentar": "Recarregar a página",
+    "irInicio": "Ir para o início"
   }
 }

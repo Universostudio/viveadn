@@ -1368,5 +1368,13 @@
       "equipo": "Membre de l'équipe",
       "sinUsuario": "Sans utilisateur (lien public)"
     }
+  },
+  "errorApp": {
+    "titulo": "Un problème est survenu",
+    "inicio": "Nous n'avons pas pu joindre le service pour ouvrir votre session. Cela se résout généralement en quelques minutes.",
+    "carga": "L'application a été mise à jour pendant que vous l'aviez ouverte. Rechargez la page pour continuer.",
+    "inesperado": "Une erreur inattendue s'est produite. Rechargez la page pour réessayer.",
+    "reintentar": "Recharger la page",
+    "irInicio": "Aller à l'accueil"
   }
 }

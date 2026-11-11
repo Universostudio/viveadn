@@ -1368,5 +1368,13 @@
       "equipo": "Persona del equipo",
       "sinUsuario": "Sin usuario (enlace público)"
     }
+  },
+  "errorApp": {
+    "titulo": "Algo no ha salido bien",
+    "inicio": "No hemos podido conectar con el servicio para abrir tu sesión. Suele resolverse en unos minutos.",
+    "carga": "La aplicación se ha actualizado mientras la tenías abierta. Recarga la página para continuar.",
+    "inesperado": "Ha ocurrido un error inesperado. Recarga la página para intentarlo de nuevo.",
+    "reintentar": "Recargar la página",
+    "irInicio": "Ir al inicio"
   }
 }
