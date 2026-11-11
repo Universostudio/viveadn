@@ -252,6 +252,7 @@
 <script setup lang="ts">
 import { Check, Circle, CircleCheck, Plus } from '@lucide/vue'
 import { construirPaquete } from '@/lib/exportacion'
+import { exportarPaginado, fuenteDePlataforma } from '@/lib/exportacionPaginada'
 import { ref, computed, onMounted } from 'vue'
 import { supabase } from '@/lib/supabase'
 import { useI18n } from 'vue-i18n'
@@ -423,17 +424,39 @@ function cambiarEtapa(ig: any, el: HTMLSelectElement) {
     () => t('plataforma.etapaCambiada', { iglesia: ig.nombre, etapa: nombre }))
 }
 
+// La descarga: pide al navegador guardar un conjunto de partes como un solo archivo
+function descargar(blob: Blob, nombre: string) {
+  const a = document.createElement('a')
+  a.href = URL.createObjectURL(blob)
+  a.download = nombre
+  a.click()
+  URL.revokeObjectURL(a.href)
+}
+
 async function exportar(ig: any) {
+  try {
+    // Exportación por páginas: el ZIP se monta pieza a pieza, así que no hay límite de tamaño de respuesta ni de memoria en la función
+    const partes: Uint8Array[] = []
+    const r = await exportarPaginado(fuenteDePlataforma(llamar, ig.id), {
+      slug: ig.slug, hoy: new Date(), leeme: t('plataforma.exportLeeme'), destino: p => { partes.push(p) },
+      progreso: p => avisar(() => t('plataforma.exportando', { iglesia: ig.nombre, tabla: p.tabla, indice: p.indice, tablas: p.tablas })),
+    })
+    descargar(new Blob(partes as BlobPart[], { type: 'application/zip' }), r.nombre)
+    avisar(() => t(r.cambios ? 'plataforma.exportadaConCambios' : 'plataforma.exportada', { iglesia: ig.nombre }), r.cambios)
+  } catch (e: any) {
+    // Una función desplegada de una versión anterior no tiene la exportación por páginas: se usa la de siempre, en una sola respuesta
+    if (/por paginas/.test(String(e?.message))) return exportarEnUnaRespuesta(ig)
+    const texto = e.message
+    avisar(() => texto, true)
+  }
+}
+
+async function exportarEnUnaRespuesta(ig: any) {
   try {
     const r = await llamar({ accion: 'exportar', iglesia_id: ig.id })
     // Con el formato nuevo sale un ZIP (manifiesto, JSON y un CSV por tabla); con el anterior, el JSON de siempre
     const p = construirPaquete(r.exportacion, ig.slug, new Date(), t('plataforma.exportLeeme'))
-    const blob = p.tipo === 'zip' ? new Blob([p.bytes as BlobPart], { type: p.mime }) : new Blob([p.texto], { type: p.mime })
-    const a = document.createElement('a')
-    a.href = URL.createObjectURL(blob)
-    a.download = p.nombre
-    a.click()
-    URL.revokeObjectURL(a.href)
+    descargar(p.tipo === 'zip' ? new Blob([p.bytes as BlobPart], { type: p.mime }) : new Blob([p.texto], { type: p.mime }), p.nombre)
     avisar(() => t('plataforma.exportada', { iglesia: ig.nombre }))
   } catch (e: any) {
     const texto = e.message

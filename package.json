@@ -28,7 +28,8 @@
     "test:error": "node scripts/probar-error-app.mts",
     "test:informes": "node scripts/probar-informes.mts",
     "check:entorno": "node scripts/verificar-entorno.mts",
-    "test:entorno": "node scripts/probar-verificar-entorno.mts"
+    "test:entorno": "node scripts/probar-verificar-entorno.mts",
+    "test:exportacion-paginada": "node --expose-gc scripts/probar-exportacion-paginada.mts"
   },
   "dependencies": {
     "@fontsource/dm-sans": "^5.3.0",

@@ -858,7 +858,9 @@
       "horas": "Hours of the most overdue",
       "noDisponible": "The purge status could not be retrieved.",
       "reintentar": "Check again"
-    }
+    },
+    "exportando": "Exporting {iglesia}: {tabla} ({indice} of {tablas})…",
+    "exportadaConCambios": "Export of {iglesia} downloaded, but the church changed while it was being exported: the manifest says so. Repeat the export to get a consistent copy."
   },
   "invitacion": {
     "comprobando": "Checking your invitation…",

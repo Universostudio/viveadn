@@ -16,10 +16,15 @@ const TABLA_CRC = (() => {
   return t
 })()
 
-export function crc32(datos: Uint8Array): number {
-  let c = 0xffffffff
+// CRC-32 incremental: se parte de 0xffffffff, se llama con cada trozo y al final se invierte (ver crc32Final)
+export function crc32Acumulado(c: number, datos: Uint8Array): number {
   for (let i = 0; i < datos.length; i++) c = TABLA_CRC[(c ^ datos[i]!) & 0xff]! ^ (c >>> 8)
-  return (c ^ 0xffffffff) >>> 0
+  return c >>> 0
+}
+export const crc32Final = (c: number): number => (c ^ 0xffffffff) >>> 0
+
+export function crc32(datos: Uint8Array): number {
+  return crc32Final(crc32Acumulado(0xffffffff, datos))
 }
 
 // Fecha y hora en el formato de MS-DOS que usa el ZIP (la hora, en UTC, para que el resultado no dependa del equipo)

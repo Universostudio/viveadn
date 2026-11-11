@@ -858,7 +858,9 @@
       "horas": "Horas de la más atrasada",
       "noDisponible": "No se pudo consultar el estado de la purga.",
       "reintentar": "Volver a consultar"
-    }
+    },
+    "exportando": "Exportando {iglesia}: {tabla} ({indice} de {tablas})…",
+    "exportadaConCambios": "Exportación de {iglesia} descargada, pero la iglesia cambió mientras se exportaba: el manifiesto lo indica. Repite la exportación para tener una copia coherente."
   },
   "invitacion": {
     "comprobando": "Comprobando tu invitación…",

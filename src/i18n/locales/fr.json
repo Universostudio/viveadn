@@ -858,7 +858,9 @@
       "horas": "Heures de la plus en retard",
       "noDisponible": "Impossible de consulter l’état de la purge.",
       "reintentar": "Consulter à nouveau"
-    }
+    },
+    "exportando": "Exportation de {iglesia} : {tabla} ({indice} sur {tablas})…",
+    "exportadaConCambios": "Exportation de {iglesia} téléchargée, mais l'église a changé pendant l'exportation : le manifeste l'indique. Répétez l'exportation pour obtenir une copie cohérente."
   },
   "invitacion": {
     "comprobando": "Vérification de votre invitation…",

@@ -858,7 +858,9 @@
       "horas": "Horas da mais atrasada",
       "noDisponible": "Não foi possível consultar a situação da exclusão.",
       "reintentar": "Consultar novamente"
-    }
+    },
+    "exportando": "Exportando {iglesia}: {tabla} ({indice} de {tablas})…",
+    "exportadaConCambios": "Exportação de {iglesia} baixada, mas a igreja mudou durante a exportação: o manifesto indica isso. Repita a exportação para ter uma cópia coerente."
   },
   "invitacion": {
     "comprobando": "Verificando seu convite…",
