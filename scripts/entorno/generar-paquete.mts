@@ -64,7 +64,7 @@ select 'ok: base vacía de Supabase, rol postgres' as resultado;
 `
 
 mkdirSync(salida, { recursive: true })
-for (const f of readdirSync(salida)) if (/^\d\d_.*\.sql$/.test(f) || f === 'INDICE.md') rmSync(join(salida, f))
+for (const f of readdirSync(salida)) if (/^\d\d_.*\.sql$/.test(f) || ['INDICE.md', 'funciones.json', 'datos_demo.sql'].includes(f)) rmSync(join(salida, f))
 const escribir = (nombre: string, texto: string) => { if (tamano(texto) > LIMITE_DURO) throw new Error(`${nombre} supera ${LIMITE_DURO} bytes`); writeFileSync(join(salida, nombre), texto) }
 const pad = (n: number) => String(n).padStart(2, '0')
 
@@ -119,6 +119,32 @@ order by 1;
   writeFileSync(join(salida, '99_verificacion.sql'), '-- (sin valores esperados todavía)\n')
 }
 
+// Funciones de borde: manifiesto con el nombre, si el despliegue verifica el JWT, los archivos de cada una y su sha256 completo.
+// Quien despliega con una herramienta (no con la CLI) copia cada archivo con su ruta relativa y comprueba el sha256 antes de desplegar.
+const SIN_JWT = ['baja', 'confirmar-suscripcion', 'enviar-confirmaciones']   // las abre cualquiera con un enlace o las llama la tarea programada con su propia clave
+const carpetaFunciones = join(RAIZ, 'supabase', 'functions')
+const funciones = readdirSync(carpetaFunciones, { withFileTypes: true }).filter(d => d.isDirectory()).map(d => d.name).sort().map(nombre => {
+  const archivos = readdirSync(join(carpetaFunciones, nombre)).filter(f => f.endsWith('.ts')).sort().map(f => {
+    const t = readFileSync(join(carpetaFunciones, nombre, f))
+    return { ruta: f, bytes: t.length, sha256: createHash('sha256').update(t).digest('hex') }
+  })
+  return { nombre, verify_jwt: !SIN_JWT.includes(nombre), entrada: 'index.ts', carpeta: `supabase/functions/${nombre}`, archivos }
+})
+writeFileSync(join(salida, 'funciones.json'), JSON.stringify({ funciones }, null, 2) + '\n')
+
+// Datos de demostración sin psql: el script original lee sus parámetros con variables de psql (\gset); aquí se sustituyen por los valores por defecto
+const demoOrigen = leer('seeds/datos_demo_sinteticos.sql')
+const iniDemo = demoOrigen.indexOf('select set_config(\'demo.slug\'')
+const finDemo = demoOrigen.indexOf('\\gset') + '\\gset'.length
+if (iniDemo < 0 || finDemo < 6) throw new Error('El script de demostración ya no tiene el bloque \\gset esperado')
+const demo = `-- Vive ADN: datos sintéticos de demostración SIN psql (paquete de aplicación). Variante de supabase/seeds/datos_demo_sinteticos.sql con los valores por defecto
+-- (iglesia-demo, 6 zonas, 18 casas, 300 personas, 24 recientes, 2 en rojo). La iglesia debe existir antes y estar marcada como demostración. Es de un solo uso.
+-- Origen: sha256 ${sha(demoOrigen)}
+${CABECERA}select set_config('demo.slug', 'iglesia-demo', false), set_config('demo.zonas', '6', false), set_config('demo.casas', '18', false),
+       set_config('demo.personas', '300', false), set_config('demo.recientes', '24', false), set_config('demo.rojos', '2', false);
+${demoOrigen.slice(finDemo)}`
+writeFileSync(join(salida, 'datos_demo.sql'), demo)
+
 const esp = (n: string) => esperados.find(e => e[0] === n)?.[1] ?? '?'
 const md = `# Paquete de aplicación del esquema de Vive ADN (proyecto de pruebas)
 
@@ -144,6 +170,11 @@ ${indice.map(i => `| \`${i.archivo}\` | ${i.bytes.toLocaleString('es-ES')} | ${i
 - Políticas e inserción de cubos en \`storage\` (\`20261105222115_archivos_por_iglesia\`): \`storage.objects\` pertenece a \`supabase_storage_admin\`. El rol \`postgres\` suele poder crear políticas ahí, pero hoy no se ha comprobado. Si falla, el error será \`must be owner of table objects\`; avisar a Desarrollo.
 - Claves foráneas a \`auth.users\` (esquema base): exigen REFERENCES sobre esa tabla; \`postgres\` lo tiene en Supabase [NV].
 - \`CREATE EXTENSION IF NOT EXISTS\`: las extensiones ya existen, así que no hace nada.
+
+## Funciones de borde y datos de demostración
+
+- \`funciones.json\`: las ${funciones.length} funciones de borde con su \`verify_jwt\`, sus archivos (ruta relativa, bytes y sha256 completo). Sin verificación de JWT: ${SIN_JWT.join(', ')}; las demás la llevan. Al desplegar con una herramienta, cada archivo va con su ruta relativa (\`index.ts\` y los que importa, como \`./ciclo.ts\`) y se comprueba el sha256 antes. Los imports \`npm:\` no necesitan nada más.
+- \`datos_demo.sql\`: 300 personas, 6 zonas y 18 casas sintéticas **sin psql**. Exige que la iglesia \`iglesia-demo\` exista y esté marcada como demostración (se crea desde \`/plataforma\`); es de un solo uso.
 
 ## Comprobación hecha en local
 

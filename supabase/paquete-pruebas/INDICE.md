@@ -31,6 +31,11 @@ Generado por `scripts/entorno/generar-paquete.sh`. Reproduce `scripts/entorno/mo
 - Claves foráneas a `auth.users` (esquema base): exigen REFERENCES sobre esa tabla; `postgres` lo tiene en Supabase [NV].
 - `CREATE EXTENSION IF NOT EXISTS`: las extensiones ya existen, así que no hace nada.
 
+## Funciones de borde y datos de demostración
+
+- `funciones.json`: las 11 funciones de borde con su `verify_jwt`, sus archivos (ruta relativa, bytes y sha256 completo). Sin verificación de JWT: baja, confirmar-suscripcion, enviar-confirmaciones; las demás la llevan. Al desplegar con una herramienta, cada archivo va con su ruta relativa (`index.ts` y los que importa, como `./ciclo.ts`) y se comprueba el sha256 antes. Los imports `npm:` no necesitan nada más.
+- `datos_demo.sql`: 300 personas, 6 zonas y 18 casas sintéticas **sin psql**. Exige que la iglesia `iglesia-demo` exista y esté marcada como demostración (se crea desde `/plataforma`); es de un solo uso.
+
 ## Comprobación hecha en local
 
 En una base local vacía con un esquema `auth` mínimo, los archivos aplicados con psql tal cual (sin variables de sesión) dan una verificación con todas las filas `ok`, y un `pg_dump` del esquema idéntico al de `montar-rama.sh` (`supabase/tests/paquete_pruebas.sh`). Si el proyecto real da otro valor en alguna fila, la letra de la fila dice dónde mirar: `a` recuentos, `b` estructura (tablas, columnas, funciones con su código, restricciones, índices, políticas, disparadores), `c` permisos, `d` datos de catálogo.

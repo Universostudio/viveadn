@@ -172,3 +172,44 @@ Pasos que dependen de algo que hoy solo se supone, con su etiqueta. Lo reproduci
 | El servicio de correo por defecto de Supabase Auth solo envía a direcciones del equipo y con un límite muy bajo en proyectos alojados (restablecer contraseña, invitaciones de Auth) | [NV, por conocimiento general de la plataforma] | Usar solo buzones de miembros del equipo de Supabase para las pruebas |
 | `pg_cron`, `pg_net` y la bóveda de secretos habilitados en la rama (apartado 5) | [NV] | Activarlos en el panel antes de programar la tarea de purga |
 | El texto anterior decía que el script de datos de demostración marcaba la iglesia como demo: era falso, y faltaba crear la iglesia antes | [E] | Corregido en el paso 7 |
+
+## 10. Orden exacto con las herramientas de Supabase y Vercel (proyecto nuevo y vacío, camino B)
+
+Quien lo ejecuta dispone de ejecución de SQL, despliegue de funciones y secretos en Supabase, y de Vercel; no dispone de psql ni de las claves secretas, que no pasan por mensajes. Cada paso dice qué valor hace falta y cómo se comprueba. Los valores entre `<>` los pone quien ejecuta, nunca se escriben en el repositorio.
+
+| Paso | Qué se hace | Valor que hace falta | Cómo se comprueba |
+| --- | --- | --- | --- |
+| 1 | Aplicar `supabase/paquete-pruebas` (`INDICE.md`): `00`, `01` a `07` y `99` | Nada | `99` con todas las filas `ok` [hecho] |
+| 2 | Limpiar el andamiaje temporal de la aplicación del paquete. **No** quitar `pg_net`: la tarea de purga (paso 12) lo necesita | Nada | Sin esquemas ni funciones auxiliares que no sean del producto |
+| 3 | Crear la cuenta administradora de la plataforma. Opción A, recomendada: panel, Authentication, Users, «Add user», con confirmación automática; el titular escribe su contraseña. Opción B, solo si no hay acceso al panel: SQL de más abajo, con contraseña aleatoria que nadie ve, y después pedir «restablecer contraseña» desde la pantalla de acceso (llega al buzón del titular) | `<EMAIL_ADMIN>`: buzón controlado, miembro del equipo de Supabase | `select id, email, email_confirmed_at from auth.users` devuelve una fila; la consulta de nulos de más abajo da 0 |
+| 4 | `insert into public.plataforma_admins (user_id) select id from auth.users where email = '<EMAIL_ADMIN>'` | `<EMAIL_ADMIN>` | Una fila en `plataforma_admins` |
+| 5 | Poner los secretos de las funciones **antes** de desplegar: `ADN_ORIGENES_EXTRA`, `ADN_WEB_URL`, `ADN_CRON_SECRET` | `<WEB_PRUEBAS>` (dirección `https` exacta y estable, sin barra final); `<SECRETO_CRON>` de 32 caracteres o más, generado por quien ejecuta, que se guarda también en la bóveda (paso 12). **No** definir `BIRD_API_KEY`, `ADN_ENVIO_ACTIVO`, `ADN_CONFIRMACION_ACTIVA` ni `ADN_EMAIL_ALERTAS`: el envío queda apagado | La lista de secretos (solo nombres) tiene exactamente esos tres además de los que inyecta la plataforma |
+| 6 | Desplegar las once funciones de `supabase/paquete-pruebas/funciones.json`: cada archivo con su ruta relativa y su `verify_jwt` (tres sin verificación: `baja`, `confirmar-suscripcion`, `enviar-confirmaciones`). Comprobar el sha256 de cada archivo antes | Nada | El despliegue de cada función termina; `npm run check:entorno` en el paso 9 |
+| 7 | Vercel: variables `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_REGION_DATOS` (apartado 2.1) y el alias estable `<WEB_PRUEBAS>` | La dirección del proyecto y la clave pública **en formato JWT** (la «anon» clásica, no la nueva `sb_publishable_`): las funciones con verificación de JWT rechazan las claves nuevas **[NV]** | Despliegue correcto; `<WEB_PRUEBAS>/api/salud` responde 200 |
+| 8 | Auth, URL Configuration: Site URL `<WEB_PRUEBAS>` y Redirect URLs `<WEB_PRUEBAS>/**`. Sin herramienta que lo haga: panel | `<WEB_PRUEBAS>` | Entrar con el administrador en `<WEB_PRUEBAS>` y completar un restablecimiento de contraseña |
+| 9 | `npm run check:entorno` con `<WEB_PRUEBAS>` y las direcciones de las funciones | La clave pública (JWT) y `<SECRETO_CRON>` por variable de entorno, no por argumento | Todo en verde; si algo falla, el nombre del chequeo dice dónde mirar |
+| 10 | Crear la iglesia de demostración desde `<WEB_PRUEBAS>/plataforma`: dirección `iglesia-demo`, casilla de demostración marcada, propietario con buzón controlado. Sin envío de correo, el enlace de invitación se copia a mano | `<EMAIL_PROPIETARIO_DEMO>`: buzón controlado | La iglesia aparece como demostración en el panel |
+| 11 | Ejecutar `supabase/paquete-pruebas/datos_demo.sql` | Nada | 300 miembros, 6 zonas y 18 casas en esa iglesia |
+| 12 | Activar `pg_cron` y `pg_net`, guardar en la bóveda `adn_anon_key` (la clave pública JWT) y `adn_cron_secret` (`<SECRETO_CRON>`), y programar la purga con el SQL de `docs/PURGA.md` | Los mismos valores del paso 5 y 7 | La tarjeta «Purga programada» del panel queda al día después de la primera ejecución |
+| 13 | Ensayo de extremo a extremo del apartado 4, incluida la descarga y la baja desde `/datos-iglesia` | Nada | Los puntos del apartado 4 |
+
+SQL del paso 3, opción B **[NV: no probado contra un Supabase real; la tabla local solo tiene la columna `id`]**:
+
+```sql
+with nuevo as (select gen_random_uuid() as id)
+insert into auth.users (instance_id, id, aud, role, email, encrypted_password, email_confirmed_at, raw_app_meta_data, raw_user_meta_data,
+  created_at, updated_at, confirmation_token, recovery_token, email_change_token_new, email_change, email_change_token_current,
+  phone_change, phone_change_token, reauthentication_token)
+select '00000000-0000-0000-0000-000000000000', id, 'authenticated', 'authenticated', '<EMAIL_ADMIN>',
+  extensions.crypt(gen_random_uuid()::text, extensions.gen_salt('bf')), now(), '{"provider":"email","providers":["email"]}', '{}',
+  now(), now(), '', '', '', '', '', '', '', '' from nuevo;
+insert into auth.identities (id, user_id, provider_id, identity_data, provider, created_at, updated_at, last_sign_in_at)
+select gen_random_uuid(), u.id, u.id::text, jsonb_build_object('sub', u.id::text, 'email', u.email, 'email_verified', true), 'email', now(), now(), now()
+from auth.users u where u.email = '<EMAIL_ADMIN>';
+-- Comprobación de nulos que rompen el inicio de sesión (debe dar 0)
+select count(*) from auth.users where confirmation_token is null or recovery_token is null or email_change_token_new is null or email_change is null
+  or email_change_token_current is null or phone_change is null or phone_change_token is null or reauthentication_token is null;
+```
+
+Si la opción B falla o el inicio de sesión no funciona, se borra esa cuenta (`delete from auth.users where email = '<EMAIL_ADMIN>'`, que arrastra su identidad) y se usa la opción A.
+

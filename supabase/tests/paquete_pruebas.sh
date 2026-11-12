@@ -47,6 +47,34 @@ if psql -q -X -v ON_ERROR_STOP=1 -d $B -f "$PAQ/00_comprobar_base_vacia.sql" >/d
 grep -q "auth.users" "$TMP/err" || falla "mensaje inesperado: $(cat "$TMP/err")"
 echo "OK: el archivo 00 rechaza una base que no es de Supabase"
 
+# 4 bis. Funciones de borde y datos de demostración
+python3 -I - "$PAQ/funciones.json" <<'PY' || falla "el manifiesto de funciones no coincide con los archivos"
+import hashlib, json, os, sys
+m = json.load(open(sys.argv[1]))['funciones']
+base = os.path.join('supabase', 'functions')
+en_disco = sorted(d for d in os.listdir(base) if os.path.isdir(os.path.join(base, d)))
+if [f['nombre'] for f in m] != en_disco: sys.exit(f"funciones distintas: {[f['nombre'] for f in m]} frente a {en_disco}")
+for f in m:
+    ruta = os.path.join(base, f['nombre'])
+    if sorted(a['ruta'] for a in f['archivos']) != sorted(x for x in os.listdir(ruta) if x.endswith('.ts')): sys.exit(f"archivos distintos en {f['nombre']}")
+    if f['entrada'] not in [a['ruta'] for a in f['archivos']]: sys.exit(f"{f['nombre']} sin entrada")
+    for a in f['archivos']:
+        d = open(os.path.join(ruta, a['ruta']), 'rb').read()
+        if hashlib.sha256(d).hexdigest() != a['sha256'] or len(d) != a['bytes']: sys.exit(f"sha256 o tamaño distinto en {f['nombre']}/{a['ruta']}")
+sin = sorted(f['nombre'] for f in m if not f['verify_jwt'])
+if sin != ['baja', 'confirmar-suscripcion', 'enviar-confirmaciones']: sys.exit(f"verify_jwt inesperado: {sin}")
+print(len(m), 'funciones')
+PY
+echo "OK: el manifiesto de funciones coincide con los archivos (11 funciones, tres sin JWT)"
+! grep -q '^\\' "$PAQ/datos_demo.sql" || falla "datos_demo.sql contiene órdenes de psql"
+psql -q -X -d $A -c "insert into public.iglesias (nombre, slug, pais, ciudad, plan, es_demo) values ('Iglesia Demo', 'iglesia-demo', 'ES', 'Sevilla', 'premium', true)" >/dev/null
+psql -q -X -v ON_ERROR_STOP=1 -d $A -f "$PAQ/datos_demo.sql" >/dev/null 2>&1 || falla "datos_demo.sql falla sobre una iglesia demo"
+cifras=$(psql -q -X -At -d $A -c "select (select count(*) from public.miembros) || ',' || (select count(*) from public.zonas) || ',' || (select count(*) from public.casas_oracion)")
+[ "$cifras" = "300,6,18" ] || falla "datos_demo.sql dejó $cifras en lugar de 300,6,18"
+echo "OK: datos_demo.sql, sin psql y sin variables, crea 300 personas, 6 zonas y 18 casas"
+if psql -q -X -v ON_ERROR_STOP=1 -d $A -f "$PAQ/datos_demo.sql" >/dev/null 2>&1; then falla "datos_demo.sql se puede aplicar dos veces"; fi
+echo "OK: datos_demo.sql se niega a repetirse"
+
 # 5. Una huella detecta un cambio: se quita una política y la verificación lo dice
 psql -q -d $A -c "drop policy archivos_marca_leer on storage.objects"
 r2=$(psql -q -X -At -F'|' -d $A -f "$PAQ/99_verificacion.sql")

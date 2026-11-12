@@ -1,0 +1,192 @@
+{
+  "funciones": [
+    {
+      "nombre": "baja",
+      "verify_jwt": false,
+      "entrada": "index.ts",
+      "carpeta": "supabase/functions/baja",
+      "archivos": [
+        {
+          "ruta": "entrada.ts",
+          "bytes": 1358,
+          "sha256": "af19fc64b910030197e3c4ceed7ed600eb62ac561500b5467e12c632dbe37fa0"
+        },
+        {
+          "ruta": "index.ts",
+          "bytes": 3406,
+          "sha256": "4f0307c7babdd361d0164121ad9ac2e8bd63f0e77da524807d496d3532f247bb"
+        }
+      ]
+    },
+    {
+      "nombre": "checkin-evento",
+      "verify_jwt": true,
+      "entrada": "index.ts",
+      "carpeta": "supabase/functions/checkin-evento",
+      "archivos": [
+        {
+          "ruta": "index.ts",
+          "bytes": 4442,
+          "sha256": "c076cb42baee6cd8178dab58bae4d18fa76880224f323bea55dd10ea1af07459"
+        },
+        {
+          "ruta": "validar.ts",
+          "bytes": 3826,
+          "sha256": "c806a04a1c35877ebcbd8187a464723e25a3f4f755a2219204b73990ac1cff2c"
+        }
+      ]
+    },
+    {
+      "nombre": "confirmar-suscripcion",
+      "verify_jwt": false,
+      "entrada": "index.ts",
+      "carpeta": "supabase/functions/confirmar-suscripcion",
+      "archivos": [
+        {
+          "ruta": "index.ts",
+          "bytes": 2934,
+          "sha256": "cad627279d2240f6508e0d25b32b1ea85ee2beab53ee4303c171f8c002d73205"
+        }
+      ]
+    },
+    {
+      "nombre": "dar-publico",
+      "verify_jwt": true,
+      "entrada": "index.ts",
+      "carpeta": "supabase/functions/dar-publico",
+      "archivos": [
+        {
+          "ruta": "index.ts",
+          "bytes": 4011,
+          "sha256": "2f326228b302ee90aba2ae58cad268311e3b57da4252f71f669a5b4fa271cdff"
+        }
+      ]
+    },
+    {
+      "nombre": "datos-iglesia",
+      "verify_jwt": true,
+      "entrada": "index.ts",
+      "carpeta": "supabase/functions/datos-iglesia",
+      "archivos": [
+        {
+          "ruta": "autoservicio.ts",
+          "bytes": 2990,
+          "sha256": "5f06bb8754f3a6fe73fb5155068146083770c2e80a2d1931fc6aa4e15d6d0fb0"
+        },
+        {
+          "ruta": "envio.ts",
+          "bytes": 9805,
+          "sha256": "9ab58ee3153810e1607908878a173812939396eb2205bbc5913474df45b9c67e"
+        },
+        {
+          "ruta": "index.ts",
+          "bytes": 9700,
+          "sha256": "f5270ddeffa3dc095f14aa5f9406f5623880380a40f8b8ac5460749fa537cec4"
+        }
+      ]
+    },
+    {
+      "nombre": "enviar-confirmaciones",
+      "verify_jwt": false,
+      "entrada": "index.ts",
+      "carpeta": "supabase/functions/enviar-confirmaciones",
+      "archivos": [
+        {
+          "ruta": "correo.ts",
+          "bytes": 6934,
+          "sha256": "f4005b5f77a7163c8ee9e6c946c30ef5bc2e4aee832a8264f8b256355f97eee4"
+        },
+        {
+          "ruta": "index.ts",
+          "bytes": 4236,
+          "sha256": "c501d8d315b997e7e93849329dd7a90002d07ff735cbdd88f62681aee454d020"
+        }
+      ]
+    },
+    {
+      "nombre": "invitaciones",
+      "verify_jwt": true,
+      "entrada": "index.ts",
+      "carpeta": "supabase/functions/invitaciones",
+      "archivos": [
+        {
+          "ruta": "index.ts",
+          "bytes": 18217,
+          "sha256": "b21d5b8cf4722665bb6b024860877a0c63439ce44130d09c4621e838637a7717"
+        }
+      ]
+    },
+    {
+      "nombre": "plataforma",
+      "verify_jwt": true,
+      "entrada": "index.ts",
+      "carpeta": "supabase/functions/plataforma",
+      "archivos": [
+        {
+          "ruta": "ciclo.ts",
+          "bytes": 2247,
+          "sha256": "a27d3d5fc17acd9b9acba75694c68e715b9ca33d2a68e8467cbc8958c8b8d796"
+        },
+        {
+          "ruta": "envio.ts",
+          "bytes": 9805,
+          "sha256": "9ab58ee3153810e1607908878a173812939396eb2205bbc5913474df45b9c67e"
+        },
+        {
+          "ruta": "index.ts",
+          "bytes": 38957,
+          "sha256": "dad1b1b769b66cb9de8cf8321a7e7d1ef01ba3898a5dadc503de5a2f9ef9fd64"
+        }
+      ]
+    },
+    {
+      "nombre": "red-resumen",
+      "verify_jwt": true,
+      "entrada": "index.ts",
+      "carpeta": "supabase/functions/red-resumen",
+      "archivos": [
+        {
+          "ruta": "index.ts",
+          "bytes": 4831,
+          "sha256": "9727f0c17cc7f47e49e46b32277bd34f431c1a763ffc3b41ed80475c6958513c"
+        }
+      ]
+    },
+    {
+      "nombre": "registro-iglesia",
+      "verify_jwt": true,
+      "entrada": "index.ts",
+      "carpeta": "supabase/functions/registro-iglesia",
+      "archivos": [
+        {
+          "ruta": "index.ts",
+          "bytes": 9448,
+          "sha256": "aef4e8ea419fcca37e580158f9a7e6674c580f3193bfa7a0a10ef5128b5c9847"
+        },
+        {
+          "ruta": "validar.ts",
+          "bytes": 3727,
+          "sha256": "9c4eb8708189aa3dc7539735059b59319d483a51fa85d3b6b9677e24ee7d0630"
+        }
+      ]
+    },
+    {
+      "nombre": "verificar-certificado",
+      "verify_jwt": true,
+      "entrada": "index.ts",
+      "carpeta": "supabase/functions/verificar-certificado",
+      "archivos": [
+        {
+          "ruta": "index.ts",
+          "bytes": 2667,
+          "sha256": "b4e96a6e7c763fb9f58e1cd730e8193814de437dce8db4883dccdcba16a3e4cd"
+        },
+        {
+          "ruta": "validar.ts",
+          "bytes": 1259,
+          "sha256": "9189488881357a3ff50b000c998f59eaebbcb6b1635e89a069354063dfba35ef"
+        }
+      ]
+    }
+  ]
+}
