@@ -58,4 +58,5 @@ bash tests/limites_concurrencia.sh "$DB"
 bash tests/formacion_concurrencia.sh "$DB"
 bash tests/exportacion_carga.sh "$DB"
 bash tests/exportacion_paginada_carga.sh "$DB"
+bash tests/paquete_pruebas.sh
 bash tests/adn_reversion.sh
