@@ -5,7 +5,10 @@
         <h1 class="text-2xl font-bold text-gray-900">{{ t('plataformaPanel.portada.titulo') }}</h1>
         <p class="text-gray-600 text-sm mt-0.5" data-test="resumen-linea">{{ t('plataformaPanel.portada.linea', { activas: resumen.activas, prueba: resumen.prueba, miembros: resumen.miembros.toLocaleString(locale) }) }}</p>
       </div>
-      <RouterLink to="/plataforma/nueva-iglesia" class="btn-primary inline-flex items-center gap-2"><Plus class="w-4 h-4" aria-hidden="true" /> {{ t('plataforma.nueva') }}</RouterLink>
+      <div class="flex items-center gap-4 flex-wrap">
+        <InterruptorDemo />
+        <RouterLink to="/plataforma/nueva-iglesia" class="btn-primary inline-flex items-center gap-2"><Plus class="w-4 h-4" aria-hidden="true" /> {{ t('plataforma.nueva') }}</RouterLink>
+      </div>
     </div>
 
     <div v-if="pm.cargando && !pm.cargada" class="py-12 text-center text-gray-500 text-sm">{{ t('plataforma.cargando') }}</div>
@@ -46,6 +49,7 @@ import TarjetaSinConectar from '@/panel-maestro/TarjetaSinConectar.vue'
 import TablaInquilinos from '@/panel-maestro/TablaInquilinos.vue'
 import type { AccionInquilino, Inquilino } from '@/panel-maestro/tipos'
 import { usePlataformaStore } from '@/stores/plataforma'
+import InterruptorDemo from './InterruptorDemo.vue'
 import { aInquilino, alertasGlobales, eventosParaPanel, kpisDe, resumir, saludDe } from './adaptador'
 
 const { t, te, locale } = useI18n()
@@ -54,11 +58,11 @@ onMounted(() => { void pm.asegurarCargada(); void pm.cargarActividad(10); void p
 
 const fecha = (iso: string) => new Date(iso).toLocaleDateString(locale.value)
 const catalogo = computed(() => ({ planes: pm.planes, modulos: pm.modulos, planModulos: pm.planModulos }))
-const resumen = computed(() => resumir(pm.iglesias))
-const alertas = computed(() => alertasGlobales(pm.iglesias, pm.purga, t as any))
+const resumen = computed(() => resumir(pm.visibles, Date.now(), pm.totalDemos))
+const alertas = computed(() => alertasGlobales(pm.visibles, pm.purga, t as any))
 const kpis = computed(() => kpisDe(resumen.value, alertas.value, t as any, n => n.toLocaleString(locale.value)))
 // La portada enseña las iglesias más recientes; la lista completa está en Iglesias
-const inquilinos = computed(() => [...pm.iglesias]
+const inquilinos = computed(() => [...pm.visibles]
   .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
   .slice(0, 8).map(ig => aInquilino(ig, catalogo.value, t as any, fecha)))
 const eventos = computed(() => eventosParaPanel(pm.actividad, t as any, te as any))

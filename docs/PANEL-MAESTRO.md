@@ -42,6 +42,10 @@ Iglesias activas (con las altas de 30 días frente a los 30 anteriores), en prue
 3. La elección vive en `sessionStorage` (clave `adn_contexto`): dura la pestaña y nunca se guarda en la base. Una pestaña nueva empieza en el panel.
 4. No existe «entrar como otra iglesia» ni suplantación. El soporte ve conteos y estados desde Gestionar [E].
 
+### 3.1 Demostraciones y una sola regla para las cifras
+
+Las iglesias de demostración (`es_demo`) pueden entrar o no en las cifras, pero **siempre con la misma regla para todas a la vez**. El interruptor «Incluir demostraciones» (visible solo si hay alguna demo) decide una lista, `visibles` en `src/stores/plataforma.ts` (`vistaDe` en `src/views/plataforma/adaptador.ts`), y de ella salen las cifras de la portada, los filtros con su número, las filas del listado, los contadores del menú y las cuentas por plan. Las demostraciones se cuentan aparte en su propia tarjeta («Incluidas en las cifras» o «Fuera de las cifras»). Valor por defecto: sí en pruebas, no en producción (`VITE_ENTORNO`, ver `docs/PUESTA-EN-MARCHA.md`); la elección se recuerda en el navegador. Cuando entran, una demostración cuenta en su estado (activa, prueba...) y también en el filtro «Demo»; las pruebas por vencer no avisan por una demo. La equivalencia entre portada, filtros y listado, en las dos posiciones del interruptor, está fijada en `scripts/probar-panel-adaptador.mts` y `scripts/probar-panel-maestro-ui.mjs` [E].
+
 ## 4. Estructura reutilizable
 
 ```

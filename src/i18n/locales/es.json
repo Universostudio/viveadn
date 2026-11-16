@@ -1650,7 +1650,9 @@
       "facturacion": "Facturación recurrente mensual",
       "alertas": "Alertas críticas",
       "alertasHay": "Revisa el detalle debajo",
-      "alertasNinguna": "Ninguna alerta activa"
+      "alertasNinguna": "Ninguna alerta activa",
+      "demosDentro": "Incluidas en las cifras",
+      "demosFuera": "Fuera de las cifras"
     },
     "faltaFacturacion": "Falta conectar una pasarela de cobro: hoy no existe ningún dato de precios ni de cobros en el sistema.",
     "portada": {
@@ -1769,6 +1771,11 @@
       "auditoriaVacia": "Sin acciones anotadas.",
       "noDisponible": "No se pudo cargar esta información. El resto de la pantalla funciona.",
       "reintentar": "Reintentar"
+    },
+    "demo": {
+      "incluir": "Incluir demostraciones",
+      "dentro": "Cuenta {n} demostración en todas las cifras | Cuentan {n} demostraciones en todas las cifras",
+      "fuera": "{n} demostración fuera de las cifras | {n} demostraciones fuera de las cifras"
     }
   },
   "lideres": {

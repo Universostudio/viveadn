@@ -1,12 +1,12 @@
 // Prueba de la pantalla «Seguimiento» de Configuración (método de seguimiento de nuevas personas) en un navegador real, con la red simulada y con estado:
 // elegir plantilla, crear un método propio, validar, editar con aviso de procesos abiertos, restaurar, archivar, plan sin método propio, base sin métodos y errores.
-// Uso: npm run test:seguimiento-config-ui   (levanta Vite en el puerto 5198 con una dirección de Supabase inventada y la intercepta)
+// Uso: npm run test:seguimiento-config-ui   (levanta Vite en el puerto 5199 con una dirección de Supabase inventada y la intercepta)
 import { createRequire } from 'node:module'
 import { spawn } from 'node:child_process'
 import assert from 'node:assert/strict'
 const { chromium } = createRequire(import.meta.url)('playwright')
 
-const PUERTO = 5198
+const PUERTO = 5199
 const SB = 'https://fake.supabase.test'
 const IG = '11111111-1111-1111-1111-111111111111'
 const USR = '22222222-2222-2222-2222-222222222222'

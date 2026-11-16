@@ -5,7 +5,7 @@ export const FILTROS: FiltroInquilinos[] = ['todas', 'activas', 'prueba', 'suspe
 
 export function coincideFiltro(i: Inquilino, filtro: FiltroInquilinos): boolean {
   switch (filtro) {
-    case 'activas': return i.estado === 'activa' && !i.demo
+    case 'activas': return i.estado === 'activa'
     case 'prueba': return i.estado === 'prueba'
     case 'suspendidas': return i.estado === 'suspendida'
     case 'demo': return i.demo

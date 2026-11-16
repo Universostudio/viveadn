@@ -47,8 +47,8 @@ const seccion = computed(() => {
 })
 
 // Contadores del menú: salen de la misma lista que ya carga el panel, sin consultas aparte
-const contadorIglesias = computed(() => pm.iglesias.length || null)
-const contadorPruebas = computed(() => pm.iglesias.filter(i => (i.etapa ?? (i.activa ? 'activa' : 'suspendida')) === 'prueba' && !i.es_demo).length || null)
+const contadorIglesias = computed(() => pm.visibles.length || null)
+const contadorPruebas = computed(() => pm.visibles.filter(i => (i.etapa ?? (i.activa ? 'activa' : 'suspendida')) === 'prueba' && !i.es_demo).length || null)
 
 const grupos = computed<GrupoMenu[]>(() => [
   { titulo: t('plataformaPanel.grupo.control'), items: [

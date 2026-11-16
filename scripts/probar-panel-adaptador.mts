@@ -1,7 +1,7 @@
 // Prueba del adaptador y del filtrado del Panel Maestro, sin navegador ni red.
 // Uso: npm run test:panel-adaptador
 import assert from 'node:assert/strict'
-import { aInquilino, alertasGlobales, kpisDe, resumir, diasDePrueba, pruebaPorVencer, pruebaVencida, borradoVencido, eventosParaPanel, saludDe, DIA } from '../src/views/plataforma/adaptador.ts'
+import { aInquilino, alertasGlobales, kpisDe, resumir, vistaDe, incluirDemoPorDefecto, diasDePrueba, pruebaPorVencer, pruebaVencida, borradoVencido, eventosParaPanel, saludDe, DIA } from '../src/views/plataforma/adaptador.ts'
 import { filtrarInquilinos, contarPorFiltro } from '../src/panel-maestro/filtros.ts'
 import { textoDeAccion } from '../src/views/plataforma/acciones.ts'
 
@@ -36,8 +36,34 @@ const lista = [
   base({ id: 'e', es_demo: true, miembros: 300, created_at: iso(-3) }),
   base({ id: 'f', etapa: 'receso', borrado_programado_en: iso(-2), miembros: 7 }),
 ]
-const r = resumir(lista, AHORA)
-assert.deepEqual({ ...r }, { activas: 1, prueba: 2, porVencer: 1, vencidas: 1, suspendidas: 1, demos: 1, miembros: 182, altasMes: 1, altasMesAnterior: 1 })
+const r = resumir(vistaDe(lista, false), AHORA, 1)
+assert.deepEqual({ ...r }, { activas: 1, prueba: 2, porVencer: 1, vencidas: 1, suspendidas: 1, demos: 1, demosDentro: 0, miembros: 182, altasMes: 1, altasMesAnterior: 1 }, 'sin demostraciones: las cifras de antes, y la demo se cuenta aparte')
+
+// UNA regla para todas las cifras: entorno, vista, resumen, filtros y listado salen de la misma lista
+assert.equal(incluirDemoPorDefecto('pruebas'), true, 'en pruebas las demostraciones entran por defecto')
+assert.equal(incluirDemoPorDefecto('produccion'), false, 'en producción no')
+assert.equal(incluirDemoPorDefecto('lo-que-sea'), true)
+assert.equal(vistaDe(lista, true).length, 6); assert.equal(vistaDe(lista, false).length, 5)
+for (const incluir of [true, false]) {
+  const vista = vistaDe(lista, incluir)
+  const rr = resumir(vista, AHORA, lista.filter(i => i.es_demo).length)
+  const filas = vista.map(l => aInquilino(l as any, cat, t, fecha, AHORA))
+  const cuentas = contarPorFiltro(filas)
+  const k = Object.fromEntries(kpisDe(rr, [], t, n => String(n)).map(x => [x.clave, x]))
+  // Equivalencia: lo que dice la portada, lo que dicen los filtros y lo que hay en el listado es lo mismo
+  assert.equal(String(cuentas.activas), k.activas.valor, `incluir=${incluir}: «Activas» de la portada y del filtro coinciden`)
+  assert.equal(cuentas.prueba, rr.prueba, `incluir=${incluir}: pruebas de la portada y del filtro coinciden`)
+  assert.equal(cuentas.suspendidas, rr.suspendidas)
+  assert.equal(cuentas.todas, vista.length, `incluir=${incluir}: el filtro «Todas» es el número de filas`)
+  assert.equal(filas.filter(f => f.estado === 'activa').length, rr.activas, 'y el listado tiene tantas activas como dice la portada')
+  assert.equal(filas.reduce((n, f) => n + f.miembros, 0), rr.miembros, `incluir=${incluir}: los miembros de la portada son la suma del listado`)
+  assert.equal(k.demos.valor, '1', 'las demostraciones se cuentan aparte, estén dentro o fuera')
+  assert.equal(rr.demosDentro, incluir ? 1 : 0)
+}
+const conDemo = resumir(vistaDe(lista, true), AHORA, 1)
+assert.deepEqual({ activas: conDemo.activas, miembros: conDemo.miembros, prueba: conDemo.prueba }, { activas: 2, miembros: 482, prueba: 2 }, 'con demostraciones: la demo activa y sus 300 personas entran en las cifras')
+assert.match(kpisDe(conDemo, [], t, String).find(x => x.clave === 'demos')!.nota!, /demosDentro/)
+assert.match(kpisDe(r, [], t, String).find(x => x.clave === 'demos')!.nota!, /demosFuera/)
 
 // Alertas: solo cifras y rutas, sin nombres de personas
 const alertas = alertasGlobales(lista, { atrasada: true, en_borrado: 1, vencidas: 1, horas_mas_atrasada: 60 }, t, AHORA)
@@ -75,7 +101,7 @@ assert.equal(aInquilino(base({ etapa: 'prueba', prueba_hasta: iso(-2) }) as any,
 
 // Filtros y búsqueda
 const inqs = lista.map(l => aInquilino({ ...l, nombre: l.id === 'a' ? 'Iglesia Álamo' : l.id, ciudad: l.id === 'a' ? 'Málaga' : null } as any, cat, t, fecha, AHORA))
-assert.deepEqual(contarPorFiltro(inqs), { todas: 6, activas: 1, prueba: 2, suspendidas: 1, demo: 1 })
+assert.deepEqual(contarPorFiltro(inqs), { todas: 6, activas: 2, prueba: 2, suspendidas: 1, demo: 1 }, 'las demostraciones que están en la lista cuentan en su estado y también en «Demo»')
 assert.equal(filtrarInquilinos(inqs, 'todas', 'alamo').length, 1, 'sin acentos ni mayúsculas')
 assert.equal(filtrarInquilinos(inqs, 'todas', 'MALAGA').length, 1, 'la ciudad también busca')
 assert.equal(filtrarInquilinos(inqs, 'prueba', 'alamo').length, 0, 'filtro y búsqueda se combinan')

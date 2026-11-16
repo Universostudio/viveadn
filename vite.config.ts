@@ -17,6 +17,8 @@ export default defineConfig({
     __INTLIFY_PROD_DEVTOOLS__: false,
     // Qué versión se está viendo: en Vercel, el commit que se construyó; en local, «local»
     __ADN_VERSION__: JSON.stringify((process.env.VERCEL_GIT_COMMIT_SHA ?? 'local').slice(0, 7)),
+    // Entorno: «produccion» solo si se pide con VITE_ENTORNO o si Vercel construye el entorno de producción; todo lo demás (vista previa, local) es «pruebas»
+    __ADN_ENTORNO__: JSON.stringify(process.env.VITE_ENTORNO ?? (process.env.VERCEL_ENV === 'production' ? 'produccion' : 'pruebas')),
   },
   resolve: {
     alias: {

@@ -40,5 +40,5 @@ const { t, locale } = useI18n()
 const pm = usePlataformaStore()
 onMounted(() => { void pm.asegurarCargada() })
 const incluye = (plan: string, modulo: string) => pm.planModulos.some(x => x.plan === plan && x.modulo === modulo)
-const contar = (plan: string) => pm.iglesias.filter(i => i.plan === plan && !i.es_demo).length
+const contar = (plan: string) => pm.visibles.filter(i => i.plan === plan).length
 </script>

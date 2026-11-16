@@ -5,7 +5,10 @@
         <h1 class="text-2xl font-bold text-gray-900">{{ t('plataformaPanel.iglesias.titulo') }}</h1>
         <p class="text-gray-500 text-sm mt-0.5">{{ t('plataformaPanel.iglesias.subtitulo') }}</p>
       </div>
-      <RouterLink to="/plataforma/nueva-iglesia" class="btn-primary inline-flex items-center gap-2" data-test="nueva-iglesia"><Plus class="w-4 h-4" aria-hidden="true" /> {{ t('plataforma.nueva') }}</RouterLink>
+      <div class="flex items-center gap-4 flex-wrap">
+        <InterruptorDemo />
+        <RouterLink to="/plataforma/nueva-iglesia" class="btn-primary inline-flex items-center gap-2" data-test="nueva-iglesia"><Plus class="w-4 h-4" aria-hidden="true" /> {{ t('plataforma.nueva') }}</RouterLink>
+      </div>
     </div>
 
     <div v-if="pm.cargando && !pm.cargada" class="py-12 text-center text-gray-500 text-sm">{{ t('plataforma.cargando') }}</div>
@@ -26,6 +29,7 @@ import type { AccionInquilino, Inquilino } from '@/panel-maestro/tipos'
 import { usePlataformaStore } from '@/stores/plataforma'
 import { aInquilino } from './adaptador'
 import NuevaIglesiaModal from './NuevaIglesiaModal.vue'
+import InterruptorDemo from './InterruptorDemo.vue'
 
 const { t, locale } = useI18n()
 const pm = usePlataformaStore()
@@ -36,7 +40,7 @@ onMounted(() => { void pm.asegurarCargada() })
 
 const fecha = (iso: string) => new Date(iso).toLocaleDateString(locale.value)
 const catalogo = computed(() => ({ planes: pm.planes, modulos: pm.modulos, planModulos: pm.planModulos }))
-const inquilinos = computed(() => pm.iglesias.map(ig => aInquilino(ig, catalogo.value, t as any, fecha)))
+const inquilinos = computed(() => pm.visibles.map(ig => aInquilino(ig, catalogo.value, t as any, fecha)))
 const busqueda = computed(() => typeof route.query.q === 'string' ? route.query.q : '')
 
 // Acciones por estado, como en la referencia: gestionar siempre; convertir una prueba; activar una iglesia en alta o en receso

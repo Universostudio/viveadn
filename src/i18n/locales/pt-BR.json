@@ -1650,7 +1650,9 @@
       "facturacion": "Receita recorrente mensal",
       "alertas": "Alertas críticos",
       "alertasHay": "Veja o detalhe abaixo",
-      "alertasNinguna": "Nenhum alerta ativo"
+      "alertasNinguna": "Nenhum alerta ativo",
+      "demosDentro": "Incluídas nos números",
+      "demosFuera": "Fora dos números"
     },
     "faltaFacturacion": "Falta conectar um gateway de pagamento: hoje o sistema não tem nenhum dado de preços nem de cobranças.",
     "portada": {
@@ -1769,6 +1771,11 @@
       "auditoriaVacia": "Nenhuma ação registrada.",
       "noDisponible": "Não foi possível carregar esta informação. O resto da tela funciona.",
       "reintentar": "Tentar de novo"
+    },
+    "demo": {
+      "incluir": "Incluir demonstrações",
+      "dentro": "{n} demonstração contada em todos os números | {n} demonstrações contadas em todos os números",
+      "fuera": "{n} demonstração fora dos números | {n} demonstrações fora dos números"
     }
   },
   "lideres": {

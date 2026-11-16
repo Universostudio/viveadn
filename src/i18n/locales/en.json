@@ -1650,7 +1650,9 @@
       "facturacion": "Monthly recurring revenue",
       "alertas": "Critical alerts",
       "alertasHay": "See the detail below",
-      "alertasNinguna": "No active alerts"
+      "alertasNinguna": "No active alerts",
+      "demosDentro": "Included in the figures",
+      "demosFuera": "Left out of the figures"
     },
     "faltaFacturacion": "A payment gateway still needs to be connected: the system holds no pricing or billing data today.",
     "portada": {
@@ -1769,6 +1771,11 @@
       "auditoriaVacia": "No actions recorded.",
       "noDisponible": "This information could not be loaded. The rest of the screen works.",
       "reintentar": "Retry"
+    },
+    "demo": {
+      "incluir": "Include demos",
+      "dentro": "{n} demo counted in every figure | {n} demos counted in every figure",
+      "fuera": "{n} demo left out of the figures | {n} demos left out of the figures"
     }
   },
   "lideres": {

@@ -34,13 +34,15 @@ const planes = [{ clave: 'semilla', nombre: 'Semilla', max_miembros: 100, orden:
 const modulos = [{ clave: 'miembros', nombre: 'Miembros', tipo: 'nucleo', orden: 1 }, { clave: 'eventos', nombre: 'Eventos', tipo: 'opcional', orden: 2 }, { clave: 'comunicacion', nombre: 'Comunicación', tipo: 'opcional', orden: 3 }]
 const planModulos = [{ plan: 'semilla', modulo: 'miembros' }, { plan: 'premium', modulo: 'miembros' }, { plan: 'premium', modulo: 'comunicacion' }]
 
-async function escenario({ admin = true, conIglesia = false, ancho = 1366, alto = 900, purgaAtrasada = false, detalleFalla = false, actividadFalla = false, envioActivo = false } = {}) {
+async function escenario({ admin = true, conIglesia = false, ancho = 1366, alto = 900, purgaAtrasada = false, detalleFalla = false, actividadFalla = false, envioActivo = false, demo = 'no', sinDemos = false } = {}) {
   const estado = { llamadas: [], cuerpos: [] }
   const browser = await chromium.launch()
   const ctx = await browser.newContext({ acceptDownloads: true, locale: 'es-ES', viewport: { width: ancho, height: alto }, deviceScaleFactor: 1 })
   const sesion = { access_token: 'x.y.z', refresh_token: 'r', token_type: 'bearer', expires_in: 3600, expires_at: Math.floor(Date.now() / 1000) + 3600,
     user: { id: USR, aud: 'authenticated', email: 'admin@prueba.test', app_metadata: {}, user_metadata: {}, created_at: '2026-01-01T00:00:00Z' } }
   await ctx.addInitScript(s => localStorage.setItem('sb-fake-auth-token', s), JSON.stringify(sesion))
+  // «Incluir demostraciones»: las pruebas anteriores fijan que no (cifras de siempre); demo: null deja el valor por defecto del entorno
+  if (demo) await ctx.addInitScript(d => { if (!sessionStorage.getItem('demo-fijado')) { localStorage.setItem('adn_panel_incluir_demo', d); sessionStorage.setItem('demo-fijado', '1') } }, demo)
   const tablas = {
     perfiles: conIglesia ? [{ id: USR, iglesia_id: IG, nombre: 'Ada', apellido: 'Admin', email: 'admin@prueba.test', rol: 'propietario', activo: true }] : [],
     iglesias: conIglesia ? [{ id: IG, nombre: 'Iglesia Propia', slug: 'propia', activa: true, plan: 'premium', etapa: 'activa' }] : [],
@@ -61,7 +63,7 @@ async function escenario({ admin = true, conIglesia = false, ancho = 1366, alto 
       const cuerpo = req.postDataJSON(); estado.llamadas.push(cuerpo.accion); estado.cuerpos.push(cuerpo)
       if (!admin) return json(403, { error: 'No autorizado' })
       switch (cuerpo.accion) {
-        case 'listar': return json(200, { iglesias, planes, modulos, plan_modulos: planModulos })
+        case 'listar': return json(200, { iglesias: sinDemos ? iglesias.filter(i => !i.es_demo) : iglesias, planes, modulos, plan_modulos: planModulos })
         case 'registro_estado': return json(200, { abierto: false, requiere_codigo: true, codigos: [] })
         case 'estado_purga': return json(200, { ok: true, atrasada: purgaAtrasada, en_borrado: 1, vencidas: purgaAtrasada ? 1 : 0, horas_mas_atrasada: purgaAtrasada ? 60 : 0 })
         case 'detalle':
@@ -182,7 +184,7 @@ try {
   })
 
   await prueba('la tabla busca, filtra y ofrece acciones según el estado', async () => {
-    const { browser, page, errores, estado } = await escenario()
+    const { browser, page, errores, estado } = await escenario({ demo: 'si' })
     await page.goto(url('/plataforma/iglesias'))
     await page.waitForSelector('[data-test=tabla-inquilinos] tbody tr')
     const filas = () => page.locator('[data-test=tabla-inquilinos] tbody tr').count()
@@ -197,7 +199,7 @@ try {
     await page.click('[data-filtro=prueba]'); assert.equal(await filas(), 2)
     await page.click('[data-filtro=suspendidas]'); assert.equal(await filas(), 1)
     await page.click('[data-filtro=demo]'); assert.equal(await filas(), 1)
-    await page.click('[data-filtro=activas]'); assert.equal(await filas(), 1)
+    await page.click('[data-filtro=activas]'); assert.equal(await filas(), 2, 'activas con demostraciones dentro: Casa del Reino y la demo')
     assert.equal(await page.getAttribute('[data-filtro=activas]', 'aria-pressed'), 'true')
     await page.click('[data-filtro=todas]')
     const acciones = id => page.locator(`tr[data-inquilino="${id}"] [data-accion]`).evaluateAll(l => l.map(e => e.dataset.accion))
@@ -220,6 +222,51 @@ try {
     assert.equal(await filas(), 1)
     await captura(page, 'escritorio-iglesias')
     assert.deepEqual(errores, [])
+    await browser.close()
+  })
+
+  await prueba('por defecto en pruebas las demostraciones entran en TODAS las cifras a la vez; el interruptor las saca de todas y la elección se recuerda', async () => {
+    const { browser, page, errores } = await escenario({ demo: null })
+    await page.goto(url('/plataforma'))
+    await page.waitForSelector('[data-kpi=activas]')
+    const valor = async k => (await page.locator(`[data-kpi=${k}] p`).nth(1).textContent()).trim()
+    assert.equal(await page.isChecked('[data-test=incluir-demo]'), true, 'en pruebas viene activado')
+    assert.equal(await valor('activas'), '2', 'activas: Casa del Reino y la demo')
+    assert.equal(await valor('miembros'), '757', '320+45+12+80+300+0')
+    assert.equal(await valor('demos'), '1'); assert.match(await page.textContent('[data-kpi=demos]'), /Incluidas en las cifras/)
+    assert.match(await page.textContent('[data-test=resumen-linea]'), /Iglesias activas: 2, en prueba: 2, miembros: 757/)
+    // Portada, filtros, listado y contador del menú: la misma lista
+    await page.goto(url('/plataforma/iglesias')); await page.waitForSelector('[data-test=tabla-inquilinos] tbody tr')
+    const filas = () => page.locator('[data-test=tabla-inquilinos] tbody tr').count()
+    const chip = async f => (await page.textContent(`[data-filtro=${f}]`)).replace(/\s+/g, ' ').trim()
+    assert.equal(await filas(), 6)
+    assert.match(await chip('todas'), /\(6\)/); assert.match(await chip('activas'), /\(2\)/); assert.match(await chip('prueba'), /\(2\)/); assert.match(await chip('suspendidas'), /\(1\)/); assert.match(await chip('demo'), /\(1\)/)
+    await page.click('[data-filtro=activas]'); assert.equal(await filas(), 2, 'el filtro «Activas» enseña tantas filas como dice su cifra')
+    await page.click('[data-filtro=todas]')
+    assert.match((await page.textContent('nav a[href="/plataforma/iglesias"]')), /6/, 'el contador del menú sale de la misma lista')
+    assert.match(await page.textContent('[data-test=demo-nota]'), /1 demostración en todas las cifras/)
+    // Apagar el interruptor cambia todo a la vez
+    await page.uncheck('[data-test=incluir-demo]')
+    assert.equal(await filas(), 5)
+    assert.match(await chip('todas'), /\(5\)/); assert.match(await chip('activas'), /\(1\)/); assert.match(await chip('prueba'), /\(2\)/)
+    assert.equal(await page.locator('[data-filtro=demo]').count(), 0, 'sin demostraciones en la lista no hay filtro «Demo»')
+    assert.match((await page.textContent('nav a[href="/plataforma/iglesias"]')), /5/)
+    assert.match(await page.textContent('[data-test=demo-nota]'), /1 demostración fuera de las cifras/)
+    await page.goto(url('/plataforma')); await page.waitForSelector('[data-kpi=activas]')
+    assert.equal(await valor('activas'), '1'); assert.equal(await valor('miembros'), '457')
+    assert.equal(await valor('demos'), '1', 'las demostraciones se cuentan aparte aunque estén fuera'); assert.match(await page.textContent('[data-kpi=demos]'), /Fuera de las cifras/)
+    // Recargar recuerda la elección
+    await page.reload(); await page.waitForSelector('[data-kpi=activas]')
+    assert.equal(await page.isChecked('[data-test=incluir-demo]'), false, 'la elección se recuerda en este navegador')
+    assert.equal(await valor('activas'), '1')
+    assert.deepEqual(errores, [])
+    await browser.close()
+  })
+
+  await prueba('sin iglesias de demostración no aparece el interruptor', async () => {
+    const { browser, page } = await escenario({ demo: null, sinDemos: true })
+    await page.goto(url('/plataforma')); await page.waitForSelector('[data-kpi=activas]')
+    assert.equal(await page.locator('[data-test=interruptor-demo]').count(), 0)
     await browser.close()
   })
 
@@ -275,7 +322,7 @@ try {
     await page.goto(url('/plataforma/nueva-iglesia')); await page.waitForSelector('[role=dialog]')
     await page.fill('#ni-nombre', 'Iglesia Nueva'); await page.fill('#ni-slug', 'iglesia-nueva'); await page.fill('#ni-pais', 'España'); await page.fill('#ni-ciudad', 'León')
     await page.fill('input[type=email]', 'dueno@prueba.test'); await page.fill('[aria-label="Nombre"]', 'Dueño'); await page.fill('[aria-label="Apellido"]', 'Prueba')
-    await page.check('input[type=checkbox]')
+    await page.check('[role=dialog] input[type=checkbox]')
     await page.click('button[type=submit]')
     await new Promise(r => setTimeout(r, 500))
     const c = estado.cuerpos.find(x => x.accion === 'crear_iglesia')

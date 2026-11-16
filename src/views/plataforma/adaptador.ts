@@ -99,24 +99,37 @@ export function alertasGlobales(lista: IglesiaFila[], purga: PurgaResumen | null
 }
 
 export interface Resumen {
-  activas: number; prueba: number; porVencer: number; vencidas: number; suspendidas: number; demos: number; miembros: number
+  activas: number; prueba: number; porVencer: number; vencidas: number; suspendidas: number; miembros: number
   altasMes: number; altasMesAnterior: number
+  /** Demostraciones: las que hay en total (se cuentan aparte, estén o no dentro de las cifras) y cuántas de ellas entran en ellas */
+  demos: number; demosDentro: number
 }
 
-export function resumir(lista: IglesiaFila[], ahora = Date.now()): Resumen {
-  const reales = lista.filter(i => !i.es_demo)
+/** UNA regla para todas las cifras del panel: con «incluir demostraciones» entran todas las iglesias; sin él, solo las reales.
+ *  Portada, filtros, listado y contadores del menú salen de la lista que devuelve esta función. */
+export function vistaDe(todas: IglesiaFila[], incluirDemo: boolean): IglesiaFila[] {
+  return incluirDemo ? todas : todas.filter(i => !i.es_demo)
+}
+
+/** En pruebas las demostraciones entran por defecto; en producción, no */
+export const incluirDemoPorDefecto = (entorno: string) => entorno !== 'produccion'
+
+/** Cifras de la lista que se ve (ya filtrada con vistaDe). `totalDemos` son las demostraciones de toda la lista, para contarlas aparte. */
+export function resumir(visibles: IglesiaFila[], ahora = Date.now(), totalDemos?: number): Resumen {
   const e = (i: IglesiaFila) => etapaDe(i)
-  const altas = (desde: number, hasta: number) => reales.filter(i => { const f = new Date(i.created_at).getTime(); return f > desde && f <= hasta }).length
+  const altas = (desde: number, hasta: number) => visibles.filter(i => { const f = new Date(i.created_at).getTime(); return f > desde && f <= hasta }).length
+  const dentro = visibles.filter(i => i.es_demo).length
   return {
-    activas: reales.filter(i => e(i) === 'activa' && i.activa).length,
-    prueba: reales.filter(i => e(i) === 'prueba').length,
-    porVencer: reales.filter(i => pruebaPorVencer(i, ahora)).length,
-    vencidas: reales.filter(i => pruebaVencida(i, ahora)).length,
-    suspendidas: reales.filter(i => !i.activa).length,
-    demos: lista.length - reales.length,
-    miembros: reales.reduce((n, i) => n + (Number(i.miembros) || 0), 0),
+    activas: visibles.filter(i => e(i) === 'activa' && i.activa).length,
+    prueba: visibles.filter(i => e(i) === 'prueba').length,
+    porVencer: visibles.filter(i => pruebaPorVencer(i, ahora)).length,
+    vencidas: visibles.filter(i => pruebaVencida(i, ahora)).length,
+    suspendidas: visibles.filter(i => !i.activa).length,
+    miembros: visibles.reduce((n, i) => n + (Number(i.miembros) || 0), 0),
     altasMes: altas(ahora - 30 * DIA, ahora),
     altasMesAnterior: altas(ahora - 60 * DIA, ahora - 30 * DIA),
+    demos: totalDemos ?? dentro,
+    demosDentro: dentro,
   }
 }
 
@@ -128,7 +141,8 @@ export function kpisDe(r: Resumen, alertas: Alerta[], t: Traductor, formatoNumer
     { clave: 'prueba', etiqueta: t('plataformaPanel.kpi.prueba'), valor: formatoNumero(r.prueba),
       nota: t('plataformaPanel.kpi.pruebaNota', { n: r.porVencer }, r.porVencer), tono: r.porVencer ? 'alerta' : 'normal' },
     { clave: 'suspendidas', etiqueta: t('plataformaPanel.kpi.suspendidas'), valor: formatoNumero(r.suspendidas) },
-    { clave: 'demos', etiqueta: t('plataformaPanel.kpi.demos'), valor: formatoNumero(r.demos) },
+    { clave: 'demos', etiqueta: t('plataformaPanel.kpi.demos'), valor: formatoNumero(r.demos),
+      nota: t(r.demosDentro > 0 || r.demos === 0 ? 'plataformaPanel.kpi.demosDentro' : 'plataformaPanel.kpi.demosFuera') },
     { clave: 'miembros', etiqueta: t('plataformaPanel.kpi.miembros'), valor: formatoNumero(r.miembros), nota: t('plataformaPanel.kpi.miembrosNota') },
     { clave: 'facturacion', etiqueta: t('plataformaPanel.kpi.facturacion'), valor: null, sinConectar: t('plataformaPanel.faltaFacturacion') },
     { clave: 'alertas', etiqueta: t('plataformaPanel.kpi.alertas'), valor: formatoNumero(alertas.length),

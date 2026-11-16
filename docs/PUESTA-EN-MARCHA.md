@@ -24,6 +24,7 @@ Las variables `VITE_` entran en la compilación: tras cambiar una, hay que volve
 | `VITE_SUPABASE_URL` | Dirección del proyecto de Supabase de pruebas | La de `<REF_PRUEBAS>`, en el panel de Supabase, Settings, API |
 | `VITE_SUPABASE_ANON_KEY` | Clave pública (anon) | La del mismo sitio. Es pública, pero no se escribe en archivos |
 | `VITE_REGION_DATOS` | Región donde se alojan los datos | `eu-west-1` [V] |
+| `VITE_ENTORNO` | `pruebas` o `produccion`: decide si el Panel Maestro incluye por defecto las iglesias de demostración en sus cifras | Opcional. Sin ella, Vercel en producción es `produccion` y todo lo demás (vista previa, local) es `pruebas` [E, `vite.config.ts`] |
 | `VITE_LEGAL_TITULAR` | Titular de los textos legales | `Visualiza Studio`, ya es el valor por defecto |
 | `VITE_LEGAL_NIF`, `VITE_LEGAL_DOMICILIO`, `VITE_EMAIL_LEGAL`, `VITE_EMAIL_SOPORTE`, `VITE_LEGAL_REGISTRO` | Datos del titular | En pruebas se dejan **vacíos**: los textos muestran un marcador visible en lugar de un dato inventado [E]. Pendiente: «le diré» |
 

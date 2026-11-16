@@ -1,9 +1,10 @@
 // Estado compartido del Panel Maestro: la lista de iglesias con sus conteos (nunca datos de personas), el catálogo de planes y módulos,
 // los ajustes de registro y el estado de la purga. Todas las pantallas del panel leen de aquí y cualquier acción recarga.
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { supabase } from '@/lib/supabase'
 import { i18n } from '@/i18n'
+import { incluirDemoPorDefecto, vistaDe } from '@/views/plataforma/adaptador'
 
 export interface PurgaEstado { atrasada: boolean; en_borrado: number; vencidas: number; horas_mas_atrasada: number }
 export interface EventoCrudo { tipo: 'alta' | 'accion'; accion: string; iglesia_id: string | null; iglesia: string | null; fecha: string }
@@ -29,6 +30,21 @@ export const usePlataformaStore = defineStore('plataforma', () => {
   const sistema = ref<Sistema | null>(null)
   const sistemaEstado = ref<Carga>('pendiente')
   const cargada = ref(false)
+  // «Incluir demostraciones»: una sola decisión para todas las cifras del panel. Por defecto, sí en pruebas y no en producción; la elección se recuerda en este navegador.
+  const CLAVE_DEMO = 'adn_panel_incluir_demo'
+  const leerDemo = (): boolean => {
+    try { const v = localStorage.getItem(CLAVE_DEMO); if (v === 'si') return true; if (v === 'no') return false } catch { /* sin almacenamiento: vale el valor por defecto */ }
+    return incluirDemoPorDefecto(typeof __ADN_ENTORNO__ === 'string' ? __ADN_ENTORNO__ : 'pruebas')
+  }
+  const incluirDemo = ref(leerDemo())
+  function fijarIncluirDemo(v: boolean) {
+    incluirDemo.value = v
+    try { localStorage.setItem(CLAVE_DEMO, v ? 'si' : 'no') } catch { /* la elección vale hasta recargar */ }
+  }
+  const hayDemos = computed(() => iglesias.value.some(i => i.es_demo))
+  const totalDemos = computed(() => iglesias.value.filter(i => i.es_demo).length)
+  /** La lista que ven todas las pantallas: portada, filtros, listado, contadores y planes salen de aquí */
+  const visibles = computed(() => vistaDe(iglesias.value, incluirDemo.value))
   // Aviso como función para que se traduzca de nuevo si cambia el idioma
   const aviso = ref<{ texto: () => string; error: boolean } | null>(null)
 
@@ -116,5 +132,5 @@ export const usePlataformaStore = defineStore('plataforma', () => {
     actividad.value = []; actividadEstado.value = 'pendiente'; sistema.value = null; sistemaEstado.value = 'pendiente'
   }
 
-  return { iglesias, planes, modulos, planModulos, registro, purga, cargando, cargada, aviso, actividad, actividadEstado, sistema, sistemaEstado, avisar, limpiarAviso, llamar, cargar, cargarPurga, cargarActividad, cargarSistema, asegurarCargada, ejecutar, limpiar }
+  return { iglesias, incluirDemo, fijarIncluirDemo, hayDemos, totalDemos, visibles, planes, modulos, planModulos, registro, purga, cargando, cargada, aviso, actividad, actividadEstado, sistema, sistemaEstado, avisar, limpiarAviso, llamar, cargar, cargarPurga, cargarActividad, cargarSistema, asegurarCargada, ejecutar, limpiar }
 })

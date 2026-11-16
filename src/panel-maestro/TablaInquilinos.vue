@@ -15,7 +15,7 @@
         </div>
       </div>
       <div role="group" :aria-label="t('panelMaestro.tabla.filtros')" class="flex flex-wrap gap-2">
-        <button v-for="f in FILTROS" :key="f" type="button" :aria-pressed="filtro === f" :data-filtro="f" @click="filtro = f"
+        <button v-for="f in filtrosVisibles" :key="f" type="button" :aria-pressed="filtro === f" :data-filtro="f" @click="filtro = f"
           :class="['text-xs px-3 py-2 rounded-full border focus:outline-none focus-visible:ring-2 focus-visible:ring-adn-verde',
             filtro === f ? 'bg-adn-verde text-white border-adn-verde' : 'bg-white text-gray-700 border-gray-200 hover:border-adn-verde']">
           {{ t('panelMaestro.tabla.filtro.' + f) }} <span class="opacity-75">({{ cuentas[f] }})</span>
@@ -142,6 +142,8 @@ watch(() => props.busquedaInicial, v => { texto.value = v })
 watch([texto, filtro], () => { limite.value = TAMANO })
 
 const cuentas = computed(() => contarPorFiltro(props.inquilinos))
+// El filtro «Demo» solo aparece si la lista que se ve tiene alguna: con las demostraciones fuera de las cifras no hay nada que filtrar
+const filtrosVisibles = computed(() => FILTROS.filter(f => f !== 'demo' || cuentas.value.demo > 0 || filtro.value === 'demo'))
 const filtrados = computed(() => filtrarInquilinos(props.inquilinos, filtro.value, texto.value))
 const visibles = computed(() => filtrados.value.slice(0, limite.value))
 

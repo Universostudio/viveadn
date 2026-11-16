@@ -1650,7 +1650,9 @@
       "facturacion": "Revenu récurrent mensuel",
       "alertas": "Alertes critiques",
       "alertasHay": "Voir le détail ci-dessous",
-      "alertasNinguna": "Aucune alerte active"
+      "alertasNinguna": "Aucune alerte active",
+      "demosDentro": "Incluses dans les chiffres",
+      "demosFuera": "Hors des chiffres"
     },
     "faltaFacturacion": "Il faut encore connecter une passerelle de paiement : le système ne contient aujourd’hui aucune donnée de tarifs ni d’encaissements.",
     "portada": {
@@ -1769,6 +1771,11 @@
       "auditoriaVacia": "Aucune action consignée.",
       "noDisponible": "Ces informations n’ont pas pu être chargées. Le reste de l’écran fonctionne.",
       "reintentar": "Réessayer"
+    },
+    "demo": {
+      "incluir": "Inclure les démonstrations",
+      "dentro": "{n} démonstration comptée dans tous les chiffres | {n} démonstrations comptées dans tous les chiffres",
+      "fuera": "{n} démonstration hors des chiffres | {n} démonstrations hors des chiffres"
     }
   },
   "lideres": {
