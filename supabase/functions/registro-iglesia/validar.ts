@@ -7,15 +7,32 @@ const RARO_RE = /[\u0000-\u001f\u007f\u200b-\u200f\u202a-\u202e\u2060\ufeff]/
 // Sin letras ambiguas (0/O, 1/I): se leen y dictan bien
 export const CODIGO_RE = /^ADN-[A-HJ-NP-Z2-9]{4}-[A-HJ-NP-Z2-9]{4}$/
 
+const CLAVE_RE = /^[a-z0-9_]{1,40}$/
+const PLAN_RE = /^[a-z0-9_]{1,30}$/
+export const TIPOS_ESTRUCTURA = ['unica', 'con_sedes', 'red'] as const
+export const MAX_ADMINISTRADORES = 5
+export const MAX_MODULOS = 30
+export const MAX_PERSONAS = 1_000_000
+export const MAX_SEDES = 200
+
+export interface Persona { nombre: string; apellido: string; email: string }
 export interface DatosRegistro {
   iglesia: { nombre: string; slug: string; pais: string; ciudad: string }
-  propietario: { nombre: string; apellido: string; email: string }
+  propietario: Persona
   codigo: string
+  // Asistente de alta. Si el navegador manda el formato antiguo (sin estos campos) se usan los valores de antes: plan semilla, sin modulos
+  plan: string
+  estructura: { tipo: (typeof TIPOS_ESTRUCTURA)[number]; personas: number | null; sedes: number }
+  modulos: string[]
+  administradores: Persona[]
 }
 
 export type Resultado =
   | { ok: true; datos: DatosRegistro }
   | { ok: false; error: 'bot' | 'consentimiento' | 'datos' | 'codigo_formato' }
+
+const entero = (v: unknown, min: number, max: number): number | null =>
+  typeof v === 'number' && Number.isInteger(v) && v >= min && v <= max ? v : null
 
 const texto = (v: unknown, max: number) => (typeof v === 'string' ? v.normalize('NFC').replace(/\s+/g, ' ').trim().slice(0, max + 1) : '')
 
@@ -38,7 +55,79 @@ export function validarRegistro(b: Record<string, unknown>, requiereCodigo: bool
   if (todos.some(t => RARO_RE.test(t))) return { ok: false, error: 'datos' }
   const codigo = normalizarCodigo(b.codigo)
   if (requiereCodigo && !CODIGO_RE.test(codigo)) return { ok: false, error: 'codigo_formato' }
-  return { ok: true, datos: { iglesia, propietario, codigo } }
+
+  // Plan: solo una clave con forma de clave; que exista y cubra el tamano lo decide decidirAlta con el catalogo
+  let plan = 'semilla'
+  if (b.plan !== undefined) {
+    if (typeof b.plan !== 'string' || !PLAN_RE.test(b.plan)) return { ok: false, error: 'datos' }
+    plan = b.plan
+  }
+  // Estructura: si viene, tipo y personas son obligatorios; las sedes solo cuentan si hay sedes
+  let estructura: DatosRegistro['estructura'] = { tipo: 'unica', personas: null, sedes: 0 }
+  if (b.estructura !== undefined) {
+    if (typeof b.estructura !== 'object' || b.estructura === null || Array.isArray(b.estructura)) return { ok: false, error: 'datos' }
+    const e = b.estructura as Record<string, unknown>
+    if (typeof e.tipo !== 'string' || !(TIPOS_ESTRUCTURA as readonly string[]).includes(e.tipo)) return { ok: false, error: 'datos' }
+    const tipo = e.tipo as DatosRegistro['estructura']['tipo']
+    const personas = entero(e.personas, 1, MAX_PERSONAS)
+    if (personas === null) return { ok: false, error: 'datos' }
+    let sedes = 0
+    if (e.sedes !== undefined && e.sedes !== null) {
+      const s = entero(e.sedes, 0, MAX_SEDES)
+      if (s === null || (tipo === 'unica' && s !== 0)) return { ok: false, error: 'datos' }
+      sedes = s
+    }
+    estructura = { tipo, personas, sedes }
+  }
+  // Modulos: lista corta de claves, sin repetidos
+  let modulos: string[] = []
+  if (b.modulos !== undefined) {
+    if (!Array.isArray(b.modulos) || b.modulos.length > MAX_MODULOS) return { ok: false, error: 'datos' }
+    if (b.modulos.some(m => typeof m !== 'string' || !CLAVE_RE.test(m))) return { ok: false, error: 'datos' }
+    modulos = [...new Set(b.modulos as string[])]
+  }
+  // Administradores propuestos: no reciben nada al registrarse; solo se guardan como sugerencia para el propietario
+  const administradores: Persona[] = []
+  if (b.administradores !== undefined) {
+    if (!Array.isArray(b.administradores) || b.administradores.length > MAX_ADMINISTRADORES) return { ok: false, error: 'datos' }
+    const vistos = new Set<string>([propietario.email])
+    for (const a of b.administradores) {
+      if (typeof a !== 'object' || a === null || Array.isArray(a)) return { ok: false, error: 'datos' }
+      const x = a as Record<string, unknown>
+      const p = { nombre: texto(x.nombre, 60), apellido: texto(x.apellido, 60), email: texto(x.email, 254).toLowerCase() }
+      if (!p.nombre || !p.apellido || p.nombre.length > 60 || p.apellido.length > 60) return { ok: false, error: 'datos' }
+      if (p.email.length > 254 || !EMAIL_RE.test(p.email) || vistos.has(p.email)) return { ok: false, error: 'datos' }
+      if ([p.nombre, p.apellido, p.email].some(t => RARO_RE.test(t))) return { ok: false, error: 'datos' }
+      vistos.add(p.email)
+      administradores.push(p)
+    }
+  }
+  return { ok: true, datos: { iglesia, propietario, codigo, plan, estructura, modulos, administradores } }
+}
+
+export interface PlanCatalogo { clave: string; max_miembros: number | null }
+export interface ModuloCatalogo { clave: string; tipo: string }
+
+// Decide con el catalogo real si el alta es posible. El navegador solo propone: el plan debe existir y cubrir el tamano,
+// y cada modulo debe existir y poder contratarse. Devuelve los modulos que el plan no incluye, que se dan como cortesia.
+export function decidirAlta(
+  d: Pick<DatosRegistro, 'estructura' | 'modulos'>,
+  plan: PlanCatalogo | null,
+  modulos: ModuloCatalogo[],
+  incluidosEnPlan: string[],
+): { ok: true; extras: string[] } | { ok: false; error: 'plan' | 'modulos' } {
+  if (!plan) return { ok: false, error: 'plan' }
+  const p = d.estructura.personas
+  if (p !== null && plan.max_miembros !== null && p > plan.max_miembros) return { ok: false, error: 'plan' }
+  const porClave = new Map(modulos.map(m => [m.clave, m]))
+  const incluidos = new Set(incluidosEnPlan)
+  const extras: string[] = []
+  for (const clave of d.modulos) {
+    const m = porClave.get(clave)
+    if (!m || m.tipo === 'nucleo') return { ok: false, error: 'modulos' }
+    if (!incluidos.has(clave)) extras.push(clave)
+  }
+  return { ok: true, extras }
 }
 
 // Respuesta al visitante segun el motivo del rechazo; el texto lo pone la pagina en su idioma
@@ -50,6 +139,8 @@ export function respuestaDeError(error: string): { status: number; cuerpo: Recor
     case 'cerrado': return { status: 403, cuerpo: { error: 'cerrado' } }
     case 'limite': return { status: 429, cuerpo: { error: 'limite' } }
     case 'slug': return { status: 409, cuerpo: { error: 'slug' } }
+    case 'plan': return { status: 400, cuerpo: { error: 'plan' } }
+    case 'modulos': return { status: 400, cuerpo: { error: 'modulos' } }
     default: return { status: 400, cuerpo: { error: 'datos' } }
   }
 }

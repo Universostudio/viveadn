@@ -256,6 +256,18 @@
       </div>
     </div>
 
+    <!-- Administradores que se propusieron al registrar la iglesia: aun no se les ha enviado nada -->
+    <div v-if="tabActivo === 'usuarios' && sugeridosPendientes.length" class="card -mt-2">
+      <h3 class="text-sm font-semibold text-gray-900">{{ t('configuracion.sugeridosTitulo') }}</h3>
+      <p class="text-xs text-gray-500 mb-3">{{ t('configuracion.sugeridosAyuda') }}</p>
+      <div class="divide-y divide-gray-50">
+        <div v-for="s in sugeridosPendientes" :key="s.email" class="flex items-center justify-between gap-3 py-2 flex-wrap">
+          <p class="text-sm font-medium text-gray-900 truncate min-w-0">{{ s.nombre }} {{ s.apellido }} · {{ s.email }}</p>
+          <button type="button" class="btn-secondary text-xs" @click="invitarSugerido(s)">{{ t('configuracion.invitar') }}</button>
+        </div>
+      </div>
+    </div>
+
     <div v-if="tabActivo === 'usuarios' && invitaciones.length" class="card -mt-2">
       <h3 class="text-sm font-semibold text-gray-900 mb-3">{{ t('configuracion.invitacionesPendientes') }}</h3>
       <div class="divide-y divide-gray-50">
@@ -523,6 +535,22 @@ async function copiarEnlace() {
   try { await navigator.clipboard.writeText(enlaceCreado.value?.enlace ?? ''); copiado.value = true; setTimeout(() => (copiado.value = false), 2000) } catch { /* el campo se puede copiar a mano */ }
 }
 
+// Sugeridos del alta: solo los ve quien configura la iglesia (la base lo exige) y desaparecen en cuanto ya son usuarios o tienen invitacion
+const sugeridos = ref<{ nombre: string; apellido: string; email: string }[]>([])
+const sugeridosPendientes = computed(() => sugeridos.value.filter(s => {
+  const e = s.email.toLowerCase()
+  return !usuarios.value.some(u => (u.email ?? '').toLowerCase() === e) && !invitaciones.value.some(i => (i.email ?? '').toLowerCase() === e)
+}))
+async function cargarSugeridos() {
+  const { data } = await supabase.from('altas_iglesia').select('administradores').maybeSingle()
+  sugeridos.value = Array.isArray(data?.administradores) ? data.administradores : []
+}
+function invitarSugerido(s: { nombre: string; apellido: string; email: string }) {
+  errorInvitacion.value = ''
+  nuevoUsuario.value = { nombre: s.nombre, apellido: s.apellido, email: s.email, rol: rolesInvitables.value.some(r => r.clave === 'administrador') ? 'administrador' : '' }
+  abrirNuevoUsuario.value = true
+}
+
 async function cargarUsuarios() {
   const { data } = await supabase
     .from('perfiles')
@@ -548,6 +576,6 @@ onMounted(async () => {
     .order('created_at')
   roles.value = rs ?? []
   await cargarUsuarios()
-  if (auth.can('usuarios.gestionar')) await cargarInvitaciones()
+  if (auth.can('usuarios.gestionar')) { await cargarInvitaciones(); if (auth.can('iglesia.configurar')) await cargarSugeridos() }
 })
 </script>

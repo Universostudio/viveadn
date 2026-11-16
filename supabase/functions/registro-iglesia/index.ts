@@ -1,7 +1,10 @@
 import { createClient } from 'npm:@supabase/supabase-js@2'
-import { validarRegistro, respuestaDeError } from './validar.ts'
+import { validarRegistro, respuestaDeError, decidirAlta } from './validar.ts'
 
 // Registro de iglesias por su cuenta (/registro). Es publica: no hay sesion.
+// Asistente de alta: el visitante cuenta como esta organizada su iglesia, que modulos quiere y que plan le encaja, y aqui se
+// valida todo contra el catalogo real (el navegador solo propone). Los administradores propuestos no reciben ningun correo:
+// quedan guardados como sugerencia y los invita el propietario cuando entra.
 // Crea la iglesia y su superadministrador y le envia un correo para que cree su contrasena, de modo que
 // el correo queda comprobado. En la etapa de pruebas exige un codigo de acceso (ver plataforma_ajustes).
 // Un correo que ya tiene cuenta recibe la misma respuesta que uno nuevo, para no revelar quien existe.
@@ -54,6 +57,26 @@ Deno.serve(async (req) => {
 
     // La pagina pregunta que campos mostrar
     if (b.accion === 'consultar') return json({ abierto, requiere_codigo: requiereCodigo })
+
+    // Catalogo publico para el asistente: planes, modulos y precios. Es informacion de venta, sin datos de ninguna iglesia.
+    // Los precios son opcionales: si faltan, el asistente sigue y muestra "precio por confirmar".
+    if (b.accion === 'catalogo') {
+      const [pl, mo, pm, pp, pmod, aj] = await Promise.all([
+        admin.from('planes').select('clave, nombre, descripcion, max_miembros, max_usuarios, orden').eq('activo', true).order('orden'),
+        admin.from('modulos').select('clave, nombre, descripcion, tipo, orden').order('orden'),
+        admin.from('plan_modulos').select('plan, modulo'),
+        admin.from('precios_plan').select('plan, importe_centimos'),
+        admin.from('precios_modulo').select('modulo, importe_centimos'),
+        admin.from('precios_ajustes').select('moneda, impuestos_incluidos, propuesta').maybeSingle(),
+      ])
+      if (pl.error || mo.error || pm.error || !pl.data || !mo.data) { console.error('catalogo', pl.error?.message ?? mo.error?.message ?? pm.error?.message); return json({ error: 'interno' }, 500) }
+      return json({
+        abierto, requiere_codigo: requiereCodigo,
+        planes: pl.data, modulos: mo.data, plan_modulos: pm.data ?? [],
+        precios_plan: pp.error ? [] : pp.data ?? [], precios_modulo: pmod.error ? [] : pmod.data ?? [],
+        ajustes: aj.error ? null : aj.data ?? null,
+      })
+    }
     if (b.accion !== 'registrar') return json({ error: 'datos' }, 400)
     if (!abierto) return json(respuestaDeError('cerrado').cuerpo, 403)
 
@@ -70,6 +93,7 @@ Deno.serve(async (req) => {
 
     if (!v.ok) { const r = respuestaDeError(v.error); return json(r.cuerpo, r.status) }
     const { iglesia, propietario, codigo } = v.datos
+    const datos = v.datos
 
     // Codigo de acceso: se usa de forma atomica y se devuelve si el alta no se completa
     let codigoId: string | null = null
@@ -84,8 +108,13 @@ Deno.serve(async (req) => {
     }
     const fallo = async (e: string) => { await devolverCodigo(); const r = respuestaDeError(e); return json(r.cuerpo, r.status) }
 
-    const { data: planOk } = await admin.from('planes').select('clave').eq('clave', 'semilla').eq('activo', true).maybeSingle()
-    if (!planOk) { await devolverCodigo(); console.error('falta el plan semilla'); return json({ error: 'interno' }, 500) }
+    // El plan y los modulos que propone el navegador se comprueban contra el catalogo real
+    const { data: plan } = await admin.from('planes').select('clave, max_miembros').eq('clave', datos.plan).eq('activo', true).maybeSingle()
+    const { data: catMods, error: eMods } = await admin.from('modulos').select('clave, tipo')
+    const { data: delPlan, error: ePlan } = await admin.from('plan_modulos').select('modulo').eq('plan', datos.plan)
+    if (eMods || ePlan) { await devolverCodigo(); console.error('catalogo', eMods?.message ?? ePlan?.message); return json({ error: 'interno' }, 500) }
+    const decision = decidirAlta(datos, plan ?? null, catMods ?? [], (delPlan ?? []).map(r => r.modulo))
+    if (!decision.ok) return await fallo(decision.error)
     const { data: existe } = await admin.from('iglesias').select('id').eq('slug', iglesia.slug).maybeSingle()
     if (existe) return await fallo('slug')
 
@@ -97,12 +126,23 @@ Deno.serve(async (req) => {
     const origenPeticion = req.headers.get('Origin') ?? ''
     const origen = ORIGENES_INVITACION.includes(origenPeticion) ? origenPeticion : 'https://viveadn.com'
     const { data: ig, error: eIg } = await admin.from('iglesias')
-      .insert({ nombre: iglesia.nombre, slug: iglesia.slug, plan: 'semilla', pais: iglesia.pais, ciudad: iglesia.ciudad, es_demo: false })
+      .insert({ nombre: iglesia.nombre, slug: iglesia.slug, plan: datos.plan, pais: iglesia.pais, ciudad: iglesia.ciudad, es_demo: false })
       .select('id').single()
     if (eIg || !ig) { await devolverCodigo(); console.error('iglesia', eIg?.message); return json({ error: 'interno' }, 500) }
     const deshacerIglesia = async () => {
       const { error } = await admin.from('iglesias').delete().eq('id', ig.id)
       if (error) console.error('no se pudo deshacer la iglesia', ig.id, error.message)
+    }
+
+    // Lo declarado en el asistente y los modulos que el plan no incluye (cortesia durante la prueba). Si algo falla, la iglesia se deshace entera.
+    const { error: eAlta } = await admin.from('altas_iglesia').insert({
+      iglesia_id: ig.id, estructura: datos.estructura.tipo, personas: datos.estructura.personas, sedes: datos.estructura.sedes,
+      modulos: datos.modulos, administradores: datos.administradores,
+    })
+    if (eAlta) { await deshacerIglesia(); await devolverCodigo(); console.error('alta', eAlta.message); return json({ error: 'interno' }, 500) }
+    if (decision.extras.length) {
+      const { error: eMod } = await admin.from('iglesia_modulos').insert(decision.extras.map(modulo => ({ iglesia_id: ig.id, modulo, origen: 'cortesia' })))
+      if (eMod) { await deshacerIglesia(); await devolverCodigo(); console.error('modulos', eMod.message); return json({ error: 'interno' }, 500) }
     }
 
     const { data: inv, error: eInv } = await admin.auth.admin.inviteUserByEmail(propietario.email, {
@@ -138,7 +178,7 @@ Deno.serve(async (req) => {
     }
 
     const { error: eAud } = await admin.from('plataforma_auditoria').insert({
-      actor: null, accion: 'registro_autoservicio', iglesia_id: ig.id, detalle: { codigo_id: codigoId, ip_hash: ipHash, slug: iglesia.slug },
+      actor: null, accion: 'registro_autoservicio', iglesia_id: ig.id, detalle: { codigo_id: codigoId, ip_hash: ipHash, slug: iglesia.slug, plan: datos.plan, estructura: datos.estructura.tipo, modulos_extra: decision.extras },
     })
     if (eAud) console.error('auditoria fallida', ig.id, eAud.message)
     return json({ ok: true })

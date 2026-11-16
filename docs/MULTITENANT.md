@@ -79,6 +79,21 @@ Todo lo que cruza iglesias pasa por una función de borde con `service_role`, qu
 
 La pantalla `/plan` (menú "Plan", para quien tiene `iglesia.configurar`) muestra el plan de la iglesia, sus módulos con un candado en los que no están activos y una calculadora que compara los planes. Tocar un módulo bloqueado avisa de cuánto subiría la facturación; la activación la hace la plataforma. Es una estimación: no se cobra nada y no hay facturación todavía. Los importes salen de tres tablas globales de solo lectura para las iglesias (`precios_plan`, `precios_modulo`, `precios_ajustes`), que hoy contienen la propuesta de [`docs/PLANES.md`](PLANES.md). La moneda y los impuestos siguen sin decidir y la web los muestra sin símbolo. La lógica de cálculo vive en `src/lib/cotizador.ts` (`npm run test:cotizador`). Pendiente: el cotizador público antes del alta, que necesita una función de borde porque un visitante anónimo no puede leer las tablas.
 
+## Asistente de alta (antes de elegir plan)
+
+`/registro` es un asistente de seis pasos: la iglesia, cómo está organizada (una sola, con sedes o red, y cuántas personas; una megaiglesia es cuestión de tamaño y no de estructura), el equipo (propietario y hasta cinco administradores propuestos), los módulos que quiere, el plan recomendado por el cotizador y la confirmación con el código de la beta. El catálogo lo sirve la propia función `registro-iglesia` (`accion: catalogo`), sin sesión y sin datos de ninguna iglesia; si no carga, el asistente se acorta a los pasos sin módulos ni plan y el servidor da el plan de siempre.
+
+Defensas, en este orden de importancia:
+
+- **El servidor no se fía del navegador.** La función valida cada campo con límites duros (`validar.ts`: tipos, rangos, longitudes, caracteres invisibles, claves de módulo y de plan con forma de clave) y `decidirAlta` comprueba contra el catálogo real que el plan exista y cubra el tamaño y que cada módulo exista y sea contratable (el núcleo no se regala). Los precios los calcula el navegador solo para mostrarlos: no deciden nada.
+- **Nadie recibe correo por un formulario público.** Los administradores propuestos no reciben cuenta ni mensaje al registrarse; se guardan en `altas_iglesia` y el propietario los ve en Configuración, en Usuarios, y los invita él. Un formulario anónimo que escribiera a terceros sería un canal de abuso y de suplantación.
+- **Se mantienen todas las defensas del registro:** código de la beta de un solo uso devuelto si el alta falla, límite de intentos por dispositivo con huella de IP no reversible, campo trampa, respuesta idéntica para un correo que ya existe, cuerpo limitado a 4 KB y auditoría de cada alta.
+- **Todo o nada.** Si falla el guardado de lo declarado o de los módulos, la iglesia se deshace entera (la cascada borra lo creado) y se devuelve el código.
+- **Lo declarado** vive en `altas_iglesia` (con `iglesia_id`, así que la exportación y el borrado de una iglesia la cubren): solo la escribe el servidor, solo la lee quien configura la iglesia, y la base impone sus límites (como mucho cinco administradores, 30 módulos y un millón de personas).
+- **Compatibilidad en el despliegue:** un navegador con la página antigua en caché sigue funcionando, porque los campos nuevos son opcionales y por defecto se usa el plan inicial de siempre. Orden de despliegue: migraciones de precios y de altas, después la función y por último la web.
+
+Los módulos que el plan no incluye y la iglesia pidió se activan como cortesía durante la prueba (`iglesia_modulos.origen = 'cortesia'`), de modo que la iglesia prueba lo que eligió; no hay cobro todavía.
+
 ## Modo alias (OP72 v2)
 
 `iglesias.modo_alias` hace que la iglesia registre a las personas con un alias o ID interno en lugar de su identidad civil. Si el dato no se guarda, no puede filtrarse ni hace falta enmascararlo. Con el modo activo, la base normaliza cada miembro nuevo (disparador `miembros_modo_alias`): el alias va en `nombre`, `apellido` queda vacío y no se guarda correo. El teléfono se conserva porque la llamada de las 72 horas lo necesita. Los miembros que ya existían no se tocan al activar el modo. Los formularios de alta, el registro público por QR y la importación se adaptan solos; ninguna lista cambia, porque ya muestran `nombre` y `apellido` juntos. No hay modo mixto: una iglesia que quiere nombres reales no activa el modo.

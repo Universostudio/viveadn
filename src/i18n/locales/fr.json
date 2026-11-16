@@ -585,7 +585,9 @@
     "correoEnviado": "Nous avons envoyé l'invitation par e-mail à {email}. Demandez-lui de vérifier aussi les courriers indésirables. Si elle n'arrive pas, copiez le lien et envoyez-le vous-même.",
     "correoNoEnviado": "L'e-mail n'a pas pu être envoyé automatiquement. Copiez le lien et envoyez-le à {email}.",
     "modoAlias": "Enregistrer les personnes avec un alias",
-    "modoAliasAyuda": "Les nouvelles personnes sont enregistrées avec un alias ou un identifiant interne : sans nom de famille ni e-mail. Le téléphone est conservé pour le contact. Les membres existants ne changent pas."
+    "modoAliasAyuda": "Les nouvelles personnes sont enregistrées avec un alias ou un identifiant interne : sans nom de famille ni e-mail. Le téléphone est conservé pour le contact. Les membres existants ne changent pas.",
+    "sugeridosTitulo": "Équipe proposée lors de l'inscription de l'église",
+    "sugeridosAyuda": "Nous ne leur avons encore rien envoyé. Invitez chaque personne quand vous le souhaitez."
   },
   "plataforma": {
     "titulo": "Plateforme",
@@ -1026,10 +1028,72 @@
       "codigo": "Le code n'est pas valide, a déjà été utilisé ou a expiré.",
       "slug": "Cette adresse courte est déjà utilisée. Essayez-en une autre.",
       "limite": "Trop de tentatives. Attendez un moment et réessayez.",
-      "generico": "Nous n'avons pas pu terminer l'inscription. Réessayez dans quelques minutes."
+      "generico": "Nous n'avons pas pu terminer l'inscription. Réessayez dans quelques minutes.",
+      "plan": "L'offre choisie ne couvre pas la taille de votre église. Choisissez-en une autre.",
+      "modulos": "Un des modules choisis n'est pas disponible. Vérifiez-les."
     },
     "nombre": "Prénom",
-    "apellido": "Nom"
+    "apellido": "Nom",
+    "pasoDe": "Étape {n} sur {total}",
+    "atras": "Retour",
+    "siguiente": "Suivant",
+    "pasos": {
+      "iglesia": "Votre église",
+      "estructura": "Son organisation",
+      "equipo": "Votre équipe",
+      "modulos": "Modules",
+      "plan": "Votre offre",
+      "confirmar": "Confirmer"
+    },
+    "estructura": {
+      "titulo": "Comment votre église est-elle organisée ?",
+      "unica": "Une seule église",
+      "unicaAyuda": "Un seul lieu et une seule équipe.",
+      "con_sedes": "Église avec antennes",
+      "con_sedesAyuda": "Une église mère avec des antennes ; chaque antenne a sa propre équipe et sa propre offre.",
+      "red": "Réseau d'églises",
+      "redAyuda": "Des églises indépendantes qui se coordonnent.",
+      "personas": "Combien de personnes compte-t-elle aujourd'hui ?",
+      "personasAyuda": "Comptez toutes les personnes que vous accompagnez. Une méga-église est une question de taille : on l'indique avec ce nombre.",
+      "sedes": "Combien d'antennes ?",
+      "sedesAyuda": "Sans compter l'église mère."
+    },
+    "equipo": {
+      "propietarioAyuda": "Vous serez le super administrateur de l'église.",
+      "adminTitulo": "Autres administrateurs (facultatif)",
+      "adminAyuda": "Nous ne leur envoyons encore rien : vous les invitez une fois connecté.",
+      "adminAnadir": "Ajouter un administrateur",
+      "adminQuitar": "Retirer"
+    },
+    "modulosPaso": {
+      "titulo": "Quels modules souhaitez-vous ?",
+      "ayuda": "Cochez ceux dont vous avez besoin. Ceux qui ne sont pas dans votre offre s'ajoutent au coût estimé.",
+      "precio": "+{importe} par mois si votre offre ne l'inclut pas",
+      "sinPrecio": "Prix à confirmer"
+    },
+    "planPaso": {
+      "titulo": "Votre offre",
+      "ayuda": "Nous recommandons la moins chère qui couvre votre taille et vos modules. Vous pouvez en choisir une autre."
+    },
+    "confirmarPaso": {
+      "titulo": "Vérifiez et créez votre église",
+      "iglesia": "Église : {nombre}, {ciudad}",
+      "estructura": "Organisation : {tipo}, environ {personas} personnes",
+      "propietario": "Super administrateur : {nombre} ({email})",
+      "admins": "Administrateurs proposés : {n}, rien ne leur est encore envoyé",
+      "plan": "Offre : {plan}, {importe} par mois (estimation)",
+      "sinCobro": "Rien n'est facturé pendant cette phase de test."
+    },
+    "validacion": {
+      "iglesia": "Renseignez le nom, le pays et la ville.",
+      "direccion": "L'adresse courte ne contient que des minuscules, des chiffres et des tirets, au moins 3 caractères.",
+      "personas": "Indiquez combien de personnes compte votre église (au moins une).",
+      "sedes": "Indiquez combien d'antennes (zéro possible).",
+      "equipo": "Renseignez votre prénom, votre nom et un e-mail valide.",
+      "admin": "Chaque administrateur a besoin d'un prénom, d'un nom et d'un e-mail valide.",
+      "adminRepetido": "Un e-mail est répété dans l'équipe.",
+      "plan": "Choisissez une offre qui couvre la taille de votre église."
+    }
   },
   "plan": {
     "limiteMiembros": "Votre offre a atteint sa limite de membres. Pour ajouter des personnes, désactivez-en une ou changez d'offre.",
