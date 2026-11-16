@@ -47,7 +47,7 @@
           </tbody>
         </table>
       </div>
-      <p v-else class="text-sm text-gray-400">{{ t('plataforma.registro.sinCodigos') }}</p>
+      <p v-else class="text-sm text-gray-500">{{ t('plataforma.registro.sinCodigos') }}</p>
     </section>
   </div>
 </template>

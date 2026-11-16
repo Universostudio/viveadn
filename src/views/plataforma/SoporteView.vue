@@ -8,7 +8,7 @@
     </template>
     <p v-else-if="pm.soporte.estado === 'error'" class="card text-sm text-red-700" role="alert" data-test="pm-soporte-error">{{ t('plataformaPanel.soporte.errorCarga') }}</p>
     <template v-else>
-      <p v-if="pm.soporte.estado === 'pendiente'" class="text-sm text-gray-400" role="status">{{ t('comun.cargando') }}</p>
+      <p v-if="pm.soporte.estado === 'pendiente'" class="text-sm text-gray-500" role="status">{{ t('comun.cargando') }}</p>
       <div v-else class="grid grid-cols-2 lg:grid-cols-4 gap-3" data-test="pm-soporte-cifras">
         <div class="card"><p class="text-xs text-gray-500">{{ t('plataformaPanel.soporte.abiertos') }}</p><p class="text-2xl font-bold" data-test="cifra-abiertos">{{ r?.tickets?.abiertos ?? 0 }}</p></div>
         <div class="card"><p class="text-xs text-gray-500">{{ t('plataformaPanel.soporte.respondidos') }}</p><p class="text-2xl font-bold">{{ r?.tickets?.respondidos ?? 0 }}</p></div>
@@ -16,8 +16,8 @@
         <div class="card"><p class="text-xs text-gray-500">{{ t('plataformaPanel.soporte.avisosVigentes') }}</p><p class="text-2xl font-bold">{{ r?.avisos?.vigentes ?? 0 }}</p></div>
       </div>
 
-      <div role="tablist" class="flex gap-2 border-b border-gray-200">
-        <button v-for="p in PESTANAS" :key="p" type="button" role="tab" :aria-selected="pestana === p" :data-pestana="p"
+      <div role="tablist" :aria-label="t('plataformaPanel.menu.soporte')" class="flex gap-2 border-b border-gray-200" @keydown="teclasPestanas">
+        <button v-for="p in PESTANAS" :key="p" :id="`soporte-tab-${p}`" type="button" role="tab" :aria-selected="pestana === p" :aria-controls="`soporte-panel-${p}`" :tabindex="pestana === p ? 0 : -1" :data-pestana="p"
           :class="['px-3 py-2 text-sm font-medium border-b-2 -mb-px', pestana === p ? 'border-adn-verde text-adn-verde' : 'border-transparent text-gray-500 hover:text-gray-800']"
           @click="cambiar(p)">{{ t('plataformaPanel.soporte.pest.' + p) }}</button>
       </div>
@@ -25,7 +25,7 @@
       <p v-if="error" class="text-sm text-red-700 rounded-lg bg-red-50 p-3" role="alert" data-test="pm-soporte-fallo">{{ error }}</p>
 
       <!-- Tickets -->
-      <section v-if="pestana === 'tickets'" class="space-y-4" data-test="pm-tickets">
+      <section v-if="pestana === 'tickets'" id="soporte-panel-tickets" role="tabpanel" aria-labelledby="soporte-tab-tickets" tabindex="0" class="space-y-4" data-test="pm-tickets">
         <p class="text-xs text-gray-500">{{ t('plataformaPanel.soporte.ticketsNota') }}</p>
         <p v-if="!tickets.length" class="card text-sm text-gray-500" data-test="pm-tickets-vacio">{{ t('plataformaPanel.soporte.sinTickets') }}</p>
         <ul v-else class="card divide-y divide-gray-100 p-0">
@@ -59,7 +59,7 @@
       </section>
 
       <!-- Novedades -->
-      <section v-if="pestana === 'novedades'" class="space-y-4" data-test="pm-novedades">
+      <section v-if="pestana === 'novedades'" id="soporte-panel-novedades" role="tabpanel" aria-labelledby="soporte-tab-novedades" tabindex="0" class="space-y-4" data-test="pm-novedades">
         <form class="card space-y-3" novalidate @submit.prevent="publicarNovedad">
           <h2 class="text-base font-semibold text-gray-900">{{ t('plataformaPanel.soporte.nuevaNovedad') }}</h2>
           <div class="grid sm:grid-cols-4 gap-3">
@@ -84,7 +84,7 @@
       </section>
 
       <!-- Avisos -->
-      <section v-if="pestana === 'avisos'" class="space-y-4" data-test="pm-avisos">
+      <section v-if="pestana === 'avisos'" id="soporte-panel-avisos" role="tabpanel" aria-labelledby="soporte-tab-avisos" tabindex="0" class="space-y-4" data-test="pm-avisos">
         <form class="card space-y-3" novalidate @submit.prevent="crearAviso">
           <h2 class="text-base font-semibold text-gray-900">{{ t('plataformaPanel.soporte.nuevoAviso') }}</h2>
           <div class="grid sm:grid-cols-3 gap-3">
@@ -163,6 +163,16 @@ async function cambiar(p: typeof PESTANAS[number]) {
   if (p === 'tickets') { const d = await accion({ accion: 'ticket_listar' }); if (d) tickets.value = d.tickets }
   else if (p === 'novedades') { const d = await accion({ accion: 'novedad_listar' }); if (d) novedades.value = d.novedades }
   else { const d = await accion({ accion: 'aviso_listar' }); if (d) avisos.value = d.avisos }
+}
+// Pestañas con teclado: flechas, Inicio y Fin mueven el foco y activan la pestaña (patrón de pestañas de WAI-ARIA)
+async function teclasPestanas(ev: KeyboardEvent) {
+  const i = PESTANAS.indexOf(pestana.value)
+  const siguiente = ev.key === 'ArrowRight' ? (i + 1) % PESTANAS.length : ev.key === 'ArrowLeft' ? (i - 1 + PESTANAS.length) % PESTANAS.length : ev.key === 'Home' ? 0 : ev.key === 'End' ? PESTANAS.length - 1 : -1
+  if (siguiente < 0) return
+  ev.preventDefault()
+  const destino = PESTANAS[siguiente]!
+  await cambiar(destino)
+  document.getElementById(`soporte-tab-${destino}`)?.focus()
 }
 async function abrir(id: string) { const d = await accion({ accion: 'ticket_abrir', id }); if (d) { abierto.value = d.ticket; respuesta.value = '' } }
 async function responder() {

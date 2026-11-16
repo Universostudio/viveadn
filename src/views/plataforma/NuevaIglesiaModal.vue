@@ -1,6 +1,6 @@
 <template>
-  <div class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center p-4 z-50" @click.self="cerrar" @keydown.esc="cerrar">
-    <div ref="caja" role="dialog" aria-modal="true" :aria-labelledby="idTitulo" class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 max-h-[90vh] overflow-y-auto" data-test="modal-nueva">
+  <div class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center p-4 z-50" @click.self="cerrar" @keydown.esc="cerrar" @keydown="atraparTab($event, caja)">
+    <div ref="caja" role="dialog" aria-modal="true" tabindex="-1" :aria-labelledby="idTitulo" class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 max-h-[90vh] overflow-y-auto" data-test="modal-nueva">
       <h2 :id="idTitulo" class="text-lg font-bold text-gray-900 mb-4">{{ t('plataforma.nueva') }}</h2>
       <form @submit.prevent="crear" class="space-y-4">
         <div>
@@ -56,7 +56,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onMounted, ref } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
+import { atraparTab } from '@/lib/foco'
 import { normalizarSlug, slugValido } from '@/lib/slug'
 import { useI18n } from 'vue-i18n'
 import { usePlataformaStore } from '@/stores/plataforma'
@@ -66,6 +67,9 @@ const { t } = useI18n()
 const pm = usePlataformaStore()
 const idTitulo = 'ni-titulo'
 const primero = ref<HTMLInputElement | null>(null)
+const caja = ref<HTMLElement | null>(null)
+// Quién tenía el foco al abrir el diálogo: al cerrarlo, el foco vuelve ahí
+const opener = typeof document !== 'undefined' ? document.activeElement as HTMLElement | null : null
 const creando = ref(false)
 const error = ref('')
 const vacia = () => ({
@@ -77,6 +81,11 @@ const slugNorm = computed(() => normalizarSlug(nueva.value.slug))
 const slugOk = computed(() => slugValido(slugNorm.value))
 
 onMounted(() => { void pm.asegurarCargada(); nextTick(() => primero.value?.focus()) })
+onBeforeUnmount(() => {
+  // Si el elemento que abrió el diálogo ya no existe, el foco va al contenido para no quedarse perdido en el documento
+  const destino = opener && opener !== document.body && document.contains(opener) ? opener : document.getElementById('panel-contenido')
+  nextTick(() => destino?.focus({ preventScroll: true }))
+})
 
 function cerrar() { emit('cerrar') }
 

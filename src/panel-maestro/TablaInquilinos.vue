@@ -25,7 +25,7 @@
 
     <p role="status" class="sr-only">{{ t('panelMaestro.tabla.resultados', { n: filtrados.length }, filtrados.length) }}</p>
 
-    <p v-if="!filtrados.length" class="text-sm text-gray-400 py-6 text-center" data-test="sin-resultados">{{ vacio ?? t('panelMaestro.tabla.sinResultados') }}</p>
+    <p v-if="!filtrados.length" class="text-sm text-gray-500 py-6 text-center" data-test="sin-resultados">{{ vacio ?? t('panelMaestro.tabla.sinResultados') }}</p>
 
     <template v-else>
       <!-- Escritorio: tabla -->
@@ -49,22 +49,22 @@
                   <span class="w-9 h-9 rounded-lg bg-adn-arena text-adn-profundo flex items-center justify-center font-bold flex-shrink-0" aria-hidden="true">{{ inicial(i) }}</span>
                   <div class="min-w-0">
                     <p class="font-medium text-gray-900 truncate">{{ i.nombre }} <span v-if="i.demo" class="ml-1 text-xs bg-adn-arena text-adn-profundo px-2 py-0.5 rounded-full">{{ t('panelMaestro.tabla.demo') }}</span></p>
-                    <p class="text-xs text-gray-400 truncate">{{ i.subtitulo }}</p>
+                    <p class="text-xs text-gray-500 truncate">{{ i.subtitulo }}</p>
                   </div>
                 </div>
               </td>
               <td class="py-3 pr-3"><span v-if="i.plan" class="text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full">{{ i.plan.nombre }}</span></td>
               <td class="py-3 pr-3">
                 <span class="inline-flex items-center gap-1.5 text-xs font-medium"><span :class="['w-2 h-2 rounded-full', punto(i)]" aria-hidden="true"></span>{{ i.estadoEtiqueta }}</span>
-                <p v-if="i.detalleEstado" :class="['text-xs mt-0.5', i.detalleUrgente ? 'text-red-700 font-medium' : 'text-gray-400']">{{ i.detalleEstado }}</p>
+                <p v-if="i.detalleEstado" :class="['text-xs mt-0.5', i.detalleUrgente ? 'text-red-700 font-medium' : 'text-gray-500']">{{ i.detalleEstado }}</p>
               </td>
               <td class="py-3 pr-3 text-right tabular-nums">{{ i.miembros.toLocaleString(locale) }}</td>
               <td class="py-3 pr-3">
                 <ul class="flex flex-wrap gap-1" :aria-label="t('panelMaestro.tabla.columna.modulos')">
-                  <li v-for="m in i.modulos.slice(0, 4)" :key="m.clave" :class="['text-xs px-2 py-0.5 rounded-full border', m.activo ? 'bg-green-50 text-green-800 border-green-200' : 'bg-white text-gray-400 border-gray-200']">
+                  <li v-for="m in i.modulos.slice(0, 4)" :key="m.clave" :class="['text-xs px-2 py-0.5 rounded-full border', m.activo ? 'bg-green-50 text-green-800 border-green-200' : 'bg-white text-gray-500 border-gray-200']">
                     {{ m.nombre }}<span class="sr-only"> ({{ t(m.activo ? 'comun.activo' : 'comun.inactivo') }})</span>
                   </li>
-                  <li v-if="i.modulos.length > 4" class="text-xs text-gray-400 px-1">+{{ i.modulos.length - 4 }}</li>
+                  <li v-if="i.modulos.length > 4" class="text-xs text-gray-500 px-1">+{{ i.modulos.length - 4 }}</li>
                 </ul>
               </td>
               <td class="py-3 text-right whitespace-nowrap">
@@ -84,13 +84,13 @@
           <div class="flex items-start justify-between gap-2">
             <div class="min-w-0">
               <p class="font-medium text-gray-900 truncate">{{ i.nombre }} <span v-if="i.demo" class="ml-1 text-xs bg-adn-arena text-adn-profundo px-2 py-0.5 rounded-full">{{ t('panelMaestro.tabla.demo') }}</span></p>
-              <p class="text-xs text-gray-400 truncate">{{ i.subtitulo }}</p>
+              <p class="text-xs text-gray-500 truncate">{{ i.subtitulo }}</p>
             </div>
             <span v-if="i.plan" class="text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full flex-shrink-0">{{ i.plan.nombre }}</span>
           </div>
           <p class="text-xs flex flex-wrap items-center gap-x-3 gap-y-1">
             <span class="inline-flex items-center gap-1.5 font-medium"><span :class="['w-2 h-2 rounded-full', punto(i)]" aria-hidden="true"></span>{{ i.estadoEtiqueta }}</span>
-            <span v-if="i.detalleEstado" :class="i.detalleUrgente ? 'text-red-700 font-medium' : 'text-gray-400'">{{ i.detalleEstado }}</span>
+            <span v-if="i.detalleEstado" :class="i.detalleUrgente ? 'text-red-700 font-medium' : 'text-gray-500'">{{ i.detalleEstado }}</span>
             <span class="text-gray-500">{{ t('panelMaestro.tabla.miembrosN', { n: i.miembros.toLocaleString(locale) }, i.miembros) }}</span>
           </p>
           <div class="flex flex-wrap gap-2 pt-1">

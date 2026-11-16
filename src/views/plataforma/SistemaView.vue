@@ -47,7 +47,7 @@
         <p class="text-sm text-gray-500 mt-0.5">{{ t('plataformaPanel.sistema.libroAyuda') }}</p>
       </div>
       <p v-if="!pm.sistema || pm.sistema.libro === null" role="status" class="text-sm px-4 py-3 rounded-lg border bg-amber-50 text-amber-800 border-amber-200">{{ t('plataformaPanel.sistema.noDisponible') }}</p>
-      <p v-else-if="!pm.sistema.libro.length" class="text-sm text-gray-400">{{ t('plataformaPanel.sistema.libroVacio') }}</p>
+      <p v-else-if="!pm.sistema.libro.length" class="text-sm text-gray-500">{{ t('plataformaPanel.sistema.libroVacio') }}</p>
       <div v-else class="overflow-x-auto">
         <table class="w-full text-sm">
           <caption class="sr-only">{{ t('plataformaPanel.sistema.libro') }}</caption>

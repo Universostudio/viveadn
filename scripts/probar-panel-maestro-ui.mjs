@@ -425,9 +425,15 @@ try {
     assert.equal(await page.evaluate(() => document.activeElement?.id), 'ni-nombre', 'el foco entra en el diálogo')
     assert.equal(await page.locator('text=Es una iglesia de demostración').count() + await page.locator('input[type=checkbox]').count() > 0, true)
     assert.deepEqual(await camposSinNombre(page), [])
+    // B11: el teclado no sale del diálogo ni hacia delante ni hacia atrás
+    for (let i = 0; i < 20; i++) { await page.keyboard.press('Tab'); assert.equal(await page.evaluate(() => !!document.activeElement?.closest('[role=dialog]')), true, 'Tab se queda en el diálogo') }
+    for (let i = 0; i < 20; i++) { await page.keyboard.press('Shift+Tab'); assert.equal(await page.evaluate(() => !!document.activeElement?.closest('[role=dialog]')), true, 'Mayús+Tab se queda en el diálogo') }
+    await page.focus('#ni-nombre')
     await page.press('#ni-nombre', 'Escape')
     await page.waitForFunction(() => !document.querySelector('[role=dialog]'))
     assert.equal(new URL(page.url()).pathname, '/plataforma/iglesias')
+    // y al cerrarlo, el foco vuelve al botón que lo abrió
+    await page.waitForFunction(() => document.activeElement?.getAttribute('data-test') === 'nueva-iglesia')
     // desde el menú lateral
     await page.goto(url('/plataforma/nueva-iglesia')); await page.waitForSelector('[role=dialog]')
     await page.fill('#ni-nombre', 'Iglesia Nueva'); await page.fill('#ni-slug', 'iglesia-nueva'); await page.fill('#ni-pais', 'España'); await page.fill('#ni-ciudad', 'León')
@@ -578,9 +584,18 @@ try {
     await captura(page, 'movil-portada')
     const caja = () => page.locator('#panel-menu').boundingBox()
     assert.ok((await caja()).x < 0, 'el menú empieza cerrado')
+    // B11: cerrado, el cajón no recibe foco: ningún enlace suyo se alcanza con Tab
+    assert.equal(await page.evaluate(() => document.querySelector('#panel-menu').inert), true, 'el cajón cerrado es inerte')
+    await page.focus('[aria-controls=panel-menu]')
+    for (let i = 0; i < 6; i++) { await page.keyboard.press('Tab'); assert.equal(await page.evaluate(() => !!document.activeElement?.closest('#panel-menu')), false, 'Tab no entra en el cajón cerrado') }
     await page.click('[aria-controls=panel-menu]')
     await page.waitForFunction(() => document.querySelector('#panel-menu').getBoundingClientRect().x >= 0)
     assert.equal(await page.getAttribute('[aria-controls=panel-menu]', 'aria-expanded'), 'true')
+    assert.equal(await page.evaluate(() => document.querySelector('#panel-menu').inert), false, 'abierto deja de ser inerte')
+    await page.waitForFunction(() => !!document.activeElement?.closest('#panel-menu'))
+    // y mientras está abierto, Tab y Mayús+Tab dan la vuelta dentro del cajón
+    for (let i = 0; i < 25; i++) { await page.keyboard.press('Tab'); assert.equal(await page.evaluate(() => !!document.activeElement?.closest('#panel-menu')), true, 'Tab se queda en el cajón abierto') }
+    await page.keyboard.press('Shift+Tab'); assert.equal(await page.evaluate(() => !!document.activeElement?.closest('#panel-menu')), true)
     await captura(page, 'movil-menu')
     await page.press('#panel-menu a', 'Escape')
     await page.waitForFunction(() => document.querySelector('#panel-menu').getBoundingClientRect().x < 0)

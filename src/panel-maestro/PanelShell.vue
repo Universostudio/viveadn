@@ -4,9 +4,9 @@
 
     <div v-if="abierto" class="fixed inset-0 bg-black/40 z-30 lg:hidden" @click="cerrar" aria-hidden="true"></div>
 
-    <aside :id="idMenu" :class="['fixed inset-y-0 left-0 z-40 w-64 bg-white border-r border-gray-100 flex flex-col shadow-sm transition-transform duration-200',
+    <aside :id="idMenu" ref="menu" :inert="menuInerte" tabindex="-1" :class="['fixed inset-y-0 left-0 z-40 w-64 bg-white border-r border-gray-100 flex flex-col shadow-sm transition-transform duration-200',
         'lg:static lg:translate-x-0 lg:flex-shrink-0', abierto ? 'translate-x-0' : '-translate-x-full']"
-      :aria-label="etiqueta" @keydown.esc="cerrar">
+      :aria-label="etiqueta" @keydown.esc="cerrar" @keydown="abierto && !escritorio ? atraparTab($event, menu) : undefined">
       <div class="px-5 py-5 border-b border-gray-100 flex items-center gap-3">
         <div class="w-9 h-9 bg-adn-verde rounded-lg flex items-center justify-center flex-shrink-0"><span class="text-white text-lg font-bold" aria-hidden="true">{{ marca }}</span></div>
         <div class="min-w-0">
@@ -73,7 +73,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { atraparTab, enfocables } from '@/lib/foco'
 import { LogOut, Menu, Search } from '@lucide/vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
@@ -100,6 +101,16 @@ const abierto = ref(false)
 const consulta = ref('')
 const botonMenu = ref<HTMLButtonElement | null>(null)
 const idMenu = 'panel-menu'
+const menu = ref<HTMLElement | null>(null)
+// En pantallas estrechas el menú es un cajón: cerrado está fuera de la pantalla y no debe recibir foco ni lectura; abierto atrapa el teclado
+const consulta768 = typeof window !== 'undefined' && window.matchMedia ? window.matchMedia('(min-width: 1024px)') : null
+const escritorio = ref(consulta768 ? consulta768.matches : true)
+const alCambiarAncho = (e: MediaQueryListEvent) => { escritorio.value = e.matches }
+onMounted(() => consulta768?.addEventListener('change', alCambiarAncho))
+onBeforeUnmount(() => consulta768?.removeEventListener('change', alCambiarAncho))
+const menuInerte = computed(() => !escritorio.value && !abierto.value)
+// Al abrir el cajón, el foco entra en él
+watch(abierto, a => { if (a && !escritorio.value) nextTick(() => (menu.value ? enfocables(menu.value)[0] ?? menu.value : null)?.focus()) })
 
 const fechaTexto = computed(() => new Date().toLocaleDateString(locale.value, { weekday: 'long', day: 'numeric', month: 'long' }))
 

@@ -251,6 +251,28 @@ try {
     await browser.close()
   })
 
+  await prueba('plataforma: las pestañas de soporte siguen el patrón ARIA (tabpanel enlazado, tabindex y flechas)', async () => {
+    const { browser, page } = await plataforma()
+    await page.goto(url('/plataforma/soporte'))
+    await page.waitForSelector('[data-pestana=tickets]')
+    const estado = () => page.evaluate(() => [...document.querySelectorAll('[role=tab]')].map(t => ({ id: t.id, sel: t.getAttribute('aria-selected'), ti: t.getAttribute('tabindex'), ctl: t.getAttribute('aria-controls'), existe: !!document.getElementById(t.getAttribute('aria-controls')), panel: document.getElementById(t.getAttribute('aria-controls'))?.getAttribute('aria-labelledby') })))
+    let t = await estado()
+    assert.deepEqual(t.map(x => x.sel), ['true', 'false', 'false']); assert.deepEqual(t.map(x => x.ti), ['0', '-1', '-1'], 'solo la pestaña activa está en el orden de tabulación')
+    assert.equal(t[0].existe, true, 'la pestaña activa apunta a un tabpanel que existe'); assert.equal(t[0].panel, t[0].id, 'y el tabpanel se nombra con su pestaña')
+    await page.focus('[data-pestana=tickets]')
+    await page.keyboard.press('ArrowRight')
+    await page.waitForSelector('[data-test=pm-novedades]')
+    t = await estado(); assert.deepEqual(t.map(x => x.sel), ['false', 'true', 'false'])
+    await page.waitForFunction(() => document.activeElement?.getAttribute('data-pestana') === 'novedades')
+    await page.keyboard.press('End'); await page.waitForSelector('[data-test=pm-avisos]')
+    await page.waitForFunction(() => document.activeElement?.getAttribute('data-pestana') === 'avisos')
+    await page.keyboard.press('ArrowRight'); await page.waitForSelector('[data-test=pm-tickets]')
+    await page.waitForFunction(() => document.activeElement?.getAttribute('data-pestana') === 'tickets')
+    await page.keyboard.press('ArrowLeft'); await page.waitForFunction(() => document.activeElement?.getAttribute('data-pestana') === 'avisos')
+    await page.keyboard.press('Home'); await page.waitForFunction(() => document.activeElement?.getAttribute('data-pestana') === 'tickets')
+    await browser.close()
+  })
+
   await prueba('plataforma: publicar una novedad y retirarla', async () => {
     const { browser, page, e } = await plataforma()
     await page.goto(url('/plataforma/soporte'))

@@ -6,7 +6,7 @@
     </div>
     <p class="text-sm text-gray-600 max-w-3xl">{{ t('plataformaPanel.facturacion.explicacion') }}</p>
 
-    <p v-if="estado === 'cargando'" class="text-sm text-gray-400" role="status">{{ t('comun.cargando') }}</p>
+    <p v-if="estado === 'cargando'" class="text-sm text-gray-500" role="status">{{ t('comun.cargando') }}</p>
     <p v-else-if="estado === 'error'" class="card text-sm text-red-700" role="alert" data-test="fact-error">{{ t('plataformaPanel.facturacion.errorCarga') }}</p>
     <template v-else-if="sim">
       <p v-if="aviso" class="text-sm text-green-800 rounded-lg bg-green-50 p-3" role="status" data-test="fact-aviso">{{ aviso }}</p>

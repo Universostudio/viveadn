@@ -18,7 +18,7 @@
             <th scope="col" class="py-2 font-medium text-right">{{ t('panelMaestro.tabla.columna.acciones') }}</th></tr></thead>
           <tbody class="divide-y divide-gray-50">
             <tr v-for="f in filas" :key="f.ig.id" :data-inquilino="f.ig.id">
-              <td class="py-3 pr-3"><p class="font-medium text-gray-900">{{ f.ig.nombre }}</p><p class="text-xs text-gray-400">{{ f.ig.slug }}</p></td>
+              <td class="py-3 pr-3"><p class="font-medium text-gray-900">{{ f.ig.nombre }}</p><p class="text-xs text-gray-500">{{ f.ig.slug }}</p></td>
               <td class="py-3 pr-3">{{ nombrePlan(f.ig.plan) }}</td>
               <td class="py-3 pr-3"><span :class="f.urgente ? 'text-red-700 font-medium' : 'text-gray-700'">{{ f.texto }}</span></td>
               <td class="py-3 pr-3 text-right tabular-nums">{{ (f.ig.miembros ?? 0).toLocaleString(locale) }}</td>
