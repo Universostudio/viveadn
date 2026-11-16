@@ -1,4 +1,4 @@
--- Vive ADN, paquete de aplicación 03 de 08. Aplicar en orden y detenerse en el primer error.
+-- Vive ADN, paquete de aplicación 03 de 09. Aplicar en orden y detenerse en el primer error.
 set search_path = public, extensions;
 
 -- ===== migrations/20261105030433_dar_plantillas.sql (sha256 e1ed00e5fedb) =====

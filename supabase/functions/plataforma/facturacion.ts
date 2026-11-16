@@ -2,7 +2,7 @@
 // `npm run test:facturacion`. NO cobra, NO crea cargos y NO habla con ninguna pasarela: solo multiplica iglesias por el precio que alguien haya fijado.
 
 export interface PlanPrecio { clave: string; nombre?: string | null; precio_mensual_centimos?: number | null; precio_anual_centimos?: number | null; moneda?: string | null }
-export interface IglesiaCobro { plan: string; activa?: boolean; etapa?: string | null; es_demo?: boolean | null; adn_borrada_en?: string | null }
+export interface IglesiaCobro { plan: string; activa?: boolean; etapa?: string | null; es_demo?: boolean | null; adn_borrada_en?: string | null; /** Cuántas iglesias iguales representa la fila (los agregados de SQL); 1 si falta */ n?: number }
 
 export type Validado<T> = ({ ok: true } & T) | { ok: false; error: string }
 const MAX_MENSUAL = 10_000_000, MAX_ANUAL = 100_000_000
@@ -50,9 +50,9 @@ export function simular(iglesias: IglesiaCobro[] | null | undefined, planes: Pla
   const fuera: Record<string, number> = { demo: 0, onboarding: 0, prueba: 0, receso: 0, suspendida: 0, borrada: 0 }
   const pagan = new Map<string, number>()
   for (const i of iglesias ?? []) {
-    const m = motivoFuera(i)
-    if (m) fuera[m]++
-    else pagan.set(i.plan, (pagan.get(i.plan) ?? 0) + 1)
+    const m = motivoFuera(i), peso = Number(i.n ?? 1) || 0
+    if (m) fuera[m] += peso
+    else pagan.set(i.plan, (pagan.get(i.plan) ?? 0) + peso)
   }
   const conocidos = new Set((planes ?? []).map(p => p.clave))
   const filas: FilaPlan[] = (planes ?? []).map(p => {
@@ -82,3 +82,7 @@ export function simular(iglesias: IglesiaCobro[] | null | undefined, planes: Pla
     fuera_del_calculo: fuera,
   }
 }
+
+/** Las filas del agregado SQL (adn_plataforma_facturacion) con la forma que espera `simular`: una fila por grupo, con su número de iglesias */
+export const filasDeFacturacion = (filas: { plan: string; activa: boolean; etapa: string | null; es_demo: boolean; borrada: boolean; n: number | string }[] | null | undefined): IglesiaCobro[] =>
+  (filas ?? []).map(f => ({ plan: f.plan, activa: f.activa, etapa: f.etapa, es_demo: f.es_demo, adn_borrada_en: f.borrada ? 'borrada' : null, n: Number(f.n) }))

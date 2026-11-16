@@ -1,4 +1,4 @@
--- Vive ADN, paquete de aplicación 01 de 08. Aplicar en orden y detenerse en el primer error.
+-- Vive ADN, paquete de aplicación 01 de 09. Aplicar en orden y detenerse en el primer error.
 set search_path = public, extensions;
 
 -- ===== schema/esquema_completo.sql (sha256 eec47cbf5926) =====

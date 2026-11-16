@@ -84,3 +84,25 @@ import { sinDemos } from '../supabase/functions/plataforma/soporte.ts'
   assert.match(fuente.slice(fuente.indexOf("case 'soporte_resumen'"), fuente.indexOf("case 'ticket_listar'")), /body\.incluir_demo !== false/)
   console.log('Soporte (función): el resumen usa el mismo interruptor de demostraciones')
 }
+
+// M6: agregados de SQL con la misma forma que los cálculos de antes
+import { leerTodo } from '../supabase/functions/plataforma/paginar.ts'
+import { estadisticasDeAgregado, resumenDeAgregado } from '../supabase/functions/plataforma/soporte.ts'
+{
+  const tickets = [{ estado: 'abierto', prioridad: 'urgente' }, { estado: 'abierto', prioridad: 'normal' }, { estado: 'respondido', prioridad: 'urgente' }, { estado: 'cerrado', prioridad: 'urgente' }]
+  const nov = [{ version: '1.3', publicada_en: '2026-11-10T00:00:00Z' }, { version: '1.2', publicada_en: '2026-11-01T00:00:00Z' }]
+  const entregas = [{ aviso_id: 'a', leido_en: 'x', descartado_en: null }, { aviso_id: 'a', leido_en: null, descartado_en: 'y' }]
+  const viejo = resumenDeSoporte(tickets, nov, [{ id: 'a' }], entregas)
+  const nuevo = resumenDeAgregado({ tickets_abiertos: '2', tickets_respondidos: 1, tickets_cerrados: 1, tickets_urgentes: 2, avisos_vigentes: 1, entregas: 2, leidos: 1, descartados: 1, novedades_total: 2, ultima_version: '1.3', ultima_publicada: '2026-11-10T00:00:00Z' })
+  assert.deepEqual(nuevo, viejo, 'el agregado de SQL da la misma respuesta que contar las filas')
+  assert.deepEqual(resumenDeAgregado(null), { tickets: { abiertos: 0, respondidos: 0, cerrados: 0, urgentes: 0 }, novedades: { total: 0, ultima: null }, avisos: { vigentes: 0, entregas: 0, leidos: 0, descartados: 0 } }, 'sin fila: ceros honestos')
+  assert.deepEqual(estadisticasDeAgregado([{ aviso_id: 'a', entregas: '2', leidos: 1, descartados: '1' }]), estadisticasDeAvisos(entregas))
+
+  // Lectura por páginas: el servicio devuelve como mucho 3 filas por respuesta, y aun así llegan las 10; una lista cortada nunca se entrega como completa
+  const todas = Array.from({ length: 10 }, (_, i) => ({ i }))
+  const servicio = (maximo: number) => async (d: number, h: number) => ({ data: todas.slice(d, Math.min(h + 1, d + maximo)), error: null })
+  for (const maximo of [1, 3, 7, 1000]) assert.equal((await leerTodo(servicio(maximo), 5)).data.length, 10, `con un límite de ${maximo} filas por respuesta se leen las 10`)
+  assert.equal((await leerTodo(async () => ({ data: null, error: { message: 'x' } }))).error?.message, 'x', 'el error se propaga')
+  assert.equal((await leerTodo(servicio(1000), 5, 4)).error?.message, 'demasiadas filas', 'por encima del tope falla en vez de devolver una lista cortada')
+  console.log('Soporte (función): agregados de SQL y lectura por páginas')
+}

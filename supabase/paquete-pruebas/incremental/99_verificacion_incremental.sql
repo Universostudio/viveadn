@@ -1,4 +1,4 @@
--- Vive ADN, verificación del incremental desde 20261111340000 hasta 20261111390000 (soporte, precios por plan, prueba vencida en solo lectura, estado de la tarea de purga y ayuda con la prueba vencida).
+-- Vive ADN, verificación del incremental desde 20261111340000 hasta 20261111400000 (soporte, precios por plan, prueba vencida en solo lectura, estado de la tarea de purga, ayuda con la prueba vencida y agregados en SQL).
 -- Solo lee. Resultado correcto: TODAS las filas con ok = true.
 set search_path = pg_catalog;
 with f(nombre, obtenido, esperado) as (values
@@ -72,7 +72,14 @@ with f(nombre, obtenido, esperado) as (values
     (select count(*)::text from pg_policies where schemaname = 'public' and tablename in ('adn_tickets', 'adn_ticket_mensajes') and policyname in ('adn_tickets_ver', 'adn_tickets_crear', 'adn_ticket_mensajes_ver', 'adn_ticket_mensajes_crear')
        and coalesce(qual, '') || coalesce(with_check, '') like '%adn_puede_pedir_ayuda%'), '4'),
   ('k03_la_regla_no_la_ejecuta_nadie_sin_sesion',
-    (select case when to_regprocedure('private.adn_puede_pedir_ayuda()') is null then 'sin funcion' else (not has_function_privilege('anon', 'private.adn_puede_pedir_ayuda()', 'execute'))::text end), 'true')
+    (select case when to_regprocedure('private.adn_puede_pedir_ayuda()') is null then 'sin funcion' else (not has_function_privilege('anon', 'private.adn_puede_pedir_ayuda()', 'execute'))::text end), 'true'),
+  ('l01_existen_los_tres_agregados',
+    (select count(*)::text from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname in ('adn_plataforma_facturacion', 'adn_soporte_resumen', 'adn_avisos_estadisticas')), '3'),
+  ('l02_solo_el_servidor_ejecuta_los_agregados',
+    (select case when to_regprocedure('public.adn_soporte_resumen(boolean)') is null or to_regprocedure('public.adn_plataforma_facturacion()') is null or to_regprocedure('public.adn_avisos_estadisticas(uuid[])') is null then 'sin funcion'
+       else (has_function_privilege('service_role', 'public.adn_soporte_resumen(boolean)', 'execute') and not has_function_privilege('anon', 'public.adn_soporte_resumen(boolean)', 'execute') and not has_function_privilege('authenticated', 'public.adn_soporte_resumen(boolean)', 'execute')
+         and not has_function_privilege('anon', 'public.adn_plataforma_facturacion()', 'execute') and not has_function_privilege('authenticated', 'public.adn_plataforma_facturacion()', 'execute')
+         and not has_function_privilege('anon', 'public.adn_avisos_estadisticas(uuid[])', 'execute') and not has_function_privilege('authenticated', 'public.adn_avisos_estadisticas(uuid[])', 'execute'))::text end), 'true')
 )
 select nombre, obtenido, esperado, (obtenido is not distinct from esperado) as ok from f
 union all

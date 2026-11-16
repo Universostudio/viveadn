@@ -1,4 +1,4 @@
--- Vive ADN, paquete de aplicación 06 de 08. Aplicar en orden y detenerse en el primer error.
+-- Vive ADN, paquete de aplicación 06 de 09. Aplicar en orden y detenerse en el primer error.
 set search_path = public, extensions;
 
 -- ===== migrations/20261111200000_adn_consentimiento_auditoria.sql (sha256 0b6dde74fca0) =====

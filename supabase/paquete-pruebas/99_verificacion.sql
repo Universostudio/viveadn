@@ -35,11 +35,11 @@ union all select 'd04_iglesias_vacia', count(*)::text from public.iglesias
 union all select 'd05_cubos_de_archivos', count(*)::text from storage.buckets where id in ('iglesia-marca', 'iglesia-archivos')
 ), esperado(nombre, valor) as (values
   ('a01_tablas_en_public', '56'),
-  ('a02_funciones_en_public_y_private', '134'),
+  ('a02_funciones_en_public_y_private', '137'),
   ('a03_extensiones_uuid_ossp_pgcrypto', '2'),
   ('b01_nombres_de_tablas', '5c32fadb7984bb618b10746cfdfa85e9'),
   ('b02_columnas', '436ddd91be1ba62ded1d46fdf1f37aa5'),
-  ('b03_funciones_con_su_codigo', '97c54c593fe1326c7529b8f33b0d11be'),
+  ('b03_funciones_con_su_codigo', 'ed376f1693d8553debb039da94d8604f'),
   ('b04_restricciones', 'd2d53eab29ca176e1bc76fd98c30c694'),
   ('b05_indices', 'db264a4e6f8130c20e19e02b07f27791'),
   ('b06_politicas_public', 'befdc9d403e1bc534c4c0e8509134468'),
@@ -47,7 +47,7 @@ union all select 'd05_cubos_de_archivos', count(*)::text from storage.buckets wh
   ('b08_disparadores', 'f14bc7b3fddc5f6ad9e1c5fbd286dc7f'),
   ('b09_tablas_con_seguridad_por_filas', '56'),
   ('c01_permisos_de_tablas', '4286fca1ed380b2e3d58ed4f7e6a625f'),
-  ('c02_permisos_de_ejecucion', '17ebc03d5ebf527355da4f711676923d'),
+  ('c02_permisos_de_ejecucion', '19979a26c637dace45941ef471c72a97'),
   ('d01_filas_de_permisos', '47'),
   ('d02_filas_de_plan_modulos', '41'),
   ('d03_filas_de_planes', '3'),

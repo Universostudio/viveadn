@@ -120,3 +120,17 @@ export function estadisticasDeAvisos(entregas: { aviso_id: string; leido_en: str
   }
   return porAviso
 }
+
+/** La fila de adn_soporte_resumen con la misma forma que `resumenDeSoporte` (las cifras de antes, ahora contadas en SQL) */
+export function resumenDeAgregado(f: Record<string, unknown> | null | undefined) {
+  const n = (k: string) => Number(f?.[k]) || 0
+  return {
+    tickets: { abiertos: n('tickets_abiertos'), respondidos: n('tickets_respondidos'), cerrados: n('tickets_cerrados'), urgentes: n('tickets_urgentes') },
+    novedades: { total: n('novedades_total'), ultima: f?.ultima_version ? { version: String(f.ultima_version), publicada_en: String(f.ultima_publicada) } : null },
+    avisos: { vigentes: n('avisos_vigentes'), entregas: n('entregas'), leidos: n('leidos'), descartados: n('descartados') },
+  }
+}
+
+/** Filas de adn_avisos_estadisticas como las que devuelve `estadisticasDeAvisos` */
+export const estadisticasDeAgregado = (filas: { aviso_id: string; entregas: number | string; leidos: number | string; descartados: number | string }[] | null | undefined) =>
+  Object.fromEntries((filas ?? []).map(f => [f.aviso_id, { entregas: Number(f.entregas), leidos: Number(f.leidos), descartados: Number(f.descartados) }]))

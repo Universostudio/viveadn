@@ -47,3 +47,17 @@ assert.deepEqual(dos.ingreso_mensual_por_moneda, { EUR: 1000, USD: 2000 })
 // El resultado no lleva nada de personas
 assert.doesNotMatch(JSON.stringify(s), /email|nombre_iglesia|telefono/i)
 console.log('Facturación (modo de prueba): todo correcto')
+
+// M6: el agregado de SQL (una fila por grupo con su número) simula exactamente igual que la lista de iglesias de una en una
+import { filasDeFacturacion } from '../supabase/functions/plataforma/facturacion.ts'
+{
+  const uno = (plan: string, etapa: string, es_demo = false, borrada = false) => ({ plan, activa: etapa !== 'suspendida', etapa, es_demo, adn_borrada_en: borrada ? 'x' : null })
+  const lista = [uno('premium', 'activa'), uno('premium', 'activa'), uno('semilla', 'activa'), uno('premium', 'prueba'), uno('premium', 'activa', true), uno('semilla', 'suspendida', false, true), uno('inventado', 'activa')]
+  const planes = [{ clave: 'semilla', nombre: 'Semilla', precio_mensual_centimos: 500, moneda: 'EUR' }, { clave: 'premium', nombre: 'Premium', precio_mensual_centimos: 2000, moneda: 'EUR' }]
+  const grupos = new Map<string, any>()
+  for (const i of lista) { const k = JSON.stringify([i.plan, i.activa, i.etapa, i.es_demo, !!i.adn_borrada_en]); const g = grupos.get(k) ?? { plan: i.plan, activa: i.activa, etapa: i.etapa, es_demo: i.es_demo, borrada: !!i.adn_borrada_en, n: 0 }; g.n++; grupos.set(k, g) }
+  const agregado = [...grupos.values()].map(g => ({ ...g, n: String(g.n) }))
+  assert.deepEqual(simular(filasDeFacturacion(agregado), planes), simular(lista, planes), 'agregado y lista de una en una dan la misma simulación')
+  assert.deepEqual(simular(filasDeFacturacion(null), planes).pagando, 0)
+  console.log('Facturación: el agregado de SQL equivale a la lista')
+}

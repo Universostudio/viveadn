@@ -1,4 +1,4 @@
--- Vive ADN, paquete de aplicación 04 de 08. Aplicar en orden y detenerse en el primer error.
+-- Vive ADN, paquete de aplicación 04 de 09. Aplicar en orden y detenerse en el primer error.
 set search_path = public, extensions;
 
 -- ===== migrations/20261105235306_motor_formacion.sql (sha256 261511bfbe04) =====

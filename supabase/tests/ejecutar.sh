@@ -58,6 +58,7 @@ bash tests/adn_soporte.sh
 "${PSQL[@]}" -d $DB -f tests/adn_prueba_lectura.sql
 bash tests/adn_purga_programada.sh
 "${PSQL[@]}" -d $DB -f tests/adn_soporte_prueba_vencida.sql
+"${PSQL[@]}" -d $DB -f tests/adn_agregados_plataforma.sql
 "${PSQL[@]}" -d $DB -f tests/adn_doble_confirmacion.sql
 "${PSQL[@]}" -d $DB -f tests/adn_purga_programada.sql
 "${PSQL[@]}" -d $DB -f tests/adn_libro_purgas.sql

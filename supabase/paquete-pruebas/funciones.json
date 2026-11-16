@@ -134,13 +134,18 @@
         },
         {
           "ruta": "facturacion.ts",
-          "bytes": 5176,
-          "sha256": "35bcd5e9df58f1401c99235491499a8c7c31c37c6bd7c75d825b25a971cdcac7"
+          "bytes": 5816,
+          "sha256": "df9befbbbaca2f8b82b3575667b0189638a5f52ba2ba5265ad0b204119379a68"
         },
         {
           "ruta": "index.ts",
-          "bytes": 50291,
-          "sha256": "ee8c71a0bcb260fefab37163339a7103e5cc9da99067b6e6d076d605c870b934"
+          "bytes": 53765,
+          "sha256": "3d19571d050c347940523c9c0e4bab627fe5d0c734ff66dbbd025e1d0a47cfb7"
+        },
+        {
+          "ruta": "paginar.ts",
+          "bytes": 1161,
+          "sha256": "2e0eb62d5835fac7168a7c4965f2d49335f36d103b8e7dc49081724fe6d6bf1e"
         },
         {
           "ruta": "panel.ts",
@@ -149,8 +154,8 @@
         },
         {
           "ruta": "soporte.ts",
-          "bytes": 7344,
-          "sha256": "87da49abef303850f2dc6b563b1173d3f21a06453a50b9335b8aab34961e2aa2"
+          "bytes": 8907,
+          "sha256": "4ae606abce92e613d0fa7b758ff668680df5d1ce60b6dfde2802506faea9c4f8"
         }
       ]
     },

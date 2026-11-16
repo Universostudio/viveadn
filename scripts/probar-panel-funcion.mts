@@ -52,3 +52,15 @@ const fuente = readFileSync(new URL('../supabase/functions/plataforma/index.ts',
 assert.match(fuente, /case 'exportar':\s*case 'exportar_plan':\s*case 'exportar_pagina':\s*return json\(\{ error: [^\n]*\}, 403\)/, 'las tres exportaciones devuelven 403')
 assert.doesNotMatch(fuente, /adn_exportar|adn_tablas_exportables|construirPaquete/, 'la función de plataforma no llama a ninguna exportación de datos')
 console.log('Plataforma: sin exportación de datos de personas')
+
+// M6: ninguna lectura de la función lleva un select sin paginar sobre tablas que crecen, y los agregados salen de SQL con alternativa si falta la migración
+{
+  const { readFileSync } = await import('node:fs')
+  const f = readFileSync(new URL('../supabase/functions/plataforma/index.ts', import.meta.url), 'utf8')
+  for (const rpc of ['adn_plataforma_facturacion', 'adn_soporte_resumen', 'adn_avisos_estadisticas']) assert.ok(f.includes(`rpc('${rpc}'`), `${rpc} se usa`)
+  assert.ok(!/from\('iglesias'\)\.select\('plan, activa, etapa, es_demo, adn_borrada_en'\)\s*,/.test(f), 'la facturación ya no lee iglesias sin paginar')
+  assert.ok(!/from\('adn_tickets'\)\.select\('(iglesia_id, )?estado, prioridad'\)\s*,/.test(f), 'el soporte ya no lee todos los tickets sin paginar')
+  const listar = f.slice(f.indexOf("case 'listar'"), f.indexOf("case 'actividad'"))
+  assert.ok(/leerTodo[^\n]*from\('iglesias'\)/.test(listar) && /leerTodo[^\n]*from\('iglesia_modulos'\)/.test(listar) && /leerTodo[^\n]*adn_plataforma_resumen/.test(listar), 'listar lee iglesias, complementos y conteos por páginas')
+  console.log('Panel (función): agregados en SQL y lecturas por páginas')
+}

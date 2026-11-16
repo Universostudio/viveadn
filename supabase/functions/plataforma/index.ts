@@ -1,8 +1,9 @@
 import { createClient } from 'npm:@supabase/supabase-js@2'
 import { claveCronValida, errorDeCiclo, tamanoLote } from './ciclo.ts'
 import { avisoPurga, enviarAviso, leerConfig, type TipoEnvio } from './envio.ts'
-import { simular, validarPrecio } from './facturacion.ts'
-import { correoDeAviso, esUuid, estadisticasDeAvisos, listaDeTickets, resumenDeSoporte, sinDemos, ticketAbierto, validarAviso, validarNovedad, validarRespuesta } from './soporte.ts'
+import { filasDeFacturacion, simular, validarPrecio } from './facturacion.ts'
+import { leerTodo } from './paginar.ts'
+import { correoDeAviso, esUuid, estadisticasDeAgregado, estadisticasDeAvisos, resumenDeAgregado, listaDeTickets, resumenDeSoporte, sinDemos, ticketAbierto, validarAviso, validarNovedad, validarRespuesta } from './soporte.ts'
 import { conteosPorIglesia, envioDelDia, eventosDeActividad, faltaLaFuncion, historialDeIglesia, MAX_LIBRO, salidaSegura } from './panel.ts'
 
 // Panel de plataforma: solo para usuarios en plataforma_admins.
@@ -166,19 +167,23 @@ Deno.serve(async (req) => {
     switch (body.accion) {
       case 'listar':
       case 'resumen': {
-        const [{ data: iglesias }, { data: addons }, { data: planes }, { data: modulos }, { data: planModulos }] = await Promise.all([
-          admin.from('iglesias').select('id, nombre, slug, plan, activa, etapa, prueba_hasta, borrado_programado_en, adn_borrada_en, es_demo, pais, ciudad, created_at, iglesia_madre_id, red_acceso').order('created_at'),
-          admin.from('iglesia_modulos').select('iglesia_id, modulo, activo, origen'),
+        // Las listas largas se leen por páginas y ordenadas: el límite de filas del servicio no las corta en silencio
+        const [rIglesias, rAddons, { data: planes }, { data: modulos }, { data: planModulos }] = await Promise.all([
+          leerTodo<Record<string, any>>((d, h) => admin.from('iglesias').select('id, nombre, slug, plan, activa, etapa, prueba_hasta, borrado_programado_en, adn_borrada_en, es_demo, pais, ciudad, created_at, iglesia_madre_id, red_acceso').order('created_at').order('id').range(d, h)),
+          leerTodo<Record<string, any>>((d, h) => admin.from('iglesia_modulos').select('iglesia_id, modulo, activo, origen').order('iglesia_id').order('modulo').range(d, h)),
           admin.from('planes').select('*').order('orden'),
           admin.from('modulos').select('*').order('orden'),
           admin.from('plan_modulos').select('plan, modulo'),
         ])
+        if (rIglesias.error || rAddons.error) return json({ error: 'No se pudo leer la lista de iglesias' }, 500)
+        const iglesias = rIglesias.data, addons = rAddons.data
         // Los conteos salen de una sola consulta (adn_plataforma_resumen). Si la migración aún no está aplicada, se cuenta como antes (2 consultas por iglesia)
         let porId: Record<string, { miembros: number; usuarios: number }>
-        const { data: filas, error: errorResumen } = await admin.rpc('adn_plataforma_resumen')
+        const rResumen = await leerTodo<Record<string, any>>((d, h) => admin.rpc('adn_plataforma_resumen').order('iglesia_id').range(d, h))
+        const errorResumen = rResumen.error
         if (!errorResumen) {
-          porId = conteosPorIglesia(filas)
-        } else if (faltaLaFuncion(errorResumen)) {
+          porId = conteosPorIglesia(rResumen.data)
+        } else if (faltaLaFuncion(errorResumen as { message?: string; code?: string })) {
           const conteos = await Promise.all((iglesias ?? []).map(async (i) => {
             const [m, u] = await Promise.all([
               admin.from('miembros').select('id', { count: 'exact', head: true }).eq('iglesia_id', i.id),
@@ -190,8 +195,10 @@ Deno.serve(async (req) => {
         } else {
           return json({ error: 'No se pudo leer el resumen de iglesias' }, 500)
         }
+        const addonsPorIglesia = new Map<string, Record<string, any>[]>()
+        for (const a of addons) addonsPorIglesia.set(a.iglesia_id, [...(addonsPorIglesia.get(a.iglesia_id) ?? []), a])
         return json(salidaSegura({
-          iglesias: (iglesias ?? []).map(i => ({ ...i, ...(porId[i.id] ?? { miembros: 0, usuarios: 0 }), addons: (addons ?? []).filter(a => a.iglesia_id === i.id) })),
+          iglesias: (iglesias ?? []).map(i => ({ ...i, ...(porId[i.id] ?? { miembros: 0, usuarios: 0 }), addons: addonsPorIglesia.get(i.id) ?? [] })),
           planes, modulos, plan_modulos: planModulos,
         }))
       }
@@ -614,19 +621,24 @@ Deno.serve(async (req) => {
       case 'soporte_resumen': {
         // Mismo interruptor que el resto del panel: sin «Incluir demostraciones», los tickets y entregas de iglesias de demostración no cuentan
         const incluirDemo = body.incluir_demo !== false
+        // Las cifras se cuentan en SQL; sin la migración, se leen las filas (por páginas) y se cuentan aquí
+        const agg = await admin.rpc('adn_soporte_resumen', { p_incluir_demo: incluirDemo })
+        if (!agg.error) return json(salidaSegura({ ok: true, ...resumenDeAgregado((agg.data as Record<string, unknown>[] | null)?.[0]) }))
+        if (!faltaLaFuncion(agg.error)) return json({ error: 'No se pudo leer el soporte' }, 500)
+        const ahora = new Date().toISOString()
         const [t, n, a, d] = await Promise.all([
-          admin.from('adn_tickets').select('iglesia_id, estado, prioridad'),
+          leerTodo<Record<string, any>>((x, h) => admin.from('adn_tickets').select('id, iglesia_id, estado, prioridad').order('id').range(x, h)),
           admin.from('adn_novedades').select('version, publicada_en').is('retirada_en', null).order('publicada_en', { ascending: false }),
-          admin.from('adn_avisos').select('id').is('retirado_en', null).lte('desde', new Date().toISOString()).or(`hasta.is.null,hasta.gt.${new Date().toISOString()}`),
-          incluirDemo ? Promise.resolve({ data: [], error: null }) : admin.from('iglesias').select('id').eq('es_demo', true),
+          admin.from('adn_avisos').select('id').is('retirado_en', null).lte('desde', ahora).or(`hasta.is.null,hasta.gt.${ahora}`),
+          incluirDemo ? Promise.resolve({ data: [], error: null }) : leerTodo<Record<string, any>>((x, h) => admin.from('iglesias').select('id').eq('es_demo', true).order('id').range(x, h)),
         ])
         const fallo = t.error ?? n.error ?? a.error ?? d.error
-        if (fallo) return json({ error: faltaLaFuncion(fallo) ? 'El soporte no esta disponible hasta aplicar su migracion' : 'No se pudo leer el soporte' }, faltaLaFuncion(fallo) ? 501 : 500)
+        if (fallo) return json({ error: faltaLaFuncion(fallo as { message?: string; code?: string }) ? 'El soporte no esta disponible hasta aplicar su migracion' : 'No se pudo leer el soporte' }, faltaLaFuncion(fallo as { message?: string; code?: string }) ? 501 : 500)
         const idsDemo = new Set<string>((d.data ?? []).map((x: { id: string }) => x.id))
         const ids = (a.data ?? []).map((x: { id: string }) => x.id)
-        const e = ids.length ? await admin.from('adn_avisos_entregas').select('aviso_id, iglesia_id, leido_en, descartado_en').in('aviso_id', ids) : { data: [], error: null }
+        const e = ids.length ? await leerTodo<Record<string, any>>((x, h) => admin.from('adn_avisos_entregas').select('id, aviso_id, iglesia_id, leido_en, descartado_en').in('aviso_id', ids).order('id').range(x, h)) : { data: [], error: null }
         if (e.error) return json({ error: 'No se pudo leer el soporte' }, 500)
-        return json(salidaSegura({ ok: true, ...resumenDeSoporte(sinDemos(t.data, idsDemo, incluirDemo), n.data, a.data, sinDemos(e.data, idsDemo, incluirDemo)) }))
+        return json(salidaSegura({ ok: true, ...resumenDeSoporte(sinDemos(t.data as any, idsDemo, incluirDemo), n.data, a.data, sinDemos(e.data as any, idsDemo, incluirDemo)) }))
       }
 
       case 'ticket_listar': {
@@ -702,9 +714,17 @@ Deno.serve(async (req) => {
         const { data, error } = await admin.from('adn_avisos').select('id, tipo, titulo, texto, destino, incluir_demo, desde, hasta, created_at, retirado_en, por_correo, correo_estado').order('created_at', { ascending: false }).limit(50)
         if (error) return json({ error: faltaLaFuncion(error) ? 'El soporte no esta disponible hasta aplicar su migracion' : 'No se pudieron leer los avisos' }, faltaLaFuncion(error) ? 501 : 500)
         const ids = (data ?? []).map((x: { id: string }) => x.id)
-        const e = ids.length ? await admin.from('adn_avisos_entregas').select('aviso_id, leido_en, descartado_en').in('aviso_id', ids) : { data: [], error: null }
-        if (e.error) return json({ error: 'No se pudieron leer los avisos' }, 500)
-        const est = estadisticasDeAvisos(e.data)
+        // Entregas, lecturas y descartes se cuentan en SQL; sin la migración, se leen las filas por páginas y se cuentan aquí
+        let est: Record<string, { entregas: number; leidos: number; descartados: number }> = {}
+        if (ids.length) {
+          const agg = await admin.rpc('adn_avisos_estadisticas', { p_ids: ids })
+          if (!agg.error) est = estadisticasDeAgregado(agg.data)
+          else if (faltaLaFuncion(agg.error)) {
+            const e = await leerTodo<Record<string, any>>((x, h) => admin.from('adn_avisos_entregas').select('id, aviso_id, leido_en, descartado_en').in('aviso_id', ids).order('id').range(x, h))
+            if (e.error) return json({ error: 'No se pudieron leer los avisos' }, 500)
+            est = estadisticasDeAvisos(e.data as any)
+          } else return json({ error: 'No se pudieron leer los avisos' }, 500)
+        }
         return json(salidaSegura({ ok: true, avisos: (data ?? []).map((a: { id: string }) => ({ ...a, ...(est[a.id] ?? { entregas: 0, leidos: 0, descartados: 0 }) })) }))
       }
 
@@ -737,14 +757,19 @@ Deno.serve(async (req) => {
 
       // ---- Facturacion en modo de prueba: solo estima el ingreso mensual esperado con el precio que alguien haya fijado. No cobra ni conecta ninguna pasarela.
       case 'facturacion_simulacion': {
-        const [{ data: iglesias, error: e1 }, { data: planes, error: e2 }] = await Promise.all([
-          admin.from('iglesias').select('plan, activa, etapa, es_demo, adn_borrada_en'),
-          admin.from('planes').select('*').order('orden'),
-        ])
-        if (e1 || e2) return json({ error: 'No se pudo leer la facturacion' }, 500)
+        // Las iglesias se cuentan en SQL (agrupadas por plan, etapa, demo y borrado). Sin la migración, se leen por páginas y se cuentan aquí
+        const [agg, { data: planes, error: e2 }] = await Promise.all([admin.rpc('adn_plataforma_facturacion'), admin.from('planes').select('*').order('orden')])
+        let filas: Parameters<typeof simular>[0]
+        if (!agg.error) filas = filasDeFacturacion(agg.data)
+        else if (faltaLaFuncion(agg.error)) {
+          const r = await leerTodo<Record<string, any>>((d, h) => admin.from('iglesias').select('plan, activa, etapa, es_demo, adn_borrada_en').order('created_at').order('id').range(d, h))
+          if (r.error) return json({ error: 'No se pudo leer la facturacion' }, 500)
+          filas = r.data as Parameters<typeof simular>[0]
+        } else return json({ error: 'No se pudo leer la facturacion' }, 500)
+        if (e2) return json({ error: 'No se pudo leer la facturacion' }, 500)
         // Si la migracion de precios aun no esta aplicada, las columnas no vienen: todos los planes salen «sin precio», que es la verdad
         const migrado = (planes ?? []).length === 0 || 'precio_mensual_centimos' in (planes as Record<string, unknown>[])[0]
-        return json({ ok: true, migrado, ...simular(iglesias, planes) })
+        return json({ ok: true, migrado, ...simular(filas, planes) })
       }
 
       case 'plan_precio_fijar': {
