@@ -355,70 +355,12 @@ Deno.serve(async (req) => {
         return json({ ok: true, auditado })
       }
 
-      case 'exportar': {
-        const iglesiaId = await iglesiaValida(body.iglesia_id)
-        if (!iglesiaId) return json({ error: 'La iglesia no existe' }, 404)
-        // Formato 2 (JSON, un CSV por tabla y manifiesto de cifras). Si la migracion adn_exportacion aun no esta
-        // aplicada, o se revirtio, se usa la exportacion anterior en JSON
-        let { data, error } = await admin.rpc('adn_exportar_paquete', { p_iglesia: iglesiaId })
-        if (error && (error.code === 'PGRST202' || /adn_exportar_paquete/.test(error.message))) {
-          ;({ data, error } = await admin.rpc('exportar_iglesia', { p_iglesia: iglesiaId }))
-        }
-        if (error || !data) return json({ error: 'No se pudo exportar la iglesia' }, 500)
-        // La exportacion anterior (de reserva) incluia la auditoria de la plataforma: son acciones internas, no salen aqui
-        if (data && typeof data === 'object' && (data as { tablas?: Record<string, unknown> }).tablas) {
-          delete (data as { tablas: Record<string, unknown> }).tablas.plataforma_auditoria
-        }
-        // Los archivos no viajan dentro del JSON: se entrega su listado para pedirlos aparte
-        let archivos: Record<string, unknown> = {}
-        try {
-          for (const cubo of CUBOS_IGLESIA) archivos[cubo] = await listarArchivos(cubo, iglesiaId)
-        } catch {
-          archivos = { error: 'No se pudo listar el almacenamiento' }
-        }
-        const auditado = await auditar('exportar_iglesia', iglesiaId)
-        return json({ ok: true, exportacion: { ...data, archivos }, auditado })
-      }
-
-      case 'exportar_plan': {
-        // Exportacion por paginas, para iglesias grandes: primero el plan (las tablas, sus columnas y sus cifras) y despues cada pagina.
-        // El navegador va montando el ZIP; esta funcion nunca tiene el paquete entero en memoria. La auditoria se anota una sola vez, aqui
-        const iglesiaId = await iglesiaValida(body.iglesia_id)
-        if (!iglesiaId) return json({ error: 'La iglesia no existe' }, 404)
-        const { data, error } = await admin.rpc('adn_exportar_plan', { p_iglesia: iglesiaId })
-        if (error && (error.code === 'PGRST202' || /adn_exportar_plan/.test(error.message))) {
-          return json({ error: 'La exportacion por paginas no esta disponible', motivo: 'sin_paginas' }, 501)
-        }
-        if (error || !data) return json({ error: 'No se pudo preparar la exportacion' }, 500)
-        let archivos: Record<string, unknown> = {}
-        try {
-          for (const cubo of CUBOS_IGLESIA) archivos[cubo] = await listarArchivos(cubo, iglesiaId)
-        } catch {
-          archivos = { error: 'No se pudo listar el almacenamiento' }
-        }
-        const auditado = await auditar('exportar_iglesia', iglesiaId, { paginado: true })
-        return json({ ok: true, plan: { ...(data as Record<string, unknown>), archivos }, auditado })
-      }
-
-      case 'exportar_pagina': {
-        // Una pagina de una tabla, en JSON o en CSV, ordenada por su clave y con un cursor. Todo lo recibido se valida aqui y otra vez en la base
-        const iglesiaId = await iglesiaValida(body.iglesia_id)
-        if (!iglesiaId) return json({ error: 'La iglesia no existe' }, 404)
-        if (typeof body.tabla !== 'string' || !/^[a-z][a-z0-9_]{0,62}$/.test(body.tabla)) return json({ error: 'Tabla no valida' }, 400)
-        if (body.formato !== 'json' && body.formato !== 'csv') return json({ error: 'Formato no valido' }, 400)
-        const despues = body.despues ?? null
-        if (despues !== null && (!Array.isArray(despues) || despues.length === 0 || despues.length > 8
-            || !despues.every((v: unknown) => typeof v === 'string' && v.length <= 200))) return json({ error: 'Cursor no valido' }, 400)
-        const limite = Number.isInteger(body.limite) ? Math.min(Math.max(body.limite, 1), 5000) : 1000
-        const { data, error } = await admin.rpc('adn_exportar_pagina',
-          { p_iglesia: iglesiaId, p_tabla: body.tabla, p_formato: body.formato, p_despues: despues, p_limite: limite })
-        if (error) {
-          if (/ADN_TABLA_NO_EXPORTABLE|ADN_FORMATO_INVALIDO|ADN_CURSOR_INVALIDO|invalid input syntax/.test(error.message)) return json({ error: 'Peticion no valida' }, 400)
-          console.error('exportar_pagina', error.message)
-          return json({ error: 'No se pudo leer la pagina' }, 500)
-        }
-        return json({ ok: true, pagina: data })
-      }
+      // Decision de Gerencia (informe 41, A1): la plataforma NO exporta datos de personas. La copia la descarga solo el propietario de la iglesia con el autoservicio
+      // (funcion datos-iglesia). Estas acciones quedan cerradas con 403 para que una version antigua de la web no abra una puerta por error.
+      case 'exportar':
+      case 'exportar_plan':
+      case 'exportar_pagina':
+        return json({ error: 'La plataforma no exporta datos de personas: la copia la descarga el propietario de la iglesia desde «Datos y baja»' }, 403)
 
       case 'auditoria_iglesia': {
         // La auditoria de la plataforma sobre una iglesia, aparte de su exportacion y solo para administradores de plataforma

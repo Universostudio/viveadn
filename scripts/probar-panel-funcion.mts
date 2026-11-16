@@ -45,3 +45,10 @@ assert.ok(!faltaLaFuncion({ code: '57014', message: 'canceling statement due to 
 assert.ok(!faltaLaFuncion(null))
 
 console.log('Panel Maestro (función de borde): todo correcto')
+
+// Decisión de Gerencia (informe 41, A1): la plataforma no exporta datos de personas. Las tres acciones de exportación quedan cerradas con 403 y la función no llama a ninguna exportación.
+import { readFileSync } from 'node:fs'
+const fuente = readFileSync(new URL('../supabase/functions/plataforma/index.ts', import.meta.url), 'utf8')
+assert.match(fuente, /case 'exportar':\s*case 'exportar_plan':\s*case 'exportar_pagina':\s*return json\(\{ error: [^\n]*\}, 403\)/, 'las tres exportaciones devuelven 403')
+assert.doesNotMatch(fuente, /adn_exportar|adn_tablas_exportables|construirPaquete/, 'la función de plataforma no llama a ninguna exportación de datos')
+console.log('Plataforma: sin exportación de datos de personas')

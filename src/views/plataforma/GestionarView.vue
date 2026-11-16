@@ -96,7 +96,7 @@
       <section class="card space-y-3" aria-labelledby="g-datos">
         <h2 id="g-datos" class="text-base font-semibold text-gray-900">{{ t('plataformaPanel.gestionar.datos') }}</h2>
         <p class="text-sm text-gray-600">{{ t('plataformaPanel.gestionar.datosAyuda') }}</p>
-        <div><button type="button" class="btn-secondary text-sm" data-test="exportar" @click="exportar">{{ t('plataforma.exportar') }}</button></div>
+        <p class="text-xs text-gray-500" data-test="datos-solo-propietario">{{ t('plataformaPanel.gestionar.datosSoloPropietario') }}</p>
       </section>
 
       <section class="card space-y-3 border-red-100" aria-labelledby="g-baja">
@@ -119,8 +119,6 @@ import { computed, onMounted } from 'vue'
 import { ArrowLeft, Check, Circle, CircleCheck } from '@lucide/vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { construirPaquete } from '@/lib/exportacion'
-import { exportarPaginado, fuenteDePlataforma } from '@/lib/exportacionPaginada'
 import { usePlataformaStore } from '@/stores/plataforma'
 import { borradoVencido as vencido, detalleDeEstado, diasDePrueba, diasParaPurga, etapaDe, modulosDe, situacionDe } from './adaptador'
 import HistorialIglesia from './HistorialIglesia.vue'
@@ -139,7 +137,7 @@ const situacion = computed(() => ig.value ? situacionDe(ig.value) : 'activa')
 // Días que importan en el texto: los de la prueba o los que faltan para la purga
 const dias = computed(() => !ig.value ? null : ig.value.borrado_programado_en ? diasParaPurga(ig.value) : diasDePrueba(ig.value))
 const fechaCorta = (iso: string | null) => iso ? new Date(iso).toLocaleDateString(locale.value) : ''
-// Los botones de cada situación: reactivar, activar o convertir; recuperar o cancelar el borrado; y la copia, que siempre se puede descargar hasta que se purgue
+// Los botones de cada situación: reactivar, activar o convertir; recuperar o cancelar el borrado. La copia de los datos la descarga solo el propietario de la iglesia
 const acciones = computed<{ clave: string; principal?: boolean; ejecutar: () => void }[]>(() => {
   const s = situacion.value
   const l: { clave: string; principal?: boolean; ejecutar: () => void }[] = []
@@ -148,7 +146,6 @@ const acciones = computed<{ clave: string; principal?: boolean; ejecutar: () => 
   if (s === 'prueba') l.push({ clave: 'convertir', principal: true, ejecutar: () => pasarAActiva() })
   if (s === 'baja_suave') l.push({ clave: 'recuperar', principal: true, ejecutar: () => recuperar() })
   if (s === 'baja_programada') l.push({ clave: 'cancelar', principal: true, ejecutar: () => cancelarBorrado() })
-  if (['receso', 'suspendida', 'baja_suave', 'baja_programada', 'baja_vencida'].includes(s)) l.push({ clave: 'descargar', ejecutar: () => exportar() })
   return l
 })
 function pasarAActiva() {
@@ -183,48 +180,6 @@ function alternarModulo(m: { clave: string; nombre: string; activo: boolean }) {
   const actual = ig.value!
   const clave = m.activo ? 'plataforma.moduloQuitado' : 'plataforma.moduloActivado'
   void pm.ejecutar({ accion: 'modulo_addon', iglesia_id: actual.id, modulo: m.clave, activo: !m.activo }, () => t(clave, { modulo: m.nombre, iglesia: actual.nombre }))
-}
-
-// La descarga: pide al navegador guardar un conjunto de partes como un solo archivo
-function descargar(blob: Blob, nombre: string) {
-  const a = document.createElement('a')
-  a.href = URL.createObjectURL(blob)
-  a.download = nombre
-  a.click()
-  URL.revokeObjectURL(a.href)
-}
-
-async function exportar() {
-  const actual = ig.value!
-  try {
-    // Exportación por páginas: el ZIP se monta pieza a pieza, así que no hay límite de tamaño de respuesta ni de memoria en la función
-    const partes: Uint8Array[] = []
-    const r = await exportarPaginado(fuenteDePlataforma(pm.llamar, actual.id), {
-      slug: actual.slug, hoy: new Date(), leeme: t('plataforma.exportLeeme'), destino: p => { partes.push(p) },
-      progreso: p => pm.avisar(() => t('plataforma.exportando', { iglesia: actual.nombre, tabla: p.tabla, indice: p.indice, tablas: p.tablas })),
-    })
-    descargar(new Blob(partes as BlobPart[], { type: 'application/zip' }), r.nombre)
-    pm.avisar(() => t(r.cambios ? 'plataforma.exportadaConCambios' : 'plataforma.exportada', { iglesia: actual.nombre }), r.cambios)
-  } catch (e: any) {
-    // Una función desplegada de una versión anterior no tiene la exportación por páginas: se usa la de siempre, en una sola respuesta
-    if (/por paginas/.test(String(e?.message))) return exportarEnUnaRespuesta()
-    const texto = e.message
-    pm.avisar(() => texto, true)
-  }
-}
-
-async function exportarEnUnaRespuesta() {
-  const actual = ig.value!
-  try {
-    const r = await pm.llamar({ accion: 'exportar', iglesia_id: actual.id })
-    // Con el formato nuevo sale un ZIP (manifiesto, JSON y un CSV por tabla); con el anterior, el JSON de siempre
-    const p = construirPaquete(r.exportacion, actual.slug, new Date(), t('plataforma.exportLeeme'))
-    descargar(p.tipo === 'zip' ? new Blob([p.bytes as BlobPart], { type: p.mime }) : new Blob([p.texto], { type: p.mime }), p.nombre)
-    pm.avisar(() => t('plataforma.exportada', { iglesia: actual.nombre }))
-  } catch (e: any) {
-    const texto = e.message
-    pm.avisar(() => texto, true)
-  }
 }
 
 function programarBorrado() {

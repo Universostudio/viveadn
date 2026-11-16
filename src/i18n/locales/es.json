@@ -1703,12 +1703,13 @@
       "alta": "Fecha de alta",
       "etapa": "Etapa",
       "red": "Red de iglesias",
-      "datos": "Exportación de datos",
-      "datosAyuda": "Descarga un paquete con todos los datos de la iglesia. La descarga queda anotada en la auditoría.",
+      "datos": "Datos de las personas",
+      "datosAyuda": "Los datos de las personas no se descargan desde aquí.",
       "baja": "Borrado y recuperación",
       "historial": "Historial de acciones de plataforma",
       "historialNoDisponible": "No se pudo cargar el historial. El resto de la pantalla funciona.",
-      "historialVacio": "Esta iglesia no tiene acciones de plataforma anotadas."
+      "historialVacio": "Esta iglesia no tiene acciones de plataforma anotadas.",
+      "datosSoloPropietario": "La copia de los datos de las personas la descarga solo el propietario de la iglesia, desde «Datos y baja». La plataforma no exporta datos de personas."
     },
     "accionAuditoria": {
       "otra": "Acción de plataforma",
@@ -1940,11 +1941,11 @@
       },
       "baja_suave": {
         "titulo": "En baja, a tiempo de recuperarla",
-        "texto": "Se pidió la baja. La iglesia está suspendida y sus datos se borrarán por completo el {fecha}, en {n} día: base de datos, archivos y cuentas de acceso. Hasta entonces se recupera con un clic y vuelve al estado que tenía, y se puede descargar una copia. Tras la purga solo queda un registro de que ocurrió, sin datos de personas. | Se pidió la baja. La iglesia está suspendida y sus datos se borrarán por completo el {fecha}, en {n} días: base de datos, archivos y cuentas de acceso. Hasta entonces se recupera con un clic y vuelve al estado que tenía, y se puede descargar una copia. Tras la purga solo queda un registro de que ocurrió, sin datos de personas."
+        "texto": "Se pidió la baja. La iglesia está suspendida y sus datos se borrarán por completo el {fecha}, en {n} día: base de datos, archivos y cuentas de acceso. Hasta entonces se recupera con un clic y vuelve al estado que tenía, y su propietario puede descargar una copia desde «Datos y baja». Tras la purga solo queda un registro de que ocurrió, sin datos de personas. | Se pidió la baja. La iglesia está suspendida y sus datos se borrarán por completo el {fecha}, en {n} días: base de datos, archivos y cuentas de acceso. Hasta entonces se recupera con un clic y vuelve al estado que tenía, y su propietario puede descargar una copia desde «Datos y baja». Tras la purga solo queda un registro de que ocurrió, sin datos de personas."
       },
       "baja_programada": {
         "titulo": "Borrado programado",
-        "texto": "Se programó el borrado de esta iglesia para el {fecha}, en {n} día. Mientras tanto sigue sin acceso y sus datos se conservan: puedes cancelar el borrado o descargar una copia. Al llegar la fecha, el borrado se lanza a mano; no se ejecuta solo. | Se programó el borrado de esta iglesia para el {fecha}, en {n} días. Mientras tanto sigue sin acceso y sus datos se conservan: puedes cancelar el borrado o descargar una copia. Al llegar la fecha, el borrado se lanza a mano; no se ejecuta solo."
+        "texto": "Se programó el borrado de esta iglesia para el {fecha}, en {n} día. Mientras tanto sigue sin acceso y sus datos se conservan: puedes cancelar el borrado, y su propietario puede descargar una copia. Al llegar la fecha, el borrado lo ejecuta la purga programada cuando esté activada; si no, se lanza a mano. | Se programó el borrado de esta iglesia para el {fecha}, en {n} días. Mientras tanto sigue sin acceso y sus datos se conservan: puedes cancelar el borrado, y su propietario puede descargar una copia. Al llegar la fecha, el borrado lo ejecuta la purga programada cuando esté activada; si no, se lanza a mano."
       },
       "baja_vencida": {
         "titulo": "Plazo vencido: pendiente de purga",
@@ -1955,8 +1956,7 @@
         "activar": "Activar la iglesia",
         "convertir": "Convertir en activa",
         "recuperar": "Recuperar la iglesia",
-        "cancelar": "Cancelar el borrado",
-        "descargar": "Descargar copia de seguridad"
+        "cancelar": "Cancelar el borrado"
       }
     },
     "reportes": {

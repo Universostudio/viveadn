@@ -14,6 +14,10 @@ El panel de plataforma entrega un ZIP con tres tipos de archivo.
 
 Entran 32 tablas [E]: la iglesia, toda tabla con `iglesia_id` y `rol_permisos`. Una prueba compara el manifiesto con el catálogo de la base y falla si una tabla nueva queda fuera, igual que la clasificación de `permisos.sql`. Los archivos de Storage no viajan: la función de borde añade su listado (`archivos`) para pedirlos aparte.
 
+## Quién puede exportar (decisión de Gerencia del 16 de noviembre)
+
+**Solo el propietario de la iglesia**, con el autoservicio de «Datos y baja» (función `datos-iglesia`). La plataforma ya **no** exporta datos de personas: las acciones `exportar`, `exportar_plan` y `exportar_pagina` de la función `plataforma` devuelven 403, la ficha «Gestionar» ya no tiene botón de descarga y tampoco las acciones de los estados de vida [E, `scripts/probar-panel-funcion.mts`, `scripts/probar-panel-maestro-ui.mjs`]. Así la plataforma no lee personas, contactos, consentimientos ni el texto de los tickets fuera de `ticket_abrir`. Las funciones de base `adn_exportar_*` siguen existiendo para el autoservicio. Un documento antiguo que mencione la exportación desde el panel de plataforma ya no describe el comportamiento.
+
 ## Qué no sale, y por qué
 
 Los tokens del QR de eventos y de invitaciones y las huellas de IP son secretos: quien tuviera el archivo podría registrar asistencia o aceptar invitaciones. Tampoco salen los secretos anidados en la auditoría ni las marcas internas del borrado suave. El manifiesto lista las columnas omitidas de cada tabla [E, la prueba busca los valores secretos en todos los archivos y no aparecen]. Los datos de otras iglesias tampoco salen [E]. Las cuentas de acceso (Auth) no viajan: las personas deben volver a ser invitadas.

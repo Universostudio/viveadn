@@ -1703,12 +1703,13 @@
       "alta": "Sign-up date",
       "etapa": "Stage",
       "red": "Church network",
-      "datos": "Data export",
-      "datosAyuda": "Downloads a package with all the church data. The download is recorded in the audit log.",
+      "datos": "People’s data",
+      "datosAyuda": "People’s data is not downloaded from here.",
       "baja": "Deletion and recovery",
       "historial": "Platform action history",
       "historialNoDisponible": "The history could not be loaded. The rest of the screen works.",
-      "historialVacio": "No platform actions are recorded for this church."
+      "historialVacio": "No platform actions are recorded for this church.",
+      "datosSoloPropietario": "The copy of people’s data is downloaded only by the church owner, from “Data and closure”. The platform does not export people’s data."
     },
     "accionAuditoria": {
       "otra": "Platform action",
@@ -1940,11 +1941,11 @@
       },
       "baja_suave": {
         "titulo": "Being closed, still recoverable",
-        "texto": "Closing was requested. The church is suspended and its data will be deleted completely on {fecha}, in {n} day: database, files and sign-in accounts. Until then it can be recovered with one click and returns to the state it had, and a copy can be downloaded. After the purge only a record that it happened remains, with no data about people. | Closing was requested. The church is suspended and its data will be deleted completely on {fecha}, in {n} days: database, files and sign-in accounts. Until then it can be recovered with one click and returns to the state it had, and a copy can be downloaded. After the purge only a record that it happened remains, with no data about people."
+        "texto": "Closing was requested. The church is suspended and its data will be deleted completely on {fecha}, in {n} day: database, files and sign-in accounts. Until then it can be recovered with one click and returns to the state it had, and its owner can download a copy from “Data and closure”. After the purge only a record that it happened remains, with no data about people. | Closing was requested. The church is suspended and its data will be deleted completely on {fecha}, in {n} days: database, files and sign-in accounts. Until then it can be recovered with one click and returns to the state it had, and its owner can download a copy from “Data and closure”. After the purge only a record that it happened remains, with no data about people."
       },
       "baja_programada": {
         "titulo": "Deletion scheduled",
-        "texto": "Deletion of this church is scheduled for {fecha}, in {n} day. Meanwhile it stays without access and its data is kept: you can cancel the deletion or download a copy. When the date arrives, the deletion is launched by hand; it does not run on its own. | Deletion of this church is scheduled for {fecha}, in {n} days. Meanwhile it stays without access and its data is kept: you can cancel the deletion or download a copy. When the date arrives, the deletion is launched by hand; it does not run on its own."
+        "texto": "Deletion of this church is scheduled for {fecha}, in {n} day. Meanwhile it stays without access and its data is kept: you can cancel the deletion, and its owner can download a copy. When the date arrives, the scheduled purge carries out the deletion once it is switched on; otherwise it is launched by hand. | Deletion of this church is scheduled for {fecha}, in {n} days. Meanwhile it stays without access and its data is kept: you can cancel the deletion, and its owner can download a copy. When the date arrives, the scheduled purge carries out the deletion once it is switched on; otherwise it is launched by hand."
       },
       "baja_vencida": {
         "titulo": "Deadline passed: waiting for purge",
@@ -1955,8 +1956,7 @@
         "activar": "Activate the church",
         "convertir": "Convert to active",
         "recuperar": "Recover the church",
-        "cancelar": "Cancel the deletion",
-        "descargar": "Download backup copy"
+        "cancelar": "Cancel the deletion"
       }
     },
     "reportes": {

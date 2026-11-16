@@ -1703,12 +1703,13 @@
       "alta": "Data de cadastro",
       "etapa": "Etapa",
       "red": "Rede de igrejas",
-      "datos": "Exportação de dados",
-      "datosAyuda": "Baixa um pacote com todos os dados da igreja. O download fica registrado na auditoria.",
+      "datos": "Dados das pessoas",
+      "datosAyuda": "Os dados das pessoas não são baixados daqui.",
       "baja": "Exclusão e recuperação",
       "historial": "Histórico de ações da plataforma",
       "historialNoDisponible": "Não foi possível carregar o histórico. O resto da tela funciona.",
-      "historialVacio": "Não há ações da plataforma registradas para esta igreja."
+      "historialVacio": "Não há ações da plataforma registradas para esta igreja.",
+      "datosSoloPropietario": "A cópia dos dados das pessoas é baixada só pelo proprietário da igreja, em “Dados e encerramento”. A plataforma não exporta dados de pessoas."
     },
     "accionAuditoria": {
       "otra": "Ação da plataforma",
@@ -1940,11 +1941,11 @@
       },
       "baja_suave": {
         "titulo": "Em encerramento, ainda recuperável",
-        "texto": "O encerramento foi pedido. A igreja está suspensa e seus dados serão apagados por completo em {fecha}, em {n} dia: banco de dados, arquivos e contas de acesso. Até lá ela se recupera com um clique e volta ao estado que tinha, e é possível baixar uma cópia. Depois da purga só resta um registro de que aconteceu, sem dados de pessoas. | O encerramento foi pedido. A igreja está suspensa e seus dados serão apagados por completo em {fecha}, em {n} dias: banco de dados, arquivos e contas de acesso. Até lá ela se recupera com um clique e volta ao estado que tinha, e é possível baixar uma cópia. Depois da purga só resta um registro de que aconteceu, sem dados de pessoas."
+        "texto": "O encerramento foi pedido. A igreja está suspensa e seus dados serão apagados por completo em {fecha}, em {n} dia: banco de dados, arquivos e contas de acesso. Até lá ela se recupera com um clique e volta ao estado que tinha, e o proprietário pode baixar uma cópia em “Dados e encerramento”. Depois da purga só resta um registro de que aconteceu, sem dados de pessoas. | O encerramento foi pedido. A igreja está suspensa e seus dados serão apagados por completo em {fecha}, em {n} dias: banco de dados, arquivos e contas de acesso. Até lá ela se recupera com um clique e volta ao estado que tinha, e o proprietário pode baixar uma cópia em “Dados e encerramento”. Depois da purga só resta um registro de que aconteceu, sem dados de pessoas."
       },
       "baja_programada": {
         "titulo": "Exclusão programada",
-        "texto": "A exclusão desta igreja está programada para {fecha}, em {n} dia. Enquanto isso fica sem acesso e seus dados são mantidos: você pode cancelar a exclusão ou baixar uma cópia. Na data, a exclusão é lançada à mão; não roda sozinha. | A exclusão desta igreja está programada para {fecha}, em {n} dias. Enquanto isso fica sem acesso e seus dados são mantidos: você pode cancelar a exclusão ou baixar uma cópia. Na data, a exclusão é lançada à mão; não roda sozinha."
+        "texto": "A exclusão desta igreja está programada para {fecha}, em {n} dia. Enquanto isso fica sem acesso e seus dados são mantidos: você pode cancelar a exclusão, e o proprietário pode baixar uma cópia. Na data, a purga programada executa a exclusão quando estiver ativada; senão, é lançada à mão. | A exclusão desta igreja está programada para {fecha}, em {n} dias. Enquanto isso fica sem acesso e seus dados são mantidos: você pode cancelar a exclusão, e o proprietário pode baixar uma cópia. Na data, a purga programada executa a exclusão quando estiver ativada; senão, é lançada à mão."
       },
       "baja_vencida": {
         "titulo": "Prazo vencido: aguardando purga",
@@ -1955,8 +1956,7 @@
         "activar": "Ativar a igreja",
         "convertir": "Converter em ativa",
         "recuperar": "Recuperar a igreja",
-        "cancelar": "Cancelar a exclusão",
-        "descargar": "Baixar cópia de segurança"
+        "cancelar": "Cancelar a exclusão"
       }
     },
     "reportes": {

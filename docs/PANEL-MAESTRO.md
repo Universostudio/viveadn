@@ -14,6 +14,8 @@ El administrador de plataforma ve conteos, estados, planes, fechas y nombres de 
 2. La función de borde: toda respuesta de las lecturas nuevas pasa por `salidaSegura` (`supabase/functions/plataforma/panel.ts`), que lanza un error si encuentra claves como email, correo, teléfono, apellido, token o secreto a cualquier profundidad. La prueba comprueba cada clave y se verificó con mutaciones (`npm run test:panel-funcion`).
 3. El adaptador del navegador: `aInquilino` copia solo campos permitidos; aunque la entrada traiga datos personales, no llegan a la salida (`npm run test:panel-adaptador`).
 
+> Nota del 16 de noviembre: la plataforma no exporta datos de personas; la copia la descarga solo el propietario de la iglesia (`docs/EXPORTACION.md`, «Quién puede exportar»).
+
 ## 3. Pantallas y rutas de Vive ADN
 
 | Ruta | Pantalla | Datos |
