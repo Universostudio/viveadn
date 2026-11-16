@@ -83,11 +83,29 @@ const router = createRouter({
       component: () => import('@/views/VerificarCertificadoView.vue'),
       meta: { public: true, allowLoggedIn: true }
     },
+    // Panel Maestro: aplicacion aparte (layout y menu propios) para quien administra la plataforma
+    {
+      path: '/plataforma',
+      component: () => import('@/views/plataforma/PlataformaLayout.vue'),
+      meta: { requiresAuth: true, requiresPlataforma: true },
+      children: [
+        { path: '', name: 'plataforma', component: () => import('@/views/plataforma/PortadaView.vue'), meta: { seccion: 'portada' } },
+        { path: 'iglesias', name: 'pm-iglesias', component: () => import('@/views/plataforma/IglesiasView.vue'), meta: { seccion: 'iglesias' } },
+        { path: 'nueva-iglesia', name: 'pm-nueva', component: () => import('@/views/plataforma/IglesiasView.vue'), meta: { seccion: 'nueva', abrirNueva: true } },
+        { path: 'iglesias/:id', name: 'pm-iglesia', component: () => import('@/views/plataforma/GestionarView.vue'), meta: { seccion: 'gestionar' } },
+        { path: 'pruebas', name: 'pm-pruebas', component: () => import('@/views/plataforma/PruebasView.vue'), meta: { seccion: 'pruebas' } },
+        { path: 'planes', name: 'pm-planes', component: () => import('@/views/plataforma/PlanesView.vue'), meta: { seccion: 'planes' } },
+        { path: 'facturacion', name: 'pm-facturacion', component: () => import('@/views/plataforma/FacturacionView.vue'), meta: { seccion: 'facturacion' } },
+        { path: 'registro', name: 'pm-registro', component: () => import('@/views/plataforma/RegistroView.vue'), meta: { seccion: 'registro' } },
+        { path: 'sistema', name: 'pm-sistema', component: () => import('@/views/plataforma/SistemaView.vue'), meta: { seccion: 'sistema' } },
+        { path: 'soporte', name: 'pm-soporte', component: () => import('@/views/plataforma/SoporteView.vue'), meta: { seccion: 'soporte' } },
+      ]
+    },
     // App principal (requiere auth)
     {
       path: '/',
       component: () => import('@/layouts/AppLayout.vue'),
-      meta: { requiresAuth: true },
+      meta: { requiresAuth: true, contextoIglesia: true },
       children: [
         {
           path: '',
@@ -164,12 +182,6 @@ const router = createRouter({
           name: 'red',
           component: () => import('@/views/RedView.vue')
         },
-        {
-          path: 'plataforma',
-          name: 'plataforma',
-          component: () => import('@/views/plataforma/PlataformaView.vue'),
-          meta: { requiresPlataforma: true }
-        },
       ]
     },
     // 404
@@ -190,10 +202,15 @@ router.beforeEach(async (to) => {
     return { name: to.path === '/' ? 'bienvenida' : 'login' }
   }
   if (to.meta.public && auth.isLoggedIn && !to.meta.allowLoggedIn) {
-    return { name: 'dashboard' }
+    return auth.enPanelMaestro ? { name: 'plataforma' } : { name: 'dashboard' }
   }
   if (to.meta.requiresPlataforma && !auth.esPlataforma) {
     return { name: 'dashboard' }
+  }
+  // Un administrador de plataforma aterriza en el Panel Maestro y no ve la aplicacion de iglesia
+  // salvo que elija entrar a la suya (solo si tiene una; el cambio dura la pestaña)
+  if (auth.enPanelMaestro && to.matched.some(r => r.meta.contextoIglesia)) {
+    return { name: 'plataforma' }
   }
 })
 

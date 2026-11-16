@@ -1468,5 +1468,216 @@
   "layout": {
     "avisoSuspendida": "Votre église est suspendue. Si vous avez demandé la résiliation, vous pouvez l'annuler ou télécharger vos données depuis ici.",
     "avisoAbrir": "Ouvrir données et résiliation"
+  },
+  "panelMaestro": {
+    "saltar": "Aller au contenu",
+    "sinConectar": "Non connecté",
+    "sinConectarCorto": "Non connecté",
+    "pendientes": "en attente",
+    "salir": "Se déconnecter",
+    "abrirMenu": "Ouvrir le menu",
+    "actividadVacia": "Aucune activité récente",
+    "situacion": {
+      "ok": "Correct",
+      "alerta": "Attention",
+      "apagado": "Éteint",
+      "sin_conectar": "Non connecté"
+    },
+    "tabla": {
+      "buscar": "Rechercher",
+      "buscarEjemplo": "Nom, adresse ou ville",
+      "filtros": "Filtrer par statut",
+      "resultados": "{n} résultat | {n} résultats",
+      "sinResultados": "Aucune correspondance avec la recherche et le filtre",
+      "demo": "Démo",
+      "miembrosN": "{n} membre | {n} membres",
+      "mostrarMas": "Afficher {n} de plus",
+      "filtro": {
+        "todas": "Toutes",
+        "activas": "Actives",
+        "prueba": "Essai",
+        "suspendidas": "Suspendues",
+        "demo": "Démo"
+      },
+      "columna": {
+        "nombre": "Nom",
+        "plan": "Formule",
+        "estado": "Statut",
+        "miembros": "Membres",
+        "modulos": "Modules actifs",
+        "acciones": "Actions"
+      }
+    }
+  },
+  "plataformaPanel": {
+    "etiqueta": "Panneau maître",
+    "rol": "Administrateur de la plateforme",
+    "buscar": "Rechercher une église",
+    "contexto": {
+      "entrar": "Entrer dans mon église : {iglesia}",
+      "volver": "Retour au Panneau maître",
+      "enIglesia": "Vous êtes dans l’application de {iglesia}"
+    },
+    "grupo": {
+      "control": "Contrôle global",
+      "negocio": "Activité",
+      "sistema": "Système",
+      "soporte": "Support"
+    },
+    "menu": {
+      "portada": "Tableau de bord maître",
+      "iglesias": "Églises",
+      "nueva": "Nouvelle église",
+      "pruebas": "Essais",
+      "planes": "Formules et modules",
+      "facturacion": "Facturation",
+      "registro": "Inscription et codes",
+      "sistema": "Système",
+      "soporte": "Support",
+      "gestionar": "Gérer"
+    },
+    "estado": {
+      "borradoVencido": "Suppression en retard",
+      "pruebaVencida": "Essai expiré",
+      "venceHoy": "L’essai se termine aujourd’hui",
+      "diasRestantes": "Il reste {n} jour d’essai | Il reste {n} jours d’essai"
+    },
+    "alerta": {
+      "purga": "La purge programmée a {horas} heures de retard",
+      "pruebasVencidas": "{n} essai expiré non converti | {n} essais expirés non convertis",
+      "borradoVencido": "{n} église avec une suppression en retard | {n} églises avec une suppression en retard"
+    },
+    "kpi": {
+      "activas": "Églises actives",
+      "activasNota": "{n} inscription en 30 jours ({delta} par rapport aux 30 précédents) | {n} inscriptions en 30 jours ({delta} par rapport aux 30 précédents)",
+      "prueba": "En essai",
+      "pruebaNota": "{n} se termine sous 7 jours | {n} se terminent sous 7 jours",
+      "suspendidas": "Suspendues",
+      "demos": "Démos",
+      "miembros": "Membres au total",
+      "miembrosNota": "Comptés seulement, les personnes ne sont jamais affichées",
+      "facturacion": "Revenu récurrent mensuel",
+      "alertas": "Alertes critiques",
+      "alertasHay": "Voir le détail ci-dessous",
+      "alertasNinguna": "Aucune alerte active"
+    },
+    "faltaFacturacion": "Il faut encore connecter une passerelle de paiement : le système ne contient aujourd’hui aucune donnée de tarifs ni d’encaissements.",
+    "portada": {
+      "titulo": "Contrôle global",
+      "linea": "Églises actives : {activas}, en essai : {prueba}, membres : {miembros}",
+      "kpis": "Indicateurs globaux",
+      "alertas": "Alertes critiques",
+      "verTodas": "Voir toutes les églises",
+      "actividad": "Activité globale",
+      "salud": "Santé du système",
+      "facturacionReciente": "Facturation récente"
+    },
+    "iglesias": {
+      "titulo": "Églises",
+      "subtitulo": "Toutes les églises inscrites, avec leur formule, leur statut et leurs totaux",
+      "tabla": "Églises",
+      "columna": "Église"
+    },
+    "accion": {
+      "gestionar": "Gérer",
+      "convertir": "Convertir",
+      "activar": "Activer"
+    },
+    "gestionar": {
+      "migas": "Fil d’Ariane",
+      "volver": "Toutes les églises",
+      "noExiste": "Cette église est introuvable. Elle a peut-être été supprimée.",
+      "resumen": "Résumé de l’église",
+      "miembros": "Membres",
+      "usuarios": "Utilisateurs",
+      "sedes": "Antennes",
+      "alta": "Date d’inscription",
+      "etapa": "Étape",
+      "red": "Réseau d’églises",
+      "datos": "Export des données",
+      "datosAyuda": "Télécharge un paquet avec toutes les données de l’église. Le téléchargement est consigné dans l’audit.",
+      "baja": "Suppression et récupération",
+      "historial": "Historique des actions de la plateforme",
+      "historialNoDisponible": "L’historique n’a pas pu être chargé. Le reste de l’écran fonctionne.",
+      "historialVacio": "Aucune action de la plateforme n’est consignée pour cette église."
+    },
+    "accionAuditoria": {
+      "otra": "Action de la plateforme",
+      "borrar_iglesia": "Suppression définitive",
+      "borrar_suave": "Suppression douce",
+      "cambiar_plan": "Changement de formule",
+      "cancelar_borrado": "Suppression annulée",
+      "codigo_crear": "Code d’inscription créé",
+      "crear_iglesia": "Création de l’église",
+      "etapa_iglesia": "Changement d’étape",
+      "exportar_iglesia": "Export des données",
+      "modulo_addon": "Changement de complément",
+      "programar_borrado": "Suppression programmée",
+      "purgar_iglesia": "Purge définitive",
+      "recuperar_iglesia": "Église récupérée",
+      "registro_ajustes": "Réglages d’inscription",
+      "repurgar_registradas": "Purge répétée",
+      "vincular_red": "Changement dans le réseau d’églises"
+    },
+    "pruebas": {
+      "titulo": "Essais en cours",
+      "subtitulo": "Églises en essai par ordre d’échéance. Celles qui se terminent dans {n} jours ou moins sont mises en évidence.",
+      "vacio": "Aucune église n’est en essai pour le moment.",
+      "vence": "Échéance",
+      "sinFecha": "Sans date de fin"
+    },
+    "planes": {
+      "titulo": "Formules et modules",
+      "subtitulo": "Ce que comprend chaque formule. Le catalogue est en lecture seule sur cet écran.",
+      "modulo": "Module",
+      "limite": "Limite de membres",
+      "sinLimite": "Sans limite",
+      "iglesias": "Églises avec cette formule",
+      "incluido": "Inclus",
+      "noIncluido": "Non inclus"
+    },
+    "facturacion": {
+      "titulo": "Facturation et paiements"
+    },
+    "soporte": {
+      "tickets": "Tickets ouverts",
+      "faltaTickets": "Il faut encore connecter un système de tickets : le support n’est pas consigné dans la plateforme aujourd’hui.",
+      "cambios": "Journal des modifications",
+      "faltaCambios": "Il faut encore publier le journal des modifications de la version : il n’existe aujourd’hui aucune source de données pour l’afficher."
+    },
+    "actividad": {
+      "alta": "Création de {iglesia}",
+      "evento": "{accion} : {iglesia}",
+      "sinIglesia": "{accion}"
+    },
+    "salud": {
+      "purga": "Purge programmée",
+      "purgaOk": "À jour",
+      "purgaAtraso": "{horas} heures de retard",
+      "envio": "Envoi d’e-mails",
+      "envioActivo": "Actif",
+      "envioApagado": "Éteint par configuration",
+      "disponibilidad": "Disponibilité par service",
+      "faltaDisponibilidad": "Il manque un moniteur externe de disponibilité : aujourd’hui on ne connaît que l’état de la purge et de l’envoi.",
+      "noDisponible": "Non disponible"
+    },
+    "sistema": {
+      "titulo": "Système",
+      "subtitulo": "État des processus de la plateforme. Seulement des chiffres et des états, sans données personnelles.",
+      "libro": "Registre des purges",
+      "libroAyuda": "Registre externe des églises purgées (identifiant et date), pour ne pas recharger de données après une restauration.",
+      "libroVacio": "Aucune purge consignée pour l’instant.",
+      "libroColumnaFecha": "Date",
+      "libroColumnaId": "Identifiant",
+      "envio": "Fonctions d’envoi",
+      "envioAyuda": "L’envoi d’e-mails est éteint sauf ordre exprès. On voit seulement s’il est actif et combien a été utilisé aujourd’hui.",
+      "envioHoy": "Envois aujourd’hui : {n}",
+      "envioTope": "Plafond global : {n}",
+      "auditoria": "Audit de la plateforme",
+      "auditoriaAyuda": "Dernières actions de la plateforme. On affiche l’action, l’église et la date, jamais le détail.",
+      "auditoriaVacia": "Aucune action consignée.",
+      "noDisponible": "Ces informations n’ont pas pu être chargées. Le reste de l’écran fonctionne.",
+      "reintentar": "Réessayer"
+    }
   }
 }

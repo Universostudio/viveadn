@@ -1468,5 +1468,216 @@
   "layout": {
     "avisoSuspendida": "Tu iglesia está suspendida. Si pediste la baja, puedes cancelarla o descargar tus datos desde aquí.",
     "avisoAbrir": "Abrir datos y baja"
+  },
+  "panelMaestro": {
+    "saltar": "Saltar al contenido",
+    "sinConectar": "Sin conectar",
+    "sinConectarCorto": "Sin conectar",
+    "pendientes": "pendientes",
+    "salir": "Cerrar sesión",
+    "abrirMenu": "Abrir el menú",
+    "actividadVacia": "Sin actividad reciente",
+    "situacion": {
+      "ok": "Correcto",
+      "alerta": "Atención",
+      "apagado": "Apagado",
+      "sin_conectar": "Sin conectar"
+    },
+    "tabla": {
+      "buscar": "Buscar",
+      "buscarEjemplo": "Nombre, dirección o ciudad",
+      "filtros": "Filtrar por estado",
+      "resultados": "{n} resultado | {n} resultados",
+      "sinResultados": "Ninguna coincidencia con la búsqueda y el filtro",
+      "demo": "Demo",
+      "miembrosN": "{n} miembro | {n} miembros",
+      "mostrarMas": "Mostrar {n} más",
+      "filtro": {
+        "todas": "Todas",
+        "activas": "Activas",
+        "prueba": "Prueba",
+        "suspendidas": "Suspendidas",
+        "demo": "Demo"
+      },
+      "columna": {
+        "nombre": "Nombre",
+        "plan": "Plan",
+        "estado": "Estado",
+        "miembros": "Miembros",
+        "modulos": "Módulos activos",
+        "acciones": "Acciones"
+      }
+    }
+  },
+  "plataformaPanel": {
+    "etiqueta": "Panel Maestro",
+    "rol": "Administrador de plataforma",
+    "buscar": "Buscar una iglesia",
+    "contexto": {
+      "entrar": "Entrar a mi iglesia: {iglesia}",
+      "volver": "Volver al Panel Maestro",
+      "enIglesia": "Estás en la aplicación de {iglesia}"
+    },
+    "grupo": {
+      "control": "Control global",
+      "negocio": "Negocio",
+      "sistema": "Sistema",
+      "soporte": "Soporte"
+    },
+    "menu": {
+      "portada": "Panel maestro",
+      "iglesias": "Iglesias",
+      "nueva": "Nueva iglesia",
+      "pruebas": "Pruebas",
+      "planes": "Planes y módulos",
+      "facturacion": "Facturación",
+      "registro": "Registro y códigos",
+      "sistema": "Sistema",
+      "soporte": "Soporte",
+      "gestionar": "Gestionar"
+    },
+    "estado": {
+      "borradoVencido": "Borrado vencido",
+      "pruebaVencida": "Prueba vencida",
+      "venceHoy": "La prueba vence hoy",
+      "diasRestantes": "Queda {n} día de prueba | Quedan {n} días de prueba"
+    },
+    "alerta": {
+      "purga": "La purga programada va atrasada {horas} horas",
+      "pruebasVencidas": "{n} prueba vencida sin convertir | {n} pruebas vencidas sin convertir",
+      "borradoVencido": "{n} iglesia con el borrado vencido | {n} iglesias con el borrado vencido"
+    },
+    "kpi": {
+      "activas": "Iglesias activas",
+      "activasNota": "{n} alta en 30 días ({delta} frente a los 30 anteriores) | {n} altas en 30 días ({delta} frente a los 30 anteriores)",
+      "prueba": "En prueba",
+      "pruebaNota": "{n} vence en 7 días | {n} vencen en 7 días",
+      "suspendidas": "Suspendidas",
+      "demos": "Demos",
+      "miembros": "Miembros totales",
+      "miembrosNota": "Solo se cuentan, sin ver a las personas",
+      "facturacion": "Facturación recurrente mensual",
+      "alertas": "Alertas críticas",
+      "alertasHay": "Revisa el detalle debajo",
+      "alertasNinguna": "Ninguna alerta activa"
+    },
+    "faltaFacturacion": "Falta conectar una pasarela de cobro: hoy no existe ningún dato de precios ni de cobros en el sistema.",
+    "portada": {
+      "titulo": "Control global",
+      "linea": "Iglesias activas: {activas}, en prueba: {prueba}, miembros: {miembros}",
+      "kpis": "Indicadores globales",
+      "alertas": "Alertas críticas",
+      "verTodas": "Ver todas las iglesias",
+      "actividad": "Actividad global",
+      "salud": "Salud del sistema",
+      "facturacionReciente": "Facturación reciente"
+    },
+    "iglesias": {
+      "titulo": "Iglesias",
+      "subtitulo": "Todas las iglesias registradas, con su plan, su estado y sus conteos",
+      "tabla": "Iglesias",
+      "columna": "Iglesia"
+    },
+    "accion": {
+      "gestionar": "Gestionar",
+      "convertir": "Convertir",
+      "activar": "Activar"
+    },
+    "gestionar": {
+      "migas": "Ruta de navegación",
+      "volver": "Todas las iglesias",
+      "noExiste": "No se encuentra esa iglesia. Puede haberse borrado.",
+      "resumen": "Resumen de la iglesia",
+      "miembros": "Miembros",
+      "usuarios": "Usuarios",
+      "sedes": "Sedes",
+      "alta": "Fecha de alta",
+      "etapa": "Etapa",
+      "red": "Red de iglesias",
+      "datos": "Exportación de datos",
+      "datosAyuda": "Descarga un paquete con todos los datos de la iglesia. La descarga queda anotada en la auditoría.",
+      "baja": "Borrado y recuperación",
+      "historial": "Historial de acciones de plataforma",
+      "historialNoDisponible": "No se pudo cargar el historial. El resto de la pantalla funciona.",
+      "historialVacio": "Esta iglesia no tiene acciones de plataforma anotadas."
+    },
+    "accionAuditoria": {
+      "otra": "Acción de plataforma",
+      "borrar_iglesia": "Borrado definitivo",
+      "borrar_suave": "Borrado suave",
+      "cambiar_plan": "Cambio de plan",
+      "cancelar_borrado": "Borrado cancelado",
+      "codigo_crear": "Código de registro creado",
+      "crear_iglesia": "Alta de la iglesia",
+      "etapa_iglesia": "Cambio de etapa",
+      "exportar_iglesia": "Exportación de datos",
+      "modulo_addon": "Cambio de complemento",
+      "programar_borrado": "Borrado programado",
+      "purgar_iglesia": "Purga definitiva",
+      "recuperar_iglesia": "Iglesia recuperada",
+      "registro_ajustes": "Ajustes de registro",
+      "repurgar_registradas": "Purga repetida",
+      "vincular_red": "Cambio en la red de iglesias"
+    },
+    "pruebas": {
+      "titulo": "Pruebas activas",
+      "subtitulo": "Iglesias en prueba por orden de vencimiento. Se resaltan las que vencen en {n} días o menos.",
+      "vacio": "No hay iglesias en prueba ahora mismo.",
+      "vence": "Vencimiento",
+      "sinFecha": "Sin fecha de fin"
+    },
+    "planes": {
+      "titulo": "Planes y módulos",
+      "subtitulo": "Qué incluye cada plan. El catálogo es de solo lectura en esta pantalla.",
+      "modulo": "Módulo",
+      "limite": "Límite de miembros",
+      "sinLimite": "Sin límite",
+      "iglesias": "Iglesias con este plan",
+      "incluido": "Incluido",
+      "noIncluido": "No incluido"
+    },
+    "facturacion": {
+      "titulo": "Facturación y cobros"
+    },
+    "soporte": {
+      "tickets": "Tickets abiertos",
+      "faltaTickets": "Falta conectar un sistema de tickets: hoy el soporte no se registra dentro de la plataforma.",
+      "cambios": "Registro de cambios",
+      "faltaCambios": "Falta publicar el registro de cambios de la versión: hoy no hay una fuente de datos para mostrarlo."
+    },
+    "actividad": {
+      "alta": "Alta de {iglesia}",
+      "evento": "{accion}: {iglesia}",
+      "sinIglesia": "{accion}"
+    },
+    "salud": {
+      "purga": "Purga programada",
+      "purgaOk": "Al día",
+      "purgaAtraso": "Retraso de {horas} horas",
+      "envio": "Envío de correo",
+      "envioActivo": "Activo",
+      "envioApagado": "Apagado por configuración",
+      "disponibilidad": "Disponibilidad por servicio",
+      "faltaDisponibilidad": "Falta un monitor externo de disponibilidad: hoy solo se conoce el estado de la purga y del envío.",
+      "noDisponible": "No disponible"
+    },
+    "sistema": {
+      "titulo": "Sistema",
+      "subtitulo": "Estado de los procesos de la plataforma. Solo cifras y estados, sin datos de personas.",
+      "libro": "Libro de purgas",
+      "libroAyuda": "Registro externo de las iglesias purgadas (identificador y fecha), para no volver a cargar datos tras una restauración.",
+      "libroVacio": "Todavía no hay purgas anotadas.",
+      "libroColumnaFecha": "Fecha",
+      "libroColumnaId": "Identificador",
+      "envio": "Funciones de envío",
+      "envioAyuda": "El envío de correo está apagado salvo orden expresa. Aquí solo se ve si está activo y cuánto se ha usado hoy.",
+      "envioHoy": "Envíos de hoy: {n}",
+      "envioTope": "Tope global: {n}",
+      "auditoria": "Auditoría de plataforma",
+      "auditoriaAyuda": "Últimas acciones de plataforma. Se muestra la acción, la iglesia y la fecha, nunca el detalle.",
+      "auditoriaVacia": "Sin acciones anotadas.",
+      "noDisponible": "No se pudo cargar esta información. El resto de la pantalla funciona.",
+      "reintentar": "Reintentar"
+    }
   }
 }

@@ -83,6 +83,13 @@
         <p class="font-display font-bold text-adn-verde">Vive ADN</p>
       </header>
 
+      <!-- Un administrador de plataforma que ademas pertenece a esta iglesia vuelve al Panel Maestro con un clic -->
+      <div v-if="auth.esPlataforma" class="bg-adn-profundo text-white text-xs px-4 py-2 flex items-center justify-between gap-3 flex-wrap" data-test="barra-contexto">
+        <span>{{ t('plataformaPanel.contexto.enIglesia', { iglesia: iglesiaName }) }}</span>
+        <button type="button" class="inline-flex items-center gap-1.5 underline font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-white rounded" data-test="volver-panel" @click="volverAlPanel">
+          <ShieldCheck class="w-4 h-4" aria-hidden="true" />{{ t('plataformaPanel.contexto.volver') }}
+        </button>
+      </div>
       <div v-if="auth.verComo" role="status" class="bg-amber-100 text-amber-900 text-xs px-4 py-2 flex items-center justify-between gap-3 flex-wrap">
         <span>{{ t('verComo.aviso', { rol: auth.verComo.nombre }) }}</span>
         <button type="button" class="underline font-medium" @click="auth.simularRol(null)">{{ t('verComo.salir') }}</button>
@@ -130,7 +137,7 @@ const iglesiaName = computed(() => auth.nombreIglesia)
 const consolidacionPendientes = ref(0)
 
 // Cada sección se muestra si el rol tiene alguno de sus permisos; label es la clave de traducción
-const todosLosItems: { to: string; icon: Component; label: string; badge?: boolean; modulo?: string; plataforma?: boolean; red?: boolean; permisos: string[] }[] = [
+const todosLosItems: { to: string; icon: Component; label: string; badge?: boolean; modulo?: string; red?: boolean; permisos: string[] }[] = [
   { to: '/',              icon: LayoutDashboard, label: 'menu.dashboard', permisos: [] },
   { to: '/miembros',      icon: Users, label: 'menu.miembros', permisos: ['miembros.ver', 'miembros.ver_asignados'] },
   { to: '/eventos',       icon: CalendarDays, label: 'menu.eventos', modulo: 'eventos', permisos: ['eventos.ver'] },
@@ -141,17 +148,20 @@ const todosLosItems: { to: string; icon: Component; label: string; badge?: boole
   { to: '/reportes',      icon: ChartColumn, label: 'menu.reportes', permisos: ['reportes.ver'] },
   { to: '/configuracion', icon: Settings, label: 'menu.configuracion', permisos: ['usuarios.gestionar', 'roles.gestionar', 'iglesia.configurar'] },
   { to: '/red',            icon: Network, label: 'menu.red', red: true, permisos: [] },
-  { to: '/plataforma',    icon: ShieldCheck, label: 'menu.plataforma', plataforma: true, permisos: [] },
 ]
 
 const navItems = computed(() =>
   todosLosItems.filter(i =>
-    (!i.plataforma || auth.esPlataforma) &&
     (!i.red || auth.tieneSedes) &&
     (!i.modulo || auth.tieneModulo(i.modulo)) &&
     (i.permisos.length === 0 || auth.can(...i.permisos))
   )
 )
+
+function volverAlPanel() {
+  auth.fijarContexto('plataforma')
+  router.push({ name: 'plataforma' })
+}
 
 async function logout() {
   await auth.logout()

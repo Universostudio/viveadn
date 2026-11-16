@@ -12,6 +12,16 @@ export const useAuthStore = defineStore('auth', () => {
   const rolInfo = ref<{ nombre: string; es_propietario: boolean } | null>(null)
 
   const esPlataforma = ref(false)
+  // Contexto de un administrador de plataforma que ademas pertenece a una iglesia: dura lo que dura la pestaña, nunca se guarda en la base
+  const CLAVE_CONTEXTO = 'adn_contexto'
+  const leerContexto = (): 'plataforma' | 'iglesia' => {
+    try { return sessionStorage.getItem(CLAVE_CONTEXTO) === 'iglesia' ? 'iglesia' : 'plataforma' } catch { return 'plataforma' }
+  }
+  const contexto = ref<'plataforma' | 'iglesia'>(leerContexto())
+  function fijarContexto(c: 'plataforma' | 'iglesia') {
+    contexto.value = c
+    try { sessionStorage.setItem(CLAVE_CONTEXTO, c) } catch { /* sin almacenamiento: el contexto vale hasta recargar */ }
+  }
   const tieneSedes = ref(false)
   const modulosActivos = ref<Set<string>>(new Set())
   const moduloDePermiso = ref<Record<string, string>>({})
@@ -62,6 +72,9 @@ export const useAuthStore = defineStore('auth', () => {
   const nombreRol = computed(() => rolInfo.value?.nombre ?? perfil.value?.rol ?? '')
   const isLoggedIn = computed(() => !!user.value)
   const iglesiaId = computed(() => perfil.value?.iglesia_id)
+  const tieneIglesia = computed(() => !!perfil.value?.iglesia_id)
+  // Un administrador de plataforma trabaja en el Panel Maestro salvo que elija entrar a su iglesia (y solo si tiene una)
+  const enPanelMaestro = computed(() => esPlataforma.value && !(tieneIglesia.value && contexto.value === 'iglesia'))
   const rol = computed(() => perfil.value?.rol)
   const nombreIglesia = computed(() => iglesia.value?.nombre ?? '')
   // Iglesia que registra a las personas con un alias, sin apellido ni correo
@@ -137,6 +150,8 @@ export const useAuthStore = defineStore('auth', () => {
     verComo.value = null
     rolesDisponibles.value = []
     esPlataforma.value = false
+    try { sessionStorage.removeItem(CLAVE_CONTEXTO) } catch { /* nada que limpiar */ }
+    contexto.value = 'plataforma'
     tieneSedes.value = false
     permisos.value = new Set()
     modulosActivos.value = new Set()
@@ -144,8 +159,11 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   async function login(email: string, password: string) {
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password })
     if (error) throw error
+    // Se carga el perfil antes de volver: el guard de rutas necesita saber ya si es administrador de plataforma
+    user.value = data.user
+    await cargarPerfil()
   }
 
   async function logout() {
@@ -154,5 +172,5 @@ export const useAuthStore = defineStore('auth', () => {
     limpiar()
   }
 
-  return { user, perfil, iglesia, nombreIglesia, modoAlias, loading, isLoggedIn, iglesiaId, rol, rolInfo, verComo, rolesDisponibles, simularRol, nombreRol, nombreCompleto, esPlataforma, tieneSedes, can, tieneModulo, init, login, logout }
+  return { user, perfil, iglesia, nombreIglesia, modoAlias, loading, isLoggedIn, iglesiaId, rol, rolInfo, verComo, rolesDisponibles, simularRol, nombreRol, nombreCompleto, esPlataforma, tieneIglesia, enPanelMaestro, contexto, fijarContexto, tieneSedes, can, tieneModulo, init, login, logout }
 })

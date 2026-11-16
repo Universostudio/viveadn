@@ -1468,5 +1468,216 @@
   "layout": {
     "avisoSuspendida": "Your church is suspended. If you requested the cancellation, you can undo it or download your data from here.",
     "avisoAbrir": "Open data and cancellation"
+  },
+  "panelMaestro": {
+    "saltar": "Skip to content",
+    "sinConectar": "Not connected",
+    "sinConectarCorto": "Not connected",
+    "pendientes": "pending",
+    "salir": "Sign out",
+    "abrirMenu": "Open the menu",
+    "actividadVacia": "No recent activity",
+    "situacion": {
+      "ok": "OK",
+      "alerta": "Attention",
+      "apagado": "Off",
+      "sin_conectar": "Not connected"
+    },
+    "tabla": {
+      "buscar": "Search",
+      "buscarEjemplo": "Name, address or city",
+      "filtros": "Filter by status",
+      "resultados": "{n} result | {n} results",
+      "sinResultados": "Nothing matches the search and the filter",
+      "demo": "Demo",
+      "miembrosN": "{n} member | {n} members",
+      "mostrarMas": "Show {n} more",
+      "filtro": {
+        "todas": "All",
+        "activas": "Active",
+        "prueba": "Trial",
+        "suspendidas": "Suspended",
+        "demo": "Demo"
+      },
+      "columna": {
+        "nombre": "Name",
+        "plan": "Plan",
+        "estado": "Status",
+        "miembros": "Members",
+        "modulos": "Active modules",
+        "acciones": "Actions"
+      }
+    }
+  },
+  "plataformaPanel": {
+    "etiqueta": "Master Panel",
+    "rol": "Platform administrator",
+    "buscar": "Search for a church",
+    "contexto": {
+      "entrar": "Enter my church: {iglesia}",
+      "volver": "Back to the Master Panel",
+      "enIglesia": "You are in the {iglesia} app"
+    },
+    "grupo": {
+      "control": "Global control",
+      "negocio": "Business",
+      "sistema": "System",
+      "soporte": "Support"
+    },
+    "menu": {
+      "portada": "Master dashboard",
+      "iglesias": "Churches",
+      "nueva": "New church",
+      "pruebas": "Trials",
+      "planes": "Plans and modules",
+      "facturacion": "Billing",
+      "registro": "Sign-up and codes",
+      "sistema": "System",
+      "soporte": "Support",
+      "gestionar": "Manage"
+    },
+    "estado": {
+      "borradoVencido": "Deletion overdue",
+      "pruebaVencida": "Trial expired",
+      "venceHoy": "The trial ends today",
+      "diasRestantes": "{n} day of trial left | {n} days of trial left"
+    },
+    "alerta": {
+      "purga": "The scheduled purge is {horas} hours behind",
+      "pruebasVencidas": "{n} expired trial not converted | {n} expired trials not converted",
+      "borradoVencido": "{n} church with an overdue deletion | {n} churches with an overdue deletion"
+    },
+    "kpi": {
+      "activas": "Active churches",
+      "activasNota": "{n} sign-up in 30 days ({delta} against the previous 30) | {n} sign-ups in 30 days ({delta} against the previous 30)",
+      "prueba": "On trial",
+      "pruebaNota": "{n} ends within 7 days | {n} end within 7 days",
+      "suspendidas": "Suspended",
+      "demos": "Demos",
+      "miembros": "Total members",
+      "miembrosNota": "Only counted, people are never shown",
+      "facturacion": "Monthly recurring revenue",
+      "alertas": "Critical alerts",
+      "alertasHay": "See the detail below",
+      "alertasNinguna": "No active alerts"
+    },
+    "faltaFacturacion": "A payment gateway still needs to be connected: the system holds no pricing or billing data today.",
+    "portada": {
+      "titulo": "Global control",
+      "linea": "Active churches: {activas}, on trial: {prueba}, members: {miembros}",
+      "kpis": "Global indicators",
+      "alertas": "Critical alerts",
+      "verTodas": "See all churches",
+      "actividad": "Global activity",
+      "salud": "System health",
+      "facturacionReciente": "Recent billing"
+    },
+    "iglesias": {
+      "titulo": "Churches",
+      "subtitulo": "Every registered church, with its plan, status and counts",
+      "tabla": "Churches",
+      "columna": "Church"
+    },
+    "accion": {
+      "gestionar": "Manage",
+      "convertir": "Convert",
+      "activar": "Activate"
+    },
+    "gestionar": {
+      "migas": "Breadcrumb",
+      "volver": "All churches",
+      "noExiste": "That church cannot be found. It may have been deleted.",
+      "resumen": "Church summary",
+      "miembros": "Members",
+      "usuarios": "Users",
+      "sedes": "Branches",
+      "alta": "Sign-up date",
+      "etapa": "Stage",
+      "red": "Church network",
+      "datos": "Data export",
+      "datosAyuda": "Downloads a package with all the church data. The download is recorded in the audit log.",
+      "baja": "Deletion and recovery",
+      "historial": "Platform action history",
+      "historialNoDisponible": "The history could not be loaded. The rest of the screen works.",
+      "historialVacio": "No platform actions are recorded for this church."
+    },
+    "accionAuditoria": {
+      "otra": "Platform action",
+      "borrar_iglesia": "Permanent deletion",
+      "borrar_suave": "Soft deletion",
+      "cambiar_plan": "Plan change",
+      "cancelar_borrado": "Deletion cancelled",
+      "codigo_crear": "Sign-up code created",
+      "crear_iglesia": "Church created",
+      "etapa_iglesia": "Stage change",
+      "exportar_iglesia": "Data export",
+      "modulo_addon": "Add-on change",
+      "programar_borrado": "Deletion scheduled",
+      "purgar_iglesia": "Permanent purge",
+      "recuperar_iglesia": "Church recovered",
+      "registro_ajustes": "Sign-up settings",
+      "repurgar_registradas": "Repeated purge",
+      "vincular_red": "Church network change"
+    },
+    "pruebas": {
+      "titulo": "Active trials",
+      "subtitulo": "Churches on trial in order of expiry. Those ending in {n} days or fewer are highlighted.",
+      "vacio": "No churches are on trial right now.",
+      "vence": "Expiry",
+      "sinFecha": "No end date"
+    },
+    "planes": {
+      "titulo": "Plans and modules",
+      "subtitulo": "What each plan includes. The catalogue is read only on this screen.",
+      "modulo": "Module",
+      "limite": "Member limit",
+      "sinLimite": "No limit",
+      "iglesias": "Churches on this plan",
+      "incluido": "Included",
+      "noIncluido": "Not included"
+    },
+    "facturacion": {
+      "titulo": "Billing and payments"
+    },
+    "soporte": {
+      "tickets": "Open tickets",
+      "faltaTickets": "A ticket system still needs to be connected: support is not recorded inside the platform today.",
+      "cambios": "Changelog",
+      "faltaCambios": "The version changelog still needs to be published: there is no data source to show it today."
+    },
+    "actividad": {
+      "alta": "{iglesia} created",
+      "evento": "{accion}: {iglesia}",
+      "sinIglesia": "{accion}"
+    },
+    "salud": {
+      "purga": "Scheduled purge",
+      "purgaOk": "Up to date",
+      "purgaAtraso": "{horas} hours behind",
+      "envio": "Email sending",
+      "envioActivo": "On",
+      "envioApagado": "Off by configuration",
+      "disponibilidad": "Availability per service",
+      "faltaDisponibilidad": "An external uptime monitor is missing: today only the purge and sending status are known.",
+      "noDisponible": "Not available"
+    },
+    "sistema": {
+      "titulo": "System",
+      "subtitulo": "Status of the platform processes. Figures and states only, no personal data.",
+      "libro": "Purge ledger",
+      "libroAyuda": "External record of purged churches (identifier and date), so no data is reloaded after a restore.",
+      "libroVacio": "No purges recorded yet.",
+      "libroColumnaFecha": "Date",
+      "libroColumnaId": "Identifier",
+      "envio": "Sending functions",
+      "envioAyuda": "Email sending is off unless expressly ordered. Here you only see whether it is on and how much was used today.",
+      "envioHoy": "Sent today: {n}",
+      "envioTope": "Global cap: {n}",
+      "auditoria": "Platform audit log",
+      "auditoriaAyuda": "Latest platform actions. The action, the church and the date are shown, never the detail.",
+      "auditoriaVacia": "No actions recorded.",
+      "noDisponible": "This information could not be loaded. The rest of the screen works.",
+      "reintentar": "Retry"
+    }
   }
 }
