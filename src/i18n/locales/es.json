@@ -30,7 +30,9 @@
     "abrirMenu": "Abrir menú",
     "eventos": "Eventos",
     "red": "Red",
-    "zonas": "Zonas"
+    "zonas": "Zonas",
+    "miPanel": "Mi panel",
+    "logros": "Logros"
   },
   "login": {
     "subtitulo": "Sistema de Gestión Eclesiástica",
@@ -1754,5 +1756,49 @@
       "personaAnadida": "{nombre} ya está en esta casa.",
       "personaQuitada": "{nombre} ya no está en esta casa."
     }
+  },
+  "sinAcceso": {
+    "titulo": "No tienes acceso a esta sección",
+    "texto": "Tu rol actual, {rol}, no incluye los permisos que esta pantalla necesita.",
+    "intentaste": "Dirección que intentaste abrir: {ruta}",
+    "volver": "Ir a mi página de inicio",
+    "pedir": "Si crees que deberías verla, pide a quien administra la iglesia que revise tu rol."
+  },
+  "logros": {
+    "titulo": "Logros",
+    "subtitulo": "Reconoce el avance de las personas con logros y puntos.",
+    "otorgar": "Otorgar un logro",
+    "persona": "Persona",
+    "nombre": "Nombre del logro",
+    "puntos": "Puntos",
+    "guardar": "Otorgar",
+    "ranking": "Ranking",
+    "vacio": "Todavía no hay logros registrados.",
+    "logrosN": "{n} logro | {n} logros",
+    "puntosN": "{n} puntos",
+    "recientes": "Logros recientes",
+    "personaDesconocida": "Persona sin identificar",
+    "error": "No se pudo guardar el logro. Inténtalo de nuevo.",
+    "guardado": "Logro otorgado."
+  },
+  "miPanel": {
+    "titulo": "Mi panel",
+    "saludo": "Hola, {nombre}. Esto es lo que necesitas de tu casa de oración.",
+    "casa": "Casa de oración",
+    "sinCasa": "Todavía no tienes una casa de oración asignada.",
+    "sinCasaAyuda": "Pide a quien administra la iglesia que te nombre líder de una casa desde Casas de oración.",
+    "personasN": "{n} persona en tu casa | {n} personas en tu casa",
+    "pasarLista": "Pasar lista",
+    "fechaReunion": "Fecha de la reunión",
+    "quienVino": "Quién vino a la reunión",
+    "guardarLista": "Guardar la lista",
+    "presentesN": "{n} de {total} presentes",
+    "ultimasReuniones": "Últimas reuniones",
+    "miGente": "Mi gente",
+    "sinPersonas": "Tu casa todavía no tiene personas asignadas.",
+    "nuevos": "Nuevos creyentes de mi casa",
+    "sinNuevos": "No hay nuevos creyentes en seguimiento en tu casa.",
+    "errorLista": "No se pudo guardar la lista completa. Revisa los datos e inténtalo de nuevo.",
+    "listaGuardada": "Lista guardada."
   }
 }

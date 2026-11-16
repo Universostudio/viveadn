@@ -30,7 +30,9 @@
     "abrirMenu": "Ouvrir le menu",
     "eventos": "Événements",
     "red": "Réseau",
-    "zonas": "Zones"
+    "zonas": "Zones",
+    "miPanel": "Mon tableau",
+    "logros": "Réussites"
   },
   "login": {
     "subtitulo": "Système de gestion d'église",
@@ -1754,5 +1756,49 @@
       "personaAnadida": "{nombre} est maintenant dans cette maison.",
       "personaQuitada": "{nombre} n’est plus dans cette maison."
     }
+  },
+  "sinAcceso": {
+    "titulo": "Vous n’avez pas accès à cette section",
+    "texto": "Votre rôle actuel, {rol}, n’inclut pas les autorisations dont cet écran a besoin.",
+    "intentaste": "Adresse que vous avez essayé d’ouvrir : {ruta}",
+    "volver": "Aller à ma page d’accueil",
+    "pedir": "Si vous pensez devoir la voir, demandez à la personne qui administre l’église de vérifier votre rôle."
+  },
+  "logros": {
+    "titulo": "Réussites",
+    "subtitulo": "Reconnaissez la progression des personnes avec des réussites et des points.",
+    "otorgar": "Attribuer une réussite",
+    "persona": "Personne",
+    "nombre": "Nom de la réussite",
+    "puntos": "Points",
+    "guardar": "Attribuer",
+    "ranking": "Classement",
+    "vacio": "Aucune réussite n’a encore été enregistrée.",
+    "logrosN": "{n} réussite | {n} réussites",
+    "puntosN": "{n} points",
+    "recientes": "Réussites récentes",
+    "personaDesconocida": "Personne non identifiée",
+    "error": "La réussite n’a pas pu être enregistrée. Réessayez.",
+    "guardado": "Réussite attribuée."
+  },
+  "miPanel": {
+    "titulo": "Mon tableau",
+    "saludo": "Bonjour, {nombre}. Voici ce dont vous avez besoin pour votre maison de prière.",
+    "casa": "Maison de prière",
+    "sinCasa": "Aucune maison de prière ne vous est encore attribuée.",
+    "sinCasaAyuda": "Demandez à la personne qui administre l’église de vous nommer responsable d’une maison depuis Maisons de prière.",
+    "personasN": "{n} personne dans votre maison | {n} personnes dans votre maison",
+    "pasarLista": "Faire l’appel",
+    "fechaReunion": "Date de la réunion",
+    "quienVino": "Qui est venu à la réunion",
+    "guardarLista": "Enregistrer la liste",
+    "presentesN": "{n} sur {total} présents",
+    "ultimasReuniones": "Dernières réunions",
+    "miGente": "Mes personnes",
+    "sinPersonas": "Votre maison n’a encore aucune personne assignée.",
+    "nuevos": "Nouveaux croyants de ma maison",
+    "sinNuevos": "Aucun nouveau croyant en suivi dans votre maison.",
+    "errorLista": "La liste complète n’a pas pu être enregistrée. Vérifiez les données et réessayez.",
+    "listaGuardada": "Liste enregistrée."
   }
 }

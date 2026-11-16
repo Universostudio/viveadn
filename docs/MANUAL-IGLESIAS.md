@@ -62,6 +62,12 @@ El consentimiento al reimportar **nunca se relaja**: una baja del archivo se apl
 
 Los cambios los hace quien tiene permiso (zonas, edición de casas y edición de miembros). El líder de casa y el líder de zona solo miran. Lo que ve cada líder después está probado en la base de datos (`supabase/tests/adn_lideres.sql`): el líder de zona ve solo las casas de su zona y a sus personas; el de casa, la suya y su gente; al mover a una persona, ambos dejan de verla.
 
+### Qué ve cada persona al entrar
+
+Cada rol ve en el menú solo lo que puede abrir, incluidas las secciones acotadas: el líder de zona ve Miembros, Casas y Consolidación de su zona, y el colaborador, lo que él registra. Si alguien escribe a mano una dirección que su rol no permite, aparece una pantalla de «sin acceso» que dice qué rol tiene y le devuelve a su portada; para ampliar lo que ve, pide a quien administra la iglesia que revise su rol.
+
+**Mi panel (líder de casa).** El líder de casa llega directamente a «Mi panel»: su casa, la lista de su gente con botones para llamar o escribir por WhatsApp, y **pasar lista**. Para pasar lista elige la fecha de la reunión (hoy por defecto), marca quién vino y guarda; si vuelve a guardar el mismo día se actualiza lo anterior sin duplicar. Debajo ve las asistencias de las últimas cuatro semanas y los nuevos creyentes de su casa que están en seguimiento. Si todavía no tiene casa, la pantalla lo dice y explica a quién pedirla (alguien con permiso de Casas de oración la asigna, apartado anterior).
+
 ## 6. Eventos, asistencia y registro por QR
 
 **Crear un evento.** «Nuevo evento» pide título, tipo (culto, casa de oración, formación, especial u otro), inicio, fin opcional, lugar y descripción. Con «Repetir cada semana» creas una serie de entre 2 y el máximo de reuniones. Un evento cancelado se marca como tal.

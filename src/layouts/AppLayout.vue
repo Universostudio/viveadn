@@ -111,7 +111,7 @@
 import { computed, onMounted, ref, watch, type Component } from 'vue'
 import {
   LayoutDashboard, Users, House, HeartHandshake, GraduationCap, MessageSquare,
-  ChartColumn, CalendarDays, Settings, ShieldCheck, LogOut, Menu, Network, MapPinned,
+  ChartColumn, CalendarDays, Settings, ShieldCheck, LogOut, Menu, Network, MapPinned, LayoutList, Trophy,
 } from '@lucide/vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
@@ -120,6 +120,7 @@ import PieLegal from '@/components/PieLegal.vue'
 import { useAuthStore } from '@/stores/auth'
 import { supabase } from '@/lib/supabase'
 import { haceHoras } from '@/lib/alertas'
+import { itemsVisibles } from '@/lib/acceso'
 
 const auth = useAuthStore()
 const router = useRouter()
@@ -136,27 +137,16 @@ const inicial = computed(() => auth.perfil?.nombre?.[0]?.toUpperCase() ?? 'U')
 const iglesiaName = computed(() => auth.nombreIglesia)
 const consolidacionPendientes = ref(0)
 
-// Cada sección se muestra si el rol tiene alguno de sus permisos; label es la clave de traducción
-const todosLosItems: { to: string; icon: Component; label: string; badge?: boolean; modulo?: string; red?: boolean; permisos: string[] }[] = [
-  { to: '/',              icon: LayoutDashboard, label: 'menu.dashboard', permisos: [] },
-  { to: '/miembros',      icon: Users, label: 'menu.miembros', permisos: ['miembros.ver', 'miembros.ver_asignados'] },
-  { to: '/eventos',       icon: CalendarDays, label: 'menu.eventos', modulo: 'eventos', permisos: ['eventos.ver'] },
-  { to: '/casas',         icon: House, label: 'menu.casas', permisos: ['casas.ver', 'casas.ver_propia'] },
-  { to: '/zonas',         icon: MapPinned, label: 'menu.zonas', permisos: ['zonas.gestionar'] },
-  { to: '/consolidacion', icon: HeartHandshake, label: 'menu.consolidacion', badge: true, permisos: ['consolidacion.ver', 'consolidacion.ver_asignados', 'consolidacion.ver_casa'] },
-  { to: '/formacion',     icon: GraduationCap, label: 'menu.formacion', permisos: ['formacion.ver'] },
-  { to: '/comunicacion',  icon: MessageSquare, label: 'menu.comunicacion', modulo: 'comunicacion', permisos: ['comunicacion.ver', 'comunicacion.enviar'] },
-  { to: '/reportes',      icon: ChartColumn, label: 'menu.reportes', permisos: ['reportes.ver'] },
-  { to: '/configuracion', icon: Settings, label: 'menu.configuracion', permisos: ['usuarios.gestionar', 'roles.gestionar', 'iglesia.configurar'] },
-  { to: '/red',            icon: Network, label: 'menu.red', red: true, permisos: [] },
-]
+// El menú y la comprobación de cada ruta salen de la misma tabla (src/lib/acceso.ts), así lo que se ofrece y lo que se abre no se separan
+const ICONOS: Record<string, Component> = {
+  miPanel: LayoutList, inicio: LayoutDashboard, miembros: Users, eventos: CalendarDays, casas: House, zonas: MapPinned,
+  consolidacion: HeartHandshake, formacion: GraduationCap, logros: Trophy, comunicacion: MessageSquare, reportes: ChartColumn,
+  configuracion: Settings, red: Network,
+}
 
 const navItems = computed(() =>
-  todosLosItems.filter(i =>
-    (!i.red || auth.tieneSedes) &&
-    (!i.modulo || auth.tieneModulo(i.modulo)) &&
-    (i.permisos.length === 0 || auth.can(...i.permisos))
-  )
+  itemsVisibles({ can: auth.can, tieneModulo: auth.tieneModulo, esPropietario: auth.rolInfo?.es_propietario === true, tieneSedes: auth.tieneSedes })
+    .map(i => ({ to: i.to, icon: ICONOS[i.clave], label: i.etiqueta, badge: i.clave === 'consolidacion' }))
 )
 
 function volverAlPanel() {

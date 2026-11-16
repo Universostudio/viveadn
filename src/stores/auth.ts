@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { supabase } from '@/lib/supabase'
 import type { Perfil, Iglesia } from '@/lib/supabase'
+import { aterrizajeDe } from '@/lib/acceso'
 
 export const useAuthStore = defineStore('auth', () => {
   const user = ref<any>(null)
@@ -73,6 +74,10 @@ export const useAuthStore = defineStore('auth', () => {
   const isLoggedIn = computed(() => !!user.value)
   const iglesiaId = computed(() => perfil.value?.iglesia_id)
   const tieneIglesia = computed(() => !!perfil.value?.iglesia_id)
+  // Un administrador de plataforma sin iglesia no tiene permisos de iglesia que comprobar
+  const esPlataformaSinIglesia = computed(() => esPlataforma.value && !perfil.value?.iglesia_id)
+  // A dónde llega al iniciar sesión según su rol: el líder de casa, a «Mi panel»; el resto, al panel de inicio
+  const aterrizaje = computed<'mi-panel' | 'dashboard'>(() => aterrizajeDe({ can }))
   // Un administrador de plataforma trabaja en el Panel Maestro salvo que elija entrar a su iglesia (y solo si tiene una)
   const enPanelMaestro = computed(() => esPlataforma.value && !(tieneIglesia.value && contexto.value === 'iglesia'))
   const rol = computed(() => perfil.value?.rol)
@@ -172,5 +177,5 @@ export const useAuthStore = defineStore('auth', () => {
     limpiar()
   }
 
-  return { user, perfil, iglesia, nombreIglesia, modoAlias, loading, isLoggedIn, iglesiaId, rol, rolInfo, verComo, rolesDisponibles, simularRol, nombreRol, nombreCompleto, esPlataforma, tieneIglesia, enPanelMaestro, contexto, fijarContexto, tieneSedes, can, tieneModulo, init, login, logout }
+  return { user, perfil, iglesia, nombreIglesia, modoAlias, loading, isLoggedIn, iglesiaId, rol, rolInfo, verComo, rolesDisponibles, simularRol, nombreRol, nombreCompleto, esPlataforma, tieneIglesia, esPlataformaSinIglesia, aterrizaje, enPanelMaestro, contexto, fijarContexto, tieneSedes, can, tieneModulo, init, login, logout }
 })

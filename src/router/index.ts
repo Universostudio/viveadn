@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { REQUISITOS_RUTA, cumple } from '@/lib/acceso'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -113,6 +114,21 @@ const router = createRouter({
           component: () => import('@/views/DashboardView.vue')
         },
         {
+          path: 'mi-panel',
+          name: 'mi-panel',
+          component: () => import('@/views/MiPanelView.vue')
+        },
+        {
+          path: 'logros',
+          name: 'logros',
+          component: () => import('@/views/LogrosView.vue')
+        },
+        {
+          path: 'sin-acceso',
+          name: 'sin-acceso',
+          component: () => import('@/views/SinAccesoView.vue')
+        },
+        {
           path: 'miembros',
           name: 'miembros',
           component: () => import('@/views/miembros/MiembrosView.vue')
@@ -207,7 +223,7 @@ router.beforeEach(async (to) => {
     return { name: to.path === '/' ? 'bienvenida' : 'login' }
   }
   if (to.meta.public && auth.isLoggedIn && !to.meta.allowLoggedIn) {
-    return auth.enPanelMaestro ? { name: 'plataforma' } : { name: 'dashboard' }
+    return auth.enPanelMaestro ? { name: 'plataforma' } : { name: auth.aterrizaje }
   }
   if (to.meta.requiresPlataforma && !auth.esPlataforma) {
     return { name: 'dashboard' }
@@ -216,6 +232,12 @@ router.beforeEach(async (to) => {
   // salvo que elija entrar a la suya (solo si tiene una; el cambio dura la pestaña)
   if (auth.enPanelMaestro && to.matched.some(r => r.meta.contextoIglesia)) {
     return { name: 'plataforma' }
+  }
+  // Permisos por ruta: lo que el menú no ofrece tampoco se abre escribiendo la dirección (la base de datos ya limitaba los datos; esto evita una pantalla vacía)
+  const requisitos = typeof to.name === 'string' ? REQUISITOS_RUTA[to.name] : undefined
+  if (requisitos && auth.isLoggedIn && !auth.esPlataformaSinIglesia) {
+    const permitido = cumple(requisitos, { can: auth.can, tieneModulo: auth.tieneModulo, esPropietario: auth.rolInfo?.es_propietario === true, tieneSedes: auth.tieneSedes })
+    if (!permitido) return { name: 'sin-acceso', query: { desde: to.path } }
   }
 })
 

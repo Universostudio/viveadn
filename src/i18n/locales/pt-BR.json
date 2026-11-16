@@ -30,7 +30,9 @@
     "abrirMenu": "Abrir menu",
     "eventos": "Eventos",
     "red": "Rede",
-    "zonas": "Zonas"
+    "zonas": "Zonas",
+    "miPanel": "Meu painel",
+    "logros": "Conquistas"
   },
   "login": {
     "subtitulo": "Sistema de Gestão de Igrejas",
@@ -1754,5 +1756,49 @@
       "personaAnadida": "{nombre} agora está nesta casa.",
       "personaQuitada": "{nombre} não está mais nesta casa."
     }
+  },
+  "sinAcceso": {
+    "titulo": "Você não tem acesso a esta seção",
+    "texto": "Seu papel atual, {rol}, não inclui as permissões que esta tela precisa.",
+    "intentaste": "Endereço que você tentou abrir: {ruta}",
+    "volver": "Ir para minha página inicial",
+    "pedir": "Se acha que deveria vê-la, peça a quem administra a igreja que revise seu papel."
+  },
+  "logros": {
+    "titulo": "Conquistas",
+    "subtitulo": "Reconheça o avanço das pessoas com conquistas e pontos.",
+    "otorgar": "Conceder uma conquista",
+    "persona": "Pessoa",
+    "nombre": "Nome da conquista",
+    "puntos": "Pontos",
+    "guardar": "Conceder",
+    "ranking": "Ranking",
+    "vacio": "Ainda não há conquistas registradas.",
+    "logrosN": "{n} conquista | {n} conquistas",
+    "puntosN": "{n} pontos",
+    "recientes": "Conquistas recentes",
+    "personaDesconocida": "Pessoa não identificada",
+    "error": "Não foi possível salvar a conquista. Tente de novo.",
+    "guardado": "Conquista concedida."
+  },
+  "miPanel": {
+    "titulo": "Meu painel",
+    "saludo": "Olá, {nombre}. Isto é o que você precisa para sua casa de oração.",
+    "casa": "Casa de oração",
+    "sinCasa": "Você ainda não tem uma casa de oração atribuída.",
+    "sinCasaAyuda": "Peça a quem administra a igreja que o nomeie líder de uma casa em Casas de oração.",
+    "personasN": "{n} pessoa na sua casa | {n} pessoas na sua casa",
+    "pasarLista": "Fazer a chamada",
+    "fechaReunion": "Data da reunião",
+    "quienVino": "Quem veio à reunião",
+    "guardarLista": "Salvar a lista",
+    "presentesN": "{n} de {total} presentes",
+    "ultimasReuniones": "Últimas reuniões",
+    "miGente": "Minhas pessoas",
+    "sinPersonas": "Sua casa ainda não tem pessoas atribuídas.",
+    "nuevos": "Novos convertidos da minha casa",
+    "sinNuevos": "Não há novos convertidos em acompanhamento na sua casa.",
+    "errorLista": "Não foi possível salvar a lista completa. Confira os dados e tente de novo.",
+    "listaGuardada": "Lista salva."
   }
 }

@@ -139,7 +139,8 @@ async function handleLogin() {
   loading.value = true
   try {
     await auth.login(email.value, password.value)
-    router.push('/')
+    // Cada rol llega a su portada: el administrador de plataforma al Panel Maestro, el líder de casa a «Mi panel» y el resto al panel de inicio
+    router.push({ name: auth.enPanelMaestro ? 'plataforma' : auth.aterrizaje })
   } catch (e: any) {
     error.value = 'login.errorCredenciales'
   } finally {

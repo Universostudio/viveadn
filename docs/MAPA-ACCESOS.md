@@ -32,25 +32,27 @@ Cada iglesia nace con nueve roles de sistema, que son filas de la tabla `roles` 
 
 ## 3. Qué secciones del menú ve cada rol
 
-La regla es la de `AppLayout.vue`: una sección aparece si el rol tiene alguno de sus permisos y la iglesia tiene el módulo en su plan. Esta tabla sale de aplicar esa regla a los permisos sembrados, suponiendo todos los módulos activos [E]. Eventos y Comunicación dependen además del plan; Red solo la ve el propietario de una iglesia con sedes.
+La regla vive en un solo sitio, `src/lib/acceso.ts`: el menú de `AppLayout.vue` y la comprobación de cada ruta del router leen la misma tabla, de modo que lo que se ofrece y lo que se abre no se separan. Una sección aparece si el rol tiene alguno de sus permisos (incluidos los acotados `ver_zona`, `ver_propios`, `ver_asignados`) y la iglesia tiene el módulo en su plan. `scripts/probar-acceso.mts` aplica esa regla a los permisos reales de cada rol y falla si cambian en la base sin actualizar la prueba [E]. Eventos y Comunicación dependen además del plan; Red solo la ve el propietario de una iglesia con sedes; «Mi panel» solo el líder de casa.
 
-| Rol | Panel de inicio | Miembros | Eventos | Casas | Consolidación | Formación | Comunicación | Reportes | Configuración |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Propietario | sí | sí | sí | sí | sí | sí | sí | sí | sí |
-| Administrador | sí | sí | sí | sí | sí | sí | sí | sí | sí |
-| Co-administrador | sí | sí | sí | sí | sí | sí | sí | sí | no |
-| Líder de Zona | sí | **no** | sí | **no** | **no** | no | no | sí | no |
-| Líder de Casa | sí | sí | sí | sí | sí | no | no | no | no |
-| Líder de Escuela | sí | sí | sí | no | no | sí | no | no | no |
-| Consolidador | sí | sí | sí | no | sí | no | no | no | no |
-| Colaborador | sí | **no** | sí | sí | **no** | no | no | no | no |
-| Miembro | sí | no | sí | no | no | no | no | no | no |
+| Rol | Mi panel | Inicio | Miembros | Eventos | Casas | Zonas | Consolidación | Formación | Logros | Comunicación | Reportes | Configuración |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Propietario | no | sí | sí | sí | sí | sí | sí | sí | sí | sí | sí | sí |
+| Administrador | no | sí | sí | sí | sí | sí | sí | sí | sí | sí | sí | sí |
+| Co-administrador | no | sí | sí | sí | sí | sí | sí | sí | sí | sí | sí | no |
+| Líder de Zona | no | sí | sí (su zona) | sí | sí (su zona) | sí (solo mira) | sí (su zona) | no | sí | no | sí | no |
+| Líder de Casa | **sí** | sí | sí (su gente) | sí | sí (la suya) | no | sí (su casa) | no | no | no | no | no |
+| Líder de Escuela | no | sí | sí | sí | no | no | no | sí | sí | no | no | no |
+| Consolidador | no | sí | sí (sus asignados) | sí | no | no | sí | no | no | no | no | no |
+| Colaborador | no | sí | sí (lo que registra) | sí | sí | no | sí | no | no | no | no | no |
+| Miembro | no | sí | no | sí | no | no | no | no | no | no | no | no |
 
-Además de esta tabla, `/datos-iglesia` (descarga y baja) solo la completa el propietario, y `/comunicacion/consentimientos` y `/formacion/programas` se abren desde sus secciones. La base de datos aplica por su cuenta el aislamiento por iglesia y los permisos con políticas de nivel de fila, de modo que el menú es comodidad y la base es la barrera [E, `docs/AISLAMIENTO.md`].
+Además de esta tabla, `/datos-iglesia` (descarga y baja) solo la completa el propietario, y `/comunicacion/consentimientos` y `/formacion/programas` se abren desde sus secciones. La base de datos aplica por su cuenta el aislamiento por iglesia y los permisos con políticas de nivel de fila, de modo que el menú y el router evitan una pantalla vacía y la base es la barrera [E, `docs/AISLAMIENTO.md`].
+
+**Escribir la dirección a mano.** Una ruta cuyos requisitos no cumple el rol lleva a `/sin-acceso`, una pantalla que nombra el rol, dice qué dirección se intentó y ofrece volver a la portada del rol. Es lo que hace el guard del router con la misma tabla del menú [E, `scripts/probar-acceso-ui.mjs`].
 
 ### Tarjetas del panel de inicio por rol
 
-El panel de inicio muestra una tarjeta por permiso: asistencia (`asistencia.ver`), dos de miembros (`miembros.ver`), eventos (`eventos.ver`), formación (`formacion.ver`) y comunicación (`comunicacion.ver`). Aplicado a los permisos sembrados [E]: propietario, administrador y co-administrador ven las cinco; el líder de escuela ve miembros, eventos y formación; el resto (líder de zona, líder de casa, consolidador, colaborador y miembro) ve solo la tarjeta de eventos.
+El panel de inicio muestra una tarjeta por permiso: asistencia (`asistencia.ver`), dos de miembros (`miembros.ver`), eventos (`eventos.ver`), formación (`formacion.ver`) y comunicación (`comunicacion.ver`). Aplicado a los permisos sembrados [E]: propietario, administrador y co-administrador ven las cinco; el líder de escuela ve miembros, eventos y formación; el resto (líder de zona, líder de casa, consolidador, colaborador y miembro) ve solo la tarjeta de eventos. Ese panel se rehace en el paso E.
 
 ## 4. Qué ruta lleva a cada sitio tras iniciar sesión
 
@@ -58,25 +60,30 @@ El panel de inicio muestra una tarjeta por permiso: asistencia (`asistencia.ver`
 | --- | --- | --- |
 | Administrador de plataforma sin iglesia | `/plataforma` | Las rutas de iglesia le redirigen al panel |
 | Administrador de plataforma con iglesia | `/plataforma` | «Entrar a mi iglesia» lleva a `/`; «Volver al Panel Maestro» regresa; la elección dura la pestaña |
-| Cualquier rol de iglesia | `/` | Elige en el menú lo que su rol permite |
+| Líder de casa | `/mi-panel` | Su casa, sus personas con llamar y WhatsApp, pasar lista y sus nuevos creyentes |
+| Cualquier otro rol de iglesia | `/` | Elige en el menú lo que su rol permite |
 | Propietario con la iglesia suspendida (baja pedida) | `/` con aviso rojo | El aviso lleva a `/datos-iglesia` para descargar o cancelar la baja |
-| Persona invitada | `/aceptar` desde el enlace del correo | Crea su contraseña y entra a `/` con el rol de la invitación |
+| Persona invitada | `/aceptar` desde el enlace del correo | Crea su contraseña y entra a la portada de su rol |
 | Sin sesión | `/bienvenida` (raíz) o `/login` | Las páginas públicas (`/dar/:slug`, `/checkin/:token`, `/baja/:token`...) no piden sesión |
 
-No hay aterrizaje por rol: un líder de casa y un administrador llegan al mismo `/` [E].
+El aterrizaje sale de `aterrizajeDe` (`src/lib/acceso.ts`): quien ve solo su casa y no todas llega a «Mi panel». Iniciar sesión y abrir `/login` con una sesión ya abierta llevan al mismo sitio [E].
+
+### «Mi panel» del líder de casa
+
+Muestra su casa (o varias, con selector), las personas asignadas con enlaces para llamar y escribir por WhatsApp, **pasar lista** de una fecha (crea las filas de asistencia que faltan y actualiza las existentes, sin duplicar), el resumen de las últimas cuatro semanas y, si el rol puede ver la consolidación de su casa, sus nuevos creyentes en seguimiento en solo lectura. Sin casa asignada lo dice y explica a quién pedirla. El orden acordado para el resto de portadas es líder de zona y consolidador, y por último el miembro: aún sin hacer.
 
 ## 5. Qué falta
 
 Ordenado por lo que más se nota en pantalla.
 
-1. **Permisos acotados sin pantalla [E].** Tres roles tienen permisos restringidos (`ver_zona`, `ver_propios`) que el menú no reconoce: el líder de zona no tiene entrada de Miembros, Casas ni Consolidación aunque su permiso es verlas de su zona, y el colaborador no tiene Miembros ni Consolidación aunque puede ver lo que registra. El resultado es que el líder de zona solo ve Panel de inicio, Eventos y Reportes. Es el hueco más claro entre lo que promete la descripción del rol y lo que muestra la aplicación. La base ya filtra por zona y por autor; falta la entrada de menú y la pantalla que enseñe solo ese subconjunto.
-2. **No hay «Mi panel» por rol (nivel 3) [E].** Todos ven el mismo panel de inicio filtrado por permisos. No hay una portada propia para el líder de casa (su casa, su asistencia de la semana, sus nuevos convertidos), ni para el líder de zona (sus casas con semáforo), ni para el consolidador (sus contactos pendientes), ni para el miembro (su perfil, sus eventos, su progreso).
-3. **El rol `miembro` solo ve Eventos [E].** No existe un portal del miembro: ver y corregir sus datos, sus consentimientos, su historial de asistencia o su formación.
-4. **No hay rol «pastor» ni un nombre «supervisor de zona» [E].** Ver apartado 2.
-5. **No hay pantalla para crear roles nuevos [E].** Configuración permite cambiar el rol de un usuario entre los existentes y ver sus permisos, pero no crear ni editar roles. El permiso `roles.gestionar` existe y solo lo tiene el propietario.
-6. **El router no comprueba permisos [E].** Una dirección escrita a mano abre la vista aunque el menú no la ofrezca; los datos siguen protegidos por la base y varias vistas comprueban `can()` por dentro, pero una persona sin permiso vería una pantalla vacía en lugar de una redirección clara.
-7. **Permisos sin pantalla [E].** `gamificacion.*` y `zonas.*` existen y se asignan a roles, pero no tienen entrada de menú.
-8. **«Ver como» solo para el propietario [E].** Permite al superadministrador previsualizar la interfaz con los permisos de otro rol; no cambia lo que permite la base. No se ha pensado una versión para el administrador de plataforma, que por principio no ve a las personas de una iglesia.
+1. **No hay «Mi panel» para el líder de zona, el consolidador ni el miembro (nivel 3) [E].** Hecho para el líder de casa. El líder de zona (sus casas con semáforo), el consolidador (sus contactos pendientes) y el miembro (su perfil, sus eventos, su progreso) siguen con el panel de inicio general.
+2. **El rol `miembro` solo ve Eventos [E].** No existe un portal del miembro: ver y corregir sus datos, sus consentimientos, su historial de asistencia o su formación.
+3. **No hay rol «pastor» ni un nombre «supervisor de zona» [E].** Ver apartado 2. **PENDIENTE: le diré.**
+4. **No hay pantalla para crear roles nuevos [E].** Configuración permite cambiar el rol de un usuario entre los existentes y ver sus permisos, pero no crear ni editar roles. El permiso `roles.gestionar` existe y solo lo tiene el propietario. Fase posterior acordada por Gerencia.
+5. **«Ver como» solo para el propietario [E].** Permite al superadministrador previsualizar la interfaz con los permisos de otro rol, y el menú y el guard de rutas respetan esa vista; no cambia lo que permite la base. No se ha pensado una versión para el administrador de plataforma, que por principio no ve a las personas de una iglesia.
+6. **Logros es una pantalla mínima [E].** Otorgar un logro a una persona, ranking y logros recientes; no hay catálogo de logros ni reglas automáticas de puntos.
+
+Resuelto en el paso C: permisos acotados sin entrada de menú (líder de zona y colaborador), router sin comprobación de permisos, y `zonas.*` y `gamificacion.*` sin entrada de menú.
 
 ## 6. Decisiones de producto (Gerencia, 16 de noviembre de 2026) y lo que queda para Harold
 
@@ -88,4 +95,4 @@ Decididas por Gerencia:
 
 Orden de construcción acordado: A seguimiento de nuevos creyentes, B líderes (zonas, líder de casa y de zona, casa de cada persona), C menú y router por permisos con «Mi panel» del líder de casa, D registro por QR con la pregunta «¿Es nuevo creyente?», E ficha del miembro editable y panel de inicio honesto, F diseño del método de seguimiento configurable (solo documento) y G siembra de cuatro iglesias de prueba.
 
-Estado: A hecho (`docs/MANUAL-IGLESIAS.md`, apartado 7) y B hecho (apartado 5: zonas, líderes y asignación de casa a cada persona; entrada «Zonas» en el menú para quien gestiona zonas). El resto, pendiente.
+Estado: A hecho (`docs/MANUAL-IGLESIAS.md`, apartado 7), B hecho (apartado 5: zonas, líderes y asignación de casa a cada persona) y C hecho (menú y router por permisos, pantalla de sin acceso, aterrizaje por rol, «Mi panel» del líder de casa, entradas de Zonas y Logros). El resto, pendiente.

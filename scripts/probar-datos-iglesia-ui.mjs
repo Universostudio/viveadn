@@ -25,7 +25,9 @@ async function escenario({ propietario, activa, baja }) {
   const tablas = {
     perfiles: [{ id: USR, iglesia_id: IG, nombre: 'Pro', apellido: 'Pietario', email: 'p@prueba.test', rol: propietario ? 'propietario' : 'administrador', activo: true }],
     iglesias: [{ id: IG, nombre: 'Iglesia de Prueba', slug: 'iglesia-prueba', activa, plan: 'premium', etapa: activa ? 'activa' : 'suspendida' }],
-    roles: [{ nombre: propietario ? 'Propietario' : 'Administrador', es_propietario: propietario, rol_permisos: [] }],
+    roles: [{ nombre: propietario ? 'Propietario' : 'Administrador', es_propietario: propietario, rol_permisos: propietario ? [] : [{ permiso: 'usuarios.gestionar' }] }],
+    // Como en una iglesia real: el plan incluye el módulo de usuarios y el permiso existe en el catálogo (el guard de rutas lo comprueba)
+    plan_modulos: [{ modulo: 'usuarios' }], iglesia_modulos: [], permisos: [{ clave: 'usuarios.gestionar', modulo: 'usuarios' }],
   }
   await ctx.route(`${SB}/**`, async ruta => {
     const req = ruta.request(); const url = new URL(req.url())
@@ -102,10 +104,12 @@ try {
   {
     const { browser, page, estado, errores } = await escenario({ propietario: false, activa: true, baja: null })
     await page.goto(url('/datos-iglesia'))
-    await page.waitForSelector('[data-test=solo-propietario]')
+    // El guard de rutas lo detiene antes de pedir nada al servidor (la vista conserva su propio aviso como segunda barrera)
+    await page.waitForSelector('[data-test=sin-acceso]')
+    assert.equal(new URL(page.url()).pathname, '/sin-acceso')
     assert.equal(await page.locator('[data-test=descargar]').count(), 0, 'sin botón de descarga')
     assert.equal(await page.locator('[data-test=pedir-baja]').count(), 0, 'sin botón de baja')
-    assert.deepEqual(estado.llamadas, ['estado'], 'solo se consultó el estado')
+    assert.deepEqual(estado.llamadas, [], 'no se consultó nada al servidor')
     await page.goto(url('/configuracion')); await page.click('button:has-text("Seguridad")')
     await page.waitForSelector('[data-test=datos-y-baja]')
     assert.equal(await page.locator('[data-test=abrir-datos]').count(), 0, 'Configuración no ofrece el enlace a quien no es propietario')

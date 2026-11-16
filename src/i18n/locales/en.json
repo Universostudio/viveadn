@@ -30,7 +30,9 @@
     "abrirMenu": "Open menu",
     "eventos": "Events",
     "red": "Network",
-    "zonas": "Zones"
+    "zonas": "Zones",
+    "miPanel": "My panel",
+    "logros": "Achievements"
   },
   "login": {
     "subtitulo": "Church Management System",
@@ -1754,5 +1756,49 @@
       "personaAnadida": "{nombre} is now in this house.",
       "personaQuitada": "{nombre} is no longer in this house."
     }
+  },
+  "sinAcceso": {
+    "titulo": "You do not have access to this section",
+    "texto": "Your current role, {rol}, does not include the permissions this screen needs.",
+    "intentaste": "Address you tried to open: {ruta}",
+    "volver": "Go to my home page",
+    "pedir": "If you think you should see it, ask whoever administers the church to review your role."
+  },
+  "logros": {
+    "titulo": "Achievements",
+    "subtitulo": "Recognize people’s progress with achievements and points.",
+    "otorgar": "Award an achievement",
+    "persona": "Person",
+    "nombre": "Achievement name",
+    "puntos": "Points",
+    "guardar": "Award",
+    "ranking": "Ranking",
+    "vacio": "No achievements have been recorded yet.",
+    "logrosN": "{n} achievement | {n} achievements",
+    "puntosN": "{n} points",
+    "recientes": "Recent achievements",
+    "personaDesconocida": "Unidentified person",
+    "error": "The achievement could not be saved. Please try again.",
+    "guardado": "Achievement awarded."
+  },
+  "miPanel": {
+    "titulo": "My panel",
+    "saludo": "Hello, {nombre}. This is what you need for your prayer house.",
+    "casa": "Prayer house",
+    "sinCasa": "You do not have a prayer house assigned yet.",
+    "sinCasaAyuda": "Ask whoever administers the church to name you leader of a house from Prayer houses.",
+    "personasN": "{n} person in your house | {n} people in your house",
+    "pasarLista": "Take attendance",
+    "fechaReunion": "Meeting date",
+    "quienVino": "Who came to the meeting",
+    "guardarLista": "Save the list",
+    "presentesN": "{n} of {total} present",
+    "ultimasReuniones": "Recent meetings",
+    "miGente": "My people",
+    "sinPersonas": "Your house has no people assigned yet.",
+    "nuevos": "New believers in my house",
+    "sinNuevos": "There are no new believers in follow-up in your house.",
+    "errorLista": "The full list could not be saved. Check the data and try again.",
+    "listaGuardada": "List saved."
   }
 }
