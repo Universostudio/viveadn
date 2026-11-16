@@ -536,7 +536,9 @@ Deno.serve(async (req) => {
         // Solo cifras: iglesias en borrado suave, vencidas, horas de la mas atrasada y si el retraso supera el umbral (48 horas)
         const { data, error } = await admin.rpc('adn_purga_estado', { p_horas: 48 })
         if (error || !data) return json({ error: 'No se pudo consultar el estado de la purga' }, 500)
-        return json({ ok: true, ...(data as Record<string, unknown>) })
+        // La tarea programada (pg_cron) es opcional: si su funcion aun no existe o falla, llega null y el resto se muestra
+        const { data: tarea, error: eTarea } = await admin.rpc('adn_purga_tarea_estado')
+        return json({ ok: true, ...(data as Record<string, unknown>), tarea: eTarea ? null : tarea })
       }
 
       case 'avisar_purga': {

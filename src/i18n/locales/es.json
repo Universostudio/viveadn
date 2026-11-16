@@ -1898,7 +1898,14 @@
       "auditoriaAyuda": "Últimas acciones de plataforma. Se muestra la acción, la iglesia y la fecha, nunca el detalle.",
       "auditoriaVacia": "Sin acciones anotadas.",
       "noDisponible": "No se pudo cargar esta información. El resto de la pantalla funciona.",
-      "reintentar": "Reintentar"
+      "reintentar": "Reintentar",
+      "tareaSinDato": "No se pudo leer si la purga está programada. Hasta saberlo, cuenta con que solo se lanza a mano.",
+      "tareaNoDisponible": "Esta base no tiene programador de tareas (pg_cron): la purga solo se lanza a mano.",
+      "tareaSinProgramar": "La purga no está programada: solo se lanza a mano.",
+      "tareaApagada": "La tarea programada de purga existe pero está apagada: la purga solo se lanza a mano.",
+      "tareaActiva": "Tarea programada de purga activa ({horario}, hora UTC).",
+      "tareaUltima": "Última pasada: {cuando}, resultado {resultado}.",
+      "tareaSinPasadas": "Todavía no ha corrido ninguna vez."
     },
     "demo": {
       "incluir": "Incluir demostraciones",

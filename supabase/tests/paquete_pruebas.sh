@@ -63,8 +63,8 @@ psql -q -X -v ON_ERROR_STOP=1 -d $C -f "$PAQ/incremental/01_aplicar_incremental.
 pg_dump -s --no-owner -d $C | grep -v '^\\\(un\)\?restrict' > "$TMP/c2.sql"
 diff -q "$TMP/a.sql" "$TMP/c2.sql" >/dev/null || falla "repetir el incremental cambia el esquema"
 echo "OK: repetir el incremental es inofensivo y no cambia el esquema"
-# Se quita un objeto de lo que añade el incremental actual (la regla de lectura del núcleo con la prueba vencida)
-psql -q -X -d $C -c "drop function private.adn_nucleo_en_lectura(text, text) cascade" >/dev/null
+# Se quita un objeto de lo que añade el incremental actual (el estado de la tarea de purga)
+psql -q -X -d $C -c "drop function public.adn_purga_tarea_estado()" >/dev/null
 [ "$(psql -q -X -At -F'|' -d $C -f "$PAQ/incremental/99_verificacion_incremental.sql" | grep '^zz_todo_ok' | cut -d'|' -f4)" = "f" ] || falla "la verificación del incremental no detecta una función que falta"
 echo "OK: la verificación del incremental detecta una función que falta"
 

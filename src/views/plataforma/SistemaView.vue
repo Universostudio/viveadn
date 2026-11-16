@@ -23,6 +23,7 @@
           <div><dd class="text-2xl font-bold text-gray-900">{{ pm.purga.vencidas }}</dd><dt class="text-xs text-gray-500">{{ t('plataforma.purga.vencidas') }}</dt></div>
           <div><dd class="text-2xl font-bold text-gray-900">{{ pm.purga.horas_mas_atrasada }}</dd><dt class="text-xs text-gray-500">{{ t('plataforma.purga.horas') }}</dt></div>
         </dl>
+        <p :class="['text-sm px-4 py-3 rounded-lg border', tareaOk ? 'bg-gray-50 text-gray-700 border-gray-200' : 'bg-amber-50 text-amber-800 border-amber-200']" data-test="purga-tarea">{{ textoTarea }}</p>
       </template>
     </section>
 
@@ -77,5 +78,18 @@ import { eventosParaPanel } from './adaptador'
 const { t, te, locale } = useI18n()
 const pm = usePlataformaStore()
 onMounted(() => { void pm.asegurarCargada(); void pm.cargarSistema(); void pm.cargarActividad(30) })
+// Estado de la tarea programada de purga (pg_cron). Sin dato, sin tarea o apagada se dice tal cual: la purga no se hace sola y solo se lanza a mano
+const tareaPurga = computed(() => pm.purga?.tarea?.tareas?.find(x => x.nombre === 'adn-purga-vencidas') ?? null)
+const tareaOk = computed(() => !!tareaPurga.value && tareaPurga.value.activa && tareaPurga.value.ultimo_resultado !== 'failed')
+const textoTarea = computed(() => {
+  const x = pm.purga?.tarea
+  if (x === undefined || x === null) return t('plataformaPanel.sistema.tareaSinDato')
+  if (!x.disponible) return t('plataformaPanel.sistema.tareaNoDisponible')
+  const tp = tareaPurga.value
+  if (!tp) return t('plataformaPanel.sistema.tareaSinProgramar')
+  if (!tp.activa) return t('plataformaPanel.sistema.tareaApagada')
+  const ultima = tp.ultima_pasada ? t('plataformaPanel.sistema.tareaUltima', { cuando: new Date(tp.ultima_pasada).toLocaleString(locale.value), resultado: tp.ultimo_resultado ?? '' }) : t('plataformaPanel.sistema.tareaSinPasadas')
+  return t('plataformaPanel.sistema.tareaActiva', { horario: tp.programacion }) + ' ' + ultima
+})
 const eventos = computed(() => eventosParaPanel(pm.actividad, t as any, te as any))
 </script>

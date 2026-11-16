@@ -1898,7 +1898,14 @@
       "auditoriaAyuda": "Latest platform actions. The action, the church and the date are shown, never the detail.",
       "auditoriaVacia": "No actions recorded.",
       "noDisponible": "This information could not be loaded. The rest of the screen works.",
-      "reintentar": "Retry"
+      "reintentar": "Retry",
+      "tareaSinDato": "Could not read whether the purge is scheduled. Until known, assume it only runs by hand.",
+      "tareaNoDisponible": "This database has no task scheduler (pg_cron): the purge only runs by hand.",
+      "tareaSinProgramar": "The purge is not scheduled: it only runs by hand.",
+      "tareaApagada": "The scheduled purge task exists but is switched off: the purge only runs by hand.",
+      "tareaActiva": "Scheduled purge task active ({horario}, UTC).",
+      "tareaUltima": "Last run: {cuando}, result {resultado}.",
+      "tareaSinPasadas": "It has not run yet."
     },
     "demo": {
       "incluir": "Include demos",

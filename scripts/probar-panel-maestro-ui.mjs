@@ -42,7 +42,7 @@ const planes = [{ clave: 'semilla', nombre: 'Semilla', max_miembros: 100, orden:
 const modulos = [{ clave: 'miembros', nombre: 'Miembros', tipo: 'nucleo', orden: 1 }, { clave: 'eventos', nombre: 'Eventos', tipo: 'opcional', orden: 2 }, { clave: 'comunicacion', nombre: 'Comunicación', tipo: 'opcional', orden: 3 }]
 const planModulos = [{ plan: 'semilla', modulo: 'miembros' }, { plan: 'premium', modulo: 'miembros' }, { plan: 'premium', modulo: 'comunicacion' }]
 
-async function escenario({ admin = true, conIglesia = false, ancho = 1366, alto = 900, purgaAtrasada = false, detalleFalla = false, actividadFalla = false, envioActivo = false, demo = 'no', sinDemos = false, ciclo = false } = {}) {
+async function escenario({ admin = true, conIglesia = false, ancho = 1366, alto = 900, purgaAtrasada = false, detalleFalla = false, actividadFalla = false, envioActivo = false, demo = 'no', sinDemos = false, ciclo = false, tarea = undefined } = {}) {
   const estado = { llamadas: [], cuerpos: [], precio: null }
   const browser = await chromium.launch()
   const ctx = await browser.newContext({ acceptDownloads: true, locale: 'es-ES', viewport: { width: ancho, height: alto }, deviceScaleFactor: 1 })
@@ -83,7 +83,7 @@ async function escenario({ admin = true, conIglesia = false, ancho = 1366, alto 
         }
         case 'plan_precio_fijar': estado.precio = cuerpo.precio_mensual_centimos === null ? null : { m: cuerpo.precio_mensual_centimos, a: cuerpo.precio_anual_centimos, mon: cuerpo.moneda }; return json(200, { ok: true, auditado: true })
         case 'soporte_resumen': return json(501, { error: 'El soporte no esta disponible hasta aplicar su migracion' }) // esta prueba es de una base sin las tablas del soporte
-        case 'estado_purga': return json(200, { ok: true, atrasada: purgaAtrasada, en_borrado: 1, vencidas: purgaAtrasada ? 1 : 0, horas_mas_atrasada: purgaAtrasada ? 60 : 0 })
+        case 'estado_purga': return json(200, { ok: true, atrasada: purgaAtrasada, en_borrado: 1, vencidas: purgaAtrasada ? 1 : 0, horas_mas_atrasada: purgaAtrasada ? 60 : 0, ...(tarea !== undefined ? { tarea } : {}) })
         case 'detalle':
           if (detalleFalla) return json(500, { error: 'No se pudo cargar' })
           return json(200, { ok: true, historial: [{ accion: 'cambiar_plan', fecha: iso(-3) }, { accion: 'crear_iglesia', fecha: iso(-200) }] })
@@ -466,6 +466,24 @@ try {
     assert.match(await page.textContent('[data-test=fact-total]'), /49,50/)
     assert.deepEqual(errores, [])
     await browser.close()
+  })
+
+  await prueba('Sistema: el estado de la tarea programada de purga dice la verdad en cada caso', async () => {
+    const casos = [
+      [undefined, /No se pudo leer si la purga está programada/],
+      [{ disponible: false, tareas: [] }, /no tiene programador de tareas/],
+      [{ disponible: true, tareas: [] }, /La purga no está programada: solo se lanza a mano/],
+      [{ disponible: true, tareas: [{ nombre: 'adn-purga-vencidas', programacion: '15 3 * * *', activa: false, ultima_pasada: null, ultimo_resultado: null }] }, /existe pero está apagada/],
+      [{ disponible: true, tareas: [{ nombre: 'adn-purga-vencidas', programacion: '15 3 * * *', activa: true, ultima_pasada: null, ultimo_resultado: null }] }, /activa \(15 3 \* \* \*, hora UTC\)\. Todavía no ha corrido/],
+      [{ disponible: true, tareas: [{ nombre: 'adn-purga-vencidas', programacion: '15 3 * * *', activa: true, ultima_pasada: '2026-11-15T03:15:00Z', ultimo_resultado: 'succeeded' }] }, /Última pasada: .*resultado succeeded/],
+    ]
+    for (const [tarea, esperado] of casos) {
+      const { browser, page, errores } = await escenario({ tarea })
+      await page.goto(url('/plataforma/sistema')); await page.waitForSelector('[data-test=purga-tarea]')
+      const txt = await page.textContent('[data-test=purga-tarea]'); assert.match(txt, esperado, JSON.stringify(tarea) + ' => ' + txt)
+      assert.deepEqual(errores, [])
+      await browser.close()
+    }
   })
 
   await prueba('el cambio de contexto: aterriza en el panel, entra a su iglesia y vuelve; dura la pestaña', async () => {

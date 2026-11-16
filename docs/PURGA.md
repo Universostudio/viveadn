@@ -11,7 +11,7 @@ Estado a 11 de noviembre de 2026. Etiquetas de evidencia: **[E]** informado por 
 
 ## 2. La tarea programada (opción A, aprobada)
 
-**Qué hace**: una llamada cada 6 horas a la función `plataforma` con `{"accion":"purgar_vencidas"}` y la cabecera `x-adn-cron`. Es idempotente, purga cada iglesia por completo (base, archivos y cuentas de acceso) y deja su rastro en la auditoría, que sobrevive a la purga [E]. Con lotes de 5 por llamada (máximo 20) se purgan hasta 20 iglesias al día y cada una queda purgada, como mucho, unas 6 horas después de vencer. Si hubiera más vencidas que el lote, la siguiente llamada continúa: la respuesta incluye cuántas quedan.
+**Qué hace** (actualizado el 16 de noviembre por orden de Gerencia: una pasada diaria en lotes pequeños, ver 2 bis): una llamada a la función `plataforma` con `{"accion":"purgar_vencidas"}` y la cabecera `x-adn-cron`. Es idempotente, purga cada iglesia por completo (base, archivos y cuentas de acceso) y deja su rastro en la auditoría, que sobrevive a la purga [E]. Con lotes de 10 por pasada diaria cada iglesia queda purgada, como mucho, un día después de vencer, y si hubiera más vencidas que el lote «Sistema» avisa al pasar de 48 horas de retraso. Si hubiera más vencidas que el lote, la siguiente llamada continúa: la respuesta incluye cuántas quedan.
 
 **Cómo, con `pg_cron` y `pg_net` dentro de la propia base**, de modo que el secreto no sale de la plataforma. Reparto de tareas acordado con Gerencia:
 
@@ -20,7 +20,7 @@ Estado a 11 de noviembre de 2026. Etiquetas de evidencia: **[E]** informado por 
 3. Con esos dos pasos hechos, se programa la tarea con un esquema como este (**sin aplicar**; los marcadores se sustituyen en la rama de pruebas, no en el repositorio):
 
 ```sql
--- Cada 6 horas. <FUNCIONES> es la dirección de las funciones del proyecto; los secretos se leen de la bóveda.
+-- (Esquema antiguo, cada 6 horas; vale el de scripts/entorno/purga-programada/programar.sql, diario.) <FUNCIONES> es la dirección de las funciones del proyecto; los secretos se leen de la bóveda.
 -- La clave pública (adn_anon_key) hace falta porque la pasarela exige un JWT válido a `plataforma` antes de que la función
 -- compruebe x-adn-cron; sin ella la tarea recibiría un 401 y no purgaría nunca.
 select cron.schedule('adn-purga-vencidas', '0 */6 * * *', $$
@@ -53,6 +53,22 @@ $$);
 4. Se comprueba de extremo a extremo en la rama de pruebas con una iglesia ficticia de plazo vencido: que la tarea corre, que purga y que el estado (apartado 5) vuelve a cero. Solo entonces se plantea hacerlo en la base real, y eso requiere la aprobación de Harold.
 
 Una limitación de la opción A: `pg_net` guarda las respuestas en la propia base, de modo que **el libro externo (apartado 4) no puede ser la respuesta de la tarea**. Lo alimenta otro proceso, descrito allí.
+
+## 2 bis. Paquete listo para programarla (sin aplicar)
+
+Lo que pidió Gerencia: la purga no puede depender de un clic. El borrado programado, cuando vence su plazo, se ejecuta solo con esta tarea (`adn_iglesias_vencidas` ya incluye toda iglesia en borrado suave con plazo cumplido) [E, `supabase/tests/adn_ciclo_vida.sql`, `adn_purga_programada.sql`].
+
+| Pieza | Qué es | Dónde |
+| --- | --- | --- |
+| Programar | Guion SQL con comprobaciones previas (pg_cron, pg_net, Vault, secretos de 32 o más caracteres, dirección `https://host`). Crea `adn-purga-vencidas` (diaria 03:15 UTC, `max` 10) y `adn-avisar-purga` (diaria 08:30 UTC). Repetirlo no duplica. Todo se lee de Vault: la orden no lleva ningún secreto escrito | `scripts/entorno/purga-programada/programar.sql` |
+| Verificar | Solo lee. Comprueba extensiones, secretos, tareas, activas, horario, que la orden lleva cabecera y acción, que ha corrido y que la última respuesta fue 200 | `scripts/entorno/purga-programada/verificar.sql` |
+| Quitar | Elimina solo las dos tareas `adn-` | `scripts/entorno/purga-programada/desprogramar.sql` |
+| Estado visible | La función `adn_purga_tarea_estado` (migración `20261111380000_adn_purga_tarea_estado`, con reversión) lee pg_cron y «Sistema» muestra si la purga está programada, activa y cómo terminó la última pasada. Sin pg_cron dice «solo se lanza a mano» | tarjeta de purga en `/plataforma/sistema` |
+| Aviso de atraso | Ya existía: «Sistema» marca en rojo cuando una iglesia lleva más de 48 horas vencida, y `avisar_purga` envía un correo diario solo si `ADN_ENVIO_ACTIVO` está encendido | `docs/COSTE-ENVIO.md` |
+
+**Reparto de tareas.** Gerencia: crea en Vault `adn_cron_secret` (el mismo valor que el secreto `ADN_CRON_SECRET` de la función `plataforma`), `adn_anon_key` y `adn_funciones_url`; activa pg_cron y pg_net en la rama de pruebas; despliega la función; aplica la migración 380000 (opcional, solo para el estado en «Sistema»); ejecuta `programar.sql` y después `verificar.sql`. Desarrollo no ve ni genera ningún secreto. Mientras `ADN_CRON_SECRET` no exista, la vía de la tarea sigue cerrada.
+
+**Qué está probado y qué no.** [E] Los guiones, con sustitutos locales de pg_cron, pg_net y Vault: se niegan sin secretos o con un secreto corto, programan dos tareas sin duplicar, no tocan tareas ajenas y no llevan ningún valor escrito (`supabase/tests/adn_purga_programada.sh`). [E] El estado en «Sistema» en seis situaciones (`scripts/probar-panel-maestro-ui.mjs`). [NV] Que pg_cron y pg_net funcionan en la rama real, que la pasarela acepta la llamada con esas cabeceras y que la purga de una iglesia ficticia vencida ocurre de extremo a extremo: solo se puede comprobar allí, con `verificar.sql` y una iglesia de pruebas con el plazo vencido. Una iglesia vencida con más de 10 por día se acumularía: el aviso de 48 horas lo hace visible.
 
 ## 3. El plazo de las copias: X = 14 días
 

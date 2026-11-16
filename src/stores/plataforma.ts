@@ -6,7 +6,8 @@ import { supabase } from '@/lib/supabase'
 import { i18n } from '@/i18n'
 import { incluirDemoPorDefecto, vistaDe } from '@/views/plataforma/adaptador'
 
-export interface PurgaEstado { atrasada: boolean; en_borrado: number; vencidas: number; horas_mas_atrasada: number }
+export interface TareaPurga { disponible: boolean; tareas: { nombre: string; programacion: string; activa: boolean; ultima_pasada: string | null; ultimo_resultado: string | null }[] }
+export interface PurgaEstado { atrasada: boolean; en_borrado: number; vencidas: number; horas_mas_atrasada: number; tarea?: TareaPurga | null }
 export interface EventoCrudo { tipo: 'alta' | 'accion'; accion: string; iglesia_id: string | null; iglesia: string | null; fecha: string }
 export interface Sistema {
   purga: PurgaEstado | null
@@ -70,7 +71,7 @@ export const usePlataformaStore = defineStore('plataforma', () => {
     try {
       const d = await llamar({ accion: 'estado_purga' })
       purga.value = typeof d?.atrasada === 'boolean'
-        ? { atrasada: d.atrasada, en_borrado: Number(d.en_borrado) || 0, vencidas: Number(d.vencidas) || 0, horas_mas_atrasada: Number(d.horas_mas_atrasada) || 0 }
+        ? { atrasada: d.atrasada, en_borrado: Number(d.en_borrado) || 0, vencidas: Number(d.vencidas) || 0, horas_mas_atrasada: Number(d.horas_mas_atrasada) || 0, tarea: d.tarea && typeof d.tarea.disponible === 'boolean' && Array.isArray(d.tarea.tareas) ? d.tarea : null }
         : null
     } catch { purga.value = null }
   }

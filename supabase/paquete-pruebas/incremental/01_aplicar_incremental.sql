@@ -1,40 +1,31 @@
--- Vive ADN, incremental tras 20261111360000. Aplicar una vez, solo sobre un proyecto que ya tiene el paquete completo hasta esa migración. Detenerse en el primer error.
+-- Vive ADN, incremental tras 20261111370000. Aplicar una vez, solo sobre un proyecto que ya tiene el paquete completo hasta esa migración. Detenerse en el primer error.
 set search_path = public, extensions;
 
--- ===== migrations/20261111370000_adn_prueba_vencida_lectura.sql (sha256 b86ac835b780) =====
--- Prueba vencida: el núcleo sigue disponible en SOLO LECTURA. Antes, una prueba vencida cortaba todos los módulos y la iglesia no podía ni ver sus datos.
--- Regla: con la prueba vencida (etapa 'prueba' y prueba_hasta pasada), tiene_permiso concede únicamente los permisos de LECTURA (ver, ver_asignados, ver_casa,
--- ver_propia y exportar) de los módulos del NÚCLEO que el plan incluye. Nada de escribir, nada de los módulos incluidos ni de pago. tiene_modulo no cambia.
--- Quien es propietario conserva además la descarga de su copia (función datos-iglesia). Reversión: reversiones/20261111370000_adn_prueba_vencida_lectura.down.sql.
-create or replace function private.adn_nucleo_en_lectura(p_modulo text, p_permiso text)
-returns boolean language sql stable security definer set search_path to '' as $$
-  select p_permiso ~ '\.(ver|ver_asignados|ver_casa|ver_propia|exportar)$'
-    and exists (
-      select 1 from public.iglesias i join public.modulos m on m.clave = p_modulo and m.tipo = 'nucleo'
-      where i.id = (select private.get_iglesia_id()) and i.activa
-        and i.etapa = 'prueba' and i.prueba_hasta is not null and i.prueba_hasta <= now()
-        and exists (select 1 from public.plan_modulos pm where pm.plan = i.plan and pm.modulo = p_modulo)
-    )
-$$;
-revoke all on function private.adn_nucleo_en_lectura(text, text) from public, anon, authenticated, service_role;
-grant execute on function private.adn_nucleo_en_lectura(text, text) to authenticated, service_role;
+-- ===== migrations/20261111380000_adn_purga_tarea_estado.sql (sha256 73fd429e1604) =====
+-- Estado de la tarea programada de purga, para mostrarlo en «Sistema». Lee pg_cron si existe y, si no, dice «no disponible» (la base local no tiene la extensión).
+-- Solo devuelve el nombre de la tarea, su horario, si está activa y cómo terminó su última pasada: nunca la orden completa, que lleva cabeceras con secretos.
+-- Función de definidor en `private` y envoltorio de invocador en `public`, ejecutable solo por el servidor. Reversión: reversiones/20261111380000_adn_purga_tarea_estado.down.sql.
+create or replace function private.adn_purga_tarea_estado() returns jsonb language plpgsql stable security definer set search_path to '' as $$
+declare r jsonb;
+begin
+  if to_regclass('cron.job') is null or to_regclass('cron.job_run_details') is null then
+    return jsonb_build_object('disponible', false, 'tareas', '[]'::jsonb);
+  end if;
+  execute $q$
+    select jsonb_build_object('disponible', true, 'tareas', coalesce(jsonb_agg(jsonb_build_object(
+      'nombre', j.jobname, 'programacion', j.schedule, 'activa', j.active,
+      'ultima_pasada', u.start_time, 'ultimo_resultado', u.status) order by j.jobname), '[]'::jsonb))
+    from cron.job j
+    left join lateral (select d.start_time, d.status from cron.job_run_details d where d.jobid = j.jobid order by d.start_time desc limit 1) u on true
+    where j.jobname like 'adn-%'
+  $q$ into r;
+  return r;
+end $$;
+revoke all on function private.adn_purga_tarea_estado() from public, anon, authenticated, service_role;
+grant execute on function private.adn_purga_tarea_estado() to service_role;
 
-create or replace function private.tiene_permiso(p_permiso text)
- returns boolean
- language sql
- stable security definer
- set search_path to ''
-as $function$
-  select exists (
-    select 1 from public.permisos pe
-    where pe.clave = p_permiso and (private.tiene_modulo(pe.modulo) or private.adn_nucleo_en_lectura(pe.modulo, pe.clave))
-  ) and exists (
-    select 1
-    from public.perfiles pf
-    join public.roles r on r.iglesia_id = pf.iglesia_id and r.clave = pf.rol
-    where pf.id = (select auth.uid())
-      and pf.activo
-      and (r.es_propietario
-           or exists (select 1 from public.rol_permisos rp where rp.rol_id = r.id and rp.permiso = p_permiso))
-  )
-$function$;
+create or replace function public.adn_purga_tarea_estado() returns jsonb language sql stable set search_path to '' as $$
+  select private.adn_purga_tarea_estado()
+$$;
+revoke all on function public.adn_purga_tarea_estado() from public, anon, authenticated, service_role;
+grant execute on function public.adn_purga_tarea_estado() to service_role;

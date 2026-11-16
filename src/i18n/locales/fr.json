@@ -1898,7 +1898,14 @@
       "auditoriaAyuda": "Dernières actions de la plateforme. On affiche l’action, l’église et la date, jamais le détail.",
       "auditoriaVacia": "Aucune action consignée.",
       "noDisponible": "Ces informations n’ont pas pu être chargées. Le reste de l’écran fonctionne.",
-      "reintentar": "Réessayer"
+      "reintentar": "Réessayer",
+      "tareaSinDato": "Impossible de lire si la purge est programmée. En attendant, comptez qu'elle ne se lance qu'à la main.",
+      "tareaNoDisponible": "Cette base n'a pas de planificateur de tâches (pg_cron) : la purge ne se lance qu'à la main.",
+      "tareaSinProgramar": "La purge n'est pas programmée : elle ne se lance qu'à la main.",
+      "tareaApagada": "La tâche programmée de purge existe mais est désactivée : la purge ne se lance qu'à la main.",
+      "tareaActiva": "Tâche programmée de purge active ({horario}, heure UTC).",
+      "tareaUltima": "Dernier passage : {cuando}, résultat {resultado}.",
+      "tareaSinPasadas": "Elle ne s'est pas encore exécutée."
     },
     "demo": {
       "incluir": "Inclure les démonstrations",

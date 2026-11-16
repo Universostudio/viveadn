@@ -55,7 +55,7 @@ El panel conserva también «Programar borrado» y «Borrar ahora», anteriores 
 
 ## 8. La purga programada
 
-**Qué es.** Una tarea de la propia base (`pg_cron` y `pg_net`) que cada 6 horas llama a la función con el secreto. Diseño y esquema en `docs/PURGA.md`; pasos de activación en `docs/PUESTA-EN-MARCHA.md`, apartado 5. Hoy **no está activa [NV]**.
+**Qué es.** Una tarea de la propia base (`pg_cron` y `pg_net`) que una vez al día (03:15 UTC) llama a la función con el secreto; guiones en `scripts/entorno/purga-programada/`. Diseño y esquema en `docs/PURGA.md`; pasos de activación en `docs/PUESTA-EN-MARCHA.md`, apartado 5. Hoy **no está activa [NV]**.
 
 **Vigilarla.** El indicador de purga del Panel Maestro (portada y `/plataforma/sistema`) muestra iglesias en borrado suave, con el plazo vencido y las horas de la más atrasada. Pasa a rojo cuando una lleva más de 48 horas esperando.
 
