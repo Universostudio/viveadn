@@ -1,6 +1,7 @@
 // Adaptador de Vive ADN: traduce lo que devuelve la función «plataforma» a los tipos genéricos de src/panel-maestro.
 // Es puro (sin Vue ni red) para poder probarlo en Node. Solo maneja conteos, estados y nombres de iglesias: nunca datos de personas.
-import type { Inquilino, Kpi, ModuloInquilino } from '../../panel-maestro/tipos.ts'
+import type { EstadoServicio, EventoActividad, Inquilino, Kpi, ModuloInquilino } from '../../panel-maestro/tipos.ts'
+import { textoDeAccion } from './acciones.ts'
 
 export type Traductor = (clave: string, valores?: Record<string, unknown>, plural?: number) => string
 
@@ -133,4 +134,36 @@ export function kpisDe(r: Resumen, alertas: Alerta[], t: Traductor, formatoNumer
     { clave: 'alertas', etiqueta: t('plataformaPanel.kpi.alertas'), valor: formatoNumero(alertas.length),
       nota: alertas.length ? t('plataformaPanel.kpi.alertasHay') : t('plataformaPanel.kpi.alertasNinguna'), tono: alertas.length ? 'alerta' : 'bien' },
   ]
+}
+
+export interface EventoCrudo { tipo: 'alta' | 'accion'; accion: string; iglesia_id: string | null; iglesia: string | null; fecha: string }
+export interface EnvioEstado { activo: boolean; hoy: number; tope_global: number; contadores: boolean }
+
+/** Eventos de la actividad global: acción, iglesia y fecha. Ni el detalle de la auditoría ni datos de personas */
+export function eventosParaPanel(eventos: EventoCrudo[], t: Traductor, existe: (clave: string) => boolean): EventoActividad[] {
+  return eventos.map((e, i) => ({
+    id: `${e.fecha}-${e.accion}-${e.iglesia_id ?? 'x'}-${i}`,
+    fecha: e.fecha,
+    texto: e.tipo === 'alta'
+      ? t('plataformaPanel.actividad.alta', { iglesia: e.iglesia ?? '' })
+      : e.iglesia
+        ? t('plataformaPanel.actividad.evento', { accion: textoDeAccion(e.accion, t, existe), iglesia: e.iglesia })
+        : t('plataformaPanel.actividad.sinIglesia', { accion: textoDeAccion(e.accion, t, existe) }),
+  }))
+}
+
+/** Salud del sistema con lo que de verdad se conoce: la purga y el envío. La disponibilidad por servicio no tiene fuente: «sin conectar» */
+export function saludDe(purga: PurgaResumen | null, envio: EnvioEstado | null, t: Traductor): EstadoServicio[] {
+  const filas: EstadoServicio[] = []
+  filas.push(purga
+    ? { clave: 'purga', etiqueta: t('plataformaPanel.salud.purga'), situacion: purga.atrasada ? 'alerta' : 'ok',
+        detalle: purga.atrasada ? t('plataformaPanel.salud.purgaAtraso', { horas: purga.horas_mas_atrasada }) : t('plataformaPanel.salud.purgaOk') }
+    : { clave: 'purga', etiqueta: t('plataformaPanel.salud.purga'), situacion: 'sin_conectar', detalle: t('plataformaPanel.salud.noDisponible') })
+  filas.push(envio
+    ? { clave: 'envio', etiqueta: t('plataformaPanel.salud.envio'), situacion: envio.activo ? 'ok' : 'apagado',
+        detalle: envio.activo ? t('plataformaPanel.sistema.envioHoy', { n: envio.hoy }) : t('plataformaPanel.salud.envioApagado'),
+        ...(envio.activo && envio.tope_global > 0 ? { porcentaje: Math.min(100, Math.round((envio.hoy / envio.tope_global) * 100)) } : {}) }
+    : { clave: 'envio', etiqueta: t('plataformaPanel.salud.envio'), situacion: 'sin_conectar', detalle: t('plataformaPanel.salud.noDisponible') })
+  filas.push({ clave: 'disponibilidad', etiqueta: t('plataformaPanel.salud.disponibilidad'), situacion: 'sin_conectar', detalle: t('plataformaPanel.salud.faltaDisponibilidad') })
+  return filas
 }

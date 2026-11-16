@@ -1,6 +1,7 @@
 import { createClient } from 'npm:@supabase/supabase-js@2'
 import { claveCronValida, errorDeCiclo, tamanoLote } from './ciclo.ts'
 import { avisoPurga, enviarAviso, leerConfig, type TipoEnvio } from './envio.ts'
+import { conteosPorIglesia, envioDelDia, eventosDeActividad, faltaLaFuncion, historialDeIglesia, MAX_LIBRO, salidaSegura } from './panel.ts'
 
 // Panel de plataforma: solo para usuarios en plataforma_admins.
 // Usa service_role, asi que cada entrada se valida aqui.
@@ -161,7 +162,8 @@ Deno.serve(async (req) => {
     }
 
     switch (body.accion) {
-      case 'listar': {
+      case 'listar':
+      case 'resumen': {
         const [{ data: iglesias }, { data: addons }, { data: planes }, { data: modulos }, { data: planModulos }] = await Promise.all([
           admin.from('iglesias').select('id, nombre, slug, plan, activa, etapa, prueba_hasta, borrado_programado_en, adn_borrada_en, es_demo, pais, ciudad, created_at, iglesia_madre_id, red_acceso').order('created_at'),
           admin.from('iglesia_modulos').select('iglesia_id, modulo, activo, origen'),
@@ -169,18 +171,62 @@ Deno.serve(async (req) => {
           admin.from('modulos').select('*').order('orden'),
           admin.from('plan_modulos').select('plan, modulo'),
         ])
-        const conteos = await Promise.all((iglesias ?? []).map(async (i) => {
-          const [m, u] = await Promise.all([
-            admin.from('miembros').select('id', { count: 'exact', head: true }).eq('iglesia_id', i.id),
-            admin.from('perfiles').select('id', { count: 'exact', head: true }).eq('iglesia_id', i.id),
-          ])
-          return [i.id, { miembros: m.count ?? 0, usuarios: u.count ?? 0 }] as const
-        }))
-        const porId = Object.fromEntries(conteos)
-        return json({
-          iglesias: (iglesias ?? []).map(i => ({ ...i, ...porId[i.id], addons: (addons ?? []).filter(a => a.iglesia_id === i.id) })),
+        // Los conteos salen de una sola consulta (adn_plataforma_resumen). Si la migración aún no está aplicada, se cuenta como antes (2 consultas por iglesia)
+        let porId: Record<string, { miembros: number; usuarios: number }>
+        const { data: filas, error: errorResumen } = await admin.rpc('adn_plataforma_resumen')
+        if (!errorResumen) {
+          porId = conteosPorIglesia(filas)
+        } else if (faltaLaFuncion(errorResumen)) {
+          const conteos = await Promise.all((iglesias ?? []).map(async (i) => {
+            const [m, u] = await Promise.all([
+              admin.from('miembros').select('id', { count: 'exact', head: true }).eq('iglesia_id', i.id),
+              admin.from('perfiles').select('id', { count: 'exact', head: true }).eq('iglesia_id', i.id),
+            ])
+            return [i.id, { miembros: m.count ?? 0, usuarios: u.count ?? 0 }] as const
+          }))
+          porId = Object.fromEntries(conteos)
+        } else {
+          return json({ error: 'No se pudo leer el resumen de iglesias' }, 500)
+        }
+        return json(salidaSegura({
+          iglesias: (iglesias ?? []).map(i => ({ ...i, ...(porId[i.id] ?? { miembros: 0, usuarios: 0 }), addons: (addons ?? []).filter(a => a.iglesia_id === i.id) })),
           planes, modulos, plan_modulos: planModulos,
-        })
+        }))
+      }
+
+      case 'actividad': {
+        // Ultimas altas y acciones de plataforma: accion, iglesia y fecha. Nunca el detalle de la auditoria
+        const limite = Number.isInteger(body.limite) ? Math.max(1, Math.min(body.limite, 100)) : 20
+        const { data, error } = await admin.rpc('adn_plataforma_actividad', { p_limite: limite })
+        if (error) return json({ error: faltaLaFuncion(error) ? 'La actividad no esta disponible hasta aplicar la migracion del panel' : 'No se pudo leer la actividad' }, faltaLaFuncion(error) ? 501 : 500)
+        return json(salidaSegura({ ok: true, eventos: eventosDeActividad(data) }))
+      }
+
+      case 'detalle': {
+        // Historial de acciones de plataforma de una iglesia: accion y fecha
+        if (typeof body.iglesia_id !== 'string' || !UUID_RE.test(body.iglesia_id)) return json({ error: 'Identificador de iglesia no valido' }, 400)
+        const { data, error } = await admin.rpc('adn_plataforma_historial', { p_iglesia: body.iglesia_id, p_limite: 50 })
+        if (error) return json({ error: faltaLaFuncion(error) ? 'El historial no esta disponible hasta aplicar la migracion del panel' : 'No se pudo leer el historial' }, faltaLaFuncion(error) ? 501 : 500)
+        return json(salidaSegura({ ok: true, historial: historialDeIglesia(data) }))
+      }
+
+      case 'sistema': {
+        // Estado de los procesos: purga, libro de purgadas y envio de correo (solo si esta activo y cuanto se uso hoy; nunca valores de secretos).
+        // Cada parte falla por separado: si una no responde, llega como null y el resto se muestra
+        const [rPurga, rLibro, rEnvio] = await Promise.all([
+          admin.rpc('adn_purga_estado', { p_horas: 48 }),
+          admin.rpc('adn_purgas_desde', { p_desde: null }),
+          admin.from('adn_envios_dia').select('tipo, n').eq('dia', new Date().toISOString().slice(0, 10)),
+        ])
+        const config = leerConfig(k => Deno.env.get(k))
+        const libro = rLibro.error ? null : (rLibro.data ?? []).slice(-MAX_LIBRO).reverse()
+          .map((f: { iglesia_ref: string; purgada_en: string }) => ({ iglesia: f.iglesia_ref, purgada_en: new Date(f.purgada_en).toISOString() }))
+        return json(salidaSegura({
+          ok: true,
+          purga: rPurga.error ? null : rPurga.data,
+          libro,
+          envio: { ...envioDelDia(rEnvio.error ? null : rEnvio.data, config), contadores: !rEnvio.error },
+        }))
       }
 
       case 'crear_iglesia': {

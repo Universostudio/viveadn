@@ -8,7 +8,7 @@ Etiquetas: **[E]** leído de una fuente oficial hoy o medido, **[H]** deducido, 
 
 | Correo | Quién lo recibe | Cuándo | Datos de personas |
 | --- | --- | --- | --- |
-| Alerta de purga atrasada (trabajo c) | La persona que opera la plataforma | Como máximo una vez al día, solo si la tarjeta «Purga programada» marca retraso | Ninguno: solo cifras |
+| Alerta de purga atrasada (trabajo c) | La persona que opera la plataforma | Como máximo una vez al día, solo si el indicador de purga del Panel Maestro marca retraso | Ninguno: solo cifras |
 | Aviso de baja pedida o cancelada | El propietario de la iglesia | Una vez por cada baja pedida y una por cada cancelación | El correo del propietario |
 | Ya existentes, sin cambios | Invitaciones de acceso y doble confirmación del check-in (apagada por defecto) | Por cada invitación o alta con correo | El correo de la persona |
 

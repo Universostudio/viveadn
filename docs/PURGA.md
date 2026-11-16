@@ -85,7 +85,7 @@ Restaurar una copia anterior a una purga resucita los datos de una iglesia ya bo
 
 `adn_purga_estado()` devuelve solo cifras: iglesias en borrado suave, vencidas, horas de la más atrasada y un `atrasada` que salta a las 48 horas [E, 28 comprobaciones en `adn_purga_programada.sql`]. Ahora se ve de dos formas:
 
-- **En el panel de superadministración** hay una tarjeta «Purga programada» que muestra las tres cifras y un aviso verde o rojo según `atrasada`. Si la consulta falla, la tarjeta lo dice y el resto del panel sigue funcionando. Usa la acción `estado_purga` de `plataforma` (admite también la clave de la tarea, para un vigilante). Está verificada con tipos, compilación y las pruebas de la batería; **no la he visto renderizada en un navegador con una sesión de administrador [NV]**.
+- **En el Panel Maestro** (portada y `/plataforma/sistema`) hay un indicador de purga que muestra las tres cifras y un aviso verde o rojo según `atrasada`. Si la consulta falla, la tarjeta lo dice y el resto del panel sigue funcionando. Usa la acción `estado_purga` de `plataforma` (admite también la clave de la tarea, para un vigilante). Está verificada con tipos, compilación y las pruebas de la batería; **no la he visto renderizada en un navegador con una sesión de administrador [NV]**.
 - **Aviso por correo a Harold**: aprobado, pero hoy no existe un remitente propio de la plataforma fuera de las invitaciones y de la confirmación (apagada). Mientras tanto vale el indicador del panel. Cuando haya remitente, el aviso consiste en una llamada a `estado_purga` desde el programador y un correo si `atrasada` es verdadero; no está escrito.
 
 ## 6. Qué hay hecho y qué no

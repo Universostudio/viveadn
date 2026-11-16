@@ -34,7 +34,7 @@ const planes = [{ clave: 'semilla', nombre: 'Semilla', max_miembros: 100, orden:
 const modulos = [{ clave: 'miembros', nombre: 'Miembros', tipo: 'nucleo', orden: 1 }, { clave: 'eventos', nombre: 'Eventos', tipo: 'opcional', orden: 2 }, { clave: 'comunicacion', nombre: 'Comunicación', tipo: 'opcional', orden: 3 }]
 const planModulos = [{ plan: 'semilla', modulo: 'miembros' }, { plan: 'premium', modulo: 'miembros' }, { plan: 'premium', modulo: 'comunicacion' }]
 
-async function escenario({ admin = true, conIglesia = false, ancho = 1366, alto = 900, purgaAtrasada = false, detalleFalla = false } = {}) {
+async function escenario({ admin = true, conIglesia = false, ancho = 1366, alto = 900, purgaAtrasada = false, detalleFalla = false, actividadFalla = false, envioActivo = false } = {}) {
   const estado = { llamadas: [], cuerpos: [] }
   const browser = await chromium.launch()
   const ctx = await browser.newContext({ acceptDownloads: true, locale: 'es-ES', viewport: { width: ancho, height: alto }, deviceScaleFactor: 1 })
@@ -67,8 +67,16 @@ async function escenario({ admin = true, conIglesia = false, ancho = 1366, alto 
         case 'detalle':
           if (detalleFalla) return json(500, { error: 'No se pudo cargar' })
           return json(200, { ok: true, historial: [{ accion: 'cambiar_plan', fecha: iso(-3) }, { accion: 'crear_iglesia', fecha: iso(-200) }] })
-        case 'actividad': return json(200, { ok: true, eventos: [] })
-        case 'sistema': return json(200, { ok: true, envio: { activo: false, hoy: 0, tope: 40 }, libro: [], auditoria: [] })
+        case 'actividad':
+          if (actividadFalla) return json(501, { error: 'La actividad no esta disponible' })
+          return json(200, { ok: true, eventos: [
+            { tipo: 'accion', accion: 'cambiar_plan', iglesia_id: uuid(1), iglesia: 'Casa del Reino', fecha: iso(-0.1) },
+            { tipo: 'accion', accion: 'registro_ajustes', iglesia_id: null, iglesia: null, fecha: iso(-0.5) },
+            { tipo: 'alta', accion: 'crear_iglesia', iglesia_id: uuid(6), iglesia: 'Sede Este', fecha: iso(-2) },
+            { tipo: 'accion', accion: 'accion_futura_desconocida', iglesia_id: uuid(2), iglesia: 'Iglesia del Norte', fecha: iso(-3) },
+          ] })
+        case 'sistema': return json(200, { ok: true, purga: { atrasada: purgaAtrasada, en_borrado: 1, vencidas: purgaAtrasada ? 1 : 0, horas_mas_atrasada: purgaAtrasada ? 60 : 0 },
+          libro: [{ iglesia: uuid(9), purgada_en: iso(-20) }], envio: { activo: envioActivo, hoy: envioActivo ? 12 : 0, por_tipo: { purga: 0, baja: 0, confirmacion: 0 }, tope_global: 40, contadores: true } })
         default: return json(200, { ok: true })
       }
     }
@@ -130,6 +138,46 @@ try {
     assert.match(alertas, /atrasada 60 horas/); assert.match(alertas, /1 prueba vencida/)
     await captura(page, 'escritorio-portada')
     assert.deepEqual(errores, [])
+    await browser.close()
+  })
+
+  await prueba('la portada enseña actividad global y salud del sistema con datos reales, y dice «sin conectar» donde no los hay', async () => {
+    const { browser, page, errores } = await escenario({ purgaAtrasada: true })
+    await page.goto(url('/plataforma'))
+    await page.waitForSelector('[data-test=actividad] li')
+    const act = await page.textContent('[data-test=actividad]')
+    assert.match(act, /Cambio de plan: Casa del Reino/); assert.match(act, /Alta de Sede Este/)
+    assert.match(act, /Ajustes de registro/, 'una acción sin iglesia sale sin nombre')
+    assert.match(act, /Acción de plataforma: Iglesia del Norte/, 'una acción desconocida cae a un texto genérico')
+    assert.ok(!/accion_futura_desconocida/.test(act), 'la clave interna no se muestra')
+    await page.waitForSelector('[data-servicio=envio]')
+    const sit = async s => page.getAttribute(`[data-servicio=${s}]`, 'data-situacion')
+    assert.equal(await sit('purga'), 'alerta'); assert.equal(await sit('envio'), 'apagado'); assert.equal(await sit('disponibilidad'), 'sin_conectar')
+    assert.match(await page.textContent('[data-servicio=disponibilidad]'), /monitor externo/)
+    assert.match(await page.textContent('[data-servicio=purga]'), /60 horas/)
+    assert.equal(await page.locator('[data-test=sin-conectar]').count(), 1, 'facturación reciente: sin conectar')
+    await captura(page, 'escritorio-portada-completa')
+    assert.deepEqual(errores, [])
+    await browser.close()
+  })
+
+  await prueba('si la actividad no está disponible, la portada lo dice y no se rompe', async () => {
+    const { browser, page, errores } = await escenario({ actividadFalla: true })
+    await page.goto(url('/plataforma'))
+    await page.waitForFunction(() => document.querySelector('[data-test=actividad]')?.textContent?.includes('No se pudo cargar esta información'))
+    await page.waitForSelector('[data-kpi=activas]')
+    assert.deepEqual(errores, [])
+    await browser.close()
+  })
+
+  await prueba('el envío activo muestra el uso del día y una barra', async () => {
+    const { browser, page } = await escenario({ envioActivo: true })
+    await page.goto(url('/plataforma'))
+    await page.waitForSelector('[data-servicio=envio][data-situacion=ok]')
+    assert.match(await page.textContent('[data-servicio=envio]'), /Envíos de hoy: 12/)
+    await page.goto(url('/plataforma/sistema')); await page.waitForSelector('[data-test=envio-estado]')
+    await page.waitForFunction(() => document.querySelector('[data-test=envio-estado]')?.textContent?.includes('Envíos de hoy: 12'))
+    assert.match(await page.textContent('[data-test=envio-estado]'), /Tope global: 40/)
     await browser.close()
   })
 
@@ -244,6 +292,9 @@ try {
     await page.goto(url('/plataforma/planes')); await page.waitForSelector('[data-test=matriz-planes]')
     assert.match(await page.textContent('[data-test=matriz-planes]'), /Semilla/)
     await page.goto(url('/plataforma/sistema')); await page.waitForSelector('[data-test=purga-estado]')
+    await page.waitForFunction(() => document.querySelector('[data-test=libro-purgas]')?.textContent?.includes('00000000-0000-4000-8000-000000000009'))
+    await page.waitForSelector('[data-test=auditoria-plataforma] li')
+    await captura(page, 'escritorio-sistema')
     await page.goto(url('/plataforma/facturacion')); await page.waitForSelector('[data-test=sin-conectar]')
     await page.goto(url('/plataforma/soporte')); await page.waitForSelector('[data-test=sin-conectar]'); assert.equal(await page.locator('[data-test=sin-conectar]').count(), 2)
     assert.deepEqual(errores, [])

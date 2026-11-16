@@ -5,9 +5,9 @@
 set -euo pipefail
 cd "$(dirname "$0")/../.."
 PAQ="${PAQUETE:-supabase/paquete-pruebas}"
-A=viveadn_paquete_a; B=viveadn_paquete_b
+A=viveadn_paquete_a; B=viveadn_paquete_b; C=viveadn_paquete_c
 TMP=$(mktemp -d)
-trap 'rm -rf "$TMP"; psql -q -d postgres -c "drop database if exists '$A'" -c "drop database if exists '$B'" >/dev/null 2>&1 || true' EXIT
+trap 'rm -rf "$TMP"; psql -q -d postgres -c "drop database if exists '$A'" -c "drop database if exists '$B'" -c "drop database if exists '$C'" >/dev/null 2>&1 || true' EXIT
 falla() { echo "FALLO: $*"; exit 1; }
 
 # 1. Al día: regenerar en una carpeta temporal y comparar con la versionada
@@ -37,6 +37,35 @@ pg_dump -s --no-owner -d $A | grep -v '^\\\(un\)\?restrict' > "$TMP/a.sql"
 pg_dump -s --no-owner -d $B | grep -v '^\\\(un\)\?restrict' > "$TMP/b.sql"
 diff -q "$TMP/a.sql" "$TMP/b.sql" >/dev/null || { diff "$TMP/a.sql" "$TMP/b.sql" | head; falla "el esquema del paquete difiere del de montar-rama.sh"; }
 echo "OK: el esquema del paquete es idéntico al de montar-rama.sh"
+
+# 3 bis. Incremental: un proyecto con el paquete hasta la última migración ya aplicada (scripts/entorno/incremental.json) y el incremental encima
+# queda idéntico al del paquete completo, y la verificación del incremental sale toda en verde (y detecta una función que falta)
+DESDE=$(python3 -I -c "import json;print(json.load(open('scripts/entorno/incremental.json'))['desde'])")
+[ -f "$PAQ/incremental/01_aplicar_incremental.sql" ] || falla "no hay archivo incremental en $PAQ/incremental"
+psql -q -d postgres -c "drop database if exists $C" -c "create database $C" >/dev/null
+psql -q -v ON_ERROR_STOP=1 -d $C -f supabase/tests/stub_supabase.sql >/dev/null
+for f in "$PAQ"/0*.sql; do
+  # El paquete completo ya incluye las migraciones nuevas: la base de partida se corta justo antes de la primera posterior a DESDE
+  awk -v desde="$DESDE" '/^-- ===== migrations\// { if (substr($0, 21, 14) > desde) exit } { print }' "$f" > "$TMP/base.sql"
+  psql -q -X -v ON_ERROR_STOP=1 -d $C -f "$TMP/base.sql" >/dev/null 2>"$TMP/err" || { cat "$TMP/err"; falla "falló la base de partida con $f"; }
+done
+if psql -q -X -At -d $C -f "$PAQ/incremental/99_verificacion_incremental.sql" 2>/dev/null | grep -q '^zz_todo_ok|||t$'; then falla "la verificación del incremental sale en verde ANTES de aplicarlo"; fi
+echo "OK: antes del incremental, su verificación no sale en verde"
+psql -q -X -v ON_ERROR_STOP=1 -d $C -f "$PAQ/incremental/01_aplicar_incremental.sql" >/dev/null 2>"$TMP/err" || { cat "$TMP/err"; falla "falló el incremental"; }
+ri=$(psql -q -X -At -F'|' -v ON_ERROR_STOP=1 -d $C -f "$PAQ/incremental/99_verificacion_incremental.sql")
+echo "$ri" | grep -q '^zz_todo_ok|||t$' || { echo "$ri" | awk -F'|' '$4 != "t"'; falla "la verificación del incremental no sale toda en verde"; }
+echo "OK: el incremental se aplica y su verificación sale toda en verde ($(echo "$ri" | grep -vc '^zz_todo_ok') comprobaciones)"
+pg_dump -s --no-owner -d $C | grep -v '^\\\(un\)\?restrict' > "$TMP/c.sql"
+diff -q "$TMP/a.sql" "$TMP/c.sql" >/dev/null || { diff "$TMP/a.sql" "$TMP/c.sql" | head; falla "base parcial + incremental difiere del paquete completo"; }
+echo "OK: base parcial más incremental es idéntica al paquete completo"
+# Repetirlo no hace daño: las funciones se crean con «create or replace» y los permisos se repiten tal cual
+psql -q -X -v ON_ERROR_STOP=1 -d $C -f "$PAQ/incremental/01_aplicar_incremental.sql" >/dev/null 2>&1 || falla "el incremental falla al repetirlo"
+pg_dump -s --no-owner -d $C | grep -v '^\\\(un\)\?restrict' > "$TMP/c2.sql"
+diff -q "$TMP/a.sql" "$TMP/c2.sql" >/dev/null || falla "repetir el incremental cambia el esquema"
+echo "OK: repetir el incremental es inofensivo y no cambia el esquema"
+psql -q -X -d $C -c "drop function public.adn_plataforma_historial(uuid, integer)" >/dev/null
+[ "$(psql -q -X -At -F'|' -d $C -f "$PAQ/incremental/99_verificacion_incremental.sql" | grep '^zz_todo_ok' | cut -d'|' -f4)" = "f" ] || falla "la verificación del incremental no detecta una función que falta"
+echo "OK: la verificación del incremental detecta una función que falta"
 
 # 4. El archivo 00 se niega a tocar una base con el esquema, y una sin Supabase
 if psql -q -X -v ON_ERROR_STOP=1 -d $A -f "$PAQ/00_comprobar_base_vacia.sql" >/dev/null 2>"$TMP/err"; then falla "el archivo 00 acepta una base que ya tiene el esquema"; fi

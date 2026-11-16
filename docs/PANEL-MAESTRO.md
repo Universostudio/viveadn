@@ -1,0 +1,123 @@
+# Panel Maestro: el panel del administrador de la plataforma
+
+Estado a 16 de noviembre de 2026. Vive ADN es el patrón: este documento describe la estructura para que otros productos (Vivepase, Viverelay, Viveplayer) copien las piezas genéricas y escriban solo su adaptador. Solo Vive ADN lo implementa hoy. Lo que se comprobó con prueba repetible lleva [E]; lo deducido, [H]; lo que no se puede comprobar desde el repositorio, [NV].
+
+## 1. Por qué existe
+
+Un producto con muchos inquilinos (iglesias, organizaciones, canales) necesita dos paneles distintos: el que usa cada inquilino para su gente y el que usa quien administra la plataforma para gobernar a los inquilinos y sus procesos. Antes, el administrador aterrizaba en el panel de una iglesia vacía y la ruta de plataforma era un ítem más de ese menú. Ahora es una aplicación aparte dentro del mismo proyecto, con su propio layout, su menú y su portada [E, `scripts/probar-panel-maestro-ui.mjs`].
+
+## 2. Principio de privacidad
+
+El administrador de plataforma ve conteos, estados, planes, fechas y nombres de inquilino. Nunca ve a las personas de un inquilino: ni nombres, ni correos, ni teléfonos, ni listas de miembros. Se hace cumplir en tres sitios [E]:
+
+1. La base: las funciones `adn_plataforma_resumen`, `adn_plataforma_actividad` y `adn_plataforma_historial` solo devuelven identificadores, nombres de iglesia, acciones, fechas y números. De la auditoría de plataforma nunca sale el detalle, que puede contener datos que no deben verse. La prueba SQL falla si cambian las columnas de salida o si el detalle sembrado aparece en una respuesta (`supabase/tests/adn_plataforma_resumen.sql`).
+2. La función de borde: toda respuesta de las lecturas nuevas pasa por `salidaSegura` (`supabase/functions/plataforma/panel.ts`), que lanza un error si encuentra claves como email, correo, teléfono, apellido, token o secreto a cualquier profundidad. La prueba comprueba cada clave y se verificó con mutaciones (`npm run test:panel-funcion`).
+3. El adaptador del navegador: `aInquilino` copia solo campos permitidos; aunque la entrada traiga datos personales, no llegan a la salida (`npm run test:panel-adaptador`).
+
+## 3. Pantallas y rutas de Vive ADN
+
+| Ruta | Pantalla | Datos |
+| --- | --- | --- |
+| `/plataforma` | Portada «Control global» | Siete indicadores, alertas críticas, actividad global, salud del sistema, facturación reciente (sin conectar) y las iglesias más recientes |
+| `/plataforma/iglesias` | Tabla de iglesias | Buscador, filtros Todas, Activas, Prueba, Suspendidas y Demo, acciones por estado |
+| `/plataforma/nueva-iglesia` | La tabla con el diálogo de alta abierto | Alta con opción de demostración |
+| `/plataforma/iglesias/:id` | Gestionar | Plan, etapa, red madre y sedes, complementos, exportación, borrado programado, recuperación, borrado suave y definitivo, historial de acciones |
+| `/plataforma/pruebas` | Pruebas activas | Iglesias en prueba por orden de vencimiento |
+| `/plataforma/planes` | Planes y módulos | Matriz de lectura: qué incluye cada plan |
+| `/plataforma/registro` | Registro y códigos | Apertura del registro y códigos de acceso |
+| `/plataforma/sistema` | Sistema | Estado de la purga, libro de purgas, funciones de envío, auditoría de plataforma |
+| `/plataforma/facturacion` | Facturación | «Sin conectar»: falta una pasarela de cobro, porque hoy no existe ningún dato de precios ni de cobros |
+| `/plataforma/soporte` | Soporte | «Sin conectar»: faltan un sistema de tickets y un registro de cambios publicado |
+
+Regla de honestidad: si un bloque no tiene datos reales detrás, muestra «Sin conectar» y una línea que dice qué falta. No hay cifras inventadas ni datos de ejemplo en pantalla [E].
+
+### Indicadores de la portada
+
+Iglesias activas (con las altas de 30 días frente a los 30 anteriores), en prueba (y cuántas vencen en 7 días), suspendidas, demos, miembros totales, facturación recurrente mensual (sin conectar) y alertas críticas. Las demos no cuentan en los totales reales. Las alertas son tipos de problema activos, no iglesias: purga atrasada, pruebas vencidas sin convertir y borrados programados vencidos sin purgar. Cada una enlaza a su pantalla [E].
+
+### Contexto: panel o iglesia
+
+1. Tras iniciar sesión, un administrador de plataforma aterriza en `/plataforma`. Las rutas de iglesia le redirigen allí.
+2. Si además tiene perfil de iglesia, el pie del Panel Maestro ofrece «Entrar a mi iglesia» y la aplicación de iglesia muestra una barra con «Volver al Panel Maestro».
+3. La elección vive en `sessionStorage` (clave `adn_contexto`): dura la pestaña y nunca se guarda en la base. Una pestaña nueva empieza en el panel.
+4. No existe «entrar como otra iglesia» ni suplantación. El soporte ve conteos y estados desde Gestionar [E].
+
+## 4. Estructura reutilizable
+
+```
+src/panel-maestro/            piezas genéricas, sin nada propio de ningún producto
+  tipos.ts                    contratos: Inquilino, Kpi, EventoActividad, EstadoServicio, GrupoMenu...
+  filtros.ts                  filtrado y búsqueda de la tabla (puro, probado en Node)
+  PanelShell.vue              layout: menú lateral por secciones, barra superior con ruta, buscador y fecha, cajón en móvil
+  KpiTarjeta.vue              un indicador, o «sin conectar» si no hay valor
+  TablaInquilinos.vue         tabla con buscador, filtros y acciones configurables; tarjetas en móvil
+  PanelActividad.vue          lista de eventos con fecha
+  PanelSalud.vue              servicios con situación (ok, alerta, apagado, sin conectar)
+  TarjetaSinConectar.vue      el bloque honesto de lo que aún no tiene datos
+src/views/plataforma/         lo específico de Vive ADN
+  PlataformaLayout.vue        declara el menú y monta PanelShell
+  adaptador.ts                traduce las respuestas de la función de borde a los tipos genéricos (puro)
+  *View.vue                   una vista por ruta
+src/stores/plataforma.ts      estado compartido y llamadas a la función de borde
+```
+
+**Regla de dependencia.** `src/panel-maestro` no importa nada de `views`, `stores` ni `supabase`. Recibe datos por propiedades y emite eventos. Solo usa `vue`, `vue-router` (los enlaces), `vue-i18n` y los iconos. Así otro producto copia la carpeta y escribe su propio adaptador y su menú [E: type-check y build limpios].
+
+**Textos.** Las piezas genéricas usan solo claves `panelMaestro.*` (ya traducidas a es, en, fr y pt-BR). Lo propio de Vive ADN vive en `plataformaPanel.*`. Al copiar la carpeta a otro producto se copian las claves `panelMaestro.*` y se añaden las suyas.
+
+### Contratos de las piezas
+
+| Pieza | Propiedades | Eventos y huecos |
+| --- | --- | --- |
+| `PanelShell` | `producto`, `marca`, `etiqueta`, `grupos`, `usuario {nombre, rol}`, `buscador`, `seccion` | Eventos `salir` y `buscar(texto)`. Huecos: `pie` (selector de idioma, cambio de contexto) y el contenido |
+| `KpiTarjeta` | `kpi {clave, etiqueta, valor, nota, tono, sinConectar}` | Con `valor` nulo muestra «sin conectar» y la línea `sinConectar` |
+| `TablaInquilinos` | `titulo`, `inquilinos`, `acciones(inquilino)`, `busquedaInicial`, `filtroInicial`, `etiquetaNombre`, `vacio` | Evento `accion(clave, inquilino)`; una acción con `ruta` es un enlace. Hueco `cabecera` |
+| `PanelActividad` | `titulo`, `eventos`, `vacio` | |
+| `PanelSalud` | `titulo`, `servicios` | |
+| `TarjetaSinConectar` | `titulo`, `falta` | |
+
+### Contrato de datos (los cuatro tipos)
+
+1. `Inquilino`: id, nombre, subtítulo, plan, estado y su etiqueta, detalle de estado (días de prueba, borrado programado), si es demostración, número de miembros y módulos con su estado. Nada de personas.
+2. `Kpi`: clave, etiqueta, valor (o nulo), nota, tono y la línea de «sin conectar».
+3. `EventoActividad`: id, fecha, texto, tono. El texto lo construye el adaptador con acción e inquilino, nunca con el detalle de la auditoría.
+4. `EstadoServicio`: clave, etiqueta, situación, detalle y porcentaje opcional.
+
+## 5. Qué debe aportar el backend de cada producto
+
+1. Una lectura agregada de inquilinos con sus conteos en **una** consulta (no una por inquilino). En Vive ADN: `adn_plataforma_resumen()`.
+2. Una lectura de actividad reciente sin detalle (`adn_plataforma_actividad`) y un historial por inquilino (`adn_plataforma_historial`).
+3. El estado de sus procesos (purga, envío, copias) como cifras y estados (`estado_purga`, `sistema`).
+4. Una barrera de privacidad en la respuesta (`salidaSegura`) y una prueba que falle si aparece una clave personal.
+5. Permisos solo del servidor sobre esas lecturas: sin EXECUTE para `anon` ni `authenticated`; la función de borde comprueba antes que quien llama es administrador de plataforma [E, `supabase/tests/adn_plataforma_resumen.sql`].
+
+## 6. Función de borde `plataforma`: acciones de lectura del panel
+
+| Acción | Devuelve | Si falta la migración |
+| --- | --- | --- |
+| `listar` y `resumen` | Iglesias con sus conteos, planes, módulos y planes por módulo | Cuenta como antes, con 2 consultas por iglesia: sigue funcionando [H] |
+| `actividad` | Últimas altas y acciones (tipo, acción, iglesia, fecha) | Responde 501 y la pantalla dice «no disponible» |
+| `detalle` | Historial de acciones de una iglesia (acción y fecha) | Igual |
+| `sistema` | Estado de la purga, libro de purgas y envío (activo o apagado, uso de hoy, tope) | Cada parte falla por separado; llega nula y el resto se muestra |
+
+El estado del envío solo dice si está activo y cuánto se usó hoy. No se leen ni se devuelven valores de secretos.
+
+## 7. Migración y despliegue
+
+La migración `20261111290000_adn_plataforma_resumen` añade las tres funciones de lectura. Tiene reversión (`supabase/reversiones/20261111290000_adn_plataforma_resumen.down.sql`) probada con `supabase/tests/adn_reversion.sh`, y prueba SQL propia incluida en `supabase/tests/ejecutar.sh` [E]. Se entrega como incremental aparte (`supabase/paquete-pruebas/incremental/`) para un proyecto que ya tiene el paquete hasta `20261111280000`. El paquete completo sigue valiendo para un proyecto vacío. Hay que volver a desplegar la función `plataforma`: ahora incluye el archivo `panel.ts` (el manifiesto `funciones.json` lo lista con su sha256).
+
+## 8. Pruebas
+
+| Orden | Qué prueba |
+| --- | --- |
+| `npm run test:panel-ui` | Navegador real con la red simulada: aterrizaje, menú sin iglesia, indicadores con valores exactos, búsqueda, filtros, acciones, Gestionar, diálogo accesible, cambio de contexto, móvil sin desborde, teclado y estados «sin conectar» |
+| `npm run test:panel-adaptador` | Adaptador, filtros, alertas, indicadores, actividad y salud, con la prueba de que no se filtran datos personales |
+| `npm run test:panel-funcion` | Barrera de privacidad y mapeos de la función de borde |
+| `supabase/tests/adn_plataforma_resumen.sql` | Conteos, orden, límites, columnas de salida, detalle de la auditoría que no sale y privilegios |
+
+## 9. Límites conocidos
+
+1. [NV] Las lecturas contra una base de Supabase real y el comportamiento de la función desplegada solo se pueden confirmar en el entorno de pruebas.
+2. [NV] Las capturas de la vista previa de la rama sobre el proyecto de pruebas necesitan la sesión del administrador de pruebas; las capturas locales usan la aplicación compilada con la red simulada.
+3. La disponibilidad por servicio no tiene fuente (no hay monitor externo): la portada lo dice. Facturación, tickets y registro de cambios están sin conectar hasta que exista un origen de datos real.
+4. El catálogo de planes y módulos es de solo lectura en el panel: hoy no hay una función para editarlo.

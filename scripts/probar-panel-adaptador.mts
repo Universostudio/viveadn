@@ -1,7 +1,7 @@
 // Prueba del adaptador y del filtrado del Panel Maestro, sin navegador ni red.
 // Uso: npm run test:panel-adaptador
 import assert from 'node:assert/strict'
-import { aInquilino, alertasGlobales, kpisDe, resumir, diasDePrueba, pruebaPorVencer, pruebaVencida, borradoVencido, DIA } from '../src/views/plataforma/adaptador.ts'
+import { aInquilino, alertasGlobales, kpisDe, resumir, diasDePrueba, pruebaPorVencer, pruebaVencida, borradoVencido, eventosParaPanel, saludDe, DIA } from '../src/views/plataforma/adaptador.ts'
 import { filtrarInquilinos, contarPorFiltro } from '../src/panel-maestro/filtros.ts'
 import { textoDeAccion } from '../src/views/plataforma/acciones.ts'
 
@@ -86,5 +86,30 @@ assert.equal(filtrarInquilinos([], 'todas', 'x').length, 0)
 const existe = (c: string) => c === 'plataformaPanel.accionAuditoria.cambiar_plan'
 assert.equal(textoDeAccion('cambiar_plan', t as any, existe), 'plataformaPanel.accionAuditoria.cambiar_plan')
 assert.equal(textoDeAccion('algo_nuevo', t as any, existe), 'plataformaPanel.accionAuditoria.otra')
+
+// Actividad global: alta, acción con iglesia, acción sin iglesia y acción desconocida; nunca el detalle ni claves internas
+const exAcc = (c: string) => c === 'plataformaPanel.accionAuditoria.cambiar_plan'
+const evs = eventosParaPanel([
+  { tipo: 'alta', accion: 'crear_iglesia', iglesia_id: 'a', iglesia: 'Casa', fecha: '2026-11-16T10:00:00.000Z' },
+  { tipo: 'accion', accion: 'cambiar_plan', iglesia_id: 'a', iglesia: 'Casa', fecha: '2026-11-16T09:00:00.000Z' },
+  { tipo: 'accion', accion: 'cambiar_plan', iglesia_id: null, iglesia: null, fecha: '2026-11-16T08:00:00.000Z' },
+  { tipo: 'accion', accion: 'rara', iglesia_id: 'b', iglesia: 'Otra', fecha: '2026-11-16T07:00:00.000Z' },
+], t, exAcc)
+assert.match(evs[0].texto, /actividad\.alta\{"iglesia":"Casa"\}/)
+assert.match(evs[1].texto, /actividad\.evento/); assert.match(evs[1].texto, /accionAuditoria\.cambiar_plan/)
+assert.match(evs[2].texto, /actividad\.sinIglesia/)
+assert.match(evs[3].texto, /accionAuditoria\.otra/); assert.ok(!evs[3].texto.includes('rara'), 'la clave interna desconocida no se muestra')
+assert.equal(new Set(evs.map(e => e.id)).size, 4, 'cada evento tiene identificador distinto')
+
+// Salud: solo lo que se conoce; la disponibilidad por servicio siempre «sin conectar»
+const purgaOk = { atrasada: false, en_borrado: 0, vencidas: 0, horas_mas_atrasada: 0 }
+let sal = saludDe(purgaOk, { activo: false, hoy: 0, tope_global: 40, contadores: true }, t)
+assert.deepEqual(sal.map(s => [s.clave, s.situacion]), [['purga', 'ok'], ['envio', 'apagado'], ['disponibilidad', 'sin_conectar']])
+sal = saludDe({ ...purgaOk, atrasada: true, horas_mas_atrasada: 60 }, { activo: true, hoy: 10, tope_global: 40, contadores: true }, t)
+assert.equal(sal[0].situacion, 'alerta'); assert.equal(sal[1].situacion, 'ok'); assert.equal(sal[1].porcentaje, 25)
+assert.equal(saludDe(purgaOk, { activo: true, hoy: 100, tope_global: 40, contadores: true }, t)[1].porcentaje, 100, 'la barra no pasa de 100')
+assert.equal(saludDe(purgaOk, { activo: true, hoy: 5, tope_global: 0, contadores: true }, t)[1].porcentaje, undefined, 'con tope 0 no hay barra (sin dividir entre cero)')
+sal = saludDe(null, null, t)
+assert.deepEqual(sal.map(s => s.situacion), ['sin_conectar', 'sin_conectar', 'sin_conectar'], 'si no responden, se dice y no se inventa un estado sano')
 
 console.log('Panel Maestro (adaptador y filtros): todo correcto')

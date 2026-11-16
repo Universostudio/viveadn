@@ -4,13 +4,13 @@ Estado a 11 de noviembre de 2026. Es el manual del equipo que opera Vive ADN: al
 
 ## 1. Dónde se opera
 
-El panel está en `/plataforma` y solo lo abren las cuentas de `plataforma_admins`. Todas sus acciones pasan por la función de borde `plataforma`, que valida a quien llama, usa la clave de servicio y deja constancia en la auditoría de la plataforma. Ningún cambio se hace a mano en el editor SQL de una base con datos reales.
+El Panel Maestro está en `/plataforma` (con su propio menú: portada, iglesias, pruebas, planes, registro, sistema, facturación y soporte; ver `docs/PANEL-MAESTRO.md`) y solo lo abren las cuentas de `plataforma_admins`, que aterrizan ahí al iniciar sesión. Todas sus acciones pasan por la función de borde `plataforma`, que valida a quien llama, usa la clave de servicio y deja constancia en la auditoría de la plataforma. Ningún cambio se hace a mano en el editor SQL de una base con datos reales.
 
 ## 2. Rutinas
 
 | Cuándo | Qué | Cómo |
 | --- | --- | --- |
-| Cada día | Comprobar la tarjeta «Purga programada» | Debe decir «Al día». Si está en rojo, ver el apartado 8 |
+| Cada día | Comprobar el indicador de purga en la portada del Panel Maestro (o `/plataforma/sistema`) | Debe decir «Al día». Si está en rojo, ver el apartado 8 |
 | Cada día | Comprobar que la web y las cuentas responden | `GET /api/salud` debe devolver `{"ok":true}` |
 | Cada semana | Revisar el registro de las funciones de borde | Solo escriben errores con `console.error`; nadie los mira sin esta rutina. Anotar la fecha de la revisión |
 | Cada semana | Verificar el entorno | `npm run check:entorno` con las variables de `docs/PUESTA-EN-MARCHA.md`, apartado 3, paso 8 |
@@ -20,7 +20,7 @@ El panel está en `/plataforma` y solo lo abren las cuentas de `plataforma_admin
 
 ## 3. Altas de iglesias
 
-**Por su cuenta.** Con el registro abierto, la iglesia entra en `/registro` con un código de acceso. En el panel, la tarjeta «Registro de iglesias» controla dos interruptores: «Registro abierto» y «Exigir código de acceso» (durante las pruebas, activo). «Crear código» pide una etiqueta, el número de usos y los días de vigencia, y **muestra el código una sola vez**: hay que copiarlo en ese momento. Un código se puede activar o desactivar después. La respuesta del registro es la misma para un correo nuevo que para uno que ya tiene cuenta, para no revelar quién existe [E].
+**Por su cuenta.** Con el registro abierto, la iglesia entra en `/registro` con un código de acceso. En el Panel Maestro, la pantalla «Registro y códigos» (`/plataforma/registro`) controla dos interruptores: «Registro abierto» y «Exigir código de acceso» (durante las pruebas, activo). «Crear código» pide una etiqueta, el número de usos y los días de vigencia, y **muestra el código una sola vez**: hay que copiarlo en ese momento. Un código se puede activar o desactivar después. La respuesta del registro es la misma para un correo nuevo que para uno que ya tiene cuenta, para no revelar quién existe [E].
 
 **Desde el panel.** «Nueva iglesia» pide nombre, dirección corta (`slug`), país, ciudad y los datos del propietario, y permite marcarla como demostración. La iglesia nace con sus roles de partida **[NV: el detalle de la invitación al propietario no se ha revisado en esta tarea]**.
 
@@ -57,7 +57,7 @@ El panel conserva también «Programar borrado» y «Borrar ahora», anteriores 
 
 **Qué es.** Una tarea de la propia base (`pg_cron` y `pg_net`) que cada 6 horas llama a la función con el secreto. Diseño y esquema en `docs/PURGA.md`; pasos de activación en `docs/PUESTA-EN-MARCHA.md`, apartado 5. Hoy **no está activa [NV]**.
 
-**Vigilarla.** La tarjeta «Purga programada» del panel muestra iglesias en borrado suave, con el plazo vencido y las horas de la más atrasada. Pasa a rojo cuando una lleva más de 48 horas esperando.
+**Vigilarla.** El indicador de purga del Panel Maestro (portada y `/plataforma/sistema`) muestra iglesias en borrado suave, con el plazo vencido y las horas de la más atrasada. Pasa a rojo cuando una lleva más de 48 horas esperando.
 
 **Si está en rojo:**
 

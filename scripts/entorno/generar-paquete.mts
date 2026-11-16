@@ -65,6 +65,7 @@ select 'ok: base vacía de Supabase, rol postgres' as resultado;
 
 mkdirSync(salida, { recursive: true })
 for (const f of readdirSync(salida)) if (/^\d\d_.*\.sql$/.test(f) || ['INDICE.md', 'funciones.json', 'datos_demo.sql'].includes(f)) rmSync(join(salida, f))
+rmSync(join(salida, 'incremental'), { recursive: true, force: true })
 const escribir = (nombre: string, texto: string) => { if (tamano(texto) > LIMITE_DURO) throw new Error(`${nombre} supera ${LIMITE_DURO} bytes`); writeFileSync(join(salida, nombre), texto) }
 const pad = (n: number) => String(n).padStart(2, '0')
 
@@ -117,6 +118,36 @@ order by 1;
   indice.push({ archivo: '99_verificacion.sql', bytes: tamano(verif), contenido: 'Verificación del esquema (solo lectura)', privilegios: 'Lectura del catálogo y de storage.buckets' })
 } else {
   writeFileSync(join(salida, '99_verificacion.sql'), '-- (sin valores esperados todavía)\n')
+}
+
+// Incremental: lo posterior a la última migración que ya se aplicó en el proyecto de pruebas (scripts/entorno/incremental.json), como archivo aparte
+// con su propia verificación. Así no hace falta volver a aplicar el paquete completo y los archivos 01 a NN ya aplicados no cambian de sentido para quien los aplicó.
+const incr = JSON.parse(readFileSync(join(RAIZ, 'scripts', 'entorno', 'incremental.json'), 'utf8')) as { desde: string; verificacion: string }
+const nuevas = fuentes.filter(f => f.ruta.startsWith('migrations/') && f.ruta.slice('migrations/'.length, 'migrations/'.length + 14) > incr.desde)
+if (nuevas.length) {
+  const dir = join(salida, 'incremental')
+  mkdirSync(dir, { recursive: true })
+  const nombreIncr = `01_aplicar_incremental.sql`
+  let t = `-- Vive ADN, incremental tras ${incr.desde}. Aplicar una vez, solo sobre un proyecto que ya tiene el paquete completo hasta esa migración. Detenerse en el primer error.\n${CABECERA}`
+  for (const f of nuevas) t += `\n-- ===== ${f.ruta} (sha256 ${sha(f.texto)}) =====\n${f.texto.endsWith('\n') ? f.texto : f.texto + '\n'}`
+  if (tamano(t) > LIMITE_DURO) throw new Error(`${nombreIncr} supera ${LIMITE_DURO} bytes`)
+  writeFileSync(join(dir, nombreIncr), t)
+  const verifIncr = readFileSync(join(RAIZ, incr.verificacion), 'utf8')
+  writeFileSync(join(dir, '99_verificacion_incremental.sql'), verifIncr)
+  writeFileSync(join(dir, 'INDICE.md'), `# Incremental del paquete de aplicación (tras ${incr.desde})
+
+Para un proyecto que ya tiene el paquete completo aplicado hasta la migración ${incr.desde}. Generado por \`scripts/entorno/generar-paquete.sh\`; no sustituye al paquete completo (que sigue valiendo para un proyecto vacío).
+
+| Archivo | Bytes | Contenido |
+| --- | --- | --- |
+| \`${nombreIncr}\` | ${tamano(t).toLocaleString('es-ES')} | ${nuevas.map(f => f.ruta.replace(/^migrations\//, '').replace(/\.sql$/, '')).join(', ')} |
+| \`99_verificacion_incremental.sql\` | ${tamano(verifIncr).toLocaleString('es-ES')} | Verificación de lo añadido (solo lectura) |
+
+**Orden.** 1) Aplicar \`${nombreIncr}\` una sola vez y detenerse si falla (avisar a Desarrollo con el texto del error). 2) Ejecutar \`99_verificacion_incremental.sql\`: todas las filas con \`ok = true\` y \`zz_todo_ok\` en \`true\`. Repetirlo no hace daño (las funciones se crean con \`create or replace\` y los permisos se repiten tal cual), pero no hace falta.
+
+**Reversión.** Está escrita y probada (\`supabase/reversiones/\`), pero solo se ejecuta si Gerencia lo ordena.
+`)
+  indice.push({ archivo: 'incremental/01_aplicar_incremental.sql', bytes: tamano(t), contenido: `Incremental tras ${incr.desde}: ${nuevas.map(f => f.ruta.replace(/^migrations\//, '').replace(/\.sql$/, '')).join(', ')}`, privilegios: 'Ninguno especial' })
 }
 
 // Funciones de borde: manifiesto con el nombre, si el despliegue verifica el JWT, los archivos de cada una y su sha256 completo.

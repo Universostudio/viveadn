@@ -21,6 +21,13 @@
         </ul>
       </section>
 
+      <div class="grid grid-cols-1 xl:grid-cols-3 gap-4">
+        <PanelActividad id="portada" :titulo="t('plataformaPanel.portada.actividad')" :eventos="eventos"
+          :vacio="pm.actividadEstado === 'no' ? t('plataformaPanel.sistema.noDisponible') : undefined" />
+        <PanelSalud id="portada" :titulo="t('plataformaPanel.portada.salud')" :servicios="salud" />
+        <TarjetaSinConectar id="facturacion-reciente" :titulo="t('plataformaPanel.portada.facturacionReciente')" :falta="t('plataformaPanel.faltaFacturacion')" />
+      </div>
+
       <TablaInquilinos :titulo="t('plataformaPanel.iglesias.tabla')" :inquilinos="inquilinos" :acciones="acciones" id="portada" :etiqueta-nombre="t('plataformaPanel.iglesias.columna')">
         <template #cabecera><RouterLink to="/plataforma/iglesias" class="text-sm text-adn-verde hover:underline">{{ t('plataformaPanel.portada.verTodas') }}</RouterLink></template>
       </TablaInquilinos>
@@ -33,14 +40,17 @@ import { computed, onMounted } from 'vue'
 import { Plus } from '@lucide/vue'
 import { useI18n } from 'vue-i18n'
 import KpiTarjeta from '@/panel-maestro/KpiTarjeta.vue'
+import PanelActividad from '@/panel-maestro/PanelActividad.vue'
+import PanelSalud from '@/panel-maestro/PanelSalud.vue'
+import TarjetaSinConectar from '@/panel-maestro/TarjetaSinConectar.vue'
 import TablaInquilinos from '@/panel-maestro/TablaInquilinos.vue'
 import type { AccionInquilino, Inquilino } from '@/panel-maestro/tipos'
 import { usePlataformaStore } from '@/stores/plataforma'
-import { aInquilino, alertasGlobales, kpisDe, resumir } from './adaptador'
+import { aInquilino, alertasGlobales, eventosParaPanel, kpisDe, resumir, saludDe } from './adaptador'
 
-const { t, locale } = useI18n()
+const { t, te, locale } = useI18n()
 const pm = usePlataformaStore()
-onMounted(() => { void pm.asegurarCargada() })
+onMounted(() => { void pm.asegurarCargada(); void pm.cargarActividad(10); void pm.cargarSistema() })
 
 const fecha = (iso: string) => new Date(iso).toLocaleDateString(locale.value)
 const catalogo = computed(() => ({ planes: pm.planes, modulos: pm.modulos, planModulos: pm.planModulos }))
@@ -51,5 +61,8 @@ const kpis = computed(() => kpisDe(resumen.value, alertas.value, t as any, n => 
 const inquilinos = computed(() => [...pm.iglesias]
   .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
   .slice(0, 8).map(ig => aInquilino(ig, catalogo.value, t as any, fecha)))
+const eventos = computed(() => eventosParaPanel(pm.actividad, t as any, te as any))
+// La purga se toma del estado más reciente que haya (la lista ya la carga) y el envío de «sistema»
+const salud = computed(() => saludDe(pm.sistema?.purga ?? pm.purga, pm.sistema?.envio ?? null, t as any))
 const acciones = (i: Inquilino): AccionInquilino[] => [{ clave: 'gestionar', etiqueta: t('plataformaPanel.accion.gestionar'), ruta: `/plataforma/iglesias/${i.id}` }]
 </script>
