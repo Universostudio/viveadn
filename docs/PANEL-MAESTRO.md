@@ -26,6 +26,7 @@ El administrador de plataforma ve conteos, estados, planes, fechas y nombres de 
 | `/plataforma/planes` | Planes y módulos | Matriz de lectura: qué incluye cada plan |
 | `/plataforma/registro` | Registro y códigos | Apertura del registro y códigos de acceso |
 | `/plataforma/sistema` | Sistema | Estado de la purga, libro de purgas, funciones de envío, auditoría de plataforma |
+| `/plataforma/reportes` | Reportes | Crecimiento de iglesias por mes, altas y bajas, distribución por plan y etapa, personas y módulos con acceso; uso real y retención «sin conectar» |
 | `/plataforma/facturacion` | Facturación | Precio por plan y estimación del ingreso mensual esperado, etiquetada «Datos de prueba»; los cobros reales siguen «sin conectar» (`docs/FACTURACION.md`) |
 | `/plataforma/soporte` | Soporte | Tickets, novedades y avisos dentro de la aplicación, sin servicios externos de pago. «Sin conectar» solo mientras la base no tenga la migración `20261111350000_adn_soporte` |
 
@@ -61,6 +62,16 @@ Tres piezas, todas en la base y la función `plataforma`, sin servicios de pago 
 **Correo masivo: apagado.** Al crear un aviso se puede pedir que además vaya por correo, pero eso solo se anota (`correo_estado`: `no_pedido`, `apagado` o `pendiente`) y la pantalla lo dice: «correo pedido, no enviado». No se envía nada mientras el interruptor general `ADN_ENVIO_ACTIVO` siga apagado, y cuando se encienda haría falta además el reparto con los topes aprobados (`docs/COSTE-ENVIO.md`). Hoy es solo la pista de lo que se pidió.
 
 **Despliegue seguro.** La web puede desplegarse antes que la migración: la iglesia comprueba una vez por carga si existen las tablas y, si no, no ofrece menú, avisos ni novedades; la plataforma muestra «Sin conectar» en vez de ceros inventados. Los ceros de verdad solo aparecen cuando la base ya tiene las tablas. Las tablas de soporte se exportan con el resto de datos de la iglesia, salvo las entregas de avisos (se reconstruyen al repartir un aviso nuevo).
+
+### 3.4 Reportes
+
+Salen de la misma lista `visibles` que todo el panel, así que el interruptor «Incluir demostraciones» los mueve a la vez [E, `scripts/probar-reportes.mts`, `scripts/probar-panel-maestro-ui.mjs`]. Lógica pura en `src/views/plataforma/reportes.ts`; no hay acción nueva en la función ni migración: se calculan con lo que ya devuelve `listar`. Solo conteos, nunca datos de personas.
+
+- **Crecimiento.** Doce meses en UTC con altas (fecha de creación), bajas (fecha de borrado) e iglesias vivas a fin de mes. Una iglesia suspendida o en receso sigue viva: no tiene fecha propia y no se cuenta como baja.
+- **Distribución** por plan y etapa de las iglesias vivas; las dadas de baja no entran. Un plan que ya no está en el catálogo se conserva.
+- **Personas.** Total de personas y de cuentas de acceso y promedio por iglesia (sin promedio si no hay iglesias; no se inventa).
+- **Módulos.** Cuántas iglesias con servicio (alta, prueba o activa) tienen cada módulo, por su plan o por un complemento activo. Es **acceso, no uso**.
+- **Sin conectar:** uso real de cada módulo (no hay registro de uso del que leer) y retención por cohorte (faltan fechas propias de suspensión y de receso).
 
 ## 4. Estructura reutilizable
 

@@ -1631,7 +1631,8 @@
       "registro": "Cadastro e códigos",
       "sistema": "Sistema",
       "soporte": "Suporte",
-      "gestionar": "Gerenciar"
+      "gestionar": "Gerenciar",
+      "reportes": "Relatórios"
     },
     "estado": {
       "borradoVencido": "Exclusão vencida",
@@ -1953,6 +1954,31 @@
         "cancelar": "Cancelar a exclusão",
         "descargar": "Baixar cópia de segurança"
       }
+    },
+    "reportes": {
+      "titulo": "Relatórios da plataforma",
+      "subtitulo": "Crescimento, distribuição e uso das igrejas. Apenas contagens: nenhum dado de pessoas.",
+      "personas": "Pessoas",
+      "totalPersonas": "Pessoas cadastradas",
+      "cuentas": "Contas de acesso",
+      "iglesiasVivas": "Igrejas (sem as encerradas)",
+      "promedio": "Média por igreja",
+      "sinDato": "Sem dado",
+      "crecimiento": "Crescimento de igrejas por mês",
+      "crecimientoNota": "Cadastros por data de criação e encerramentos por data de exclusão. As suspensas e em recesso continuam vivas: não têm data própria e não contam como encerramentos.",
+      "mes": "Mês",
+      "altas": "Cadastros",
+      "bajas": "Encerramentos",
+      "vivas": "Igrejas vivas no fim do mês",
+      "distribucion": "Distribuição por plano e etapa",
+      "total": "Total",
+      "modulos": "Módulos com acesso",
+      "modulosNota": "Igrejas em serviço (cadastro, teste ou ativas) que têm o módulo, pelo plano ou por um complemento. É acesso, não uso.",
+      "porComplemento": "{n} por complemento",
+      "usoReal": "Uso real dos módulos",
+      "faltaUsoReal": "O uso real de cada módulo (quantas pessoas o usam por semana) ainda não é medido: hoje não há registro de uso para ler.",
+      "retencion": "Retenção por coorte",
+      "faltaRetencion": "Falta uma data própria de suspensão e de recesso para calcular quantas igrejas continuam ativas meses depois do cadastro."
     }
   },
   "lideres": {

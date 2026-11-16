@@ -486,6 +486,25 @@ try {
     }
   })
 
+  await prueba('reportes: personas, crecimiento, distribución y módulos salen de la misma lista que el resto, el interruptor de demostraciones los mueve a la vez y lo que no tiene fuente dice «sin conectar»', async () => {
+    const { browser, page, errores } = await escenario()
+    await page.goto(url('/plataforma/reportes')); await page.waitForSelector('[data-test=rep-personas]')
+    // Sin demostraciones y sin la iglesia dada de baja: Casa del Reino 320, Iglesia del Norte 45, Comunidad del Sur 12 y Sede Este 0
+    assert.equal((await page.textContent('[data-test=rep-total-personas]')).trim().replace(/\D/g, ''), '377')
+    assert.match(await page.textContent('[data-test=rep-promedio]'), /94[,.]3/)
+    assert.equal((await page.textContent('[data-test=rep-dist-total]')).trim(), '4')
+    assert.equal(await page.locator('[data-test=rep-crecimiento] tbody tr').count(), 12, 'doce meses')
+    assert.equal(await page.locator('[data-test=rep-crecimiento] [data-mes]').last().locator('[data-campo=vivas]').textContent().then(x => x.trim()), '4', 'el último mes cuenta las iglesias vivas de hoy')
+    assert.equal(await page.locator('[data-test=rep-modulos] li').count(), 3)
+    assert.equal(await page.locator('[data-test=sin-conectar]').count(), 2, 'uso real y retención: sin fuente, sin conectar')
+    // El interruptor mueve todo a la vez
+    await page.check('[data-test=incluir-demo]')
+    await page.waitForFunction(() => /677/.test((document.querySelector('[data-test=rep-total-personas]')?.textContent ?? '').replace(/\D/g, '')))
+    assert.equal((await page.textContent('[data-test=rep-dist-total]')).trim(), '5')
+    assert.deepEqual(errores, [])
+    await browser.close()
+  })
+
   await prueba('el cambio de contexto: aterriza en el panel, entra a su iglesia y vuelve; dura la pestaña', async () => {
     const { browser, page, errores } = await escenario({ conIglesia: true })
     await page.goto(url('/'))

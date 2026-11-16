@@ -96,6 +96,7 @@ const router = createRouter({
         { path: 'iglesias/:id', name: 'pm-iglesia', component: () => import('@/views/plataforma/GestionarView.vue'), meta: { seccion: 'gestionar' } },
         { path: 'pruebas', name: 'pm-pruebas', component: () => import('@/views/plataforma/PruebasView.vue'), meta: { seccion: 'pruebas' } },
         { path: 'planes', name: 'pm-planes', component: () => import('@/views/plataforma/PlanesView.vue'), meta: { seccion: 'planes' } },
+        { path: 'reportes', name: 'pm-reportes', component: () => import('@/views/plataforma/ReportesView.vue'), meta: { seccion: 'reportes' } },
         { path: 'facturacion', name: 'pm-facturacion', component: () => import('@/views/plataforma/FacturacionView.vue'), meta: { seccion: 'facturacion' } },
         { path: 'registro', name: 'pm-registro', component: () => import('@/views/plataforma/RegistroView.vue'), meta: { seccion: 'registro' } },
         { path: 'sistema', name: 'pm-sistema', component: () => import('@/views/plataforma/SistemaView.vue'), meta: { seccion: 'sistema' } },

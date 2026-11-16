@@ -1631,7 +1631,8 @@
       "registro": "Inscription et codes",
       "sistema": "Système",
       "soporte": "Support",
-      "gestionar": "Gérer"
+      "gestionar": "Gérer",
+      "reportes": "Rapports"
     },
     "estado": {
       "borradoVencido": "Suppression en retard",
@@ -1953,6 +1954,31 @@
         "cancelar": "Annuler la suppression",
         "descargar": "Télécharger la copie de sauvegarde"
       }
+    },
+    "reportes": {
+      "titulo": "Rapports de la plateforme",
+      "subtitulo": "Croissance, répartition et usage des églises. Seulement des comptages : aucune donnée personnelle.",
+      "personas": "Personnes",
+      "totalPersonas": "Personnes enregistrées",
+      "cuentas": "Comptes d'accès",
+      "iglesiasVivas": "Églises (hors résiliées)",
+      "promedio": "Moyenne par église",
+      "sinDato": "Sans donnée",
+      "crecimiento": "Croissance des églises par mois",
+      "crecimientoNota": "Inscriptions par date de création et résiliations par date de suppression. Les églises suspendues ou en pause restent vivantes : elles n'ont pas de date propre et ne comptent pas comme résiliations.",
+      "mes": "Mois",
+      "altas": "Inscriptions",
+      "bajas": "Résiliations",
+      "vivas": "Églises vivantes en fin de mois",
+      "distribucion": "Répartition par formule et état",
+      "total": "Total",
+      "modulos": "Modules accessibles",
+      "modulosNota": "Églises en service (inscription, essai ou actives) qui ont le module, par leur formule ou par un complément. C'est de l'accès, pas de l'usage.",
+      "porComplemento": "{n} par complément",
+      "usoReal": "Usage réel des modules",
+      "faltaUsoReal": "L'usage réel de chaque module (combien de personnes l'utilisent chaque semaine) n'est pas encore mesuré : il n'existe aucun registre d'usage à lire.",
+      "retencion": "Rétention par cohorte",
+      "faltaRetencion": "Il manque une date propre de suspension et de pause pour calculer combien d'églises sont encore actives des mois après l'inscription."
     }
   },
   "lideres": {

@@ -22,7 +22,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
-import { Activity, Church, CirclePlus, KeyRound, LayoutDashboard, LifeBuoy, Layers, Receipt, Timer } from '@lucide/vue'
+import { Activity, Church, CirclePlus, KeyRound, LayoutDashboard, LifeBuoy, Layers, Receipt, Timer, ChartColumn } from '@lucide/vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import PanelShell from '@/panel-maestro/PanelShell.vue'
@@ -61,6 +61,7 @@ const grupos = computed<GrupoMenu[]>(() => [
   { titulo: t('plataformaPanel.grupo.negocio'), items: [
     { to: '/plataforma/pruebas', etiqueta: t('plataformaPanel.menu.pruebas'), icono: Timer, contador: contadorPruebas.value },
     { to: '/plataforma/planes', etiqueta: t('plataformaPanel.menu.planes'), icono: Layers },
+    { to: '/plataforma/reportes', etiqueta: t('plataformaPanel.menu.reportes'), icono: ChartColumn },
     { to: '/plataforma/facturacion', etiqueta: t('plataformaPanel.menu.facturacion'), icono: Receipt },
   ] },
   { titulo: t('plataformaPanel.grupo.sistema'), items: [

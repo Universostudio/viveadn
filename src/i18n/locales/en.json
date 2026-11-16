@@ -1631,7 +1631,8 @@
       "registro": "Sign-up and codes",
       "sistema": "System",
       "soporte": "Support",
-      "gestionar": "Manage"
+      "gestionar": "Manage",
+      "reportes": "Reports"
     },
     "estado": {
       "borradoVencido": "Deletion overdue",
@@ -1953,6 +1954,31 @@
         "cancelar": "Cancel the deletion",
         "descargar": "Download backup copy"
       }
+    },
+    "reportes": {
+      "titulo": "Platform reports",
+      "subtitulo": "Growth, distribution and use of churches. Counts only: no personal data.",
+      "personas": "People",
+      "totalPersonas": "Registered people",
+      "cuentas": "Access accounts",
+      "iglesiasVivas": "Churches (excluding closed down)",
+      "promedio": "Average per church",
+      "sinDato": "No data",
+      "crecimiento": "Church growth by month",
+      "crecimientoNota": "Sign-ups by creation date and closures by deletion date. Suspended and recess churches stay alive: they have no date of their own and do not count as closures.",
+      "mes": "Month",
+      "altas": "Sign-ups",
+      "bajas": "Closures",
+      "vivas": "Live churches at month end",
+      "distribucion": "Distribution by plan and stage",
+      "total": "Total",
+      "modulos": "Modules with access",
+      "modulosNota": "Churches in service (sign-up, trial or active) that have the module, through their plan or an add-on. This is access, not use.",
+      "porComplemento": "{n} via add-on",
+      "usoReal": "Real module use",
+      "faltaUsoReal": "Real use of each module (how many people use it each week) is not measured yet: there is no usage record to read from today.",
+      "retencion": "Cohort retention",
+      "faltaRetencion": "A date of its own for suspension and recess is missing, needed to count how many churches are still active months after sign-up."
     }
   },
   "lideres": {

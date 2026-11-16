@@ -1631,7 +1631,8 @@
       "registro": "Registro y códigos",
       "sistema": "Sistema",
       "soporte": "Soporte",
-      "gestionar": "Gestionar"
+      "gestionar": "Gestionar",
+      "reportes": "Reportes"
     },
     "estado": {
       "borradoVencido": "Borrado vencido",
@@ -1953,6 +1954,31 @@
         "cancelar": "Cancelar el borrado",
         "descargar": "Descargar copia de seguridad"
       }
+    },
+    "reportes": {
+      "titulo": "Reportes de la plataforma",
+      "subtitulo": "Crecimiento, distribución y uso de las iglesias. Solo conteos: ningún dato de personas.",
+      "personas": "Personas",
+      "totalPersonas": "Personas registradas",
+      "cuentas": "Cuentas de acceso",
+      "iglesiasVivas": "Iglesias (sin dadas de baja)",
+      "promedio": "Promedio por iglesia",
+      "sinDato": "Sin dato",
+      "crecimiento": "Crecimiento de iglesias por mes",
+      "crecimientoNota": "Altas por fecha de creación y bajas por fecha de borrado. Las suspendidas y en receso siguen vivas: no tienen fecha propia y no se cuentan como bajas.",
+      "mes": "Mes",
+      "altas": "Altas",
+      "bajas": "Bajas",
+      "vivas": "Iglesias vivas a fin de mes",
+      "distribucion": "Distribución por plan y etapa",
+      "total": "Total",
+      "modulos": "Módulos con acceso",
+      "modulosNota": "Iglesias con servicio (alta, prueba o activa) que tienen el módulo, por su plan o por un complemento. Es acceso, no uso.",
+      "porComplemento": "{n} por complemento",
+      "usoReal": "Uso real de los módulos",
+      "faltaUsoReal": "Falta medir el uso real de cada módulo (cuántas personas lo usan cada semana): hoy no hay un registro de uso del que leer.",
+      "retencion": "Retención por cohorte",
+      "faltaRetencion": "Falta una fecha propia de suspensión y de receso para calcular cuántas iglesias siguen activas meses después de su alta."
     }
   },
   "lideres": {
