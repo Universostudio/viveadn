@@ -65,6 +65,7 @@ Deno.serve(async (req) => {
         p_email: v.datos.email, p_telefono: v.datos.telefono, p_ip_hash: await huellaIp(ip, servicio),
         p_texto_version: v.datos.textoVersion || null, p_idioma: v.datos.idioma || null,
         p_canales: v.datos.canales.length ? v.datos.canales : null,
+        p_nuevo_creyente: v.datos.nuevoCreyente,
       })
       if (error) { console.error('registrar_checkin', error.message); return json({ error: 'interno' }, 500) }
       const r = respuestaDe(String(data))

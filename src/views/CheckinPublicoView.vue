@@ -55,6 +55,20 @@
           <input id="ck-email" v-model="form.email" type="email" inputmode="email" maxlength="254" autocomplete="email" class="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-adn-verde" />
         </div>
 
+        <!-- Solo quien responde que sí abre seguimiento; es una pregunta de respuesta obligatoria con «No» siempre a mano -->
+        <fieldset class="space-y-2 rounded-lg border border-gray-200 px-4 py-3" data-test="nuevo-creyente">
+          <legend class="px-1 text-sm font-medium text-gray-700">{{ t('checkin.nuevoCreyenteTitulo') }}</legend>
+          <p class="text-xs text-gray-500">{{ t('checkin.nuevoCreyenteAyuda') }}</p>
+          <label class="flex items-center gap-2 text-sm text-gray-700">
+            <input v-model="nuevoCreyente" type="radio" name="nuevo-creyente" :value="true" data-test="nc-si" class="text-adn-verde" />
+            <span>{{ t('checkin.nuevoCreyenteSi') }}</span>
+          </label>
+          <label class="flex items-center gap-2 text-sm text-gray-700">
+            <input v-model="nuevoCreyente" type="radio" name="nuevo-creyente" :value="false" data-test="nc-no" class="text-adn-verde" />
+            <span>{{ t('checkin.nuevoCreyenteNo') }}</span>
+          </label>
+        </fieldset>
+
         <!-- Campo trampa: fuera de la vista y del teclado; solo un robot lo rellena -->
         <div class="absolute -left-[9999px] w-px h-px overflow-hidden" aria-hidden="true">
           <label for="ck-web">Web</label>
@@ -121,6 +135,8 @@ const error = ref('')
 const form = reactive({ nombre: '', apellido: '', telefono: '', email: '', mayor14: false, consentimiento: false, web: '' })
 // Una casilla por canal, sin marcar de antemano: la persona decide cada una y puede registrarse sin marcar ninguna
 const canales = reactive({ email: false, whatsapp: false, sms: false })
+// Sin responder hasta que la persona elija: null no se envía como «no», se pide la respuesta
+const nuevoCreyente = ref<boolean | null>(null)
 const token = String(route.params.token ?? '')
 
 // La pagina lleva el enlace secreto en la direccion: que no se indexe ni se pase a otros sitios
@@ -156,9 +172,10 @@ onBeforeUnmount(() => metas.forEach(m => m.remove()))
 async function enviar() {
   error.value = ''
   if (!form.nombre.trim() || (!info.value?.alias && !form.apellido.trim()) || !form.telefono.trim()) { error.value = 'checkin.errorDatos'; return }
+  if (nuevoCreyente.value === null) { error.value = 'checkin.errorNuevoCreyente'; return }
   if (!form.mayor14 || !form.consentimiento) { error.value = 'checkin.errorConsentimiento'; return }
   enviando.value = true
-  const { error: err } = await supabase.functions.invoke('checkin-evento', { body: { accion: 'registrar', token, ...form, texto_version: CHECKIN_TEXTO_VERSION, idioma: locale.value, canales: { ...canales, email: canales.email && !!form.email.trim() }, ...(info.value?.alias ? { apellido: '', email: '' } : {}) } })
+  const { error: err } = await supabase.functions.invoke('checkin-evento', { body: { accion: 'registrar', token, ...form, texto_version: CHECKIN_TEXTO_VERSION, idioma: locale.value, canales: { ...canales, email: canales.email && !!form.email.trim() }, nuevo_creyente: nuevoCreyente.value, ...(info.value?.alias ? { apellido: '', email: '' } : {}) } })
   enviando.value = false
   if (!err) { estado.value = 'enviado'; return }
   const codigo = await codigoDe(err)

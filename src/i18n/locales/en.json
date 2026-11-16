@@ -1137,7 +1137,12 @@
     "canalEmail": "I want to receive messages from {iglesia} by email. I can unsubscribe at any time.",
     "canalWhatsapp": "I want to receive messages from {iglesia} on WhatsApp. I can unsubscribe at any time.",
     "canalSms": "I want to receive messages from {iglesia} by SMS. I can unsubscribe at any time.",
-    "masInfo": "More information in the privacy policy"
+    "masInfo": "More information in the privacy policy",
+    "nuevoCreyenteTitulo": "Are you a new believer?",
+    "nuevoCreyenteAyuda": "If you decide to follow Jesus today or are just starting out, someone from the church can walk with you in your first steps. If you are only visiting or prefer not to share this, choose No.",
+    "nuevoCreyenteSi": "Yes, I am a new believer",
+    "nuevoCreyenteNo": "No",
+    "errorNuevoCreyente": "Choose an answer to “Are you a new believer?”."
   },
   "bienvenida": {
     "lema1": "Your purpose,",

@@ -1137,7 +1137,12 @@
     "canalEmail": "Je souhaite recevoir des messages de {iglesia} par e-mail. Je peux me désinscrire à tout moment.",
     "canalWhatsapp": "Je souhaite recevoir des messages de {iglesia} sur WhatsApp. Je peux me désinscrire à tout moment.",
     "canalSms": "Je souhaite recevoir des messages de {iglesia} par SMS. Je peux me désinscrire à tout moment.",
-    "masInfo": "Plus d'informations dans la politique de confidentialité"
+    "masInfo": "Plus d'informations dans la politique de confidentialité",
+    "nuevoCreyenteTitulo": "Êtes-vous un nouveau croyant ?",
+    "nuevoCreyenteAyuda": "Si vous décidez de suivre Jésus aujourd’hui ou si vous débutez, quelqu’un de l’église pourra vous accompagner dans vos premiers pas. Si vous êtes simplement de passage ou préférez ne pas le partager, choisissez Non.",
+    "nuevoCreyenteSi": "Oui, je suis un nouveau croyant",
+    "nuevoCreyenteNo": "Non",
+    "errorNuevoCreyente": "Choisissez une réponse à « Êtes-vous un nouveau croyant ? »."
   },
   "bienvenida": {
     "lema1": "Votre vocation,",

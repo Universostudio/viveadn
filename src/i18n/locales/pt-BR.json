@@ -1137,7 +1137,12 @@
     "canalEmail": "Quero receber mensagens de {iglesia} por e-mail. Posso cancelar quando quiser.",
     "canalWhatsapp": "Quero receber mensagens de {iglesia} pelo WhatsApp. Posso cancelar quando quiser.",
     "canalSms": "Quero receber mensagens de {iglesia} por SMS. Posso cancelar quando quiser.",
-    "masInfo": "Mais informações na política de privacidade"
+    "masInfo": "Mais informações na política de privacidade",
+    "nuevoCreyenteTitulo": "Você é um novo convertido?",
+    "nuevoCreyenteAyuda": "Se hoje você decide seguir Jesus ou está começando, alguém da igreja poderá acompanhá-lo nos primeiros passos. Se está apenas visitando ou prefere não compartilhar, escolha Não.",
+    "nuevoCreyenteSi": "Sim, sou um novo convertido",
+    "nuevoCreyenteNo": "Não",
+    "errorNuevoCreyente": "Escolha uma resposta para “Você é um novo convertido?”."
   },
   "bienvenida": {
     "lema1": "Seu propósito,",

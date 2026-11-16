@@ -26,13 +26,13 @@
       "archivos": [
         {
           "ruta": "index.ts",
-          "bytes": 4442,
-          "sha256": "c076cb42baee6cd8178dab58bae4d18fa76880224f323bea55dd10ea1af07459"
+          "bytes": 4491,
+          "sha256": "6e3a1fd36873ba33a37f6327a8f5065289bac9000697dc3083ee81f4274ce260"
         },
         {
           "ruta": "validar.ts",
-          "bytes": 3826,
-          "sha256": "c806a04a1c35877ebcbd8187a464723e25a3f4f755a2219204b73990ac1cff2c"
+          "bytes": 4128,
+          "sha256": "2ee845a3138a748c514f007a9b4c532dfa9a989eb5a6a750921b70ab3c38a7d4"
         }
       ]
     },

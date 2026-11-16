@@ -63,7 +63,8 @@ psql -q -X -v ON_ERROR_STOP=1 -d $C -f "$PAQ/incremental/01_aplicar_incremental.
 pg_dump -s --no-owner -d $C | grep -v '^\\\(un\)\?restrict' > "$TMP/c2.sql"
 diff -q "$TMP/a.sql" "$TMP/c2.sql" >/dev/null || falla "repetir el incremental cambia el esquema"
 echo "OK: repetir el incremental es inofensivo y no cambia el esquema"
-psql -q -X -d $C -c "drop function public.adn_plataforma_historial(uuid, integer)" >/dev/null
+# Se quita una función de lo que añade el incremental actual (la firma de registrar_checkin con la respuesta «nuevo creyente»)
+psql -q -X -d $C -c "drop function public.registrar_checkin(text, text, text, text, text, text, text, text, text[], boolean)" >/dev/null
 [ "$(psql -q -X -At -F'|' -d $C -f "$PAQ/incremental/99_verificacion_incremental.sql" | grep '^zz_todo_ok' | cut -d'|' -f4)" = "f" ] || falla "la verificación del incremental no detecta una función que falta"
 echo "OK: la verificación del incremental detecta una función que falta"
 

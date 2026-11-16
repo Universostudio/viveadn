@@ -42,7 +42,8 @@
     "test:lideres-ui": "node scripts/probar-lideres-ui.mjs",
     "test:acceso": "node scripts/probar-acceso.mts",
     "test:asistencia": "node scripts/probar-asistencia.mts",
-    "test:acceso-ui": "node scripts/probar-acceso-ui.mjs"
+    "test:acceso-ui": "node scripts/probar-acceso-ui.mjs",
+    "test:checkin-ui": "node scripts/probar-checkin-ui.mjs"
   },
   "dependencies": {
     "@fontsource/dm-sans": "^5.3.0",

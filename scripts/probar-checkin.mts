@@ -5,7 +5,7 @@ const { validarRegistro, respuestaDe, TOKEN_RE } = await import('../supabase/fun
 const bueno = { nombre: 'María José', apellido: 'García  López', telefono: '+34 600 111 222', email: 'MARIA@Ejemplo.com', consentimiento: true, mayor14: true, web: '' }
 const r = validarRegistro(bueno)
 assert.ok(r.ok)
-assert.deepEqual(r.ok && r.datos, { nombre: 'María José', apellido: 'García López', telefono: '+34 600 111 222', email: 'maria@ejemplo.com', textoVersion: '', idioma: '', canales: [] }, 'normaliza espacios y pasa el correo a minusculas')
+assert.deepEqual(r.ok && r.datos, { nombre: 'María José', apellido: 'García López', telefono: '+34 600 111 222', email: 'maria@ejemplo.com', textoVersion: '', idioma: '', canales: [], nuevoCreyente: null }, 'normaliza espacios y pasa el correo a minusculas')
 
 // Casillas de canal: solo cuentan las que llegan exactamente como true, y el correo exige un correo
 const marcadas = validarRegistro({ ...bueno, canales: { email: true, whatsapp: true, sms: false } })
@@ -15,6 +15,10 @@ for (const c of [{ email: 'true' }, { email: 1 }, { whatsapp: 'si' }, { telegram
   assert.ok(x.ok && x.datos.canales.length === 0, 'no cuenta como casilla marcada: ' + JSON.stringify(c))
 }
 assert.ok(validarRegistro({ ...bueno }).ok && (validarRegistro({ ...bueno }) as { datos: { canales: string[] } }).datos.canales.length === 0, 'sin casillas el registro es válido')
+// «¿Es nuevo creyente?»: solo true y false exactos son respuesta; cualquier otra cosa es «sin respuesta» (la base conserva el comportamiento anterior)
+const nc = (v: unknown) => { const x = validarRegistro({ ...bueno, nuevo_creyente: v }); return x.ok ? x.datos.nuevoCreyente : 'rechazado' }
+assert.equal(nc(true), true); assert.equal(nc(false), false)
+for (const v of ['true', 'si', 1, 0, null, undefined, [], {}]) assert.equal(nc(v), null, 'sin respuesta: ' + JSON.stringify(v))
 assert.deepEqual(validarRegistro({ ...bueno, email: '', canales: { email: true } }), { ok: false, error: 'datos' }, 'correo marcado sin correo: datos incompletos')
 assert.ok(validarRegistro({ ...bueno, email: '', canales: { whatsapp: true, sms: true } }).ok, 'WhatsApp y SMS no necesitan correo')
 

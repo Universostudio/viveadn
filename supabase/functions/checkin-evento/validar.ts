@@ -16,6 +16,8 @@ export interface Datos {
   idioma: string
   /** Canales de comunicación cuya casilla marcó la persona (cada una por separado, sin marcar de antemano) */
   canales: string[]
+  /** Respuesta a «¿Es nuevo creyente?»: true, false o null si la página no la envió (una versión antigua). Solo un true exacto cuenta como sí. */
+  nuevoCreyente: boolean | null
 }
 
 export type Resultado =
@@ -48,7 +50,8 @@ export function validarRegistro(b: Record<string, unknown>): Resultado {
   const marcadas = typeof b.canales === 'object' && b.canales !== null && !Array.isArray(b.canales) ? (b.canales as Record<string, unknown>) : {}
   const canales = CANALES.filter(c => marcadas[c] === true)
   if (canales.includes('email') && !email) return { ok: false, error: 'datos' }
-  return { ok: true, datos: { nombre, apellido, telefono, email, textoVersion, idioma, canales } }
+  const nuevoCreyente = b.nuevo_creyente === true ? true : b.nuevo_creyente === false ? false : null
+  return { ok: true, datos: { nombre, apellido, telefono, email, textoVersion, idioma, canales, nuevoCreyente } }
 }
 
 // Respuesta al visitante segun lo que devuelve la base de datos. Nuevo y existente se responden igual.

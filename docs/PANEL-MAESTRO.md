@@ -104,7 +104,7 @@ El estado del envío solo dice si está activo y cuánto se usó hoy. No se leen
 
 ## 7. Migración y despliegue
 
-La migración `20261111290000_adn_plataforma_resumen` añade las tres funciones de lectura. Tiene reversión (`supabase/reversiones/20261111290000_adn_plataforma_resumen.down.sql`) probada con `supabase/tests/adn_reversion.sh`, y prueba SQL propia incluida en `supabase/tests/ejecutar.sh` [E]. Se entrega como incremental aparte (`supabase/paquete-pruebas/incremental/`) para un proyecto que ya tiene el paquete hasta `20261111280000`. El paquete completo sigue valiendo para un proyecto vacío. Hay que volver a desplegar la función `plataforma`: ahora incluye el archivo `panel.ts` (el manifiesto `funciones.json` lo lista con su sha256).
+La migración `20261111290000_adn_plataforma_resumen` añade las tres funciones de lectura. Tiene reversión (`supabase/reversiones/20261111290000_adn_plataforma_resumen.down.sql`) probada con `supabase/tests/adn_reversion.sh`, y prueba SQL propia incluida en `supabase/tests/ejecutar.sh` [E]. Se entrega como incremental aparte (`supabase/paquete-pruebas/incremental/`) para un proyecto que ya tenía el paquete hasta `20261111280000` (esa migración ya está aplicada en viveadn-pruebas; el incremental vigente parte ahora de `20261111290000`, `docs/PUESTA-EN-MARCHA.md`). El paquete completo sigue valiendo para un proyecto vacío. Hay que volver a desplegar la función `plataforma`: ahora incluye el archivo `panel.ts` (el manifiesto `funciones.json` lo lista con su sha256).
 
 ## 8. Pruebas
 
