@@ -43,7 +43,7 @@ const modulos = [{ clave: 'miembros', nombre: 'Miembros', tipo: 'nucleo', orden:
 const planModulos = [{ plan: 'semilla', modulo: 'miembros' }, { plan: 'premium', modulo: 'miembros' }, { plan: 'premium', modulo: 'comunicacion' }]
 
 async function escenario({ admin = true, conIglesia = false, ancho = 1366, alto = 900, purgaAtrasada = false, detalleFalla = false, actividadFalla = false, envioActivo = false, demo = 'no', sinDemos = false, ciclo = false, tarea = undefined } = {}) {
-  const estado = { llamadas: [], cuerpos: [], precio: null }
+  const estado = { llamadas: [], cuerpos: [], precio: null, sinAuditar: false }
   const browser = await chromium.launch()
   const ctx = await browser.newContext({ acceptDownloads: true, locale: 'es-ES', viewport: { width: ancho, height: alto }, deviceScaleFactor: 1 })
   const sesion = { access_token: 'x.y.z', refresh_token: 'r', token_type: 'bearer', expires_in: 3600, expires_at: Math.floor(Date.now() / 1000) + 3600,
@@ -82,6 +82,7 @@ async function escenario({ admin = true, conIglesia = false, ancho = 1366, alto 
             ingreso_mensual_por_moneda: pr ? { EUR: pr.m } : {}, fuera_del_calculo: { demo: 1, onboarding: 1, prueba: 2, receso: 0, suspendida: 1, borrada: 0 } })
         }
         case 'plan_precio_fijar': estado.precio = cuerpo.precio_mensual_centimos === null ? null : { m: cuerpo.precio_mensual_centimos, a: cuerpo.precio_anual_centimos, mon: cuerpo.moneda }; return json(200, { ok: true, auditado: true })
+        case 'etapa': return json(200, { ok: true, auditado: !estado.sinAuditar })
         case 'soporte_resumen': return json(501, { error: 'El soporte no esta disponible hasta aplicar su migracion' }) // esta prueba es de una base sin las tablas del soporte
         case 'estado_purga': return json(200, { ok: true, atrasada: purgaAtrasada, en_borrado: 1, vencidas: purgaAtrasada ? 1 : 0, horas_mas_atrasada: purgaAtrasada ? 60 : 0, ...(tarea !== undefined ? { tarea } : {}) })
         case 'detalle':
@@ -236,6 +237,13 @@ try {
     await new Promise(r => setTimeout(r, 400))
     const cuerpo = estado.cuerpos.find(c => c.accion === 'etapa')
     assert.deepEqual({ a: cuerpo?.accion, i: cuerpo?.iglesia_id, e: cuerpo?.etapa }, { a: 'etapa', i: uuid(2), e: 'activa' })
+    // M3: con la auditoría escrita no hay advertencia; si la función avisa auditado=false, la pantalla lo dice
+    assert.equal(await page.locator('[data-test=aviso-sin-auditoria]').count(), 0, 'con auditado=true no hay advertencia')
+    estado.sinAuditar = true
+    await page.click(`tr[data-inquilino="${uuid(2)}"] [data-accion=convertir]`)
+    await page.waitForSelector('[data-test=aviso-sin-auditoria]')
+    assert.match(await page.textContent('[data-test=aviso-sin-auditoria]'), /no quedó anotado en el registro de auditoría/)
+    estado.sinAuditar = false
     // la búsqueda de la barra superior lleva a la tabla filtrada
     await page.fill('[data-test=buscador-global]', 'sur'); await page.press('[data-test=buscador-global]', 'Enter')
     await page.waitForFunction(() => location.search.includes('q=sur'))

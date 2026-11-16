@@ -858,6 +858,7 @@
     "esDemo": "C'est une église de démonstration",
     "crear": "Créer et inviter",
     "errorGenerico": "L'action n'a pas pu être effectuée",
+    "sinAuditoria": "Le changement a été fait, mais il n'a pas été consigné dans le journal d'audit. Prévenez l'équipe technique.",
     "planActualizado": "Offre de {iglesia} mise à jour.",
     "moduloQuitado": "{modulo} retiré de {iglesia}.",
     "moduloActivado": "{modulo} activé pour {iglesia}.",

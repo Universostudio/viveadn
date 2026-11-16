@@ -64,3 +64,11 @@ assert.deepEqual(resumenDeSoporte(null, null, null, null), { tickets: { abiertos
 assert.deepEqual(estadisticasDeAvisos([{ aviso_id: 'a', leido_en: 'z', descartado_en: null }, { aviso_id: 'b', leido_en: null, descartado_en: null }, { aviso_id: 'a', leido_en: null, descartado_en: 'z' }]),
   { a: { entregas: 2, leidos: 1, descartados: 1 }, b: { entregas: 1, leidos: 0, descartados: 0 } })
 console.log('Soporte (función): todo correcto')
+
+// M3: abrir un ticket audita ANTES de leer los mensajes y, si la auditoría falla, el texto no sale
+import { readFileSync } from 'node:fs'
+const fuente = readFileSync(new URL('../supabase/functions/plataforma/index.ts', import.meta.url), 'utf8')
+const abrir = fuente.slice(fuente.indexOf("case 'ticket_abrir'"), fuente.indexOf("case 'ticket_responder'"))
+assert.ok(abrir.indexOf("auditar('ticket_abrir'") > -1 && abrir.indexOf("auditar('ticket_abrir'") < abrir.indexOf('adn_ticket_mensajes'), 'ticket_abrir audita antes de leer los mensajes')
+assert.match(abrir, /if \(!auditado\) return json\(\{ error: [^}]*\}, 503\)/, 'si la auditoría falla, ticket_abrir responde 503 sin texto')
+console.log('Soporte (función): lectura de tickets audita antes y falla si no pudo auditar')

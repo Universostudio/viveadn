@@ -15,6 +15,7 @@
     <div class="p-4 sm:p-6 space-y-6">
       <p v-if="pm.aviso" role="status" data-test="aviso"
         :class="['text-sm px-4 py-3 rounded-lg border', pm.aviso.error ? 'bg-red-50 text-red-700 border-red-200' : 'bg-green-50 text-green-700 border-green-200']">{{ pm.aviso.texto() }}</p>
+      <p v-if="pm.sinAuditoria" role="alert" data-test="aviso-sin-auditoria" class="text-sm px-4 py-3 rounded-lg border bg-amber-50 text-amber-800 border-amber-300">{{ t('plataforma.sinAuditoria') }}</p>
       <RouterView />
     </div>
   </PanelShell>

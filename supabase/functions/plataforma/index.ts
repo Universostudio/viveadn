@@ -637,14 +637,15 @@ Deno.serve(async (req) => {
       }
 
       case 'ticket_abrir': {
-        // Abrir un ticket para leerlo es una accion con rastro: queda en la auditoria
+        // Leer el texto de un ticket deja rastro ANTES de entregarlo: si la auditoria no se puede escribir, el texto no sale
         if (!esUuid(body.id)) return json({ error: 'Identificador de ticket no valido' }, 400)
         const { data: t, error } = await admin.from('adn_tickets').select('id, iglesia_id, asunto, prioridad, estado, created_at, updated_at, cerrado_en, iglesias(nombre)').eq('id', body.id).maybeSingle()
         if (error) return json({ error: 'No se pudo leer el ticket' }, 500)
         if (!t) return json({ error: 'El ticket no existe' }, 404)
+        const auditado = await auditar('ticket_abrir', t.iglesia_id, { ticket_id: t.id })
+        if (!auditado) return json({ error: 'No se pudo registrar la lectura en la auditoria; el ticket no se muestra' }, 503)
         const { data: m, error: eM } = await admin.from('adn_ticket_mensajes').select('id, autor_tipo, texto, created_at').eq('ticket_id', body.id).order('id')
         if (eM) return json({ error: 'No se pudo leer el ticket' }, 500)
-        const auditado = await auditar('ticket_abrir', t.iglesia_id, { ticket_id: t.id })
         return json(salidaSegura({ ok: true, ticket: ticketAbierto(t, m), auditado }))
       }
 

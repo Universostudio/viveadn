@@ -858,6 +858,7 @@
     "esDemo": "This is a demo church",
     "crear": "Create and invite",
     "errorGenerico": "The action couldn't be completed",
+    "sinAuditoria": "The change was made, but it was not recorded in the audit log. Tell the technical team.",
     "planActualizado": "{iglesia}'s plan has been updated.",
     "moduloQuitado": "{modulo} removed from {iglesia}.",
     "moduloActivado": "{modulo} enabled for {iglesia}.",

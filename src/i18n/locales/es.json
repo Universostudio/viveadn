@@ -858,6 +858,7 @@
     "esDemo": "Es una iglesia de demostración",
     "crear": "Crear e invitar",
     "errorGenerico": "No se pudo completar la acción",
+    "sinAuditoria": "El cambio se hizo, pero no quedó anotado en el registro de auditoría. Avisa al equipo técnico.",
     "planActualizado": "Plan de {iglesia} actualizado.",
     "moduloQuitado": "{modulo} quitado de {iglesia}.",
     "moduloActivado": "{modulo} activado en {iglesia}.",

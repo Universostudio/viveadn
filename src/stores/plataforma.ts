@@ -48,9 +48,11 @@ export const usePlataformaStore = defineStore('plataforma', () => {
   const visibles = computed(() => vistaDe(iglesias.value, incluirDemo.value))
   // Aviso como función para que se traduzca de nuevo si cambia el idioma
   const aviso = ref<{ texto: () => string; error: boolean } | null>(null)
+  // true si la última acción de escritura se hizo pero la base no pudo anotarla en la auditoría (auditado=false)
+  const sinAuditoria = ref(false)
 
   function avisar(texto: () => string, error = false) { aviso.value = { texto, error } }
-  function limpiarAviso() { aviso.value = null }
+  function limpiarAviso() { aviso.value = null; sinAuditoria.value = false }
 
   async function llamar(cuerpo: Record<string, unknown>) {
     const { data, error } = await supabase.functions.invoke('plataforma', { body: { ...cuerpo, origen: window.location.origin } })
@@ -63,6 +65,7 @@ export const usePlataformaStore = defineStore('plataforma', () => {
       } catch { /* se queda el mensaje genérico */ }
       throw new Error(motivo)
     }
+    if (data && typeof data === 'object' && (data as { auditado?: unknown }).auditado === false) sinAuditoria.value = true
     return data
   }
 
@@ -128,6 +131,7 @@ export const usePlataformaStore = defineStore('plataforma', () => {
   // Ejecuta una acción de escritura, avisa del resultado y recarga la lista
   async function ejecutar(cuerpo: Record<string, unknown>, ok: () => string) {
     try {
+      sinAuditoria.value = false
       await llamar(cuerpo)
       avisar(ok)
     } catch (e: any) {
@@ -140,9 +144,9 @@ export const usePlataformaStore = defineStore('plataforma', () => {
   function limpiar() {
     iglesias.value = []; planes.value = []; modulos.value = []; planModulos.value = []
     registro.value = { abierto: false, requiere_codigo: true, codigos: [] }
-    purga.value = null; cargada.value = false; aviso.value = null
+    purga.value = null; cargada.value = false; aviso.value = null; sinAuditoria.value = false
     actividad.value = []; actividadEstado.value = 'pendiente'; sistema.value = null; sistemaEstado.value = 'pendiente'
   }
 
-  return { iglesias, incluirDemo, fijarIncluirDemo, hayDemos, totalDemos, visibles, planes, modulos, planModulos, registro, purga, cargando, cargada, aviso, actividad, actividadEstado, sistema, sistemaEstado, soporte, cargarSoporte, avisar, limpiarAviso, llamar, cargar, cargarPurga, cargarActividad, cargarSistema, asegurarCargada, ejecutar, limpiar }
+  return { iglesias, incluirDemo, fijarIncluirDemo, hayDemos, totalDemos, visibles, planes, modulos, planModulos, registro, purga, cargando, cargada, aviso, sinAuditoria, actividad, actividadEstado, sistema, sistemaEstado, soporte, cargarSoporte, avisar, limpiarAviso, llamar, cargar, cargarPurga, cargarActividad, cargarSistema, asegurarCargada, ejecutar, limpiar }
 })
