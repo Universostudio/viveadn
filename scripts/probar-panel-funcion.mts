@@ -43,6 +43,13 @@ assert.ok(faltaLaFuncion({ code: '42883', message: 'function public.adn_platafor
 assert.ok(faltaLaFuncion({ code: 'PGRST202', message: 'Could not find the function public.adn_plataforma_resumen' }))
 assert.ok(!faltaLaFuncion({ code: '57014', message: 'canceling statement due to statement timeout' }), 'un fallo real no se disfraza de migración pendiente')
 assert.ok(!faltaLaFuncion(null))
+// B10: un texto suelto «does not exist» (columna, valor, rol) ya no se presenta como migración pendiente
+assert.ok(!faltaLaFuncion({ code: '42703', message: 'column "etapa" does not exist' }), 'una columna que falta es un fallo real, no una migración pendiente')
+assert.ok(!faltaLaFuncion({ message: 'role "x" does not exist' }))
+assert.ok(!faltaLaFuncion({ code: 'XX000', message: 'Something does not exist' }))
+assert.ok(faltaLaFuncion({ code: '42P01', message: 'relation "public.adn_tickets" does not exist' }), 'la tabla que falta sí')
+assert.ok(faltaLaFuncion({ message: 'function public.adn_plataforma_resumen() does not exist' }), 'el mensaje exacto de la función que falta, aunque no traiga código')
+assert.ok(faltaLaFuncion({ code: 'PGRST205', message: "Could not find the table 'public.adn_avisos' in the schema cache" }))
 
 console.log('Panel Maestro (función de borde): todo correcto')
 
@@ -63,4 +70,18 @@ console.log('Plataforma: sin exportación de datos de personas')
   const listar = f.slice(f.indexOf("case 'listar'"), f.indexOf("case 'actividad'"))
   assert.ok(/leerTodo[^\n]*from\('iglesias'\)/.test(listar) && /leerTodo[^\n]*from\('iglesia_modulos'\)/.test(listar) && /leerTodo[^\n]*adn_plataforma_resumen/.test(listar), 'listar lee iglesias, complementos y conteos por páginas')
   console.log('Panel (función): agregados en SQL y lecturas por páginas')
+}
+
+// B13 y B14: código de registro y correo de aviso, por código fuente de la función
+{
+  const { readFileSync } = await import('node:fs')
+  const f = readFileSync(new URL('../supabase/functions/plataforma/index.ts', import.meta.url), 'utf8')
+  const c = f.slice(f.indexOf("case 'codigo_crear'"), f.indexOf("case 'codigo_estado'"))
+  assert.match(c, /usos_max !== undefined && !Number\.isInteger\(body\.usos_max\)\) return json\(\{ error: [^}]*\}, 400\)/, 'usos_max que no es entero se rechaza')
+  assert.match(c, /dias !== undefined && !Number\.isInteger\(body\.dias\)\) return json\(\{ error: [^}]*\}, 400\)/, 'dias que no es entero se rechaza')
+  assert.match(c, /dias < 1 \|\| dias > 365\) return json/, 'dias = 0 (sin vencimiento) se rechaza')
+  assert.ok(!/dias > 0 \?/.test(c), 'ya no hay códigos sin vencimiento')
+  const a = f.slice(f.indexOf("case 'aviso_crear'"), f.indexOf("case 'aviso_retirar'"))
+  assert.match(a, /correo === 'sin_envio'\) return json\(\{ error: [^}]*\}, 409\)/, 'con el envío encendido y nadie que lo envíe, el aviso con correo se rechaza')
+  console.log('Panel (función): códigos y avisos con correo se validan sin cambiar valores en silencio')
 }

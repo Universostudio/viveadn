@@ -36,7 +36,7 @@ assert.equal(av({ destino: { todas: true }, hasta: 'ayer' }).ok, false)
 // El correo masivo no se envía: solo se anota
 assert.equal(correoDeAviso(false, true), 'no_pedido'); assert.equal(correoDeAviso(false, false), 'no_pedido')
 assert.equal(correoDeAviso(true, false), 'apagado', 'con el interruptor apagado se anota «apagado»')
-assert.equal(correoDeAviso(true, true), 'pendiente', 'encendido, queda pendiente: el envío real no está construido')
+assert.equal(correoDeAviso(true, true), 'sin_envio', 'encendido no hay quien envíe: no queda «pendiente», se rechaza')
 
 // Lista de tickets: sin texto y sin datos personales
 const filas = [

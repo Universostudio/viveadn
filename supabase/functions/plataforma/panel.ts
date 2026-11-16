@@ -50,11 +50,14 @@ export function envioDelDia(
   return { activo: config.activo, hoy, por_tipo: porTipo, tope_global: config.topeGlobal }
 }
 
-/** Una función de base de datos que aún no existe (migración sin aplicar): la función de borde sigue funcionando con la ruta antigua */
+/** Una función o tabla de base de datos que aún no existe (migración sin aplicar): la función de borde sigue funcionando con la ruta antigua.
+ *  Se reconoce por el código de error (42883 función, 42P01 tabla, PGRST202/205 del servicio) o por su mensaje exacto; un texto suelto como
+ *  «does not exist» (una columna, un valor) NO basta: un fallo real no debe presentarse como «falta aplicar la migración». */
 export function faltaLaFuncion(error: { code?: string; message?: string } | null | undefined): boolean {
   if (!error) return false
-  const m = `${error.code ?? ''} ${error.message ?? ''}`
-  return /42883|42P01|PGRST202|PGRST205|could not find the function|could not find the table|does not exist/i.test(m)
+  if (/^(42883|42P01|PGRST202|PGRST205)$/.test(error.code ?? '')) return true
+  const m = error.message ?? ''
+  return /could not find the (function|table)/i.test(m) || /^(function|relation) \S+ does not exist/i.test(m)
 }
 
 export const MAX_LIBRO = 20

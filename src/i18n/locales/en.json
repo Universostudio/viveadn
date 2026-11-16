@@ -895,7 +895,7 @@
       "codigoUnaVez": "Copy it now: it will not be shown again.",
       "etiqueta": "Who it is for",
       "usos": "Uses",
-      "dias": "Days valid (0 = no expiry)",
+      "dias": "Days valid (1 to 365)",
       "crear": "Create code",
       "usados": "Uses",
       "vence": "Expires",

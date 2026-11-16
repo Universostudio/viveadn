@@ -895,7 +895,7 @@
       "codigoUnaVez": "Copie agora: ele não será mostrado de novo.",
       "etiqueta": "Para quem é",
       "usos": "Usos",
-      "dias": "Dias de validade (0 = sem vencimento)",
+      "dias": "Dias de validade (1 a 365)",
       "crear": "Criar código",
       "usados": "Usos",
       "vence": "Vence",

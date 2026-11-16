@@ -25,7 +25,7 @@
         <div><label for="cd-usos" class="block text-xs font-medium text-gray-600 mb-1">{{ t('plataforma.registro.usos') }}</label>
           <input id="cd-usos" v-model.number="nuevoCodigo.usos_max" type="number" min="1" max="1000" required class="w-24 text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-adn-verde" /></div>
         <div><label for="cd-dias" class="block text-xs font-medium text-gray-600 mb-1">{{ t('plataforma.registro.dias') }}</label>
-          <input id="cd-dias" v-model.number="nuevoCodigo.dias" type="number" min="0" max="365" required class="w-24 text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-adn-verde" /></div>
+          <input id="cd-dias" v-model.number="nuevoCodigo.dias" type="number" min="1" max="365" required class="w-24 text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-adn-verde" /></div>
         <button type="submit" class="btn-primary text-sm">{{ t('plataforma.registro.crear') }}</button>
       </form>
 

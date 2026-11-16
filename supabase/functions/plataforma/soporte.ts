@@ -62,10 +62,11 @@ export function validarAviso(body: Record<string, unknown>, ahora = Date.now()):
   return { ok: true, aviso: { tipo: body.tipo as AvisoValidado['tipo'], titulo, texto: t, destino, incluir_demo: body.incluir_demo === true, desde: new Date(ahora).toISOString(), hasta, por_correo: body.por_correo === true } }
 }
 
-/** Qué se anota del correo de un aviso: el correo masivo no se envía; solo se registra si se pidió y si el interruptor general está apagado */
-export function correoDeAviso(porCorreo: boolean, envioActivo: boolean): 'no_pedido' | 'apagado' | 'pendiente' {
+/** Qué se anota del correo de un aviso. El correo masivo no está construido: con el interruptor general apagado solo se anota la petición; con él encendido
+ *  no hay quien lo envíe, así que se devuelve 'sin_envio' y el aviso se rechaza en vez de quedar «pendiente» para siempre. */
+export function correoDeAviso(porCorreo: boolean, envioActivo: boolean): 'no_pedido' | 'apagado' | 'sin_envio' {
   if (!porCorreo) return 'no_pedido'
-  return envioActivo ? 'pendiente' : 'apagado'
+  return envioActivo ? 'sin_envio' : 'apagado'
 }
 
 export interface FilaTicket {

@@ -589,17 +589,20 @@ Deno.serve(async (req) => {
 
       case 'codigo_crear': {
         const etiqueta = texto(body.etiqueta, 80)
-        const usosMax = Number.isInteger(body.usos_max) ? Number(body.usos_max) : 1
-        const dias = Number.isInteger(body.dias) ? Number(body.dias) : 0
+        // Lo que no es un entero se rechaza: antes un valor raro (texto, decimal) se cambiaba en silencio por el valor por defecto, y dias = 0 dejaba el codigo sin vencer sin decirlo
+        if (body.usos_max !== undefined && !Number.isInteger(body.usos_max)) return json({ error: 'Los usos deben ser un numero entero' }, 400)
+        if (body.dias !== undefined && !Number.isInteger(body.dias)) return json({ error: 'La vigencia debe ser un numero entero de dias' }, 400)
+        const usosMax = body.usos_max === undefined ? 1 : Number(body.usos_max)
+        const dias = body.dias === undefined ? 0 : Number(body.dias)
         if (!etiqueta) return json({ error: 'Falta la etiqueta del codigo' }, 400)
         if (usosMax < 1 || usosMax > 1000) return json({ error: 'Los usos deben estar entre 1 y 1000' }, 400)
-        if (dias < 0 || dias > 365) return json({ error: 'La vigencia debe estar entre 0 y 365 dias' }, 400)
+        if (dias < 1 || dias > 365) return json({ error: 'La vigencia debe estar entre 1 y 365 dias: un codigo sin vencimiento no se crea' }, 400)
         // Sin letras ambiguas (I, O) ni cifras 0 y 1; 32 simbolos, asi que cada byte se reparte sin sesgo
         const alfabeto = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
         const aleatorio = (n: number) => [...crypto.getRandomValues(new Uint8Array(n))].map(x => alfabeto[x % 32]).join('')
         const codigo = `ADN-${aleatorio(4)}-${aleatorio(4)}`
         const huella = [...new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(codigo)))].map(x => x.toString(16).padStart(2, '0')).join('')
-        const vence = dias > 0 ? new Date(Date.now() + dias * 86400000).toISOString() : null
+        const vence = new Date(Date.now() + dias * 86400000).toISOString()
         const { data: fila, error } = await admin.from('registro_codigos')
           .insert({ codigo_hash: huella, etiqueta, usos_max: usosMax, vence_en: vence }).select('id').single()
         if (error || !fila) return json({ error: 'No se pudo crear el codigo' }, 500)
@@ -734,6 +737,7 @@ Deno.serve(async (req) => {
         const config = leerConfig(k => Deno.env.get(k))
         // El correo masivo no se envia: solo se anota si se pidio y si el interruptor general (ADN_ENVIO_ACTIVO) esta apagado
         const correo = correoDeAviso(v.aviso.por_correo, config.activo)
+        if (correo === 'sin_envio') return json({ error: 'El envio masivo de correo aun no esta construido: crea el aviso sin correo' }, 409)
         const { data, error } = await admin.from('adn_avisos').insert({ ...v.aviso, correo_estado: correo, creado_por: user?.id ?? null }).select('id').single()
         if (error || !data) return json({ error: faltaLaFuncion(error) ? 'Los avisos no estan disponibles hasta aplicar la migracion del soporte' : 'No se pudo crear el aviso' }, faltaLaFuncion(error) ? 501 : 500)
         const { data: n, error: eEntrega } = await admin.rpc('adn_aviso_entregar', { p_aviso: data.id })
