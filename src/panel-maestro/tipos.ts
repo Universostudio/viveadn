@@ -41,6 +41,10 @@ export interface Inquilino {
   /** El detalle del estado merece atención (prueba por vencer, borrado vencido) */
   detalleUrgente?: boolean
   demo: boolean
+  /** La iglesia está en baja: tiene una purga o un borrado programado (borrado suave o programado) */
+  enBaja?: boolean
+  /** Días enteros hasta la purga; negativo si ya venció; null si no está en baja */
+  diasParaPurga?: number | null
   /** Conteos: nunca datos de personas */
   miembros: number
   modulos: ModuloInquilino[]
@@ -54,7 +58,7 @@ export interface AccionInquilino {
   ruta?: string
 }
 
-export type FiltroInquilinos = 'todas' | 'activas' | 'prueba' | 'suspendidas' | 'demo'
+export type FiltroInquilinos = 'todas' | 'activas' | 'prueba' | 'suspendidas' | 'receso' | 'baja' | 'demo'
 
 export interface Kpi {
   clave: string

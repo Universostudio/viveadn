@@ -1,13 +1,16 @@
 // Filtrado de la tabla de inquilinos, aparte de la vista para poder probarlo sin navegador
 import type { FiltroInquilinos, Inquilino } from './tipos'
 
-export const FILTROS: FiltroInquilinos[] = ['todas', 'activas', 'prueba', 'suspendidas', 'demo']
+export const FILTROS: FiltroInquilinos[] = ['todas', 'activas', 'prueba', 'suspendidas', 'receso', 'baja', 'demo']
 
 export function coincideFiltro(i: Inquilino, filtro: FiltroInquilinos): boolean {
   switch (filtro) {
     case 'activas': return i.estado === 'activa'
     case 'prueba': return i.estado === 'prueba'
-    case 'suspendidas': return i.estado === 'suspendida'
+    // Suspendidas, en receso y en baja no se solapan: una iglesia en baja cuenta solo como «en baja»
+    case 'suspendidas': return i.estado === 'suspendida' && !i.enBaja
+    case 'receso': return i.estado === 'receso' && !i.enBaja
+    case 'baja': return !!i.enBaja
     case 'demo': return i.demo
     default: return true
   }

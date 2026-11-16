@@ -1588,7 +1588,9 @@
         "activas": "Actives",
         "prueba": "Essai",
         "suspendidas": "Suspendues",
-        "demo": "Démo"
+        "demo": "Démo",
+        "receso": "En pause",
+        "baja": "En fermeture"
       },
       "columna": {
         "nombre": "Nom",
@@ -1631,7 +1633,9 @@
       "borradoVencido": "Suppression en retard",
       "pruebaVencida": "Essai expiré",
       "venceHoy": "L’essai se termine aujourd’hui",
-      "diasRestantes": "Il reste {n} jour d’essai | Il reste {n} jours d’essai"
+      "diasRestantes": "Il reste {n} jour d’essai | Il reste {n} jours d’essai",
+      "baja": "En cours de fermeture : purge le {fecha} (dans {n} jour) | En cours de fermeture : purge le {fecha} (dans {n} jours)",
+      "bajaProgramada": "Suppression prévue le {fecha} (dans {n} jour) | Suppression prévue le {fecha} (dans {n} jours)"
     },
     "alerta": {
       "purga": "La purge programmée a {horas} heures de retard",
@@ -1652,7 +1656,14 @@
       "alertasHay": "Voir le détail ci-dessous",
       "alertasNinguna": "Aucune alerte active",
       "demosDentro": "Incluses dans les chiffres",
-      "demosFuera": "Hors des chiffres"
+      "demosFuera": "Hors des chiffres",
+      "suspendidasNota": "Sans accès, données conservées",
+      "receso": "En pause",
+      "recesoNota": "En pause, données conservées",
+      "baja": "En cours de fermeture",
+      "bajaNinguna": "Aucune en attente de purge",
+      "bajaProxima": "Prochaine purge dans {n} jour | Prochaine purge dans {n} jours",
+      "bajaVencida": "Une purge est en retard"
     },
     "faltaFacturacion": "Il faut encore connecter une passerelle de paiement : le système ne contient aujourd’hui aucune donnée de tarifs ni d’encaissements.",
     "portada": {
@@ -1776,6 +1787,48 @@
       "incluir": "Inclure les démonstrations",
       "dentro": "{n} démonstration comptée dans tous les chiffres | {n} démonstrations comptées dans tous les chiffres",
       "fuera": "{n} démonstration hors des chiffres | {n} démonstrations hors des chiffres"
+    },
+    "ciclo": {
+      "onboarding": {
+        "titulo": "En cours d'ouverture",
+        "texto": "L'église est en cours d'ouverture. Elle peut déjà se connecter et utiliser les modules de son forfait. Activez-la quand l'ouverture est terminée."
+      },
+      "prueba": {
+        "titulo": "En essai",
+        "texto": "Elle utilise l'application avec les modules de son forfait jusqu'au {fecha}. À la fin de l'essai, la base lui coupe seule l'accès aux modules, même si l'étape indique encore « en essai », et les données sont conservées. Pour qu'elle continue, convertissez-la en active."
+      },
+      "activa": {
+        "titulo": "Active",
+        "texto": "Fonctionne normalement : l'église se connecte et utilise les modules de son forfait. Rien n'est en attente."
+      },
+      "receso": {
+        "titulo": "En pause",
+        "texto": "L'église est en pause : son équipe ne voit pas les données, mais tout est conservé intact. Aujourd'hui aucun délai ne la ferme seule : elle reste en pause jusqu'à ce que quelqu'un la réactive ou programme sa suppression. Son propriétaire peut ouvrir l'écran des données pour télécharger une copie ou demander la fermeture."
+      },
+      "suspendida": {
+        "titulo": "Suspendue",
+        "texto": "L'accès a été coupé : l'application ne lui montre pas ses données, mais tout est conservé. Son propriétaire voit un avis rouge avec le chemin pour télécharger une copie. Elle reste ainsi jusqu'à ce que quelqu'un la réactive ou programme sa suppression."
+      },
+      "baja_suave": {
+        "titulo": "En fermeture, encore récupérable",
+        "texto": "La fermeture a été demandée. L'église est suspendue et ses données seront entièrement supprimées le {fecha}, dans {n} jour : base de données, fichiers et comptes d'accès. D'ici là, elle se récupère en un clic et retrouve son état d'avant, et on peut télécharger une copie. Après la purge, il ne reste qu'une trace que cela a eu lieu, sans données de personnes. | La fermeture a été demandée. L'église est suspendue et ses données seront entièrement supprimées le {fecha}, dans {n} jours : base de données, fichiers et comptes d'accès. D'ici là, elle se récupère en un clic et retrouve son état d'avant, et on peut télécharger une copie. Après la purge, il ne reste qu'une trace que cela a eu lieu, sans données de personnes."
+      },
+      "baja_programada": {
+        "titulo": "Suppression programmée",
+        "texto": "La suppression de cette église est programmée pour le {fecha}, dans {n} jour. En attendant, elle reste sans accès et ses données sont conservées : vous pouvez annuler la suppression ou télécharger une copie. À la date prévue, la suppression se lance à la main ; elle ne s'exécute pas seule. | La suppression de cette église est programmée pour le {fecha}, dans {n} jours. En attendant, elle reste sans accès et ses données sont conservées : vous pouvez annuler la suppression ou télécharger une copie. À la date prévue, la suppression se lance à la main ; elle ne s'exécute pas seule."
+      },
+      "baja_vencida": {
+        "titulo": "Délai dépassé : en attente de purge",
+        "texto": "Le délai est dépassé et l'église ne peut plus être récupérée. Ses données seront supprimées à la prochaine purge, lancée par une personne de la plateforme ou par la tâche programmée une fois activée, ou tout de suite avec « Supprimer maintenant ». Si une copie est encore nécessaire, téléchargez-la d'abord."
+      },
+      "boton": {
+        "reactivar": "Réactiver l'église",
+        "activar": "Activer l'église",
+        "convertir": "Convertir en active",
+        "recuperar": "Récupérer l'église",
+        "cancelar": "Annuler la suppression",
+        "descargar": "Télécharger la copie de sauvegarde"
+      }
     }
   },
   "lideres": {

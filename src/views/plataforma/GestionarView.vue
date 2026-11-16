@@ -20,6 +20,15 @@
         </div>
       </header>
 
+      <!-- En qué estado está y qué significa, en lenguaje llano, con los botones que hay para ese estado -->
+      <section class="card space-y-3" aria-labelledby="g-estado" data-test="estado-vida" :data-situacion="situacion">
+        <h2 id="g-estado" class="text-base font-semibold text-gray-900">{{ t(`plataformaPanel.ciclo.${situacion}.titulo`) }}</h2>
+        <p class="text-sm text-gray-700" data-test="estado-texto">{{ t(`plataformaPanel.ciclo.${situacion}.texto`, { fecha: fechaCorta(ig.borrado_programado_en ?? ig.prueba_hasta), n: dias ?? 0 }, dias ?? 0) }}</p>
+        <div v-if="acciones.length" class="flex flex-wrap gap-2">
+          <button v-for="a in acciones" :key="a.clave" type="button" :data-test="a.clave" :class="a.principal ? 'btn-primary text-sm' : 'btn-secondary text-sm'" @click="a.ejecutar()">{{ t(`plataformaPanel.ciclo.boton.${a.clave}`) }}</button>
+        </div>
+      </section>
+
       <!-- Conteos: nunca datos de personas -->
       <section :aria-label="t('plataformaPanel.gestionar.resumen')" class="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <div class="card"><p class="text-xs text-gray-500">{{ t('plataformaPanel.gestionar.miembros') }}</p><p class="text-2xl font-bold text-gray-900 mt-1">{{ (ig.miembros ?? 0).toLocaleString(locale) }}</p>
@@ -95,9 +104,7 @@
         <p v-if="ig.borrado_programado_en" :class="['text-sm font-medium', borradoVencido ? 'text-red-700' : 'text-amber-700']">{{ detalle.texto }}</p>
         <div class="flex flex-wrap gap-3 text-sm">
           <button v-if="borradoVencido" type="button" class="text-red-700 underline" @click="borrarAhora">{{ t('plataforma.borrarAhora') }}</button>
-          <button v-if="ig.adn_borrada_en && !borradoVencido" type="button" class="text-emerald-800 underline" @click="recuperar">{{ t('plataforma.recuperar') }}</button>
-          <button v-if="ig.borrado_programado_en && !ig.adn_borrada_en" type="button" class="text-gray-700 underline" @click="cancelarBorrado">{{ t('plataforma.cancelarBorrado') }}</button>
-          <button v-else-if="!ig.borrado_programado_en && ['receso', 'suspendida'].includes(etapa)" type="button" class="text-gray-700 hover:text-red-700 underline" @click="programarBorrado">{{ t('plataforma.programarBorrado') }}</button>
+          <button v-if="!ig.borrado_programado_en && ['receso', 'suspendida'].includes(etapa)" type="button" class="text-gray-700 hover:text-red-700 underline" @click="programarBorrado">{{ t('plataforma.programarBorrado') }}</button>
           <button v-if="!ig.adn_borrada_en" type="button" class="text-red-700 underline" data-test="borrar-suave" @click="borrarSuave">{{ t('plataforma.borrarSuave') }}</button>
         </div>
       </section>
@@ -115,7 +122,7 @@ import { useI18n } from 'vue-i18n'
 import { construirPaquete } from '@/lib/exportacion'
 import { exportarPaginado, fuenteDePlataforma } from '@/lib/exportacionPaginada'
 import { usePlataformaStore } from '@/stores/plataforma'
-import { borradoVencido as vencido, detalleDeEstado, etapaDe, modulosDe } from './adaptador'
+import { borradoVencido as vencido, detalleDeEstado, diasDePrueba, diasParaPurga, etapaDe, modulosDe, situacionDe } from './adaptador'
 import HistorialIglesia from './HistorialIglesia.vue'
 
 const { t, locale } = useI18n()
@@ -128,6 +135,28 @@ onMounted(() => { void pm.asegurarCargada() })
 const ig = computed(() => pm.iglesias.find(i => i.id === route.params.id) ?? null)
 const etapa = computed(() => ig.value ? etapaDe(ig.value) : 'activa')
 const catalogo = computed(() => ({ planes: pm.planes, modulos: pm.modulos, planModulos: pm.planModulos }))
+const situacion = computed(() => ig.value ? situacionDe(ig.value) : 'activa')
+// Días que importan en el texto: los de la prueba o los que faltan para la purga
+const dias = computed(() => !ig.value ? null : ig.value.borrado_programado_en ? diasParaPurga(ig.value) : diasDePrueba(ig.value))
+const fechaCorta = (iso: string | null) => iso ? new Date(iso).toLocaleDateString(locale.value) : ''
+// Los botones de cada situación: reactivar, activar o convertir; recuperar o cancelar el borrado; y la copia, que siempre se puede descargar hasta que se purgue
+const acciones = computed<{ clave: string; principal?: boolean; ejecutar: () => void }[]>(() => {
+  const s = situacion.value
+  const l: { clave: string; principal?: boolean; ejecutar: () => void }[] = []
+  if (s === 'receso' || s === 'suspendida') l.push({ clave: 'reactivar', principal: true, ejecutar: () => pasarAActiva() })
+  if (s === 'onboarding') l.push({ clave: 'activar', principal: true, ejecutar: () => pasarAActiva() })
+  if (s === 'prueba') l.push({ clave: 'convertir', principal: true, ejecutar: () => pasarAActiva() })
+  if (s === 'baja_suave') l.push({ clave: 'recuperar', principal: true, ejecutar: () => recuperar() })
+  if (s === 'baja_programada') l.push({ clave: 'cancelar', principal: true, ejecutar: () => cancelarBorrado() })
+  if (['receso', 'suspendida', 'baja_suave', 'baja_programada', 'baja_vencida'].includes(s)) l.push({ clave: 'descargar', ejecutar: () => exportar() })
+  return l
+})
+function pasarAActiva() {
+  const actual = ig.value!
+  const nombre = t('plataforma.etapa.activa')
+  if (!window.confirm(t('plataforma.confirmarEtapa', { iglesia: actual.nombre, etapa: nombre }))) return
+  void pm.ejecutar({ accion: 'etapa', iglesia_id: actual.id, etapa: 'activa' }, () => t('plataforma.etapaCambiada', { iglesia: actual.nombre, etapa: nombre }))
+}
 const detalle = computed(() => ig.value ? detalleDeEstado(ig.value, t as any, iso => new Date(iso).toLocaleDateString(locale.value)) : {})
 const borradoVencido = computed(() => !!ig.value && vencido(ig.value))
 const limite = computed(() => pm.planes.find(p => p.clave === ig.value?.plan)?.max_miembros ?? null)

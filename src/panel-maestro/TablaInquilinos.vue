@@ -143,12 +143,12 @@ watch([texto, filtro], () => { limite.value = TAMANO })
 
 const cuentas = computed(() => contarPorFiltro(props.inquilinos))
 // El filtro «Demo» solo aparece si la lista que se ve tiene alguna: con las demostraciones fuera de las cifras no hay nada que filtrar
-const filtrosVisibles = computed(() => FILTROS.filter(f => f !== 'demo' || cuentas.value.demo > 0 || filtro.value === 'demo'))
+const filtrosVisibles = computed(() => FILTROS.filter(f => (f !== 'demo' && f !== 'receso' && f !== 'baja') || cuentas.value[f] > 0 || filtro.value === f))
 const filtrados = computed(() => filtrarInquilinos(props.inquilinos, filtro.value, texto.value))
 const visibles = computed(() => filtrados.value.slice(0, limite.value))
 
 const inicial = (i: Inquilino) => i.nombre.trim()[0]?.toUpperCase() ?? '?'
-const punto = (i: Inquilino) => i.estado === 'activa' ? 'bg-green-500' : i.estado === 'prueba' ? 'bg-amber-500' : i.estado === 'suspendida' ? 'bg-red-500' : 'bg-gray-400'
+const punto = (i: Inquilino) => i.enBaja ? 'bg-red-700' : i.estado === 'activa' ? 'bg-green-500' : i.estado === 'prueba' ? 'bg-amber-500' : i.estado === 'suspendida' ? 'bg-red-500' : i.estado === 'receso' ? 'bg-blue-500' : 'bg-gray-400'
 const enlace = (a: AccionInquilino) => ['text-xs px-2 py-1 rounded hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-adn-verde', a.variante === 'peligro' ? 'text-red-700' : 'text-adn-verde']
 const enlaceMovil = (a: AccionInquilino) => ['text-xs px-3 py-2 rounded-lg border focus:outline-none focus-visible:ring-2 focus-visible:ring-adn-verde', a.variante === 'peligro' ? 'text-red-700 border-red-200' : 'text-adn-verde border-gray-200']
 </script>

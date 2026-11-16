@@ -30,11 +30,19 @@ const iglesias = [
   { id: uuid(5), nombre: 'Iglesia de Demostración', slug: 'demo', plan: 'premium', activa: true, etapa: 'activa', ciudad: 'Madrid', pais: 'España', created_at: iso(-5), es_demo: true, miembros: 300, usuarios: 6, addons: [], iglesia_madre_id: null, red_acceso: 'resumen', prueba_hasta: null, borrado_programado_en: null, adn_borrada_en: null },
   { id: uuid(6), nombre: 'Sede Este', slug: 'sede-este', plan: 'premium', activa: true, etapa: 'onboarding', ciudad: 'Zaragoza', pais: 'España', created_at: iso(-2), es_demo: false, miembros: 0, usuarios: 1, addons: [], iglesia_madre_id: null, red_acceso: 'resumen', prueba_hasta: null, borrado_programado_en: null, adn_borrada_en: null },
 ]
+// Las tres iglesias demo de los estados de vida: suspendida, en receso y en baja con 20 días para la purga
+const base = { plan: 'premium', activa: false, ciudad: 'Madrid', pais: 'España', created_at: iso(-3), es_demo: true, miembros: 5, usuarios: 1, addons: [], iglesia_madre_id: null, red_acceso: 'resumen', prueba_hasta: null, borrado_programado_en: null, adn_borrada_en: null }
+const iglesiasCiclo = [
+  { ...base, id: uuid(11), nombre: 'Demo suspendida', slug: 'demo-suspendida', etapa: 'suspendida' },
+  { ...base, id: uuid(12), nombre: 'Demo receso', slug: 'demo-receso', etapa: 'receso' },
+  { ...base, id: uuid(13), nombre: 'Demo en baja', slug: 'demo-en-baja', etapa: 'suspendida', borrado_programado_en: iso(20), adn_borrada_en: iso(-10) },
+  { ...base, id: uuid(14), nombre: 'Demo borrado programado', slug: 'demo-programado', etapa: 'receso', borrado_programado_en: iso(5) },
+]
 const planes = [{ clave: 'semilla', nombre: 'Semilla', max_miembros: 100, orden: 1 }, { clave: 'premium', nombre: 'Premium', max_miembros: null, orden: 2 }]
 const modulos = [{ clave: 'miembros', nombre: 'Miembros', tipo: 'nucleo', orden: 1 }, { clave: 'eventos', nombre: 'Eventos', tipo: 'opcional', orden: 2 }, { clave: 'comunicacion', nombre: 'Comunicación', tipo: 'opcional', orden: 3 }]
 const planModulos = [{ plan: 'semilla', modulo: 'miembros' }, { plan: 'premium', modulo: 'miembros' }, { plan: 'premium', modulo: 'comunicacion' }]
 
-async function escenario({ admin = true, conIglesia = false, ancho = 1366, alto = 900, purgaAtrasada = false, detalleFalla = false, actividadFalla = false, envioActivo = false, demo = 'no', sinDemos = false } = {}) {
+async function escenario({ admin = true, conIglesia = false, ancho = 1366, alto = 900, purgaAtrasada = false, detalleFalla = false, actividadFalla = false, envioActivo = false, demo = 'no', sinDemos = false, ciclo = false } = {}) {
   const estado = { llamadas: [], cuerpos: [] }
   const browser = await chromium.launch()
   const ctx = await browser.newContext({ acceptDownloads: true, locale: 'es-ES', viewport: { width: ancho, height: alto }, deviceScaleFactor: 1 })
@@ -63,7 +71,7 @@ async function escenario({ admin = true, conIglesia = false, ancho = 1366, alto 
       const cuerpo = req.postDataJSON(); estado.llamadas.push(cuerpo.accion); estado.cuerpos.push(cuerpo)
       if (!admin) return json(403, { error: 'No autorizado' })
       switch (cuerpo.accion) {
-        case 'listar': return json(200, { iglesias: sinDemos ? iglesias.filter(i => !i.es_demo) : iglesias, planes, modulos, plan_modulos: planModulos })
+        case 'listar': return json(200, { iglesias: (sinDemos ? iglesias.filter(i => !i.es_demo) : iglesias).concat(ciclo ? iglesiasCiclo : []), planes, modulos, plan_modulos: planModulos })
         case 'registro_estado': return json(200, { abierto: false, requiere_codigo: true, codigos: [] })
         case 'estado_purga': return json(200, { ok: true, atrasada: purgaAtrasada, en_borrado: 1, vencidas: purgaAtrasada ? 1 : 0, horas_mas_atrasada: purgaAtrasada ? 60 : 0 })
         case 'detalle':
@@ -128,7 +136,8 @@ try {
     assert.match(await page.textContent('[data-test=resumen-linea]'), /Iglesias activas: 1, en prueba: 2, miembros: 457/)
     assert.equal(await valor('activas'), '1', 'activas: solo Casa del Reino (la demo y las de prueba no cuentan)')
     assert.equal(await valor('prueba'), '2')
-    assert.equal(await valor('suspendidas'), '1')
+    assert.equal(await valor('suspendidas'), '0', 'Centro de Vida está suspendida pero en baja: cuenta solo como «en baja»')
+    assert.equal(await valor('baja'), '1'); assert.equal(await valor('receso'), '0')
     assert.equal(await valor('demos'), '1')
     assert.equal(await valor('miembros'), '457', 'miembros sin demos: 320+45+12+80+0')
     assert.match(await page.textContent('[data-kpi=prueba]'), /1 vence en 7 días/)
@@ -197,7 +206,8 @@ try {
     await page.waitForSelector('[data-test=sin-resultados]')
     await page.fill('[data-test=buscar]', '')
     await page.click('[data-filtro=prueba]'); assert.equal(await filas(), 2)
-    await page.click('[data-filtro=suspendidas]'); assert.equal(await filas(), 1)
+    await page.click('[data-filtro=suspendidas]'); assert.equal(await filas(), 0, 'la suspendida está en baja y no se cuenta dos veces')
+    await page.click('[data-filtro=baja]'); assert.equal(await filas(), 1)
     await page.click('[data-filtro=demo]'); assert.equal(await filas(), 1)
     await page.click('[data-filtro=activas]'); assert.equal(await filas(), 2, 'activas con demostraciones dentro: Casa del Reino y la demo')
     assert.equal(await page.getAttribute('[data-filtro=activas]', 'aria-pressed'), 'true')
@@ -240,7 +250,7 @@ try {
     const filas = () => page.locator('[data-test=tabla-inquilinos] tbody tr').count()
     const chip = async f => (await page.textContent(`[data-filtro=${f}]`)).replace(/\s+/g, ' ').trim()
     assert.equal(await filas(), 6)
-    assert.match(await chip('todas'), /\(6\)/); assert.match(await chip('activas'), /\(2\)/); assert.match(await chip('prueba'), /\(2\)/); assert.match(await chip('suspendidas'), /\(1\)/); assert.match(await chip('demo'), /\(1\)/)
+    assert.match(await chip('todas'), /\(6\)/); assert.match(await chip('activas'), /\(2\)/); assert.match(await chip('prueba'), /\(2\)/); assert.match(await chip('suspendidas'), /\(0\)/); assert.match(await chip('baja'), /\(1\)/); assert.match(await chip('demo'), /\(1\)/)
     await page.click('[data-filtro=activas]'); assert.equal(await filas(), 2, 'el filtro «Activas» enseña tantas filas como dice su cifra')
     await page.click('[data-filtro=todas]')
     assert.match((await page.textContent('nav a[href="/plataforma/iglesias"]')), /6/, 'el contador del menú sale de la misma lista')
@@ -286,6 +296,63 @@ try {
     assert.ok(await page.locator('button[aria-pressed]:disabled', { hasText: 'Comunicación' }).count() + await page.locator('button:disabled', { hasText: 'Eventos' }).count() >= 0)
     assert.deepEqual(await camposSinNombre(page), [], 'todos los campos tienen nombre accesible')
     await captura(page, 'escritorio-gestionar')
+    assert.deepEqual(errores, [])
+    await browser.close()
+  })
+
+  await prueba('los estados de vida tienen tarjeta propia y se cuentan sin solaparse, igual en la portada, en los filtros y en el listado', async () => {
+    const { browser, page, errores } = await escenario({ ciclo: true, demo: 'si' })
+    await page.goto(url('/plataforma')); await page.waitForSelector('[data-kpi=baja]')
+    const valor = async k => (await page.locator(`[data-kpi=${k}] p`).nth(1).textContent()).trim()
+    assert.equal(await valor('suspendidas'), '1', 'Demo suspendida'); assert.equal(await valor('receso'), '1', 'Demo receso')
+    assert.equal(await valor('baja'), '3', 'Centro de Vida (plazo vencido), Demo en baja y Demo borrado programado')
+    assert.match(await page.textContent('[data-kpi=baja]'), /Hay una purga vencida/)
+    await page.goto(url('/plataforma/iglesias')); await page.waitForSelector('[data-test=tabla-inquilinos] tbody tr')
+    const chip = async f => (await page.textContent(`[data-filtro=${f}]`)).replace(/\s+/g, ' ').trim()
+    assert.match(await chip('suspendidas'), /\(1\)/); assert.match(await chip('receso'), /\(1\)/); assert.match(await chip('baja'), /\(3\)/)
+    await page.click('[data-filtro=baja]')
+    assert.equal(await page.locator('[data-test=tabla-inquilinos] tbody tr').count(), 3)
+    assert.match(await page.textContent(`tr[data-inquilino="${uuid(13)}"]`), /En baja: se purga el .* \(en 20 días\)/)
+    assert.match(await page.textContent(`tr[data-inquilino="${uuid(14)}"]`), /Borrado programado el .* \(en 5 días\)/)
+    assert.deepEqual(errores, [])
+    await browser.close()
+  })
+
+  await prueba('la ficha explica cada estado en lenguaje llano y ofrece los botones de ese estado', async () => {
+    const { browser, page, errores, estado } = await escenario({ ciclo: true, demo: 'si' })
+    const abrir = async id => { await page.goto(url(`/plataforma/iglesias/${id}`)); await page.waitForSelector('[data-test=estado-vida]') }
+    const botones = () => page.locator('[data-test=estado-vida] button').evaluateAll(l => l.map(e => e.dataset.test))
+    const texto = () => page.textContent('[data-test=estado-texto]')
+    await abrir(uuid(1))
+    assert.equal(await page.getAttribute('[data-test=estado-vida]', 'data-situacion'), 'activa'); assert.deepEqual(await botones(), []); assert.match(await texto(), /Funciona con normalidad/)
+    await abrir(uuid(2))
+    assert.equal(await page.getAttribute('[data-test=estado-vida]', 'data-situacion'), 'prueba'); assert.deepEqual(await botones(), ['convertir']); assert.match(await texto(), /la base le corta sola el acceso a los módulos.*los datos se conservan/)
+    await abrir(uuid(6))
+    assert.deepEqual(await botones(), ['activar'], 'en alta')
+    await abrir(uuid(11))
+    assert.equal(await page.getAttribute('[data-test=estado-vida]', 'data-situacion'), 'suspendida'); assert.deepEqual(await botones(), ['reactivar', 'descargar'])
+    assert.match(await texto(), /Se le ha cortado el acceso.*todo se conserva.*aviso rojo/)
+    await abrir(uuid(12))
+    assert.equal(await page.getAttribute('[data-test=estado-vida]', 'data-situacion'), 'receso'); assert.deepEqual(await botones(), ['reactivar', 'descargar'])
+    assert.match(await texto(), /ningún plazo la cierra sola/)
+    await abrir(uuid(13))
+    assert.equal(await page.getAttribute('[data-test=estado-vida]', 'data-situacion'), 'baja_suave'); assert.deepEqual(await botones(), ['recuperar', 'descargar'])
+    assert.match(await texto(), /se borrarán por completo el .*, en 20 días: base de datos, archivos y cuentas de acceso.*se recupera con un clic/)
+    await abrir(uuid(14))
+    assert.equal(await page.getAttribute('[data-test=estado-vida]', 'data-situacion'), 'baja_programada'); assert.deepEqual(await botones(), ['cancelar', 'descargar'])
+    assert.match(await texto(), /en 5 días.*se lanza a mano/)
+    await abrir(uuid(4))
+    assert.equal(await page.getAttribute('[data-test=estado-vida]', 'data-situacion'), 'baja_vencida'); assert.deepEqual(await botones(), ['descargar'], 'vencida: ya no se recupera')
+    assert.match(await texto(), /no se puede recuperar/)
+    assert.equal(await page.locator('button', { hasText: 'Borrar ahora' }).count(), 1, 'y se ofrece borrar ahora')
+    // Los botones llaman a la acción que dicen
+    await abrir(uuid(13)); await page.click('[data-test=recuperar]'); await new Promise(r => setTimeout(r, 300))
+    assert.equal(estado.cuerpos.filter(c => c.accion === 'recuperar').length, 1)
+    await abrir(uuid(14)); await page.click('[data-test=cancelar]'); await new Promise(r => setTimeout(r, 300))
+    assert.equal(estado.cuerpos.filter(c => c.accion === 'cancelar_borrado').length, 1)
+    await abrir(uuid(12)); await page.click('[data-test=reactivar]'); await new Promise(r => setTimeout(r, 300))
+    const e = estado.cuerpos.find(c => c.accion === 'etapa')
+    assert.deepEqual({ i: e?.iglesia_id, e: e?.etapa }, { i: uuid(12), e: 'activa' })
     assert.deepEqual(errores, [])
     await browser.close()
   })

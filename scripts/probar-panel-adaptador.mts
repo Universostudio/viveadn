@@ -1,7 +1,7 @@
 // Prueba del adaptador y del filtrado del Panel Maestro, sin navegador ni red.
 // Uso: npm run test:panel-adaptador
 import assert from 'node:assert/strict'
-import { aInquilino, alertasGlobales, kpisDe, resumir, vistaDe, incluirDemoPorDefecto, diasDePrueba, pruebaPorVencer, pruebaVencida, borradoVencido, eventosParaPanel, saludDe, DIA } from '../src/views/plataforma/adaptador.ts'
+import { aInquilino, alertasGlobales, kpisDe, resumir, vistaDe, incluirDemoPorDefecto, situacionDe, etapaDe, diasDePrueba, pruebaPorVencer, pruebaVencida, borradoVencido, eventosParaPanel, saludDe, DIA } from '../src/views/plataforma/adaptador.ts'
 import { filtrarInquilinos, contarPorFiltro } from '../src/panel-maestro/filtros.ts'
 import { textoDeAccion } from '../src/views/plataforma/acciones.ts'
 
@@ -37,7 +37,7 @@ const lista = [
   base({ id: 'f', etapa: 'receso', borrado_programado_en: iso(-2), miembros: 7 }),
 ]
 const r = resumir(vistaDe(lista, false), AHORA, 1)
-assert.deepEqual({ ...r }, { activas: 1, prueba: 2, porVencer: 1, vencidas: 1, suspendidas: 1, demos: 1, demosDentro: 0, miembros: 182, altasMes: 1, altasMesAnterior: 1 }, 'sin demostraciones: las cifras de antes, y la demo se cuenta aparte')
+assert.deepEqual({ ...r }, { activas: 1, prueba: 2, porVencer: 1, vencidas: 1, suspendidas: 1, receso: 0, baja: 1, proximaPurgaDias: -2, demos: 1, demosDentro: 0, miembros: 182, altasMes: 1, altasMesAnterior: 1 }, 'sin demostraciones: las cifras de antes, y la demo se cuenta aparte; la iglesia en receso con borrado vencido cuenta solo como «en baja»')
 
 // UNA regla para todas las cifras: entorno, vista, resumen, filtros y listado salen de la misma lista
 assert.equal(incluirDemoPorDefecto('pruebas'), true, 'en pruebas las demostraciones entran por defecto')
@@ -65,6 +65,39 @@ assert.deepEqual({ activas: conDemo.activas, miembros: conDemo.miembros, prueba:
 assert.match(kpisDe(conDemo, [], t, String).find(x => x.clave === 'demos')!.nota!, /demosDentro/)
 assert.match(kpisDe(r, [], t, String).find(x => x.clave === 'demos')!.nota!, /demosFuera/)
 
+// Ciclo de vida: suspendidas, en receso y en baja no se solapan y su suma con activas, prueba y alta cubre toda la lista
+const DIAS30 = 30
+const ciclo = [
+  base({ id: 'c1' }),
+  base({ id: 'c2', etapa: 'prueba', prueba_hasta: iso(5) }),
+  base({ id: 'c3', activa: false, etapa: 'suspendida' }),
+  base({ id: 'c4', activa: false, etapa: 'receso' }),
+  base({ id: 'c5', activa: false, etapa: 'suspendida', adn_borrada_en: iso(-1), borrado_programado_en: iso(DIAS30 - 1) }),
+  base({ id: 'c6', activa: false, etapa: 'receso', borrado_programado_en: iso(10) }),
+  base({ id: 'c7', etapa: 'onboarding' }),
+]
+const rc = resumir(ciclo, AHORA, 0)
+assert.deepEqual({ a: rc.activas, p: rc.prueba, s: rc.suspendidas, r: rc.receso, b: rc.baja }, { a: 1, p: 1, s: 1, r: 1, b: 2 })
+assert.equal(rc.proximaPurgaDias, 10, 'la próxima purga es la más cercana de las iglesias en baja')
+assert.equal(rc.activas + rc.prueba + rc.suspendidas + rc.receso + rc.baja + ciclo.filter(i => etapaDe(i) === 'onboarding').length, ciclo.length, 'cada iglesia cuenta una sola vez')
+assert.equal(resumir(ciclo.slice(0, 4), AHORA, 0).proximaPurgaDias, null, 'sin iglesias en baja no hay próxima purga')
+const filasCiclo = ciclo.map(l => aInquilino(l as any, cat, t, fecha, AHORA))
+const cc = contarPorFiltro(filasCiclo)
+assert.deepEqual({ s: cc.suspendidas, r: cc.receso, b: cc.baja }, { s: 1, r: 1, b: 2 }, 'los filtros cuentan lo mismo que la portada')
+assert.equal(filtrarInquilinos(filasCiclo, 'baja', '').length, 2)
+assert.equal(aInquilino(ciclo[4] as any, cat, t, fecha, AHORA).diasParaPurga, 29)
+assert.match(aInquilino(ciclo[4] as any, cat, t, fecha, AHORA).detalleEstado!, /estado\.baja\{"fecha":"[^"]+","n":29\}#29/, 'el detalle dice cuántos días faltan')
+assert.match(aInquilino(ciclo[5] as any, cat, t, fecha, AHORA).detalleEstado!, /estado\.bajaProgramada/)
+assert.equal(aInquilino(ciclo[0] as any, cat, t, fecha, AHORA).enBaja, false)
+const kb = Object.fromEntries(kpisDe(rc, [], t, String).map(k => [k.clave, k]))
+assert.equal(kb.baja.valor, '2'); assert.match(kb.baja.nota!, /bajaProxima\{"n":10\}#10/); assert.equal(kb.receso.valor, '1')
+assert.match(kpisDe(r, [], t, String).find(k => k.clave === 'baja')!.nota!, /bajaVencida/, 'una purga vencida se dice')
+assert.match(kpisDe(resumir(ciclo.slice(0, 2), AHORA, 0), [], t, String).find(k => k.clave === 'baja')!.nota!, /bajaNinguna/)
+// Situación que explica la ficha
+assert.deepEqual(ciclo.map(i => situacionDe(i as any, AHORA)), ['activa', 'prueba', 'suspendida', 'receso', 'baja_suave', 'baja_programada', 'onboarding'])
+assert.equal(situacionDe(base({ etapa: 'suspendida', activa: false, adn_borrada_en: iso(-31), borrado_programado_en: iso(-1) }) as any, AHORA), 'baja_vencida')
+assert.equal(situacionDe(base({ etapa: 'raro' }) as any, AHORA), 'activa', 'una etapa desconocida no rompe')
+
 // Alertas: solo cifras y rutas, sin nombres de personas
 const alertas = alertasGlobales(lista, { atrasada: true, en_borrado: 1, vencidas: 1, horas_mas_atrasada: 60 }, t, AHORA)
 assert.deepEqual(alertas.map(a => a.clave), ['purga', 'pruebasVencidas', 'borradoVencido'])
@@ -75,7 +108,7 @@ assert.equal(alertasGlobales(lista.slice(0, 1), null, t, AHORA).length, 0, 'si l
 // KPIs: nada inventado
 const kpis = kpisDe(r, alertas, t, n => String(n))
 const porClave = Object.fromEntries(kpis.map(k => [k.clave, k]))
-assert.deepEqual(kpis.map(k => k.clave), ['activas', 'prueba', 'suspendidas', 'demos', 'miembros', 'facturacion', 'alertas'])
+assert.deepEqual(kpis.map(k => k.clave), ['activas', 'prueba', 'suspendidas', 'receso', 'baja', 'demos', 'miembros', 'facturacion', 'alertas'])
 assert.equal(porClave.facturacion.valor, null, 'la facturación no tiene datos: sin cifra')
 assert.ok(porClave.facturacion.sinConectar, 'y dice qué falta')
 assert.equal(porClave.miembros.valor, '182')
@@ -101,7 +134,7 @@ assert.equal(aInquilino(base({ etapa: 'prueba', prueba_hasta: iso(-2) }) as any,
 
 // Filtros y búsqueda
 const inqs = lista.map(l => aInquilino({ ...l, nombre: l.id === 'a' ? 'Iglesia Álamo' : l.id, ciudad: l.id === 'a' ? 'Málaga' : null } as any, cat, t, fecha, AHORA))
-assert.deepEqual(contarPorFiltro(inqs), { todas: 6, activas: 2, prueba: 2, suspendidas: 1, demo: 1 }, 'las demostraciones que están en la lista cuentan en su estado y también en «Demo»')
+assert.deepEqual(contarPorFiltro(inqs), { todas: 6, activas: 2, prueba: 2, suspendidas: 1, receso: 0, baja: 1, demo: 1 }, 'las demostraciones que están en la lista cuentan en su estado y también en «Demo»')
 assert.equal(filtrarInquilinos(inqs, 'todas', 'alamo').length, 1, 'sin acentos ni mayúsculas')
 assert.equal(filtrarInquilinos(inqs, 'todas', 'MALAGA').length, 1, 'la ciudad también busca')
 assert.equal(filtrarInquilinos(inqs, 'prueba', 'alamo').length, 0, 'filtro y búsqueda se combinan')

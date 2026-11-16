@@ -38,6 +38,23 @@ export const pruebaVencida = (ig: IglesiaFila, ahora = Date.now()) => {
   const d = diasDePrueba(ig, ahora)
   return etapaDe(ig) === 'prueba' && !ig.es_demo && d !== null && d < 0
 }
+/** Está en baja: tiene una purga (borrado suave) o un borrado programado. Suspendidas, en receso y en baja no se solapan. */
+export const enBaja = (ig: IglesiaFila) => !!ig.borrado_programado_en
+
+/** Días enteros hasta la purga; negativo si el plazo ya venció; null si no está en baja */
+export function diasParaPurga(ig: IglesiaFila, ahora = Date.now()): number | null {
+  if (!ig.borrado_programado_en) return null
+  return Math.ceil((new Date(ig.borrado_programado_en).getTime() - ahora) / DIA)
+}
+
+/** En qué situación de vida está la iglesia, con la que se elige el texto que se la explica a quien opera la plataforma */
+export type Situacion = 'onboarding' | 'prueba' | 'activa' | 'receso' | 'suspendida' | 'baja_suave' | 'baja_programada' | 'baja_vencida'
+export function situacionDe(ig: IglesiaFila, ahora = Date.now()): Situacion {
+  if (ig.borrado_programado_en) return borradoVencido(ig, ahora) ? 'baja_vencida' : ig.adn_borrada_en ? 'baja_suave' : 'baja_programada'
+  const e = etapaDe(ig)
+  return (['onboarding', 'prueba', 'activa', 'receso', 'suspendida'].includes(e) ? e : 'activa') as Situacion
+}
+
 export const borradoVencido = (ig: IglesiaFila, ahora = Date.now()) =>
   !!ig.borrado_programado_en && new Date(ig.borrado_programado_en).getTime() <= ahora
 
@@ -53,7 +70,8 @@ export function modulosDe(ig: IglesiaFila, c: Catalogo): (ModuloInquilino & { de
 export function detalleDeEstado(ig: IglesiaFila, t: Traductor, formatoFecha: (iso: string) => string, ahora = Date.now()): { texto?: string; urgente?: boolean } {
   if (ig.borrado_programado_en) {
     if (borradoVencido(ig, ahora)) return { texto: t('plataformaPanel.estado.borradoVencido'), urgente: true }
-    return { texto: t(ig.adn_borrada_en ? 'plataforma.borradaSuave' : 'plataforma.borradoProgramado', { fecha: formatoFecha(ig.borrado_programado_en) }) }
+    const n = diasParaPurga(ig, ahora) ?? 0
+    return { texto: t(ig.adn_borrada_en ? 'plataformaPanel.estado.baja' : 'plataformaPanel.estado.bajaProgramada', { fecha: formatoFecha(ig.borrado_programado_en), n }, n), urgente: n <= 3 }
   }
   if (etapaDe(ig) === 'prueba') {
     const d = diasDePrueba(ig, ahora)
@@ -78,6 +96,8 @@ export function aInquilino(ig: IglesiaFila, c: Catalogo, t: Traductor, formatoFe
     detalleEstado: detalle.texto,
     detalleUrgente: detalle.urgente,
     demo: !!ig.es_demo,
+    enBaja: enBaja(ig),
+    diasParaPurga: diasParaPurga(ig, ahora),
     miembros: Number(ig.miembros) || 0,
     modulos: modulosDe(ig, c).map(({ clave, nombre, activo }) => ({ clave, nombre, activo })),
   }
@@ -99,7 +119,11 @@ export function alertasGlobales(lista: IglesiaFila[], purga: PurgaResumen | null
 }
 
 export interface Resumen {
-  activas: number; prueba: number; porVencer: number; vencidas: number; suspendidas: number; miembros: number
+  activas: number; prueba: number; porVencer: number; vencidas: number; miembros: number
+  /** Ciclo de vida: no se solapan. Una iglesia en baja (con purga o borrado programado) cuenta solo como «en baja» */
+  suspendidas: number; receso: number; baja: number
+  /** Días hasta la purga más cercana de las iglesias en baja; negativo si ya venció; null si no hay ninguna */
+  proximaPurgaDias: number | null
   altasMes: number; altasMesAnterior: number
   /** Demostraciones: las que hay en total (se cuentan aparte, estén o no dentro de las cifras) y cuántas de ellas entran en ellas */
   demos: number; demosDentro: number
@@ -124,7 +148,10 @@ export function resumir(visibles: IglesiaFila[], ahora = Date.now(), totalDemos?
     prueba: visibles.filter(i => e(i) === 'prueba').length,
     porVencer: visibles.filter(i => pruebaPorVencer(i, ahora)).length,
     vencidas: visibles.filter(i => pruebaVencida(i, ahora)).length,
-    suspendidas: visibles.filter(i => !i.activa).length,
+    suspendidas: visibles.filter(i => etapaDe(i) === 'suspendida' && !enBaja(i)).length,
+    receso: visibles.filter(i => etapaDe(i) === 'receso' && !enBaja(i)).length,
+    baja: visibles.filter(enBaja).length,
+    proximaPurgaDias: visibles.filter(enBaja).reduce<number | null>((m, i) => { const d = diasParaPurga(i, ahora)!; return m === null || d < m ? d : m }, null),
     miembros: visibles.reduce((n, i) => n + (Number(i.miembros) || 0), 0),
     altasMes: altas(ahora - 30 * DIA, ahora),
     altasMesAnterior: altas(ahora - 60 * DIA, ahora - 30 * DIA),
@@ -140,7 +167,12 @@ export function kpisDe(r: Resumen, alertas: Alerta[], t: Traductor, formatoNumer
       nota: t('plataformaPanel.kpi.activasNota', { n: r.altasMes, delta: (delta > 0 ? '+' : '') + delta }, r.altasMes), tono: delta >= 0 ? 'bien' : 'normal' },
     { clave: 'prueba', etiqueta: t('plataformaPanel.kpi.prueba'), valor: formatoNumero(r.prueba),
       nota: t('plataformaPanel.kpi.pruebaNota', { n: r.porVencer }, r.porVencer), tono: r.porVencer ? 'alerta' : 'normal' },
-    { clave: 'suspendidas', etiqueta: t('plataformaPanel.kpi.suspendidas'), valor: formatoNumero(r.suspendidas) },
+    { clave: 'suspendidas', etiqueta: t('plataformaPanel.kpi.suspendidas'), valor: formatoNumero(r.suspendidas), nota: t('plataformaPanel.kpi.suspendidasNota') },
+    { clave: 'receso', etiqueta: t('plataformaPanel.kpi.receso'), valor: formatoNumero(r.receso), nota: t('plataformaPanel.kpi.recesoNota') },
+    { clave: 'baja', etiqueta: t('plataformaPanel.kpi.baja'), valor: formatoNumero(r.baja),
+      nota: r.proximaPurgaDias === null ? t('plataformaPanel.kpi.bajaNinguna')
+        : r.proximaPurgaDias < 0 ? t('plataformaPanel.kpi.bajaVencida') : t('plataformaPanel.kpi.bajaProxima', { n: r.proximaPurgaDias }, r.proximaPurgaDias),
+      tono: r.proximaPurgaDias !== null && r.proximaPurgaDias <= 3 ? 'alerta' : 'normal' },
     { clave: 'demos', etiqueta: t('plataformaPanel.kpi.demos'), valor: formatoNumero(r.demos),
       nota: t(r.demosDentro > 0 || r.demos === 0 ? 'plataformaPanel.kpi.demosDentro' : 'plataformaPanel.kpi.demosFuera') },
     { clave: 'miembros', etiqueta: t('plataformaPanel.kpi.miembros'), valor: formatoNumero(r.miembros), nota: t('plataformaPanel.kpi.miembrosNota') },

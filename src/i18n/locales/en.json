@@ -1588,7 +1588,9 @@
         "activas": "Active",
         "prueba": "Trial",
         "suspendidas": "Suspended",
-        "demo": "Demo"
+        "demo": "Demo",
+        "receso": "On break",
+        "baja": "Being closed"
       },
       "columna": {
         "nombre": "Name",
@@ -1631,7 +1633,9 @@
       "borradoVencido": "Deletion overdue",
       "pruebaVencida": "Trial expired",
       "venceHoy": "The trial ends today",
-      "diasRestantes": "{n} day of trial left | {n} days of trial left"
+      "diasRestantes": "{n} day of trial left | {n} days of trial left",
+      "baja": "Being closed: purged on {fecha} (in {n} day) | Being closed: purged on {fecha} (in {n} days)",
+      "bajaProgramada": "Deletion scheduled for {fecha} (in {n} day) | Deletion scheduled for {fecha} (in {n} days)"
     },
     "alerta": {
       "purga": "The scheduled purge is {horas} hours behind",
@@ -1652,7 +1656,14 @@
       "alertasHay": "See the detail below",
       "alertasNinguna": "No active alerts",
       "demosDentro": "Included in the figures",
-      "demosFuera": "Left out of the figures"
+      "demosFuera": "Left out of the figures",
+      "suspendidasNota": "No access, data kept",
+      "receso": "On break",
+      "recesoNota": "Paused, data kept",
+      "baja": "Being closed",
+      "bajaNinguna": "None waiting for purge",
+      "bajaProxima": "Next purge in {n} day | Next purge in {n} days",
+      "bajaVencida": "A purge is overdue"
     },
     "faltaFacturacion": "A payment gateway still needs to be connected: the system holds no pricing or billing data today.",
     "portada": {
@@ -1776,6 +1787,48 @@
       "incluir": "Include demos",
       "dentro": "{n} demo counted in every figure | {n} demos counted in every figure",
       "fuera": "{n} demo left out of the figures | {n} demos left out of the figures"
+    },
+    "ciclo": {
+      "onboarding": {
+        "titulo": "Being set up",
+        "texto": "The church is being set up. It can already sign in and use the modules of its plan. Activate it when the set-up is finished."
+      },
+      "prueba": {
+        "titulo": "On trial",
+        "texto": "It uses the app with the modules of its plan until {fecha}. When the trial ends, the database cuts off its access to the modules on its own, even if the stage still says “on trial”, and the data is kept. To keep it going, convert it to active."
+      },
+      "activa": {
+        "titulo": "Active",
+        "texto": "Working normally: the church signs in and uses the modules of its plan. Nothing is pending."
+      },
+      "receso": {
+        "titulo": "On break",
+        "texto": "The church is paused: its team cannot see the data, but everything is kept intact. Today no deadline closes it on its own: it stays on break until someone reactivates it or schedules its deletion. Its owner can open the data screen to download a copy or ask to close the account."
+      },
+      "suspendida": {
+        "titulo": "Suspended",
+        "texto": "Access has been cut off: the app does not show it its data, but everything is kept. Its owner sees a red notice with the way to download a copy. It stays like this until someone reactivates it or schedules its deletion."
+      },
+      "baja_suave": {
+        "titulo": "Being closed, still recoverable",
+        "texto": "Closing was requested. The church is suspended and its data will be deleted completely on {fecha}, in {n} day: database, files and sign-in accounts. Until then it can be recovered with one click and returns to the state it had, and a copy can be downloaded. After the purge only a record that it happened remains, with no data about people. | Closing was requested. The church is suspended and its data will be deleted completely on {fecha}, in {n} days: database, files and sign-in accounts. Until then it can be recovered with one click and returns to the state it had, and a copy can be downloaded. After the purge only a record that it happened remains, with no data about people."
+      },
+      "baja_programada": {
+        "titulo": "Deletion scheduled",
+        "texto": "Deletion of this church is scheduled for {fecha}, in {n} day. Meanwhile it stays without access and its data is kept: you can cancel the deletion or download a copy. When the date arrives, the deletion is launched by hand; it does not run on its own. | Deletion of this church is scheduled for {fecha}, in {n} days. Meanwhile it stays without access and its data is kept: you can cancel the deletion or download a copy. When the date arrives, the deletion is launched by hand; it does not run on its own."
+      },
+      "baja_vencida": {
+        "titulo": "Deadline passed: waiting for purge",
+        "texto": "The deadline has passed and the church can no longer be recovered. Its data will be deleted at the next purge, which a platform person launches or the scheduled task does once it is switched on, or right now with “Delete now”. If a copy is still needed, download it first."
+      },
+      "boton": {
+        "reactivar": "Reactivate the church",
+        "activar": "Activate the church",
+        "convertir": "Convert to active",
+        "recuperar": "Recover the church",
+        "cancelar": "Cancel the deletion",
+        "descargar": "Download backup copy"
+      }
     }
   },
   "lideres": {

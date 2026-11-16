@@ -1588,7 +1588,9 @@
         "activas": "Activas",
         "prueba": "Prueba",
         "suspendidas": "Suspendidas",
-        "demo": "Demo"
+        "demo": "Demo",
+        "receso": "Receso",
+        "baja": "En baja"
       },
       "columna": {
         "nombre": "Nombre",
@@ -1631,7 +1633,9 @@
       "borradoVencido": "Borrado vencido",
       "pruebaVencida": "Prueba vencida",
       "venceHoy": "La prueba vence hoy",
-      "diasRestantes": "Queda {n} día de prueba | Quedan {n} días de prueba"
+      "diasRestantes": "Queda {n} día de prueba | Quedan {n} días de prueba",
+      "baja": "En baja: se purga el {fecha} (en {n} día) | En baja: se purga el {fecha} (en {n} días)",
+      "bajaProgramada": "Borrado programado el {fecha} (en {n} día) | Borrado programado el {fecha} (en {n} días)"
     },
     "alerta": {
       "purga": "La purga programada va atrasada {horas} horas",
@@ -1652,7 +1656,14 @@
       "alertasHay": "Revisa el detalle debajo",
       "alertasNinguna": "Ninguna alerta activa",
       "demosDentro": "Incluidas en las cifras",
-      "demosFuera": "Fuera de las cifras"
+      "demosFuera": "Fuera de las cifras",
+      "suspendidasNota": "Sin acceso, datos conservados",
+      "receso": "En receso",
+      "recesoNota": "En pausa, datos conservados",
+      "baja": "En baja",
+      "bajaNinguna": "Ninguna pendiente de purga",
+      "bajaProxima": "Próxima purga en {n} día | Próxima purga en {n} días",
+      "bajaVencida": "Hay una purga vencida"
     },
     "faltaFacturacion": "Falta conectar una pasarela de cobro: hoy no existe ningún dato de precios ni de cobros en el sistema.",
     "portada": {
@@ -1776,6 +1787,48 @@
       "incluir": "Incluir demostraciones",
       "dentro": "Cuenta {n} demostración en todas las cifras | Cuentan {n} demostraciones en todas las cifras",
       "fuera": "{n} demostración fuera de las cifras | {n} demostraciones fuera de las cifras"
+    },
+    "ciclo": {
+      "onboarding": {
+        "titulo": "En alta",
+        "texto": "La iglesia se está dando de alta. Ya puede entrar y usar los módulos de su plan. Actívala cuando termine el alta."
+      },
+      "prueba": {
+        "titulo": "En prueba",
+        "texto": "Usa la aplicación con los módulos de su plan hasta el {fecha}. Al vencer la prueba, la base le corta sola el acceso a los módulos, aunque la etapa siga siendo «en prueba», y los datos se conservan. Para que siga, conviértela en activa."
+      },
+      "activa": {
+        "titulo": "Activa",
+        "texto": "Funciona con normalidad: la iglesia entra y usa los módulos de su plan. No hay nada pendiente."
+      },
+      "receso": {
+        "titulo": "En receso",
+        "texto": "La iglesia está en pausa: su equipo no ve los datos, pero todo se conserva intacto. Hoy ningún plazo la cierra sola: sigue en receso hasta que alguien la reactive o programe su borrado. Su propietario puede entrar a la pantalla de datos para descargar una copia o pedir la baja."
+      },
+      "suspendida": {
+        "titulo": "Suspendida",
+        "texto": "Se le ha cortado el acceso: la aplicación no le enseña sus datos, pero todo se conserva. Su propietario ve un aviso rojo con el camino a descargar una copia. Sigue así hasta que alguien la reactive o programe su borrado."
+      },
+      "baja_suave": {
+        "titulo": "En baja, a tiempo de recuperarla",
+        "texto": "Se pidió la baja. La iglesia está suspendida y sus datos se borrarán por completo el {fecha}, en {n} día: base de datos, archivos y cuentas de acceso. Hasta entonces se recupera con un clic y vuelve al estado que tenía, y se puede descargar una copia. Tras la purga solo queda un registro de que ocurrió, sin datos de personas. | Se pidió la baja. La iglesia está suspendida y sus datos se borrarán por completo el {fecha}, en {n} días: base de datos, archivos y cuentas de acceso. Hasta entonces se recupera con un clic y vuelve al estado que tenía, y se puede descargar una copia. Tras la purga solo queda un registro de que ocurrió, sin datos de personas."
+      },
+      "baja_programada": {
+        "titulo": "Borrado programado",
+        "texto": "Se programó el borrado de esta iglesia para el {fecha}, en {n} día. Mientras tanto sigue sin acceso y sus datos se conservan: puedes cancelar el borrado o descargar una copia. Al llegar la fecha, el borrado se lanza a mano; no se ejecuta solo. | Se programó el borrado de esta iglesia para el {fecha}, en {n} días. Mientras tanto sigue sin acceso y sus datos se conservan: puedes cancelar el borrado o descargar una copia. Al llegar la fecha, el borrado se lanza a mano; no se ejecuta solo."
+      },
+      "baja_vencida": {
+        "titulo": "Plazo vencido: pendiente de purga",
+        "texto": "El plazo ya venció y la iglesia no se puede recuperar. Sus datos se borrarán con la próxima purga, que lanza una persona de la plataforma o la tarea programada cuando esté activada, o ahora con «Borrar ahora». Si aún hace falta una copia, descárgala antes."
+      },
+      "boton": {
+        "reactivar": "Reactivar la iglesia",
+        "activar": "Activar la iglesia",
+        "convertir": "Convertir en activa",
+        "recuperar": "Recuperar la iglesia",
+        "cancelar": "Cancelar el borrado",
+        "descargar": "Descargar copia de seguridad"
+      }
     }
   },
   "lideres": {
