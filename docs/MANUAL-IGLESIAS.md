@@ -68,6 +68,13 @@ El consentimiento al reimportar **nunca se relaja**: una baja del archivo se apl
 
 Para cada nuevo convertido se registra el miembro, la fecha de conversión y notas. La pantalla muestra el progreso de las 72 horas, el límite, las horas transcurridas y el estado, y se ordena por urgencia, fecha o nombre. «Completar» cierra el seguimiento. Las consolidaciones pendientes aparecen en el panel como alertas, con las horas transcurridas desde la conversión.
 
+**Seguimiento de cada persona.** En «Ver detalles» se ve la lista de contactos y, según el rol, se puede:
+1. **Asignar consolidador** (quien tiene el permiso de reasignar): la lista solo ofrece a las personas activas cuyo rol puede registrar contactos, o al propietario. Una consolidación sin asignar lo dice en la tarjeta.
+2. **Registrar un contacto** (el consolidador asignado y quien edita consolidaciones): fecha y hora, y una nota. Se guardan hasta tres contactos; con los tres hechos, el formulario se cierra y avisa. La fecha no puede ser futura.
+3. **Llamar o escribir por WhatsApp** desde la tarjeta: son enlaces que abre quien está en pantalla, no se envía nada desde la aplicación y el mensaje no viene escrito. Para WhatsApp el número necesita su prefijo internacional (`+34...`); si no lo trae, se completa con el prefijo del país de la iglesia cuando es uno de los conocidos, y si no se puede, la tarjeta lo dice y deja solo «Llamar». [NV: la lista de países con prefijo es corta y hay que ampliarla con los países reales de las iglesias.]
+
+Quien no tiene el permiso de crear no ve el botón «Nuevo convertido»; quien solo puede leer (por ejemplo, el líder de casa) ve la consolidación y puede llamar, pero no registrar ni completar. La base de datos exige los mismos permisos aunque la pantalla no los oculte (pruebas S11 de `supabase/tests/aislamiento.sql`).
+
 ## 8. Comunicación y consentimiento
 
 **Quién recibe mensajes.** Solo recibe mensajes quien consta como **suscrito en ese canal**. Un miembro creado a mano no tiene registro de consentimiento, así que no recibe nada hasta que alguien lo registre. Los estados son: suscrito, sin dato, nunca suscrito y suscripción cancelada.

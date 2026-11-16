@@ -6,10 +6,12 @@
         <h1 class="text-2xl font-bold text-gray-900">{{ t('consolidacion.titulo') }}</h1>
         <p class="text-gray-500 text-sm mt-0.5">{{ t('consolidacion.subtitulo') }}</p>
       </div>
-      <button @click="abrirNuevo = true" class="btn-primary flex items-center gap-2">
+      <button v-if="puedeCrear" @click="abrirNuevo = true" class="btn-primary flex items-center gap-2" data-test="nuevo-convertido">
         <UserPlus class="w-4 h-4" aria-hidden="true" /> {{ t('consolidacion.nuevo') }}
       </button>
     </div>
+
+    <p v-if="aviso" role="status" data-test="aviso" :class="['text-sm px-4 py-3 rounded-lg border', aviso.error ? 'bg-red-50 text-red-700 border-red-200' : 'bg-green-50 text-green-700 border-green-200']">{{ aviso.texto }}</p>
 
     <!-- Indicadores de estado -->
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
@@ -112,6 +114,7 @@
         <div
           v-for="c in consolidacionesFiltradas"
           :key="c.id"
+          :data-consolidacion="c.id"
           :class="['border rounded-xl p-4 transition-all hover:shadow-sm', claseBorde(c.estado_alerta)]"
         >
           <div class="flex items-start justify-between gap-4">
@@ -135,6 +138,10 @@
                   <span v-if="c.consolidador_perfil" class="inline-flex items-center gap-1">
                     <UserRound class="w-3.5 h-3.5" aria-hidden="true" /> {{ c.consolidador_perfil.nombre }} {{ c.consolidador_perfil.apellido }}
                   </span>
+                  <span v-else class="inline-flex items-center gap-1 text-amber-700" data-test="sin-asignar">
+                    <UserRound class="w-3.5 h-3.5" aria-hidden="true" /> {{ t('consolidacion.sinAsignar') }}
+                  </span>
+                  <span class="inline-flex items-center gap-1" data-test="n-contactos">{{ t('consolidacion.contactos.titulo') }}: {{ contactosDe(c).length }}/3</span>
                 </div>
                 <p v-if="c.notas" class="text-xs text-gray-600 mt-2 bg-gray-50 rounded px-2 py-1 italic">
                   "{{ c.notas }}"
@@ -149,17 +156,39 @@
                 <button
                   @click="verDetalle(c)"
                   class="text-xs text-adn-verde hover:underline font-medium"
+                  data-test="ver-detalles"
                 >
                   {{ t('consolidacion.verDetalles') }}
                 </button>
                 <button
+                  v-if="puedeContactar"
                   @click="marcarCompletado(c.id)"
                   class="text-xs text-green-700 hover:underline font-medium inline-flex items-center gap-1"
+                  data-test="completar"
                 >
                   <Check class="w-3.5 h-3.5" aria-hidden="true" /> {{ t('consolidacion.completar') }}
                 </button>
               </div>
             </div>
+          </div>
+
+          <!-- Llamar y escribir: enlaces que abre quien está en pantalla; no se envía nada desde aquí -->
+          <div class="mt-3 flex flex-wrap gap-2" v-if="c.miembros">
+            <a v-if="enlaceLlamar(c.miembros.telefono)" :href="enlaceLlamar(c.miembros.telefono)!" data-test="llamar"
+              :aria-label="t('consolidacion.llamarA', { nombre: nombreDe(c) })"
+              class="inline-flex items-center gap-1.5 text-xs px-3 py-2 rounded-lg border border-gray-200 text-adn-verde hover:border-adn-verde focus:outline-none focus-visible:ring-2 focus-visible:ring-adn-verde">
+              <Phone class="w-3.5 h-3.5" aria-hidden="true" /> {{ t('consolidacion.llamar') }}
+            </a>
+            <a v-if="enlaceWhatsApp(c.miembros.telefono, auth.iglesia?.pais)" :href="enlaceWhatsApp(c.miembros.telefono, auth.iglesia?.pais)!" target="_blank" rel="noopener noreferrer" data-test="whatsapp"
+              :aria-label="t('consolidacion.whatsappA', { nombre: nombreDe(c) })"
+              class="inline-flex items-center gap-1.5 text-xs px-3 py-2 rounded-lg border border-gray-200 text-adn-verde hover:border-adn-verde focus:outline-none focus-visible:ring-2 focus-visible:ring-adn-verde">
+              <MessageCircle class="w-3.5 h-3.5" aria-hidden="true" /> {{ t('consolidacion.whatsapp') }}
+            </a>
+            <span v-if="!c.miembros.telefono" class="text-xs text-gray-500 py-2" data-test="sin-telefono">{{ t('consolidacion.sinTelefono') }}</span>
+            <span v-else-if="!enlaceWhatsApp(c.miembros.telefono, auth.iglesia?.pais)" class="text-xs text-gray-500 py-2" data-test="sin-prefijo">{{ t('consolidacion.sinPrefijo') }}</span>
+            <button v-if="puedeContactar" type="button" class="inline-flex items-center gap-1.5 text-xs px-3 py-2 rounded-lg bg-adn-verde text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-adn-verde" data-test="registrar-contacto" @click="verDetalle(c)">
+              <ClipboardPen class="w-3.5 h-3.5" aria-hidden="true" /> {{ t('consolidacion.contactos.registrar') }}
+            </button>
           </div>
 
           <!-- Barra de progreso 72h -->
@@ -233,11 +262,11 @@
     <div
       v-if="detalleActivo"
       class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center p-4 z-50"
-      @click.self="detalleActivo = null"
+      @click.self="detalleActivo = null" @keydown.esc="detalleActivo = null"
     >
-      <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6">
+      <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6 max-h-[90vh] overflow-y-auto" role="dialog" aria-modal="true" aria-labelledby="cs-titulo-detalle" data-test="detalle" tabindex="-1" ref="dialogoDetalle">
         <div class="flex items-center justify-between mb-4">
-          <h2 class="text-lg font-bold text-gray-900">{{ t('consolidacion.detalleTitulo') }}</h2>
+          <h2 id="cs-titulo-detalle" class="text-lg font-bold text-gray-900">{{ t('consolidacion.detalleTitulo') }}</h2>
           <button @click="detalleActivo = null" class="text-gray-400 hover:text-gray-600 text-xl" :aria-label="t('comun.cerrar')">×</button>
         </div>
         <div v-if="detalleActivo" class="space-y-3 text-sm">
@@ -265,11 +294,45 @@
               <p class="font-semibold">{{ formatFecha(detalleActivo.fecha_limite) }}</p>
             </div>
           </div>
+          <div v-if="puedeReasignar" class="bg-gray-50 rounded-lg p-3">
+            <label for="cs-consolidador" class="text-xs text-gray-500 block mb-1">{{ t('consolidacion.asignar.etiqueta') }}</label>
+            <select id="cs-consolidador" data-test="asignar" :value="detalleActivo.consolidador_id ?? ''" @change="asignar(($event.target as HTMLSelectElement).value || null)"
+              class="w-full text-sm border border-gray-200 rounded-lg px-2 py-2 focus:outline-none focus:ring-2 focus:ring-adn-verde">
+              <option value="">{{ t('consolidacion.asignar.ninguno') }}</option>
+              <option v-for="p in consolidadores" :key="p.id" :value="p.id">{{ p.nombre }} {{ p.apellido }}</option>
+            </select>
+          </div>
+          <section class="bg-gray-50 rounded-lg p-3 space-y-2" aria-labelledby="cs-contactos" data-test="contactos">
+            <h3 id="cs-contactos" class="text-sm font-semibold text-gray-800">{{ t('consolidacion.contactos.titulo') }}</h3>
+            <p v-if="!contactosDe(detalleActivo).length" class="text-xs text-gray-500">{{ t('consolidacion.contactos.ninguno') }}</p>
+            <ul v-else class="space-y-2">
+              <li v-for="k in contactosDe(detalleActivo)" :key="k.n" class="text-sm" data-test="contacto">
+                <p class="text-xs text-gray-500">{{ t('consolidacion.contactos.n', { n: k.n }) }} · {{ formatFecha(k.fecha) }}</p>
+                <p v-if="k.notas" class="text-gray-700">{{ k.notas }}</p>
+              </li>
+            </ul>
+            <form v-if="puedeContactar && siguienteHueco(detalleActivo)" class="space-y-2 pt-2 border-t border-gray-200" @submit.prevent="guardarContacto">
+              <div>
+                <label for="cs-fecha" class="text-xs text-gray-500 block mb-1">{{ t('consolidacion.contactos.fecha') }}</label>
+                <input id="cs-fecha" v-model="contacto.fecha" type="datetime-local" required data-test="contacto-fecha"
+                  class="w-full text-sm border border-gray-200 rounded-lg px-2 py-2 focus:outline-none focus:ring-2 focus:ring-adn-verde" />
+              </div>
+              <div>
+                <label for="cs-nota" class="text-xs text-gray-500 block mb-1">{{ t('consolidacion.contactos.nota') }}</label>
+                <textarea id="cs-nota" v-model="contacto.nota" rows="2" maxlength="1000" data-test="contacto-nota" :placeholder="t('consolidacion.contactos.notaEjemplo')"
+                  class="w-full text-sm border border-gray-200 rounded-lg px-2 py-2 focus:outline-none focus:ring-2 focus:ring-adn-verde resize-none"></textarea>
+              </div>
+              <p v-if="errorContacto" role="alert" class="text-xs text-red-700" data-test="error-contacto">{{ errorContacto }}</p>
+              <button type="submit" :disabled="guardando" class="btn-primary w-full text-sm disabled:opacity-60" data-test="guardar-contacto">{{ t('consolidacion.contactos.guardar') }}</button>
+            </form>
+            <p v-else-if="!siguienteHueco(detalleActivo)" class="text-xs text-gray-500" data-test="contactos-completos">{{ t('consolidacion.contactos.completos') }}</p>
+          </section>
           <div v-if="detalleActivo.notas" class="bg-yellow-50 rounded-lg p-3">
             <p class="text-xs text-gray-400 mb-1">{{ t('consolidacion.notas') }}</p>
             <p class="italic text-gray-700">"{{ detalleActivo.notas }}"</p>
           </div>
           <button
+            v-if="puedeContactar"
             @click="marcarCompletado(detalleActivo.id); detalleActivo = null"
             class="w-full btn-primary mt-2 inline-flex items-center justify-center gap-2"
           >
@@ -283,14 +346,15 @@
 
 <script setup lang="ts">
 import EstadoAlerta from '@/components/EstadoAlerta.vue'
-import { CalendarDays, ChartColumn, Check, CircleCheck, Clock, LoaderCircle, Siren, Timer, TriangleAlert, UserPlus, UserRound } from '@lucide/vue'
-import { ref, computed, onMounted } from 'vue'
+import { CalendarDays, ChartColumn, Check, CircleCheck, ClipboardPen, Clock, LoaderCircle, MessageCircle, Phone, Siren, Timer, TriangleAlert, UserPlus, UserRound } from '@lucide/vue'
+import { ref, computed, nextTick, onMounted, watch } from 'vue'
 import { supabase } from '@/lib/supabase'
 import { conAlerta } from '@/lib/alertas'
 import type { AlertaColor } from '@/lib/supabase'
 import { useI18n } from 'vue-i18n'
 import { formatoFechaHora } from '@/i18n'
 import { useAuthStore } from '@/stores/auth'
+import { camposContacto, contactosDe, enlaceLlamar, enlaceWhatsApp, fechaDeContactoValida, siguienteHueco } from '@/lib/seguimiento'
 
 const { t, te } = useI18n()
 const auth = useAuthStore()
@@ -343,6 +407,66 @@ const ordenar = ref('urgente')
 const abrirNuevo = ref(false)
 const guardando = ref(false)
 const detalleActivo = ref<any>(null)
+const dialogoDetalle = ref<HTMLElement | null>(null)
+// El foco entra en el diálogo al abrirlo (así Escape lo cierra) y vuelve a donde estaba al cerrarlo
+let focoPrevio: HTMLElement | null = null
+watch(detalleActivo, async (nuevo, viejo) => {
+  if (nuevo && !viejo) { focoPrevio = document.activeElement as HTMLElement | null; await nextTick(); dialogoDetalle.value?.focus() }
+  else if (!nuevo && viejo) { focoPrevio?.focus?.(); focoPrevio = null }
+})
+
+// Permisos de esta pantalla: la base de datos los exige igualmente; aquí solo se ofrece lo que la persona puede hacer
+const puedeCrear = computed(() => auth.can('consolidacion.crear'))
+const puedeContactar = computed(() => auth.can('consolidacion.editar', 'consolidacion.registrar_contacto'))
+const puedeReasignar = computed(() => auth.can('consolidacion.reasignar'))
+
+const aviso = ref<{ texto: string; error: boolean } | null>(null)
+const avisar = (texto: string, error = false) => { aviso.value = { texto, error } }
+const nombreDe = (c: any) => `${c.miembros?.nombre ?? ''} ${c.miembros?.apellido ?? ''}`.trim()
+
+// Quién puede ser consolidador: las personas activas cuyo rol puede registrar contactos (o es propietario)
+const consolidadores = ref<{ id: string; nombre: string; apellido: string }[]>([])
+async function cargarConsolidadores() {
+  if (!puedeReasignar.value) return
+  const [{ data: roles }, { data: perfiles }] = await Promise.all([
+    supabase.from('roles').select('clave, es_propietario, rol_permisos(permiso)'),
+    supabase.from('perfiles').select('id, nombre, apellido, rol, activo').eq('activo', true).order('nombre'),
+  ])
+  const validos = new Set((roles ?? []).filter((r: any) => r.es_propietario || (r.rol_permisos ?? []).some((x: any) => x.permiso === 'consolidacion.registrar_contacto')).map((r: any) => r.clave))
+  consolidadores.value = (perfiles ?? []).filter((p: any) => validos.has(p.rol)).map((p: any) => ({ id: p.id, nombre: p.nombre, apellido: p.apellido }))
+}
+
+const ahoraLocal = () => { const d = new Date(); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0, 16) }
+const contacto = ref({ fecha: ahoraLocal(), nota: '' })
+const errorContacto = ref('')
+
+async function guardarContacto() {
+  const c = detalleActivo.value
+  const n = c ? siguienteHueco(c) : null
+  if (!c || !n) return
+  const fechaIso = new Date(contacto.value.fecha).toISOString()
+  if (!fechaDeContactoValida(fechaIso)) { errorContacto.value = t('consolidacion.contactos.futura'); return }
+  errorContacto.value = ''
+  guardando.value = true
+  const campos = camposContacto(n, fechaIso, contacto.value.nota)
+  const { error } = await supabase.from('consolidaciones').update(campos).eq('id', c.id)
+  guardando.value = false
+  if (error) { errorContacto.value = t('consolidacion.contactos.error'); return }
+  Object.assign(c, campos)
+  contacto.value = { fecha: ahoraLocal(), nota: '' }
+  avisar(t('consolidacion.contactos.guardado'))
+}
+
+async function asignar(id: string | null) {
+  const c = detalleActivo.value
+  if (!c) return
+  const { error } = await supabase.from('consolidaciones').update({ consolidador_id: id }).eq('id', c.id)
+  if (error) { avisar(t('consolidacion.asignar.error'), true); await cargarDatos(); return }
+  c.consolidador_id = id
+  const p = consolidadores.value.find(x => x.id === id)
+  c.consolidador_perfil = p ? { nombre: p.nombre, apellido: p.apellido } : null
+  avisar(t('consolidacion.asignar.guardado'))
+}
 
 const nuevo = ref({
   miembro_id: '',
@@ -425,14 +549,12 @@ async function cargarDatos() {
   const [consolRes, miembrosRes] = await Promise.all([
     supabase
       .from('consolidaciones')
-      .select('*, miembros!consolidaciones_miembro_fk(id, nombre, apellido, crm_id), consolidador_perfil:perfiles!consolidaciones_consolidador_fk(nombre, apellido)')
+      .select('*, miembros!consolidaciones_miembro_fk(id, nombre, apellido, crm_id, telefono), consolidador_perfil:perfiles!consolidaciones_consolidador_fk(nombre, apellido)')
       .eq('completado', false)
       .order('fecha_conversion', { ascending: true }),
-    supabase
-      .from('miembros')
-      .select('id, nombre, apellido, crm_id')
-      .eq('activo', true)
-      .order('nombre'),
+    puedeCrear.value
+      ? supabase.from('miembros').select('id, nombre, apellido, crm_id').eq('activo', true).order('nombre')
+      : Promise.resolve({ data: [] as any[] }),
   ])
   consolidaciones.value = (consolRes.data ?? []).map(conAlerta)
   miembrosDisponibles.value = miembrosRes.data ?? []
@@ -447,6 +569,7 @@ async function crearConsolidacion() {
     notas: nuevo.value.notas || null,
   })
   guardando.value = false
+  if (error) { avisar(t('consolidacion.errorCrear'), true); return }
   if (!error) {
     abrirNuevo.value = false
     nuevo.value = { miembro_id: '', fecha_conversion: new Date().toISOString().slice(0, 16), notas: '' }
@@ -455,9 +578,10 @@ async function crearConsolidacion() {
 }
 
 async function marcarCompletado(id: string) {
-  await supabase.from('consolidaciones').update({ completado: true }).eq('id', id)
+  const { error } = await supabase.from('consolidaciones').update({ completado: true }).eq('id', id)
+  if (error) { avisar(t('consolidacion.errorCompletar'), true); return }
   consolidaciones.value = consolidaciones.value.filter(c => c.id !== id)
 }
 
-onMounted(() => { cargarDatos(); cargarMetricas() })
+onMounted(() => { cargarDatos(); cargarMetricas(); cargarConsolidadores() })
 </script>

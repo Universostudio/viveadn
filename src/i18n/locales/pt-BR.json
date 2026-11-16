@@ -392,7 +392,36 @@
       "vencidosN": "{n} vencidas",
       "promo": "Métricas avançadas do OP72",
       "promoAyuda": "Tempos de contato, cumprimento das 72 horas e detalhe por consolidador e por casa. Incluídas nos planos Básico e Premium, ou como complemento."
-    }
+    },
+    "sinAsignar": "Sem acompanhante designado",
+    "asignar": {
+      "etiqueta": "Acompanhante",
+      "ninguno": "Sem designação",
+      "guardado": "Acompanhante atualizado.",
+      "error": "Não foi possível trocar o acompanhante. Tente de novo."
+    },
+    "llamar": "Ligar",
+    "whatsapp": "WhatsApp",
+    "llamarA": "Ligar para {nombre}",
+    "whatsappA": "Enviar WhatsApp para {nombre}",
+    "sinTelefono": "Sem telefone cadastrado",
+    "sinPrefijo": "Não é possível abrir o WhatsApp: falta o código do país no número.",
+    "contactos": {
+      "titulo": "Contatos",
+      "ninguno": "Ainda não há nenhum contato registrado.",
+      "n": "Contato {n}",
+      "registrar": "Registrar contato",
+      "fecha": "Data e hora do contato",
+      "nota": "Nota do contato",
+      "notaEjemplo": "O que foi conversado, o que a pessoa precisa, quando ligar de novo...",
+      "guardar": "Salvar contato",
+      "guardado": "Contato registrado.",
+      "completos": "Os três contatos já estão registrados. Acrescente o detalhe nas notas do acompanhamento.",
+      "error": "Não foi possível salvar o contato. Tente de novo.",
+      "futura": "A data do contato não pode ser futura."
+    },
+    "errorCrear": "Não foi possível registrar o novo convertido. Tente de novo.",
+    "errorCompletar": "Não foi possível marcar como concluído. Tente de novo."
   },
   "formacion": {
     "titulo": "Formação",

@@ -392,7 +392,36 @@
       "vencidosN": "{n} en retard",
       "promo": "Indicateurs avancés OP72",
       "promoAyuda": "Délais de contact, respect des 72 heures et détail par consolidateur et par maison. Inclus dans les forfaits Basique et Premium, ou en option."
-    }
+    },
+    "sinAsignar": "Aucun accompagnateur assigné",
+    "asignar": {
+      "etiqueta": "Accompagnateur",
+      "ninguno": "Non assigné",
+      "guardado": "Accompagnateur mis à jour.",
+      "error": "L’accompagnateur n’a pas pu être changé. Réessayez."
+    },
+    "llamar": "Appeler",
+    "whatsapp": "WhatsApp",
+    "llamarA": "Appeler {nombre}",
+    "whatsappA": "Écrire à {nombre} sur WhatsApp",
+    "sinTelefono": "Aucun téléphone enregistré",
+    "sinPrefijo": "WhatsApp ne peut pas s’ouvrir : il manque l’indicatif du pays au numéro.",
+    "contactos": {
+      "titulo": "Contacts",
+      "ninguno": "Aucun contact n’est encore enregistré.",
+      "n": "Contact {n}",
+      "registrar": "Enregistrer un contact",
+      "fecha": "Date et heure du contact",
+      "nota": "Note du contact",
+      "notaEjemplo": "Ce dont on a parlé, ce dont la personne a besoin, quand rappeler...",
+      "guardar": "Enregistrer le contact",
+      "guardado": "Contact enregistré.",
+      "completos": "Les trois contacts sont déjà enregistrés. Ajoutez le détail dans les notes du suivi.",
+      "error": "Le contact n’a pas pu être enregistré. Réessayez.",
+      "futura": "La date du contact ne peut pas être dans le futur."
+    },
+    "errorCrear": "Le nouveau converti n’a pas pu être enregistré. Réessayez.",
+    "errorCompletar": "Impossible de le marquer comme terminé. Réessayez."
   },
   "formacion": {
     "titulo": "Formation",

@@ -392,7 +392,36 @@
       "vencidosN": "{n} overdue",
       "promo": "Advanced OP72 metrics",
       "promoAyuda": "Contact times, 72-hour compliance and a breakdown by consolidator and house. Included in the Basic and Premium plans, or as an add-on."
-    }
+    },
+    "sinAsignar": "No follow-up person assigned",
+    "asignar": {
+      "etiqueta": "Follow-up person",
+      "ninguno": "Unassigned",
+      "guardado": "Follow-up person updated.",
+      "error": "The follow-up person could not be changed. Please try again."
+    },
+    "llamar": "Call",
+    "whatsapp": "WhatsApp",
+    "llamarA": "Call {nombre}",
+    "whatsappA": "Message {nombre} on WhatsApp",
+    "sinTelefono": "No phone number on record",
+    "sinPrefijo": "WhatsApp cannot be opened: the number is missing its country code.",
+    "contactos": {
+      "titulo": "Contacts",
+      "ninguno": "No contact has been recorded yet.",
+      "n": "Contact {n}",
+      "registrar": "Record a contact",
+      "fecha": "Date and time of the contact",
+      "nota": "Contact note",
+      "notaEjemplo": "What was discussed, what they need, when to call back...",
+      "guardar": "Save contact",
+      "guardado": "Contact recorded.",
+      "completos": "All three contacts are already recorded. Add the detail in the follow-up notes.",
+      "error": "The contact could not be saved. Please try again.",
+      "futura": "The contact date cannot be in the future."
+    },
+    "errorCrear": "The new convert could not be registered. Please try again.",
+    "errorCompletar": "It could not be marked as completed. Please try again."
   },
   "formacion": {
     "titulo": "Discipleship training",

@@ -78,12 +78,14 @@ Ordenado por lo que más se nota en pantalla.
 7. **Permisos sin pantalla [E].** `gamificacion.*` y `zonas.*` existen y se asignan a roles, pero no tienen entrada de menú.
 8. **«Ver como» solo para el propietario [E].** Permite al superadministrador previsualizar la interfaz con los permisos de otro rol; no cambia lo que permite la base. No se ha pensado una versión para el administrador de plataforma, que por principio no ve a las personas de una iglesia.
 
-## 6. Decisiones que necesita Harold antes de construir [H]
+## 6. Decisiones de producto (Gerencia, 16 de noviembre de 2026) y lo que queda para Harold
 
-1. ¿Existe un rol «Pastor»? Si sí: qué ve (propuesta: todo lo pastoral y de reportes, sin configuración ni usuarios) y si tiene su propio panel de inicio.
-2. ¿Se renombra `lider_zona` a «Supervisor de Zona» en pantalla, o conviven los dos nombres?
-3. Orden de los «Mi panel»: propuesta, empezar por el líder de casa (es quien más gente tiene y más a menudo entra), después líder de zona y consolidador, y por último el miembro.
-4. ¿Se permite crear roles nuevos por iglesia? Tiene un coste de diseño (un rol mal configurado puede dar más acceso del previsto) y de pruebas.
-5. El orden de entrega sugerido, sin prisa y sin cambiar la base de datos salvo para el punto 4: (a) menú y pantallas para `ver_zona` y `ver_propios`, (b) aterrizaje por rol y «Mi panel» del líder de casa, (c) guard del router por permiso con una pantalla clara de «sin acceso», (d) portal del miembro.
+Decididas por Gerencia:
+1. **Rol «Pastor».** No se crea todavía. Se cubre con propietario o administrador. **PENDIENTE: le diré** (Harold decide si existe y qué ve).
+2. **Líder de zona.** No se renombra la clave en la base. El nombre que se muestra pasa a ser configurable por iglesia (una etiqueta), sin cambiar la clave del rol.
+3. **Crear y editar roles por iglesia.** Fase posterior, no ahora.
+4. **Orden de «Mi panel».** Líder de casa, líder de zona y consolidador, y al final el miembro.
 
-Nada de esto está empezado: es el mapa y la lista de lo que falta.
+Orden de construcción acordado: A seguimiento de nuevos creyentes, B líderes (zonas, líder de casa y de zona, casa de cada persona), C menú y router por permisos con «Mi panel» del líder de casa, D registro por QR con la pregunta «¿Es nuevo creyente?», E ficha del miembro editable y panel de inicio honesto, F diseño del método de seguimiento configurable (solo documento) y G siembra de cuatro iglesias de prueba.
+
+Estado: A hecho (ver `docs/MANUAL-IGLESIAS.md`, apartado 7). El resto, pendiente.

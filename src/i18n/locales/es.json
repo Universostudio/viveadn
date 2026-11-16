@@ -392,7 +392,36 @@
       "vencidosN": "{n} vencidas",
       "promo": "Métricas avanzadas de OP72",
       "promoAyuda": "Tiempos de contacto, cumplimiento de las 72 horas y desglose por consolidador y casa. Incluidas en los planes Básico y Premium, o como complemento."
-    }
+    },
+    "sinAsignar": "Sin consolidador asignado",
+    "asignar": {
+      "etiqueta": "Consolidador",
+      "ninguno": "Sin asignar",
+      "guardado": "Consolidador actualizado.",
+      "error": "No se pudo cambiar el consolidador. Inténtalo de nuevo."
+    },
+    "llamar": "Llamar",
+    "whatsapp": "WhatsApp",
+    "llamarA": "Llamar a {nombre}",
+    "whatsappA": "Escribir por WhatsApp a {nombre}",
+    "sinTelefono": "Sin teléfono registrado",
+    "sinPrefijo": "No se puede abrir WhatsApp: al número le falta el prefijo del país.",
+    "contactos": {
+      "titulo": "Contactos",
+      "ninguno": "Todavía no hay ningún contacto registrado.",
+      "n": "Contacto {n}",
+      "registrar": "Registrar contacto",
+      "fecha": "Fecha y hora del contacto",
+      "nota": "Nota del contacto",
+      "notaEjemplo": "Qué se habló, qué necesita, cuándo volver a llamar...",
+      "guardar": "Guardar contacto",
+      "guardado": "Contacto registrado.",
+      "completos": "Ya están registrados los tres contactos. Añade el detalle en las notas de la consolidación.",
+      "error": "No se pudo guardar el contacto. Inténtalo de nuevo.",
+      "futura": "La fecha del contacto no puede ser futura."
+    },
+    "errorCrear": "No se pudo registrar al nuevo convertido. Inténtalo de nuevo.",
+    "errorCompletar": "No se pudo marcar como completado. Inténtalo de nuevo."
   },
   "formacion": {
     "titulo": "Formación",

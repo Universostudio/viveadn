@@ -35,7 +35,9 @@
     "test:envio": "node scripts/probar-envio.mts",
     "test:panel-ui": "node scripts/probar-panel-maestro-ui.mjs",
     "test:panel-adaptador": "node scripts/probar-panel-adaptador.mts",
-    "test:panel-funcion": "node scripts/probar-panel-funcion.mts"
+    "test:panel-funcion": "node scripts/probar-panel-funcion.mts",
+    "test:seguimiento": "node scripts/probar-seguimiento.mts",
+    "test:seguimiento-ui": "node scripts/probar-seguimiento-ui.mjs"
   },
   "dependencies": {
     "@fontsource/dm-sans": "^5.3.0",
