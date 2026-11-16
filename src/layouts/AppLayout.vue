@@ -97,8 +97,7 @@
 import { computed, onMounted, ref, watch, type Component } from 'vue'
 import {
   LayoutDashboard, Users, House, HeartHandshake, GraduationCap, MessageSquare,
-  ChartColumn, CalendarDays, Settings, ShieldCheck, LogOut, Menu, Network,
-} from '@lucide/vue'
+  ChartColumn, CalendarDays, Settings, ShieldCheck, LogOut, Menu, Network, Layers } from '@lucide/vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import SelectorIdioma from '@/components/SelectorIdioma.vue'
@@ -132,6 +131,7 @@ const todosLosItems: { to: string; icon: Component; label: string; badge?: boole
   { to: '/comunicacion',  icon: MessageSquare, label: 'menu.comunicacion', modulo: 'comunicacion', permisos: ['miembros.ver'] },
   { to: '/reportes',      icon: ChartColumn, label: 'menu.reportes', permisos: ['reportes.ver'] },
   { to: '/configuracion', icon: Settings, label: 'menu.configuracion', permisos: ['usuarios.gestionar', 'roles.gestionar', 'iglesia.configurar'] },
+  { to: '/plan',          icon: Layers, label: 'menu.plan', permisos: ['iglesia.configurar'] },
   { to: '/red',            icon: Network, label: 'menu.red', red: true, permisos: [] },
   { to: '/plataforma',    icon: ShieldCheck, label: 'menu.plataforma', plataforma: true, permisos: [] },
 ]

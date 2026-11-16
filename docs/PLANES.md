@@ -43,6 +43,8 @@ Importes mensuales en la moneda base, que Harold aún no fijó (la propuesta usa
 
 | Complemento | Propuesta | Costo de servirlo que hay que verificar |
 | --- | --- | --- |
+| Formación, Reportes, OP72 avanzado | 9 cada uno | Casi nulo |
+| Comunicación por correo | 9 | Correo transaccional; sin verificar |
 | Credenciales con foto y QR | 9 | Casi nulo; el QR se dibuja en el navegador |
 | Consolidación por etapas | 9 | Casi nulo |
 | Biblioteca de recursos | 5 | Almacenamiento de archivos |
@@ -51,6 +53,15 @@ Importes mensuales en la moneda base, que Harold aún no fijó (la propuesta usa
 | App con marca propia | 29 | Publicación y mantenimiento de la app; sin verificar |
 
 El cotizador compara los planes para los módulos que el cliente elige y recomienda el más barato. Con estos números, Básico más los cinco complementos que Premium ya incluye (credenciales, consolidación por etapas, biblioteca, gamificación y WhatsApp) sale en 76, por debajo de Premium (79); Premium además sube el límite a 5.000 personas y el cotizador debe mostrarlo.
+
+### Observaciones que salieron al probar el cotizador
+
+Con estos importes la calculadora muestra dos cosas que conviene decidir antes de fijar precios:
+
+1. **Básico apenas compite con Semilla más complementos.** Semilla con Formación y Reportes cuesta 27, menos que Básico (29); Básico solo gana por los límites (300 personas y 10 usuarios frente a 50 y 3) o a partir de tres módulos. O el complemento sube (por ejemplo a 12) o Básico baja, o se acepta que quien tiene pocas personas elige Semilla más dos módulos.
+2. **Premium nunca sale más barato que Básico más complementos.** Básico con los cuatro complementos que Premium incluye y no Básico cuesta 67, y con todos los que Premium incluye, 76, frente a 79. Premium solo compensa por el límite de 5.000 personas y los usuarios sin tope. Si se quiere que atraiga por precio, hay que bajarlo o subir los complementos.
+
+El cotizador parte del número real de personas de la iglesia y no recomienda un plan que no la cubre.
 
 ## 5. Margen
 
