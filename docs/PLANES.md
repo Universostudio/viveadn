@@ -50,11 +50,11 @@ Importes mensuales en la moneda base, que Harold aún no fijó (la propuesta usa
 | WhatsApp Business | 19 | Mensajes del proveedor y credenciales del cliente; sin verificar |
 | App con marca propia | 29 | Publicación y mantenimiento de la app; sin verificar |
 
-El cotizador compara los planes para los módulos que el cliente elige y recomienda el más barato. Con estos números, Básico con todos los complementos sale en 76, por debajo de Premium (79), pero Premium además sube el límite a 5.000 personas.
+El cotizador compara los planes para los módulos que el cliente elige y recomienda el más barato. Con estos números, Básico más los cinco complementos que Premium ya incluye (credenciales, consolidación por etapas, biblioteca, gamificación y WhatsApp) sale en 76, por debajo de Premium (79); Premium además sube el límite a 5.000 personas y el cotizador debe mostrarlo.
 
 ## 5. Margen
 
-Con el costo fijo de unos 45 al mes y un cobro de 29 con una comisión de alrededor del 3 % a 4,3 %, cada iglesia Básico deja cerca de 27,7 después de comisiones. **Dos iglesias Básico cubren la infraestructura.** Esto es el margen sobre infraestructura y comisiones y nada más.
+Con el costo fijo de unos 45 al mes y un cobro de 29 con una comisión de alrededor del 3 % a 4,3 %, cada iglesia Básico deja entre 27,5 y 28 después de comisiones. **Dos iglesias Básico cubren la infraestructura.** Esto es el margen sobre infraestructura y comisiones y nada más.
 
 No incluye: desarrollo, soporte, tiempo de gestión, legal, contador, marketing, impuestos ni los costos sin verificar de la sección 2. El margen real depende de ellos y no se puede afirmar hasta estimarlos.
 
