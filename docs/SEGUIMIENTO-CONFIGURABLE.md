@@ -170,6 +170,19 @@ Cada fase se entrega por separado, con su reversión escrita y probada antes, su
 5. **Dato sensible.** Un método no guarda nada sobre la persona; el proceso ya existía. No añade tratamiento de datos de creencias. [H]
 6. **Tamaño.** Las fases 1 y 2 son de tamaño medio y de bajo riesgo si la prueba de equivalencia se cumple; la 3 es la que más pantalla añade; la 4 es la única de riesgo real porque mueve datos. [H]
 
-## 12. Qué NO se hace ahora
+## 12. Estado de construcción
 
-No se crea ninguna tabla ni función, no se cambia ningún texto de menú, no se toca `alertas.ts` ni el disparador, y no se aplica nada en ningún entorno. Este documento es el único cambio de este paso. La construcción empezará, si Gerencia lo ordena, por la fase 1.
+Aprobado por Gerencia el 16 de noviembre de 2026: se construyen las fases 1, 2 y 3, cada una como paquete numerado, sin aplicar en pruebas hasta que Gerencia lo ordene. La fase 4 queda en espera. El método propio entra en Premium para las pruebas de desarrollo (el empaquetado real por plan queda como «PENDIENTE: le diré»), los valores de «Seguimiento simple» siguen **por validar**, y las «Etapas hasta el bautismo» son un diseño aparte que no se mezcla con esto.
+
+| Fase | Paquete | Estado |
+| --- | --- | --- |
+| 1. Esquema sin cambio visible | `20261111320000_adn_seguimiento_metodos` | Hecha, sin aplicar. Tablas `adn_seguimiento_metodos` y `adn_seguimiento_config`, columna `consolidaciones.metodo_id` con OP72 por defecto, disparador que lee el método, `adn_seguimiento_alerta()` y la vista `adn_seguimiento_estado` [E, `supabase/tests/adn_seguimiento_metodos.sql` 48 comprobaciones y `supabase/tests/adn_seguimiento_metodos.sh` 8 con datos previos] |
+| 2. La interfaz lee el método | pendiente | |
+| 3. Configuración y método propio | pendiente | |
+| 4. Más de tres pasos | en espera | |
+
+Detalles de la fase 1 que afinan este diseño [E]: el color usa umbrales «hasta» (verde hasta el umbral amarillo, amarillo hasta el naranja, naranja hasta el plazo, rojo después), que con OP72 dan 24, 48 y 72; una plantilla copiada solo puede venir de una plantilla de plataforma o de la propia iglesia; y las claves foráneas hacia `adn_seguimiento_metodos` son simples (no compuestas con la iglesia) porque las plantillas no tienen iglesia, con la integridad entre iglesias dada por disparadores y probada.
+
+## 13. Qué NO se hace ahora
+
+Este apartado describe lo que decidió el paso F (solo diseño). Hoy, la fase 1 ya está construida en el repositorio (apartado 12) y nada se aplica en ningún entorno hasta que Gerencia lo ordene.

@@ -1,4 +1,4 @@
--- Vive ADN, paquete de aplicación 02 de 07. Aplicar en orden y detenerse en el primer error.
+-- Vive ADN, paquete de aplicación 02 de 08. Aplicar en orden y detenerse en el primer error.
 set search_path = public, extensions;
 
 -- ===== migrations/20261025080000_endurecer_aislamiento_y_privilegios.sql (sha256 8701571635d1) =====

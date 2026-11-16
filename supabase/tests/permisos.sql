@@ -112,6 +112,9 @@ begin
     join pg_class d on d.oid = k.confrelid and d.relnamespace = 'public'::regnamespace
     join pg_attribute a on a.attrelid = k.conrelid and a.attnum = k.conkey[1]
     where k.contype = 'f' and array_length(k.conkey, 1) = 1 and d.relname <> 'iglesias'
+      -- Excepción documentada: las plantillas de plataforma no tienen iglesia, así que no admiten clave compuesta; la integridad la dan los disparadores
+      -- private.adn_comprobar_metodo y private.adn_comprobar_plantilla, que prueba tests/adn_seguimiento_metodos.sql
+      and d.relname <> 'adn_seguimiento_metodos'
       and exists (select 1 from pg_attribute x where x.attrelid = o.oid and x.attname = 'iglesia_id' and not x.attisdropped)
       and exists (select 1 from pg_attribute x where x.attrelid = d.oid and x.attname = 'iglesia_id' and not x.attisdropped)
   loop

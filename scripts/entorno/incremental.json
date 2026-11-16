@@ -1,5 +1,5 @@
 {
   "desde": "20261111300000",
   "descripcion": "Última migración que Gerencia ya aplicó en viveadn-pruebas. Todo lo posterior se entrega además como archivo incremental aparte (supabase/paquete-pruebas/incremental), para no volver a aplicar el paquete completo.",
-  "verificacion": "scripts/entorno/incrementales/20261111310000.verificacion.sql"
+  "verificacion": "scripts/entorno/incrementales/20261111320000.verificacion.sql"
 }
