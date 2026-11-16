@@ -45,6 +45,7 @@ bash tests/checkin_concurrencia.sh "$DB"
 "${PSQL[@]}" -d $DB -f tests/adn_consentimiento_evidencia.sql
 "${PSQL[@]}" -d $DB -f tests/adn_checkin_canales.sql
 "${PSQL[@]}" -d $DB -f tests/adn_checkin_nuevo_creyente.sql
+"${PSQL[@]}" -d $DB -f tests/adn_siembra_iglesias.sql
 "${PSQL[@]}" -d $DB -f tests/adn_doble_confirmacion.sql
 "${PSQL[@]}" -d $DB -f tests/adn_purga_programada.sql
 "${PSQL[@]}" -d $DB -f tests/adn_libro_purgas.sql

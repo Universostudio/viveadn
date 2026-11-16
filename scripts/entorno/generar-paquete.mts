@@ -64,7 +64,7 @@ select 'ok: base vacía de Supabase, rol postgres' as resultado;
 `
 
 mkdirSync(salida, { recursive: true })
-for (const f of readdirSync(salida)) if (/^\d\d_.*\.sql$/.test(f) || ['INDICE.md', 'funciones.json', 'datos_demo.sql'].includes(f)) rmSync(join(salida, f))
+for (const f of readdirSync(salida)) if (/^\d\d_.*\.sql$/.test(f) || ['INDICE.md', 'funciones.json', 'datos_demo.sql', 'sembrar_iglesias_prueba.sql'].includes(f)) rmSync(join(salida, f))
 rmSync(join(salida, 'incremental'), { recursive: true, force: true })
 const escribir = (nombre: string, texto: string) => { if (tamano(texto) > LIMITE_DURO) throw new Error(`${nombre} supera ${LIMITE_DURO} bytes`); writeFileSync(join(salida, nombre), texto) }
 const pad = (n: number) => String(n).padStart(2, '0')
@@ -176,6 +176,11 @@ ${CABECERA}select set_config('demo.slug', 'iglesia-demo', false), set_config('de
 ${demoOrigen.slice(finDemo)}`
 writeFileSync(join(salida, 'datos_demo.sql'), demo)
 
+// Siembra de las iglesias de prueba (mega con sedes, mediana, pequeña y en prueba): el origen no usa psql, así que se copia tal cual con su huella de origen
+const siembraOrigen = leer('seeds/sembrar_iglesias_prueba.sql')
+if (/^\\/m.test(siembraOrigen)) throw new Error('La siembra de iglesias de prueba contiene órdenes de psql')
+writeFileSync(join(salida, 'sembrar_iglesias_prueba.sql'), `-- Origen: supabase/seeds/sembrar_iglesias_prueba.sql, sha256 ${sha(siembraOrigen)}\n${siembraOrigen}`)
+
 const esp = (n: string) => esperados.find(e => e[0] === n)?.[1] ?? '?'
 const md = `# Paquete de aplicación del esquema de Vive ADN (proyecto de pruebas)
 
@@ -206,6 +211,7 @@ ${indice.map(i => `| \`${i.archivo}\` | ${i.bytes.toLocaleString('es-ES')} | ${i
 
 - \`funciones.json\`: las ${funciones.length} funciones de borde con su \`verify_jwt\`, sus archivos (ruta relativa, bytes y sha256 completo). Sin verificación de JWT: ${SIN_JWT.join(', ')}; las demás la llevan. Al desplegar con una herramienta, cada archivo va con su ruta relativa (\`index.ts\` y los que importa, como \`./ciclo.ts\`) y se comprueba el sha256 antes. Los imports \`npm:\` no necesitan nada más.
 - \`datos_demo.sql\`: 300 personas, 6 zonas y 18 casas sintéticas **sin psql**. Exige que la iglesia \`iglesia-demo\` exista y esté marcada como demostración (se crea desde \`/plataforma\`); es de un solo uso.
+- \`sembrar_iglesias_prueba.sql\`: cuatro iglesias de prueba (una mega Premium con dos sedes, una mediana Básico, una pequeña Semilla y una en periodo de prueba en modo alias, seis filas en total) con más de 500 personas sintéticas, **sin psql** y de un solo uso. No crea usuarios ni consentimientos; contactos enmascarados (\`@demo.invalid\` y teléfonos \`+999\`).
 
 ## Comprobación hecha en local
 

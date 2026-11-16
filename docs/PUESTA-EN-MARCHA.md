@@ -103,6 +103,19 @@ psql "$DATABASE_URL" -v slug=iglesia-demo -v zonas=6 -v casas=18 -v personas=300
 
 **La iglesia debe existir antes y ya estar marcada como demostración**: el script no la crea ni la marca, y se niega si no existe o si no es demo, o si ya tiene miembros [E: reproducido, sin la iglesia falla con «No existe la iglesia iglesia-demo»]. Por eso, antes del script: entrar en `<WEB_PRUEBAS>/plataforma` con el administrador, pulsar «Crear iglesia», escribir la dirección `iglesia-demo`, **marcar la casilla de demostración** y poner el nombre y el buzón controlado del propietario (sin `BIRD_API_KEY`, el enlace de invitación se copia a mano y se abre en el navegador). Con la iglesia creada, ejecutar el script (en local tarda menos de un segundo, 300 personas, 6 zonas, 18 casas [E]). Después, en `<WEB_PRUEBAS>/plataforma` con el administrador y vincular o invitar a un superadministrador de la iglesia demo con un buzón controlado.
 
+**Paso 7 bis. Siembra de las cuatro iglesias de prueba (opcional, además de la de demostración).** Una sola ejecución del archivo `supabase/paquete-pruebas/sembrar_iglesias_prueba.sql` (sin psql, sin variables, copia del origen `supabase/seeds/sembrar_iglesias_prueba.sql`) crea seis filas en `iglesias`, todas marcadas como demostración, que son cuatro iglesias lógicas:
+
+| Iglesia | Plan | Etapa | Personas | Notas |
+| --- | --- | --- | --- | --- |
+| `prueba-mega` | Premium | activa | 220 | Iglesia madre con dos sedes: `prueba-mega-norte` (60 personas) y `prueba-mega-sur` (55), también Premium |
+| `prueba-mediana` | Básico | activa | 120 | 4 zonas y 12 casas |
+| `prueba-pequena` | Semilla | activa | 45 | Dentro del tope de 50 personas del plan |
+| `prueba-en-prueba` | Semilla | prueba (14 días) | 30 | Modo alias: alias, teléfono y fecha, sin apellido ni correo |
+
+Son 530 personas sintéticas, con zonas, casas, seguimientos recientes (algunos en rojo, contados exactamente), asistencia de cuatro semanas y tres eventos próximos por iglesia. **Contactos enmascarados:** todos los correos terminan en `@demo.invalid` y todos los teléfonos empiezan por `+999`, un prefijo no asignado; cada persona lleva en notas «Dato sintético de demostración (siembra)». **No crea usuarios ni perfiles** (no toca `auth`) y **no crea consentimientos**, de modo que nadie queda suscrito a ningún canal y ningún envío podría llegar a estas personas aunque se encendiera [E, `supabase/tests/adn_siembra_iglesias.sql`, 27 comprobaciones, y `supabase/tests/paquete_pruebas.sh`]. Para entrar a una de ellas como propietario hay que crear la cuenta desde el Panel Maestro; no se hace desde el script. Es de un solo uso: se niega si ya existe alguna de las seis direcciones, y la plataforma borra las iglesias demo desde su panel para volver a empezar.
+
+**Los datos son sintéticos y no copian nada de OP72** [H]: no se ha localizado el archivo de usuarios de OP72. La iglesia en prueba usa el modo alias porque se supone que es la forma de ese archivo; es una suposición y se corregirá cuando aparezca el archivo real. PENDIENTE: le diré.
+
 **Paso 8. Verificar el entorno desplegado.** Solo lee y hace peticiones inocuas; no crea ni borra nada ni envía correos:
 
 ```bash

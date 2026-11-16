@@ -104,6 +104,16 @@ cifras=$(psql -q -X -At -d $A -c "select (select count(*) from public.miembros) 
 echo "OK: datos_demo.sql, sin psql y sin variables, crea 300 personas, 6 zonas y 18 casas"
 if psql -q -X -v ON_ERROR_STOP=1 -d $A -f "$PAQ/datos_demo.sql" >/dev/null 2>&1; then falla "datos_demo.sql se puede aplicar dos veces"; fi
 echo "OK: datos_demo.sql se niega a repetirse"
+# Siembra de las iglesias de prueba: sin psql, seis filas en iglesias, más de 500 personas, contactos enmascarados y de un solo uso
+! grep -q '^\\' "$PAQ/sembrar_iglesias_prueba.sql" || falla "sembrar_iglesias_prueba.sql contiene órdenes de psql"
+psql -q -X -v ON_ERROR_STOP=1 -d $A -f "$PAQ/sembrar_iglesias_prueba.sql" >/dev/null 2>&1 || falla "sembrar_iglesias_prueba.sql falla"
+cifras=$(psql -q -X -At -d $A -c "select count(*) || ',' || (select count(*) from public.miembros m join public.iglesias i on i.id = m.iglesia_id where i.slug like 'prueba-%') from public.iglesias where slug like 'prueba-%' and es_demo")
+[ "$cifras" = "6,530" ] || falla "la siembra dejó $cifras en lugar de 6,530"
+malos=$(psql -q -X -At -d $A -c "select count(*) from public.miembros m join public.iglesias i on i.id = m.iglesia_id where i.slug like 'prueba-%' and ((m.email is not null and m.email !~ '@demo[.]invalid$') or m.telefono !~ '^[+]999 ')")
+[ "$malos" = "0" ] || falla "la siembra dejó $malos contactos que no están enmascarados"
+echo "OK: sembrar_iglesias_prueba.sql, sin psql, crea 6 iglesias de prueba con 530 personas y contactos enmascarados"
+if psql -q -X -v ON_ERROR_STOP=1 -d $A -f "$PAQ/sembrar_iglesias_prueba.sql" >/dev/null 2>&1; then falla "sembrar_iglesias_prueba.sql se puede aplicar dos veces"; fi
+echo "OK: sembrar_iglesias_prueba.sql se niega a repetirse"
 
 # 5. Una huella detecta un cambio: se quita una política y la verificación lo dice
 psql -q -d $A -c "drop policy archivos_marca_leer on storage.objects"
