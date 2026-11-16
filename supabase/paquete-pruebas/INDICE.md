@@ -1,6 +1,6 @@
 # Paquete de aplicación del esquema de Vive ADN (proyecto de pruebas)
 
-Generado por `scripts/entorno/generar-paquete.sh`. Reproduce `scripts/entorno/montar-rama.sh` sin psql: esquema base, catálogo y 56 migraciones, en archivos SQL numerados.
+Generado por `scripts/entorno/generar-paquete.sh`. Reproduce `scripts/entorno/montar-rama.sh` sin psql: esquema base, catálogo y 57 migraciones, en archivos SQL numerados.
 
 **Reglas.** Solo sobre un proyecto de pruebas VACÍO. Aplicar los archivos en orden con una herramienta que ejecute SQL; **detenerse en el primer error** y avisar a Desarrollo con el texto del error. No hay reintento seguro: un archivo que falla puede dejar el proyecto a medias, y entonces se recrea el proyecto vacío. Cada archivo empieza con su propio `set search_path`, así que no depende de la conexión. Los archivos no contienen claves ni datos de personas.
 
@@ -16,15 +16,15 @@ Generado por `scripts/entorno/generar-paquete.sh`. Reproduce `scripts/entorno/mo
 | `05_aplicar_05.sql` | 57.590 | 20261111150000_adn_informes, 20261111160000_adn_comunicacion, 20261111170000_adn_panel_inicio, 20261111180000_adn_descargas_informe, 20261111190000_adn_consentimiento | Ninguno especial |
 | `06_aplicar_06.sql` | 45.676 | 20261111200000_adn_consentimiento_auditoria, 20261111210000_adn_consentimiento_evidencia, 20261111220000_adn_checkin_canales | Ninguno especial |
 | `07_aplicar_07.sql` | 56.194 | 20261111230000_adn_doble_confirmacion, 20261111240000_adn_purga_estado, 20261111250000_adn_purgas_libro, 20261111260000_adn_exportacion_paginada, 20261111270000_adn_autoservicio_datos, 20261111280000_adn_envios_topes, 20261111290000_adn_plataforma_resumen, 20261111300000_adn_checkin_nuevo_creyente, 20261111310000_adn_asistencias_unico | Ninguno especial |
-| `08_aplicar_08.sql` | 50.861 | 20261111320000_adn_seguimiento_metodos, 20261111330000_adn_seguimiento_metricas, 20261111340000_adn_seguimiento_propio, 20261111350000_adn_soporte, 20261111360000_adn_precios_plan | Ninguno especial |
+| `08_aplicar_08.sql` | 53.137 | 20261111320000_adn_seguimiento_metodos, 20261111330000_adn_seguimiento_metricas, 20261111340000_adn_seguimiento_propio, 20261111350000_adn_soporte, 20261111360000_adn_precios_plan, 20261111370000_adn_prueba_vencida_lectura | Ninguno especial |
 | `99_verificacion.sql` | 6478 | Verificación del esquema (solo lectura) | Lectura del catálogo y de storage.buckets |
-| `incremental/01_aplicar_incremental.sql` | 1447 | Incremental tras 20261111350000: 20261111360000_adn_precios_plan | Ninguno especial |
+| `incremental/01_aplicar_incremental.sql` | 2485 | Incremental tras 20261111360000: 20261111370000_adn_prueba_vencida_lectura | Ninguno especial |
 
 ## Resultado esperado
 
 - `00`: una fila `ok: base vacía de Supabase, rol postgres`. Si el rol no es `postgres`, falla a propósito (las migraciones fijan permisos por defecto para ese rol).
 - `01` a `08`: sin filas de error. Los avisos `NOTICE` de objetos que no existían son normales.
-- `99`: todas las filas con `ok = true` y la última, `zz_todo_ok`, en `true`. Valores de referencia: 56 tablas en `public`, 130 funciones en `public` y `private`, 47 permisos, 41 filas de plan_modulos, 3 planes, 0 iglesias y 2 cubos de archivos.
+- `99`: todas las filas con `ok = true` y la última, `zz_todo_ok`, en `true`. Valores de referencia: 56 tablas en `public`, 131 funciones en `public` y `private`, 47 permisos, 41 filas de plan_modulos, 3 planes, 0 iglesias y 2 cubos de archivos.
 
 ## Qué puede fallar por privilegios (no se ha podido probar en Supabase real) [NV]
 

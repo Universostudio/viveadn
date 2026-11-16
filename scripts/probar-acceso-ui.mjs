@@ -24,7 +24,7 @@ const catalogo = [...new Set(Object.values(PERMISOS).flat())]
 const modulo = c => c.split('.')[0]
 const hoy = (() => { const d = new Date(); return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10) })()
 
-async function escenario(rol, { postFalla = false, asistenciasHoy = [] } = {}) {
+async function escenario(rol, { postFalla = false, asistenciasHoy = [], vencida = false } = {}) {
   const e = { patches: [], posts: [] }
   const casas = [{ id: 'c1', nombre: 'Casa Uno', codigo_zona: 'ZN-000001', direccion: 'Calle 1', ciudad: 'Sevilla', activa: true }]
   const miembros = [
@@ -39,10 +39,11 @@ async function escenario(rol, { postFalla = false, asistenciasHoy = [] } = {}) {
   await ctx.addInitScript(s => localStorage.setItem('sb-fake-auth-token', s), JSON.stringify(sesion))
   const tablas = () => ({
     perfiles: [{ id: USR, iglesia_id: IG, nombre: 'Yo', apellido: 'Mismo', email: 'p@prueba.test', rol, activo: true }],
-    iglesias: [{ id: IG, nombre: 'Iglesia de Prueba', slug: 'prueba', activa: true, plan: 'premium', etapa: 'activa', pais: 'España' }],
+    iglesias: [{ id: IG, nombre: 'Iglesia de Prueba', slug: 'prueba', activa: true, plan: 'premium', etapa: vencida ? 'prueba' : 'activa', prueba_hasta: vencida ? '2026-01-01T00:00:00Z' : null, pais: 'España' }],
     roles: Object.keys(PERMISOS).map(clave => ({ clave, nombre: clave, es_propietario: false, rol_permisos: PERMISOS[clave].map(permiso => ({ permiso })) })),
     plan_modulos: [...new Set(catalogo.map(modulo))].map(m => ({ modulo: m })), iglesia_modulos: [],
     permisos: catalogo.map(clave => ({ clave, modulo: modulo(clave) })), plataforma_admins: [],
+    modulos: [{ clave: 'miembros', tipo: 'nucleo' }, { clave: 'casas', tipo: 'nucleo' }, { clave: 'zonas', tipo: 'nucleo' }, { clave: 'consolidacion', tipo: 'nucleo' }, { clave: 'asistencia', tipo: 'nucleo' }, { clave: 'usuarios', tipo: 'nucleo' }, { clave: 'reportes', tipo: 'incluido' }, { clave: 'eventos', tipo: 'incluido' }, { clave: 'gamificacion', tipo: 'incluido' }],
     casas_oracion: casas, miembros, consolidaciones: [], asistencias,
   })
   const cors = { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'access-control-allow-methods': '*' }
@@ -98,6 +99,21 @@ try {
       assert.deepEqual(errores, [], rol)
       await browser.close()
     }
+  })
+
+  await prueba('prueba vencida: aviso de solo lectura, el núcleo se ve y lo demás se cierra', async () => {
+    const { browser, page, errores } = await escenario('administrador', { vencida: true })
+    await page.goto(url('/')); await page.waitForSelector('aside nav a')
+    assert.equal(await page.locator('[data-test=aviso-solo-lectura]').count(), 1)
+    assert.match(await page.textContent('[data-test=aviso-solo-lectura]'), /Tu prueba terminó/)
+    // Solo módulos del núcleo y solo con permiso de lectura: no hay reportes, eventos ni configuración
+    assert.deepEqual(await enlacesMenu(page), ['/', '/miembros', '/casas', '/consolidacion'])
+    assert.deepEqual(errores, [])
+    await browser.close()
+    const normal = await escenario('administrador')
+    await normal.page.goto(url('/')); await normal.page.waitForSelector('aside nav a')
+    assert.equal(await normal.page.locator('[data-test=aviso-solo-lectura]').count(), 0, 'sin prueba vencida no hay aviso')
+    await normal.browser.close()
   })
 
   await prueba('abrir escribiendo la dirección una sección sin permiso lleva a «sin acceso», y desde ahí se vuelve a la portada del rol', async () => {

@@ -54,7 +54,8 @@
     "test:soporte-funcion": "node scripts/probar-soporte-funcion.mts",
     "test:soporte": "node scripts/probar-soporte.mts",
     "test:soporte-ui": "node scripts/probar-soporte-ui.mjs",
-    "test:facturacion": "node scripts/probar-facturacion.mts"
+    "test:facturacion": "node scripts/probar-facturacion.mts",
+    "test:prueba-vencida": "node scripts/probar-prueba-vencida.mts"
   },
   "dependencies": {
     "@fontsource/dm-sans": "^5.3.0",

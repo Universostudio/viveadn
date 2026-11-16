@@ -3,6 +3,7 @@ import { ref, computed } from 'vue'
 import { supabase } from '@/lib/supabase'
 import type { Perfil, Iglesia } from '@/lib/supabase'
 import { aterrizajeDe } from '@/lib/acceso'
+import { esPermisoDeLectura, modulosEnPruebaVencida, pruebaVencida } from '@/lib/pruebaVencida'
 
 export const useAuthStore = defineStore('auth', () => {
   const user = ref<any>(null)
@@ -24,6 +25,7 @@ export const useAuthStore = defineStore('auth', () => {
     try { sessionStorage.setItem(CLAVE_CONTEXTO, c) } catch { /* sin almacenamiento: el contexto vale hasta recargar */ }
   }
   const tieneSedes = ref(false)
+  const soloLectura = ref(false)
   const modulosActivos = ref<Set<string>>(new Set())
   const moduloDePermiso = ref<Record<string, string>>({})
 
@@ -62,6 +64,7 @@ export const useAuthStore = defineStore('auth', () => {
   // true si el rol incluye alguno de los permisos y el plan de la iglesia tiene su módulo
   function can(...claves: string[]) {
     return claves.some(c => {
+      if (soloLectura.value && !esPermisoDeLectura(c)) return false
       const modulo = moduloDePermiso.value[c]
       if (!modulo || !modulosActivos.value.has(modulo)) return false
       const sim = verComo.value
@@ -141,7 +144,13 @@ export const useAuthStore = defineStore('auth', () => {
         const vigente = e.activo && new Date(e.desde).getTime() <= ahora && (!e.hasta || new Date(e.hasta).getTime() > ahora)
         if (vigente) activos.add(e.modulo)
       }
-      modulosActivos.value = activos
+      // Prueba vencida: solo el núcleo y solo lectura (la base lo aplica igual; esto evita ofrecer botones que fallarían)
+      soloLectura.value = pruebaVencida(ig)
+      if (soloLectura.value) {
+        const { data: tiposMod } = await supabase.from('modulos').select('clave, tipo')
+        if (tiposMod?.length) modulosActivos.value = modulosEnPruebaVencida(activos, Object.fromEntries(tiposMod.map((m: any) => [m.clave, m.tipo])))
+        else modulosActivos.value = activos
+      } else modulosActivos.value = activos
       await cargarRolesParaVerComo()
       await comprobarSedes()
       moduloDePermiso.value = Object.fromEntries((catalogo ?? []).map((p: any) => [p.clave, p.modulo]))
@@ -151,6 +160,7 @@ export const useAuthStore = defineStore('auth', () => {
   function limpiar() {
     perfil.value = null
     iglesia.value = null
+    soloLectura.value = false
     rolInfo.value = null
     verComo.value = null
     rolesDisponibles.value = []
@@ -177,5 +187,5 @@ export const useAuthStore = defineStore('auth', () => {
     limpiar()
   }
 
-  return { user, perfil, iglesia, nombreIglesia, modoAlias, loading, isLoggedIn, iglesiaId, rol, rolInfo, verComo, rolesDisponibles, simularRol, nombreRol, nombreCompleto, esPlataforma, tieneIglesia, esPlataformaSinIglesia, aterrizaje, enPanelMaestro, contexto, fijarContexto, tieneSedes, can, tieneModulo, init, login, logout }
+  return { user, perfil, iglesia, nombreIglesia, modoAlias, loading, isLoggedIn, iglesiaId, rol, rolInfo, verComo, rolesDisponibles, simularRol, nombreRol, nombreCompleto, esPlataforma, tieneIglesia, esPlataformaSinIglesia, aterrizaje, enPanelMaestro, contexto, fijarContexto, tieneSedes, soloLectura, can, tieneModulo, init, login, logout }
 })

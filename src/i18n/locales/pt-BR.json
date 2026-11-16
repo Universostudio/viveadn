@@ -1561,7 +1561,8 @@
   "layout": {
     "avisoSuspendida": "Sua igreja está suspensa. Se você pediu o cancelamento, pode desfazê-lo ou baixar seus dados daqui.",
     "avisoAbrir": "Abrir dados e cancelamento",
-    "descartarAviso": "Dispensar"
+    "descartarAviso": "Dispensar",
+    "avisoSoloLectura": "Seu teste terminou. Você pode consultar e baixar seus dados, mas não alterá-los, e os módulos pagos ficam fechados até você escolher um plano."
   },
   "panelMaestro": {
     "saltar": "Ir para o conteúdo",

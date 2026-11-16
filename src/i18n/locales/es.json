@@ -1561,7 +1561,8 @@
   "layout": {
     "avisoSuspendida": "Tu iglesia está suspendida. Si pediste la baja, puedes cancelarla o descargar tus datos desde aquí.",
     "avisoAbrir": "Abrir datos y baja",
-    "descartarAviso": "Descartar"
+    "descartarAviso": "Descartar",
+    "avisoSoloLectura": "Tu prueba terminó. Puedes consultar y descargar tus datos, pero no cambiarlos, y los módulos de pago están cerrados hasta que elijas un plan."
   },
   "panelMaestro": {
     "saltar": "Saltar al contenido",

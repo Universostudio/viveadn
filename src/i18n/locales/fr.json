@@ -1561,7 +1561,8 @@
   "layout": {
     "avisoSuspendida": "Votre église est suspendue. Si vous avez demandé la résiliation, vous pouvez l'annuler ou télécharger vos données depuis ici.",
     "avisoAbrir": "Ouvrir données et résiliation",
-    "descartarAviso": "Fermer"
+    "descartarAviso": "Fermer",
+    "avisoSoloLectura": "Votre essai est terminé. Vous pouvez consulter et télécharger vos données mais pas les modifier, et les modules payants restent fermés tant que vous n'avez pas choisi une formule."
   },
   "panelMaestro": {
     "saltar": "Aller au contenu",

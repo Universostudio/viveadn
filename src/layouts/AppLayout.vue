@@ -104,6 +104,11 @@
         <span>{{ t('layout.avisoSuspendida') }}</span>
         <RouterLink to="/datos-iglesia" class="underline font-medium">{{ t('layout.avisoAbrir') }}</RouterLink>
       </div>
+      <!-- Prueba vencida: el núcleo queda en solo lectura; el propietario puede descargar su copia -->
+      <div v-if="auth.soloLectura" role="status" data-test="aviso-solo-lectura" class="bg-amber-100 text-amber-900 text-xs px-4 py-2 flex items-center justify-between gap-3 flex-wrap">
+        <span>{{ t('layout.avisoSoloLectura') }}</span>
+        <RouterLink v-if="auth.rolInfo?.es_propietario && route.path !== '/datos-iglesia'" to="/datos-iglesia" class="underline font-medium">{{ t('layout.avisoAbrir') }}</RouterLink>
+      </div>
       <!-- Avisos de la plataforma para la iglesia: se pueden descartar -->
       <div v-if="soporte.avisos.length" class="space-y-px" data-test="avisos">
         <div v-for="a in soporte.avisos" :key="a.id" :role="a.tipo === 'alerta' ? 'alert' : 'status'" :data-aviso="a.id" :data-tipo="a.tipo"

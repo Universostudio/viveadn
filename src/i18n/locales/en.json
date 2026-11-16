@@ -1561,7 +1561,8 @@
   "layout": {
     "avisoSuspendida": "Your church is suspended. If you requested the cancellation, you can undo it or download your data from here.",
     "avisoAbrir": "Open data and cancellation",
-    "descartarAviso": "Dismiss"
+    "descartarAviso": "Dismiss",
+    "avisoSoloLectura": "Your trial has ended. You can view and download your data but not change it, and paid modules stay closed until you choose a plan."
   },
   "panelMaestro": {
     "saltar": "Skip to content",
