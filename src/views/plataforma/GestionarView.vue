@@ -48,7 +48,7 @@
               <option v-for="p in pm.planes" :key="p.clave" :value="p.clave">{{ p.nombre }}</option>
             </select>
           </div>
-          <div>
+          <div v-if="!ig.adn_borrada_en" data-test="etapa-selector">
             <label for="g-etapa-sel" class="block text-xs font-medium text-gray-600 mb-1">{{ t('plataformaPanel.gestionar.etapa') }}</label>
             <select id="g-etapa-sel" :value="ig.etapa" @change="cambiarEtapa($event.target as HTMLSelectElement)" data-test="etapa"
               class="text-sm border border-gray-200 rounded-lg px-2 py-2 focus:outline-none focus:ring-2 focus:ring-adn-verde">
@@ -145,7 +145,8 @@ const acciones = computed<{ clave: string; principal?: boolean; ejecutar: () => 
   if (s === 'onboarding') l.push({ clave: 'activar', principal: true, ejecutar: () => pasarAActiva() })
   if (s === 'prueba') l.push({ clave: 'convertir', principal: true, ejecutar: () => pasarAActiva() })
   if (s === 'baja_suave') l.push({ clave: 'recuperar', principal: true, ejecutar: () => recuperar() })
-  if (s === 'baja_programada') l.push({ clave: 'cancelar', principal: true, ejecutar: () => cancelarBorrado() })
+  // Un borrado programado cuyo plazo ya venció sigue pudiendo cancelarse mientras nadie lo haya ejecutado (en borrado suave se recupera, no se cancela)
+  if (s === 'baja_programada' || (s === 'baja_vencida' && !ig.value?.adn_borrada_en)) l.push({ clave: 'cancelar', principal: true, ejecutar: () => cancelarBorrado() })
   return l
 })
 function pasarAActiva() {

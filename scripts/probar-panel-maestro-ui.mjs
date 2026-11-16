@@ -42,7 +42,7 @@ const planes = [{ clave: 'semilla', nombre: 'Semilla', max_miembros: 100, orden:
 const modulos = [{ clave: 'miembros', nombre: 'Miembros', tipo: 'nucleo', orden: 1 }, { clave: 'eventos', nombre: 'Eventos', tipo: 'opcional', orden: 2 }, { clave: 'comunicacion', nombre: 'Comunicación', tipo: 'opcional', orden: 3 }]
 const planModulos = [{ plan: 'semilla', modulo: 'miembros' }, { plan: 'premium', modulo: 'miembros' }, { plan: 'premium', modulo: 'comunicacion' }]
 
-async function escenario({ admin = true, conIglesia = false, ancho = 1366, alto = 900, purgaAtrasada = false, detalleFalla = false, actividadFalla = false, envioActivo = false, demo = 'no', sinDemos = false, ciclo = false, tarea = undefined } = {}) {
+async function escenario({ admin = true, conIglesia = false, ancho = 1366, alto = 900, purgaAtrasada = false, detalleFalla = false, actividadFalla = false, envioActivo = false, demo = 'no', sinDemos = false, ciclo = false, vencidaNoSuave = false, tarea = undefined } = {}) {
   const estado = { llamadas: [], cuerpos: [], precio: null, sinAuditar: false }
   const browser = await chromium.launch()
   const ctx = await browser.newContext({ acceptDownloads: true, locale: 'es-ES', viewport: { width: ancho, height: alto }, deviceScaleFactor: 1 })
@@ -71,7 +71,7 @@ async function escenario({ admin = true, conIglesia = false, ancho = 1366, alto 
       const cuerpo = req.postDataJSON(); estado.llamadas.push(cuerpo.accion); estado.cuerpos.push(cuerpo)
       if (!admin) return json(403, { error: 'No autorizado' })
       switch (cuerpo.accion) {
-        case 'listar': return json(200, { iglesias: (sinDemos ? iglesias.filter(i => !i.es_demo) : iglesias).concat(ciclo ? iglesiasCiclo : []), planes, modulos, plan_modulos: planModulos })
+        case 'listar': return json(200, { iglesias: (sinDemos ? iglesias.filter(i => !i.es_demo) : iglesias).concat(ciclo ? iglesiasCiclo : []).concat(vencidaNoSuave ? [{ ...iglesiasCiclo[0], id: uuid(15), nombre: 'Borrado vencido sin purgar', slug: 'borrado-vencido', etapa: 'suspendida', activa: false, es_demo: false, borrado_programado_en: iso(-2), adn_borrada_en: null }] : []), planes, modulos, plan_modulos: planModulos })
         case 'registro_estado': return json(200, { abierto: false, requiere_codigo: true, codigos: [] })
         case 'facturacion_simulacion': {
           const pr = estado.precio
@@ -368,6 +368,8 @@ try {
     assert.equal(await page.getAttribute('[data-test=estado-vida]', 'data-situacion'), 'baja_vencida'); assert.deepEqual(await botones(), [], 'vencida: ya no se recupera')
     assert.match(await texto(), /no se puede recuperar/)
     assert.equal(await page.locator('button', { hasText: 'Borrar ahora' }).count(), 1, 'y se ofrece borrar ahora')
+    // B9: un borrado programado vencido que nadie ejecutó (sin borrado suave) todavía se puede cancelar; el de borrado suave vencido, no
+    assert.equal(await page.locator('[data-test=cancelar]').count(), 0, 'en borrado suave vencido no hay «cancelar»')
     // Los botones llaman a la acción que dicen
     await abrir(uuid(13)); await page.click('[data-test=recuperar]'); await new Promise(r => setTimeout(r, 300))
     assert.equal(estado.cuerpos.filter(c => c.accion === 'recuperar').length, 1)
@@ -376,6 +378,24 @@ try {
     await abrir(uuid(12)); await page.click('[data-test=reactivar]'); await new Promise(r => setTimeout(r, 300))
     const e = estado.cuerpos.find(c => c.accion === 'etapa')
     assert.deepEqual({ i: e?.iglesia_id, e: e?.etapa }, { i: uuid(12), e: 'activa' })
+    assert.deepEqual(errores, [])
+    await browser.close()
+  })
+
+  await prueba('un borrado programado vencido sin purgar se puede cancelar, y la iglesia en borrado suave no ofrece cambiar de etapa', async () => {
+    const { browser, page, errores, estado } = await escenario({ ciclo: true, vencidaNoSuave: true, demo: 'si' })
+    const abrir = async id => { await page.goto(url(`/plataforma/iglesias/${id}`)); await page.waitForSelector('[data-test=estado-vida]') }
+    await abrir(uuid(15))
+    assert.equal(await page.getAttribute('[data-test=estado-vida]', 'data-situacion'), 'baja_vencida')
+    assert.deepEqual(await page.locator('[data-test=estado-vida] button').evaluateAll(l => l.map(e => e.dataset.test)), ['cancelar'], 'vencido sin purgar: se ofrece cancelar')
+    assert.equal(await page.locator('[data-test=etapa-selector]').count(), 1, 'sin borrado suave el selector de etapa sigue')
+    await page.click('[data-test=cancelar]'); await new Promise(r => setTimeout(r, 300))
+    const c = estado.cuerpos.find(x => x.accion === 'cancelar_borrado')
+    assert.equal(c?.iglesia_id, uuid(15))
+    await abrir(uuid(13))
+    assert.equal(await page.getAttribute('[data-test=estado-vida]', 'data-situacion'), 'baja_suave')
+    assert.equal(await page.locator('[data-test=etapa-selector]').count(), 0, 'en borrado suave no se ofrece cambiar de etapa')
+    assert.equal(await page.locator('[data-test=plan]').count(), 1)
     assert.deepEqual(errores, [])
     await browser.close()
   })
