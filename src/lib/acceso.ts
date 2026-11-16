@@ -16,6 +16,8 @@ export interface Requisitos {
   /** El plan de la iglesia debe incluir este módulo */
   modulo?: string
   soloPropietario?: boolean
+  /** Con permisos: basta con tener alguno de ellos O ser propietario (por ejemplo, el soporte con la prueba vencida, cuando los permisos se cierran) */
+  oPropietario?: boolean
   /** Solo si la iglesia tiene sedes (red de iglesias) */
   red?: boolean
   /** Líder de casa: ve su casa pero no todas */
@@ -27,7 +29,7 @@ export function cumple(r: Requisitos, c: ContextoAcceso): boolean {
   if (r.red && !c.tieneSedes) return false
   if (r.modulo && !c.tieneModulo(r.modulo)) return false
   if (r.soloLiderDeCasa && !esLiderDeCasa(c)) return false
-  if (r.permisos && r.permisos.length > 0 && !c.can(...r.permisos)) return false
+  if (r.permisos && r.permisos.length > 0 && !c.can(...r.permisos) && !(r.oPropietario && c.esPropietario)) return false
   return true
 }
 
@@ -53,7 +55,7 @@ export const ITEMS_MENU: ItemMenu[] = [
   { clave: 'red', to: '/red', etiqueta: 'menu.red', soloPropietario: true, red: true },
   // Novedades de la plataforma (todas las personas con sesión) y soporte (quien puede configurar la iglesia). Solo se ofrecen si la base ya tiene las tablas (AppLayout)
   { clave: 'novedades', to: '/novedades', etiqueta: 'menu.novedades' },
-  { clave: 'soporte', to: '/soporte', etiqueta: 'menu.soporte', permisos: ['iglesia.configurar'] },
+  { clave: 'soporte', to: '/soporte', etiqueta: 'menu.soporte', permisos: ['iglesia.configurar'], oPropietario: true },
 ]
 
 export const itemsVisibles = (c: ContextoAcceso) => ITEMS_MENU.filter(i => cumple(i, c))
@@ -62,8 +64,8 @@ export const itemsVisibles = (c: ContextoAcceso) => ITEMS_MENU.filter(i => cumpl
 export const aterrizajeDe = (c: Pick<ContextoAcceso, 'can'>): 'mi-panel' | 'dashboard' => esLiderDeCasa(c) ? 'mi-panel' : 'dashboard'
 
 const deMenu = (clave: string): Requisitos => {
-  const { permisos, modulo, soloPropietario, red, soloLiderDeCasa } = ITEMS_MENU.find(i => i.clave === clave)!
-  return { permisos, modulo, soloPropietario, red, soloLiderDeCasa }
+  const { permisos, modulo, soloPropietario, oPropietario, red, soloLiderDeCasa } = ITEMS_MENU.find(i => i.clave === clave)!
+  return { permisos, modulo, soloPropietario, oPropietario, red, soloLiderDeCasa }
 }
 
 /** Requisitos de cada ruta de la aplicación de iglesia, por nombre de ruta. Una ruta que no está aquí solo pide sesión */

@@ -139,8 +139,8 @@
         },
         {
           "ruta": "index.ts",
-          "bytes": 53688,
-          "sha256": "892ad05e8022fc27b668279db9ade91fbc0eeb2eda57d08454ec6591370327a4"
+          "bytes": 50291,
+          "sha256": "ee8c71a0bcb260fefab37163339a7103e5cc9da99067b6e6d076d605c870b934"
         },
         {
           "ruta": "panel.ts",

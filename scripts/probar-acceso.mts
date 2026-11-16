@@ -232,4 +232,9 @@ assert.ok(!cumple(REQUISITOS_RUTA['mi-panel'], ctxDe('administrador')), 'un admi
 // Una ruta sin requisitos solo pide sesión
 assert.equal(REQUISITOS_RUTA.dashboard, undefined)
 
+// Con la prueba vencida los permisos se cierran (can da falso para todo lo que escribe): el propietario sigue viendo Soporte, un rol sin permiso no
+const sinPermisos = (esPropietario: boolean) => ({ can: () => false, tieneModulo: () => false, esPropietario, tieneSedes: false })
+assert.ok(itemsVisibles(sinPermisos(true)).some(i => i.clave === 'soporte'), 'el propietario con la prueba vencida ve Soporte')
+assert.ok(!itemsVisibles(sinPermisos(false)).some(i => i.clave === 'soporte'), 'quien no es propietario y no tiene permiso, no')
+assert.ok(cumple(REQUISITOS_RUTA.soporte, sinPermisos(true))); assert.ok(!cumple(REQUISITOS_RUTA.soporte, sinPermisos(false)))
 console.log('Acceso: todo correcto')
