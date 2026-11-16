@@ -106,6 +106,11 @@ const router = createRouter({
           component: () => import('@/views/consolidacion/ConsolidacionView.vue')
         },
         {
+          path: 'plan',
+          name: 'plan',
+          component: () => import('@/views/PlanView.vue')
+        },
+        {
           path: 'formacion',
           name: 'formacion',
           component: () => import('@/views/FormacionView.vue')

@@ -29,7 +29,8 @@
     "salir": "Salir",
     "abrirMenu": "Abrir menú",
     "eventos": "Eventos",
-    "red": "Red"
+    "red": "Red",
+    "plan": "Plan"
   },
   "login": {
     "subtitulo": "Sistema de Gestión Eclesiástica",
@@ -1047,5 +1048,48 @@
     "noEncontradoTexto": "Este código no corresponde a ningún certificado. Comprueba el enlace o el QR.",
     "error": "No se pudo verificar",
     "errorTexto": "Inténtalo de nuevo en unos minutos."
+  },
+  "planes": {
+    "titulo": "Plan y módulos",
+    "subtitulo": "Qué incluye tu plan, qué puedes añadir y cuánto costaría.",
+    "aviso": "Estimación en modo de prueba: los importes son una propuesta y no se cobra nada.",
+    "sinMoneda": "La moneda aún no está definida, así que los importes van sin símbolo.",
+    "errorCargar": "No se pudo cargar el catálogo de planes.",
+    "tuPlan": "Tu plan",
+    "limitePersonas": "Hasta {n} personas",
+    "sinLimitePersonas": "Sin límite de personas",
+    "limiteUsuarios": "Hasta {n} usuarios",
+    "sinLimiteUsuarios": "Usuarios sin límite",
+    "estimacionActual": "Estimación actual: {importe} al mes",
+    "modulos": {
+      "titulo": "Módulos",
+      "activo": "Activo",
+      "masPrecio": "Bloqueado, +{importe} al mes",
+      "porConfirmar": "Bloqueado, precio por confirmar",
+      "abrirDetalle": "Ver qué cuesta activar {modulo}"
+    },
+    "modal": {
+      "titulo": "«{modulo}» no está en tu plan",
+      "aumento": "Activarlo aumentaría tu facturación en {importe} al mes: de {actual} a {nueva}.",
+      "sinPrecio": "Todavía no hay un precio confirmado para este módulo.",
+      "como": "La activación la gestiona la plataforma. Pídela a quien la administra.",
+      "entendido": "Entendido"
+    },
+    "calc": {
+      "titulo": "Calculadora de costo",
+      "descripcion": "Marca los módulos que quieres y el tamaño de tu iglesia: te mostramos cada plan y cuál sale más barato.",
+      "personas": "Personas",
+      "usuarios": "Usuarios del sistema",
+      "modulos": "Módulos que quieres",
+      "plan": "Planes",
+      "recomendado": "Recomendado",
+      "tuPlan": "Tu plan actual",
+      "noCabe": "No cubre ese tamaño",
+      "sinPrecio": "Falta el precio de algún módulo",
+      "alMes": "{importe} al mes",
+      "diferenciaMas": "{importe} más que ahora",
+      "diferenciaMenos": "{importe} menos que ahora",
+      "igual": "Igual que ahora"
+    }
   }
 }

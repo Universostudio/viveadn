@@ -29,7 +29,8 @@
     "salir": "Se déconnecter",
     "abrirMenu": "Ouvrir le menu",
     "eventos": "Événements",
-    "red": "Réseau"
+    "red": "Réseau",
+    "plan": "Offre"
   },
   "login": {
     "subtitulo": "Système de gestion d'église",
@@ -1047,5 +1048,48 @@
     "noEncontradoTexto": "Ce code ne correspond à aucun certificat. Vérifiez le lien ou le QR.",
     "error": "Vérification impossible",
     "errorTexto": "Réessayez dans quelques minutes."
+  },
+  "planes": {
+    "titulo": "Offre et modules",
+    "subtitulo": "Ce que comprend votre offre, ce que vous pouvez ajouter et ce que cela coûterait.",
+    "aviso": "Estimation en mode test : les montants sont une proposition et rien n'est facturé.",
+    "sinMoneda": "La devise n'est pas encore définie, les montants n'ont donc pas de symbole.",
+    "errorCargar": "Impossible de charger le catalogue des offres.",
+    "tuPlan": "Votre offre",
+    "limitePersonas": "Jusqu'à {n} personnes",
+    "sinLimitePersonas": "Nombre de personnes illimité",
+    "limiteUsuarios": "Jusqu'à {n} utilisateurs",
+    "sinLimiteUsuarios": "Utilisateurs illimités",
+    "estimacionActual": "Estimation actuelle : {importe} par mois",
+    "modulos": {
+      "titulo": "Modules",
+      "activo": "Actif",
+      "masPrecio": "Verrouillé, +{importe} par mois",
+      "porConfirmar": "Verrouillé, prix à confirmer",
+      "abrirDetalle": "Voir le coût d'activation de {modulo}"
+    },
+    "modal": {
+      "titulo": "« {modulo} » n'est pas dans votre offre",
+      "aumento": "L'activer augmenterait votre facturation de {importe} par mois : de {actual} à {nueva}.",
+      "sinPrecio": "Il n'y a pas encore de prix confirmé pour ce module.",
+      "como": "L'activation est gérée par la plateforme. Demandez-la à son administrateur.",
+      "entendido": "Compris"
+    },
+    "calc": {
+      "titulo": "Calculateur de coût",
+      "descripcion": "Cochez les modules souhaités et la taille de votre église : nous affichons chaque offre et la moins chère.",
+      "personas": "Personnes",
+      "usuarios": "Utilisateurs du système",
+      "modulos": "Modules souhaités",
+      "plan": "Offres",
+      "recomendado": "Recommandé",
+      "tuPlan": "Votre offre actuelle",
+      "noCabe": "Ne couvre pas cette taille",
+      "sinPrecio": "Il manque le prix d'un module",
+      "alMes": "{importe} par mois",
+      "diferenciaMas": "{importe} de plus qu'aujourd'hui",
+      "diferenciaMenos": "{importe} de moins qu'aujourd'hui",
+      "igual": "Identique à aujourd'hui"
+    }
   }
 }

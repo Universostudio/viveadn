@@ -29,7 +29,8 @@
     "salir": "Sign out",
     "abrirMenu": "Open menu",
     "eventos": "Events",
-    "red": "Network"
+    "red": "Network",
+    "plan": "Plan"
   },
   "login": {
     "subtitulo": "Church Management System",
@@ -1047,5 +1048,48 @@
     "noEncontradoTexto": "This code does not match any certificate. Check the link or the QR.",
     "error": "Could not verify",
     "errorTexto": "Please try again in a few minutes."
+  },
+  "planes": {
+    "titulo": "Plan and modules",
+    "subtitulo": "What your plan includes, what you can add and what it would cost.",
+    "aviso": "Test-mode estimate: the amounts are a proposal and nothing is charged.",
+    "sinMoneda": "The currency is not set yet, so amounts have no symbol.",
+    "errorCargar": "The plan catalog could not be loaded.",
+    "tuPlan": "Your plan",
+    "limitePersonas": "Up to {n} people",
+    "sinLimitePersonas": "No limit on people",
+    "limiteUsuarios": "Up to {n} users",
+    "sinLimiteUsuarios": "Unlimited users",
+    "estimacionActual": "Current estimate: {importe} per month",
+    "modulos": {
+      "titulo": "Modules",
+      "activo": "Active",
+      "masPrecio": "Locked, +{importe} per month",
+      "porConfirmar": "Locked, price to be confirmed",
+      "abrirDetalle": "See what it costs to activate {modulo}"
+    },
+    "modal": {
+      "titulo": "\"{modulo}\" is not in your plan",
+      "aumento": "Activating it would raise your billing by {importe} per month: from {actual} to {nueva}.",
+      "sinPrecio": "There is no confirmed price for this module yet.",
+      "como": "Activation is handled by the platform. Ask whoever administers it.",
+      "entendido": "Got it"
+    },
+    "calc": {
+      "titulo": "Cost calculator",
+      "descripcion": "Tick the modules you want and the size of your church: we show every plan and which one is cheapest.",
+      "personas": "People",
+      "usuarios": "System users",
+      "modulos": "Modules you want",
+      "plan": "Plans",
+      "recomendado": "Recommended",
+      "tuPlan": "Your current plan",
+      "noCabe": "Does not cover that size",
+      "sinPrecio": "A module is missing its price",
+      "alMes": "{importe} per month",
+      "diferenciaMas": "{importe} more than now",
+      "diferenciaMenos": "{importe} less than now",
+      "igual": "Same as now"
+    }
   }
 }

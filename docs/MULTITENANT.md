@@ -75,6 +75,10 @@ Todo lo que cruza iglesias pasa por una función de borde con `service_role`, qu
 8. Todo archivo nuevo va en uno de los dos cubos, bajo `{iglesia_id}/`; un cubo nuevo repite las políticas de prefijo y se añade a `CUBOS_IGLESIA` en la función `plataforma` para que la exportación y el borrado lo cubran.
 9. Cualquier función privilegiada va en `private` con `search_path` fijo, o es una función de borde con `service_role` que valida a quien llama.
 
+## Plan y módulos (cotizador)
+
+La pantalla `/plan` (menú "Plan", para quien tiene `iglesia.configurar`) muestra el plan de la iglesia, sus módulos con un candado en los que no están activos y una calculadora que compara los planes. Tocar un módulo bloqueado avisa de cuánto subiría la facturación; la activación la hace la plataforma. Es una estimación: no se cobra nada y no hay facturación todavía. Los importes salen de tres tablas globales de solo lectura para las iglesias (`precios_plan`, `precios_modulo`, `precios_ajustes`), que hoy contienen la propuesta de [`docs/PLANES.md`](PLANES.md). La moneda y los impuestos siguen sin decidir y la web los muestra sin símbolo. La lógica de cálculo vive en `src/lib/cotizador.ts` (`npm run test:cotizador`). Pendiente: el cotizador público antes del alta, que necesita una función de borde porque un visitante anónimo no puede leer las tablas.
+
 ## Modo alias (OP72 v2)
 
 `iglesias.modo_alias` hace que la iglesia registre a las personas con un alias o ID interno en lugar de su identidad civil. Si el dato no se guarda, no puede filtrarse ni hace falta enmascararlo. Con el modo activo, la base normaliza cada miembro nuevo (disparador `miembros_modo_alias`): el alias va en `nombre`, `apellido` queda vacío y no se guarda correo. El teléfono se conserva porque la llamada de las 72 horas lo necesita. Los miembros que ya existían no se tocan al activar el modo. Los formularios de alta, el registro público por QR y la importación se adaptan solos; ninguna lista cambia, porque ya muestran `nombre` y `apellido` juntos. No hay modo mixto: una iglesia que quiere nombres reales no activa el modo.

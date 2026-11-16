@@ -35,6 +35,12 @@ bash tests/checkin_concurrencia.sh "$DB"
 "${PSQL[@]}" -d $DB -f tests/op72_avanzado.sql
 "${PSQL[@]}" -d $DB -f tests/motor_formacion.sql
 "${PSQL[@]}" -d $DB -f tests/certificados.sql
+"${PSQL[@]}" -d $DB -f tests/precios_catalogo.sql
 "${PSQL[@]}" -d $DB -f tests/limites_plan.sql
 bash tests/limites_concurrencia.sh "$DB"
 bash tests/formacion_concurrencia.sh "$DB"
+# La reversion del catalogo de precios lo borra sin tocar planes ni modulos, y se puede volver a aplicar
+"${PSQL[@]}" -d $DB -f reversiones/20261116120000_precios_catalogo.down.sql
+"${PSQL[@]}" -d $DB -c "do \$\$ begin if to_regclass('public.precios_plan') is not null or (select count(*) from public.planes) <> 3 then raise exception 'FALLO: la reversion de precios no dejo la base como antes'; end if; raise notice 'OK: la reversion de precios deja la base como antes'; end \$\$"
+"${PSQL[@]}" -d $DB -f migrations/20261116120000_precios_catalogo.sql
+"${PSQL[@]}" -d $DB -f tests/precios_catalogo.sql
