@@ -60,6 +60,8 @@ insert into public.consolidaciones (id, iglesia_id, miembro_id, consolidador_id,
   ('ea500000-0000-0000-0000-000000000001', 'ea100000-0000-0000-0000-00000000000a', 'ea400000-0000-0000-0000-000000000001', 'ea000000-0000-0000-0000-000000000001', 'ea300000-0000-0000-0000-000000000001', '2026-11-01 10:00:00+00', 'Llamado; "dijo que sí"', false);
 insert into public.asistencias (iglesia_id, casa_oracion_id, miembro_id, fecha, presente, notas) values
   ('ea100000-0000-0000-0000-00000000000a', 'ea300000-0000-0000-0000-000000000001', 'ea400000-0000-0000-0000-000000000001', '2026-11-04', true, 'ok');
+insert into public.adn_asistencias_duplicadas (id, iglesia_id, casa_oracion_id, miembro_id, fecha, presente, created_at) values
+  (gen_random_uuid(), 'ea100000-0000-0000-0000-00000000000a', 'ea300000-0000-0000-0000-000000000001', 'ea400000-0000-0000-0000-000000000001', '2026-11-04', true, '2026-11-04 19:00:00+00');
 insert into public.progreso_formacion (iglesia_id, miembro_id, nivel, nombre_nivel, porcentaje, fecha_inicio) values
   ('ea100000-0000-0000-0000-00000000000a', 'ea400000-0000-0000-0000-000000000001', 1, 'Fundamentos', 40, '2026-10-01');
 insert into public.logros (iglesia_id, miembro_id, tipo, nombre, puntos_otorgados) values
