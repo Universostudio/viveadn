@@ -154,7 +154,23 @@
       "mensajes": "Mensagens em 30 dias",
       "enviados": "Registrados",
       "nota": "Números da caixa de testes: ainda não há envio real."
-    }
+    },
+    "erroresCarga": "Não foi possível carregar: {secciones}. Um “—” não é zero: significa que esse dado não pôde ser lido.",
+    "reintentar": "Tentar de novo",
+    "seccion": {
+      "panel": "o resumo",
+      "personas": "as pessoas",
+      "casas": "as casas",
+      "seguimiento": "o acompanhamento",
+      "recientes": "as pessoas recentes"
+    },
+    "personasACargo": "Pessoas sob meus cuidados",
+    "misCasas": "Minhas casas",
+    "enSeguimientoACargo": "Em acompanhamento sob meus cuidados",
+    "alertasCriticasACargo": "Alertas críticos sob meus cuidados",
+    "alertasFallo": "Não foi possível carregar os alertas de acompanhamento.",
+    "mostrandoAlertas": "Mostrando {n} de {total} em alerta.",
+    "recientesFallo": "Não foi possível carregar as pessoas recentes."
   },
   "miembros": {
     "titulo": "Membros",
@@ -305,7 +321,36 @@
     "informacion": "Informações",
     "registrado": "Cadastrado em",
     "estado": "Status",
-    "zona": "Zona"
+    "zona": "Zona",
+    "editar": "Editar",
+    "editando": "Editar ficha",
+    "guardar": "Salvar alterações",
+    "guardado": "Alterações salvas.",
+    "sinCambios": "Não havia nada para salvar.",
+    "errorGuardar": "Não foi possível salvar as alterações. Verifique a conexão ou suas permissões e tente de novo.",
+    "errorCarga": "Não foi possível carregar a ficha.",
+    "reintentar": "Tentar de novo",
+    "lecturasFallidas": "Não foi possível carregar: {partes}. O que você vê pode estar incompleto.",
+    "parte": {
+      "historial": "o histórico de acompanhamento",
+      "formacion": "o progresso de formação",
+      "logros": "as conquistas",
+      "contactos": "os dados de contato"
+    },
+    "fechaNacimiento": "Data de nascimento",
+    "notas": "Notas",
+    "activaAyuda": "Pessoa ativa (se desmarcar, deixa de aparecer nas listas e nas contagens).",
+    "errores": {
+      "nombre": "Digite o nome.",
+      "nombreInvalido": "O nome é longo demais ou tem caracteres inválidos.",
+      "apellido": "Digite o sobrenome.",
+      "apellidoInvalido": "O sobrenome é longo demais ou tem caracteres inválidos.",
+      "email": "Digite um e-mail válido.",
+      "telefono": "Digite um telefone válido, com pelo menos 7 dígitos.",
+      "fechaNacimiento": "Digite uma data de nascimento válida que não seja futura.",
+      "notas": "As notas não podem passar de 2000 caracteres.",
+      "nivel": "Escolha um nível de compromisso da lista."
+    }
   },
   "casas": {
     "titulo": "Casas de Oração",

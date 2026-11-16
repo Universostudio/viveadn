@@ -14,6 +14,12 @@
       <p>{{ t('ficha.cargando') }}</p>
     </div>
 
+    <div v-else-if="errorCarga" class="py-16 text-center text-red-700 space-y-3" role="alert" data-test="error-carga">
+      <TriangleAlert class="w-10 h-10 mx-auto text-red-500" aria-hidden="true" />
+      <p>{{ t('ficha.errorCarga') }}</p>
+      <button type="button" class="btn-secondary" data-test="reintentar" @click="cargar">{{ t('ficha.reintentar') }}</button>
+    </div>
+
     <div v-else-if="!miembro" class="py-20 text-center text-gray-400">
       <UserX class="w-10 h-10 mx-auto mb-2 text-gray-300" aria-hidden="true" />
       <p>{{ t('ficha.noEncontrado') }}</p>
@@ -23,6 +29,8 @@
     </div>
 
     <div v-else class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <p v-if="aviso" role="status" data-test="aviso" :class="['lg:col-span-3 text-sm px-4 py-3 rounded-lg border', aviso.error ? 'bg-red-50 text-red-700 border-red-200' : 'bg-green-50 text-green-700 border-green-200']">{{ aviso.texto }}</p>
+      <p v-if="lecturasFallidas.length" role="alert" data-test="lecturas-fallidas" class="lg:col-span-3 text-sm px-4 py-3 rounded-lg border bg-amber-50 text-amber-900 border-amber-200">{{ t('ficha.lecturasFallidas', { partes: lecturasFallidas.map(k => t('ficha.parte.' + k)).join(', ') }) }}</p>
       <!-- Columna principal -->
       <div class="lg:col-span-2 space-y-6">
         <!-- Tarjeta perfil -->
@@ -41,6 +49,9 @@
                   {{ etiquetaNivel(miembro.nivel_compromiso) }}
                 </span>
               </div>
+              <div v-if="puedeEditar && !editando" class="mt-3">
+                <button type="button" class="btn-secondary inline-flex items-center gap-2 text-sm" data-test="editar" @click="empezarEdicion"><Pencil class="w-4 h-4" aria-hidden="true" /> {{ t('ficha.editar') }}</button>
+              </div>
               <div class="flex flex-wrap gap-4 mt-4 text-sm text-gray-600">
                 <span v-if="miembro.email" class="inline-flex items-center gap-1.5"><Mail class="w-4 h-4 text-gray-400" aria-hidden="true" /> {{ miembro.email }}</span>
                 <span v-if="miembro.telefono" class="inline-flex items-center gap-1.5"><Phone class="w-4 h-4 text-gray-400" aria-hidden="true" /> {{ miembro.telefono }}</span>
@@ -49,6 +60,68 @@
             </div>
           </div>
         </div>
+
+        <!-- Edición de la ficha: solo con permiso de editar; se guardan únicamente los campos que cambian -->
+        <form v-if="editando" class="card space-y-4" data-test="form-ficha" novalidate @submit.prevent="guardar" @keydown.esc="cancelarEdicion">
+          <h3 class="font-semibold text-gray-900 flex items-center gap-2"><Pencil class="w-5 h-5 text-adn-verde" aria-hidden="true" /> {{ t('ficha.editando') }}</h3>
+          <div :class="auth.modoAlias ? '' : 'grid grid-cols-1 sm:grid-cols-2 gap-4'">
+            <div>
+              <label for="fi-nombre" class="block text-sm font-medium text-gray-700 mb-1">{{ auth.modoAlias ? t('miembros.alias') : t('miembros.nombre') }}</label>
+              <input id="fi-nombre" v-model="form.nombre" type="text" maxlength="100" :aria-invalid="!!errores.nombre" :aria-describedby="errores.nombre ? 'fi-nombre-e' : undefined" class="w-full px-3 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-adn-verde text-sm" />
+              <p v-if="errores.nombre" id="fi-nombre-e" class="text-xs text-red-600 mt-1" data-test="e-nombre">{{ t(errores.nombre) }}</p>
+            </div>
+            <div v-if="!auth.modoAlias">
+              <label for="fi-apellido" class="block text-sm font-medium text-gray-700 mb-1">{{ t('miembros.apellido') }}</label>
+              <input id="fi-apellido" v-model="form.apellido" type="text" maxlength="100" :aria-invalid="!!errores.apellido" :aria-describedby="errores.apellido ? 'fi-apellido-e' : undefined" class="w-full px-3 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-adn-verde text-sm" />
+              <p v-if="errores.apellido" id="fi-apellido-e" class="text-xs text-red-600 mt-1" data-test="e-apellido">{{ t(errores.apellido) }}</p>
+            </div>
+          </div>
+          <div v-if="!auth.modoAlias">
+            <label for="fi-email" class="block text-sm font-medium text-gray-700 mb-1">{{ t('miembros.email') }}</label>
+            <input id="fi-email" v-model="form.email" type="email" maxlength="254" :aria-invalid="!!errores.email" :aria-describedby="errores.email ? 'fi-email-e' : undefined" class="w-full px-3 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-adn-verde text-sm" />
+            <p v-if="errores.email" id="fi-email-e" class="text-xs text-red-600 mt-1" data-test="e-email">{{ t(errores.email) }}</p>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label for="fi-tel" class="block text-sm font-medium text-gray-700 mb-1">{{ t('miembros.telefono') }}</label>
+              <input id="fi-tel" v-model="form.telefono" type="tel" maxlength="30" :aria-invalid="!!errores.telefono" :aria-describedby="errores.telefono ? 'fi-tel-e' : undefined" class="w-full px-3 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-adn-verde text-sm" />
+              <p v-if="errores.telefono" id="fi-tel-e" class="text-xs text-red-600 mt-1" data-test="e-telefono">{{ t(errores.telefono) }}</p>
+            </div>
+            <div>
+              <label for="fi-nac" class="block text-sm font-medium text-gray-700 mb-1">{{ t('ficha.fechaNacimiento') }}</label>
+              <input id="fi-nac" v-model="form.fecha_nacimiento" type="date" :max="hoy" :aria-invalid="!!errores.fecha_nacimiento" :aria-describedby="errores.fecha_nacimiento ? 'fi-nac-e' : undefined" class="w-full px-3 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-adn-verde text-sm" />
+              <p v-if="errores.fecha_nacimiento" id="fi-nac-e" class="text-xs text-red-600 mt-1" data-test="e-fecha">{{ t(errores.fecha_nacimiento) }}</p>
+            </div>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div v-if="casas.length">
+              <label for="fi-casa" class="block text-sm font-medium text-gray-700 mb-1">{{ t('miembros.casa') }}</label>
+              <select id="fi-casa" v-model="form.casa_oracion_id" class="w-full px-3 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-adn-verde text-sm">
+                <option value="">{{ t('miembros.sinAsignar') }}</option>
+                <option v-for="c in casas" :key="c.id" :value="c.id">{{ c.nombre }} ({{ c.codigo_zona }})</option>
+              </select>
+            </div>
+            <div>
+              <label for="fi-nivel" class="block text-sm font-medium text-gray-700 mb-1">{{ t('miembros.nivelCompromiso') }}</label>
+              <select id="fi-nivel" v-model="form.nivel_compromiso" class="w-full px-3 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-adn-verde text-sm">
+                <option v-for="n in NIVELES_COMPROMISO" :key="n" :value="n">{{ t(ETIQUETAS_COMPROMISO[n]) }}</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label for="fi-notas" class="block text-sm font-medium text-gray-700 mb-1">{{ t('ficha.notas') }}</label>
+            <textarea id="fi-notas" v-model="form.notas" rows="3" maxlength="2000" :aria-invalid="!!errores.notas" class="w-full px-3 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-adn-verde text-sm"></textarea>
+            <p v-if="errores.notas" class="text-xs text-red-600 mt-1" data-test="e-notas">{{ t(errores.notas) }}</p>
+          </div>
+          <label class="flex items-start gap-2 text-sm text-gray-700">
+            <input v-model="form.activo" type="checkbox" class="mt-0.5 rounded border-gray-300 text-adn-verde" data-test="f-activo" />
+            <span>{{ t('ficha.activaAyuda') }}</span>
+          </label>
+          <div class="flex gap-3 pt-1">
+            <button type="button" class="btn-secondary flex-1" data-test="cancelar" @click="cancelarEdicion">{{ t('comun.cancelar') }}</button>
+            <button type="submit" :disabled="guardando" class="btn-primary flex-1 disabled:opacity-60" data-test="guardar">{{ guardando ? t('comun.guardando') : t('ficha.guardar') }}</button>
+          </div>
+        </form>
 
         <!-- Datos de contacto adicionales (segundo correo, otros teléfonos, direcciones y etiquetas), p. ej. de una importación -->
         <div v-if="contactos.length" class="card">
@@ -187,12 +260,15 @@
 </template>
 
 <script setup lang="ts">
-import { Activity, ArrowLeft, Award, Check, ContactRound, Flame, GraduationCap, HeartHandshake, House, Info, LoaderCircle, Mail, Phone, Trophy, UserX } from '@lucide/vue'
-import { ref, computed, onMounted } from 'vue'
+import { Activity, ArrowLeft, Award, Check, ContactRound, Flame, GraduationCap, HeartHandshake, House, Info, LoaderCircle, Mail, Pencil, Phone, Trophy, TriangleAlert, UserX } from '@lucide/vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { supabase } from '@/lib/supabase'
 import { conAlerta } from '@/lib/alertas'
+import { ETIQUETAS_COMPROMISO, NIVELES_COMPROMISO } from '@/lib/supabase'
 import type { NivelCompromiso } from '@/lib/supabase'
+import { aFormulario, cambiosDe, validarFicha, type ErroresFicha, type FichaForm } from '@/lib/ficha'
+import { hoyLocal } from '@/lib/asistencia'
 import EstadoAlerta from '@/components/EstadoAlerta.vue'
 import ConsentimientoMiembro from '@/components/ConsentimientoMiembro.vue'
 import { useI18n } from 'vue-i18n'
@@ -245,9 +321,48 @@ function etiquetaNivel(nivel: string) {
   return nivel
 }
 
-onMounted(async () => {
+const puedeEditar = computed(() => auth.can('miembros.editar'))
+const hoy = hoyLocal()
+const casas = ref<any[]>([])
+const errorCarga = ref(false)
+const lecturasFallidas = ref<string[]>([])
+const aviso = ref<{ texto: string; error: boolean } | null>(null)
+const editando = ref(false)
+const guardando = ref(false)
+const errores = ref<ErroresFicha>({})
+const form = reactive<FichaForm>({ nombre: '', apellido: '', email: '', telefono: '', fecha_nacimiento: '', nivel_compromiso: 'nuevo', casa_oracion_id: '', notas: '', activo: true })
+const opciones = () => ({ alias: auth.modoAlias, niveles: NIVELES_COMPROMISO as readonly string[], hoy })
+
+function empezarEdicion() {
+  Object.assign(form, aFormulario(miembro.value))
+  errores.value = {}
+  aviso.value = null
+  editando.value = true
+}
+function cancelarEdicion() { editando.value = false; errores.value = {} }
+
+async function guardar() {
+  aviso.value = null
+  errores.value = validarFicha(form, opciones())
+  if (Object.keys(errores.value).length) return
+  const cambios = cambiosDe(aFormulario(miembro.value), form, opciones())
+  if (!Object.keys(cambios).length) { editando.value = false; aviso.value = { texto: t('ficha.sinCambios'), error: false }; return }
+  guardando.value = true
+  const { data, error: err } = await supabase.from('miembros').update(cambios).eq('id', miembro.value.id).select('*, casas_oracion(nombre, codigo_zona)').single()
+  guardando.value = false
+  // Si la base lo rechaza (permiso, red) la ficha NO se da por guardada: se queda abierta con lo escrito
+  if (err || !data) { aviso.value = { texto: t('ficha.errorGuardar'), error: true }; return }
+  miembro.value = data
+  editando.value = false
+  aviso.value = { texto: t('ficha.guardado'), error: false }
+}
+
+async function cargar() {
+  cargando.value = true
+  errorCarga.value = false
+  lecturasFallidas.value = []
   const id = route.params.id as string
-  const [miembroRes, consolRes, progresoRes, logrosRes, contactosRes] = await Promise.all([
+  const [miembroRes, consolRes, progresoRes, logrosRes, contactosRes, casasRes] = await Promise.all([
     supabase
       .from('miembros')
       .select('*, casas_oracion(nombre, codigo_zona)')
@@ -271,12 +386,22 @@ onMounted(async () => {
       .select('id, tipo, etiqueta, valor, orden')
       .eq('miembro_id', id)
       .order('orden'),
+    auth.can('casas.ver') ? supabase.from('casas_oracion').select('id, nombre, codigo_zona').eq('activa', true).order('nombre') : Promise.resolve({ data: [] as any[], error: null }),
   ])
-  miembro.value = miembroRes.data
+  // «No hay fila» (PGRST116) es una persona que no existe o que no puedes ver; cualquier otro error es un fallo de lectura y se dice como tal
+  if (miembroRes.error && miembroRes.error.code !== 'PGRST116') errorCarga.value = true
+  miembro.value = miembroRes.error ? null : miembroRes.data
+  if (consolRes.error) lecturasFallidas.value.push('historial')
+  if (progresoRes.error) lecturasFallidas.value.push('formacion')
+  if (logrosRes.error) lecturasFallidas.value.push('logros')
+  if (contactosRes.error) lecturasFallidas.value.push('contactos')
   consolidaciones.value = (consolRes.data ?? []).map(conAlerta)
   progreso.value = progresoRes.data ?? []
   logros.value = logrosRes.data ?? []
   contactos.value = contactosRes.data ?? []
+  casas.value = casasRes.data ?? []
   cargando.value = false
-})
+}
+
+onMounted(cargar)
 </script>

@@ -6,7 +6,7 @@
         <h1 class="text-2xl font-bold text-gray-900">{{ t('panel.titulo') }}</h1>
         <p class="text-gray-500 text-sm mt-0.5">{{ t('panel.bienvenida', { nombre: auth.perfil?.nombre ?? '', fecha: fechaHoy }) }}</p>
       </div>
-      <RouterLink :to="{ path: '/miembros', query: { nuevo: '1' } }" class="btn-primary inline-flex items-center gap-2 whitespace-nowrap">
+      <RouterLink v-if="tarjetas.nuevaPersona" :to="{ path: '/miembros', query: { nuevo: '1' } }" class="btn-primary inline-flex items-center gap-2 whitespace-nowrap" data-test="nueva-persona">
         <UserPlus class="w-4 h-4" aria-hidden="true" /> {{ t('miembros.nuevo') }}
       </RouterLink>
     </div>
@@ -18,45 +18,52 @@
 
     <BotonesDar />
 
+    <!-- Un dato que no cargó se ve como «—» y se avisa; un rol que no ve algo no recibe una tarjeta con un 0 que no es suyo -->
+    <div v-if="erroresCarga.length" role="alert" data-test="errores-carga" class="rounded-lg border border-red-200 bg-red-50 text-red-800 text-sm p-3 flex items-center justify-between gap-3 flex-wrap">
+      <span>{{ t('panel.erroresCarga', { secciones: erroresCarga.map(k => t('panel.seccion.' + k)).join(', ') }) }}</span>
+      <button type="button" class="underline font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-red-700 rounded" data-test="reintentar" @click="cargar">{{ t('panel.reintentar') }}</button>
+    </div>
+
     <!-- Stats principales -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-      <div class="card-stat">
+    <div v-if="tarjetas.personas || tarjetas.casas || tarjetas.seguimiento" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" data-test="estadisticas">
+      <div v-if="tarjetas.personas" class="card-stat" data-test="stat-personas">
         <div class="w-12 h-12 bg-adn-verde/10 rounded-xl flex items-center justify-center flex-shrink-0">
           <Users class="w-6 h-6 text-adn-verde" aria-hidden="true" />
         </div>
         <div>
-          <p class="text-2xl font-bold text-gray-900">{{ stats.totalMiembros }}</p>
-          <p class="text-sm text-gray-500">{{ t('panel.totalMiembros') }}</p>
+          <p class="text-2xl font-bold text-gray-900">{{ textoMedida(stats.personas) }}</p>
+          <p class="text-sm text-gray-500">{{ t(tarjetas.personas === 'todo' ? 'panel.totalMiembros' : 'panel.personasACargo') }}</p>
         </div>
       </div>
 
-      <div class="card-stat">
+      <div v-if="tarjetas.casas" class="card-stat" data-test="stat-casas">
         <div class="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center flex-shrink-0">
           <House class="w-6 h-6 text-yellow-700" aria-hidden="true" />
         </div>
         <div>
-          <p class="text-2xl font-bold text-gray-900">{{ stats.totalCasas }}</p>
-          <p class="text-sm text-gray-500">{{ t('panel.casas') }}</p>
+          <p class="text-2xl font-bold text-gray-900">{{ textoMedida(stats.casas) }}</p>
+          <p class="text-sm text-gray-500">{{ t(tarjetas.casas === 'todo' ? 'panel.casas' : 'panel.misCasas') }}</p>
         </div>
       </div>
 
-      <div class="card-stat">
+      <div v-if="tarjetas.seguimiento" class="card-stat" data-test="stat-seguimiento">
         <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0">
           <HeartHandshake class="w-6 h-6 text-green-700" aria-hidden="true" />
         </div>
         <div>
-          <p class="text-2xl font-bold text-gray-900">{{ stats.consolidacionesActivas }}</p>
-          <p class="text-sm text-gray-500">{{ t('panel.enConsolidacion') }}</p>
+          <p class="text-2xl font-bold text-gray-900">{{ textoMedida(stats.seguimiento) }}</p>
+          <p class="text-sm text-gray-500">{{ t(tarjetas.seguimiento === 'todo' ? 'panel.enConsolidacion' : 'panel.enSeguimientoACargo') }}</p>
         </div>
       </div>
 
-      <div class="card-stat border-l-4 border-red-400">
+      <!-- Críticas: más de 72 horas sin completar, contadas sobre el total y no sobre las filas que caben en la lista -->
+      <div v-if="tarjetas.seguimiento" class="card-stat border-l-4 border-red-400" data-test="stat-criticas">
         <div class="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center flex-shrink-0">
           <Siren class="w-6 h-6 text-red-600" aria-hidden="true" />
         </div>
         <div>
-          <p class="text-2xl font-bold text-red-600">{{ stats.alertasCriticas }}</p>
-          <p class="text-sm text-gray-500">{{ t('panel.alertasCriticas') }}</p>
+          <p class="text-2xl font-bold text-red-600">{{ textoMedida(stats.criticas) }}</p>
+          <p class="text-sm text-gray-500">{{ t(tarjetas.seguimiento === 'todo' ? 'panel.alertasCriticas' : 'panel.alertasCriticasACargo') }}</p>
         </div>
       </div>
     </div>
@@ -174,7 +181,7 @@
     </div>
 
     <!-- Alertas 72h -->
-    <div class="card">
+    <div v-if="tarjetas.seguimiento" class="card" data-test="alertas-72h">
       <div class="flex items-center justify-between mb-4">
         <h2 class="text-lg font-semibold text-gray-900 flex items-center gap-2"><HeartHandshake class="w-5 h-5 text-adn-verde" aria-hidden="true" /> {{ t('panel.consolidacion') }}</h2>
         <RouterLink to="/consolidacion" class="text-sm text-adn-verde hover:underline font-medium">
@@ -182,7 +189,9 @@
         </RouterLink>
       </div>
 
-      <div v-if="consolidaciones.length === 0" class="text-center py-8 text-gray-400">
+      <div v-if="alertasFallo" class="text-center py-6 text-red-700 text-sm" data-test="alertas-fallo">{{ t('panel.alertasFallo') }}</div>
+
+      <div v-else-if="consolidaciones.length === 0" class="text-center py-8 text-gray-400">
         <CircleCheck class="w-10 h-10 mx-auto mb-2 text-emerald-500" aria-hidden="true" />
         <p>{{ t('panel.sinAlertas') }}</p>
       </div>
@@ -201,11 +210,12 @@
           </div>
           <EstadoAlerta :estado="c.estado_alerta" />
         </div>
+        <p v-if="hayMas(consolidaciones.length, stats.enAlerta.valor)" class="text-xs text-gray-500" data-test="mostrando-alertas">{{ t('panel.mostrandoAlertas', { n: consolidaciones.length, total: stats.enAlerta.valor }) }}</p>
       </div>
     </div>
 
     <!-- Miembros recientes -->
-    <div class="card">
+    <div v-if="tarjetas.personas" class="card" data-test="recientes">
       <div class="flex items-center justify-between mb-4">
         <h2 class="text-lg font-semibold text-gray-900 flex items-center gap-2"><UserPlus class="w-5 h-5 text-adn-verde" aria-hidden="true" /> {{ t('panel.nuevosMiembros') }}</h2>
         <RouterLink to="/miembros" class="text-sm text-adn-verde hover:underline font-medium">
@@ -213,7 +223,9 @@
         </RouterLink>
       </div>
 
-      <div v-if="miembrosRecientes.length === 0" class="text-center py-8 text-gray-400">
+      <div v-if="recientesFallo" class="text-center py-6 text-red-700 text-sm" data-test="recientes-fallo">{{ t('panel.recientesFallo') }}</div>
+
+      <div v-else-if="miembrosRecientes.length === 0" class="text-center py-8 text-gray-400">
         <p>{{ t('panel.sinMiembros') }}</p>
       </div>
 
@@ -247,6 +259,7 @@ import { useI18n } from 'vue-i18n'
 import { formatoFecha } from '@/i18n'
 import { supabase } from '@/lib/supabase'
 import { conAlerta, haceHoras } from '@/lib/alertas'
+import { tarjetasDeInicio, medida, textoMedida, hayMas, type Medida } from '@/lib/panelInicio'
 import {
   Users, House, HeartHandshake, Siren, CircleCheck, UserPlus,
   CalendarCheck, CalendarDays, TrendingUp, Cake, GraduationCap, MessageSquare,
@@ -270,7 +283,24 @@ function etiquetaCompromiso(nivel: string) {
   return clave ? t(clave) : nivel
 }
 
-const stats = ref({ totalMiembros: 0, totalCasas: 0, consolidacionesActivas: 0, alertasCriticas: 0 })
+const tarjetas = computed(() => tarjetasDeInicio(auth.can))
+const SIN_DATO: Medida = { valor: null, fallo: false }
+const stats = ref<{ personas: Medida; casas: Medida; seguimiento: Medida; criticas: Medida; enAlerta: Medida }>({
+  personas: SIN_DATO, casas: SIN_DATO, seguimiento: SIN_DATO, criticas: SIN_DATO, enAlerta: SIN_DATO,
+})
+const alertasFallo = ref(false)
+const recientesFallo = ref(false)
+// Secciones cuya lectura falló, para avisar en vez de mostrar un cero
+const erroresCarga = computed(() => {
+  const fallos: string[] = []
+  if (errorPanel.value) fallos.push('panel')
+  const s = stats.value
+  if (tarjetas.value.personas && s.personas.fallo) fallos.push('personas')
+  if (tarjetas.value.casas && s.casas.fallo) fallos.push('casas')
+  if (tarjetas.value.seguimiento && (s.seguimiento.fallo || s.criticas.fallo || s.enAlerta.fallo || alertasFallo.value)) fallos.push('seguimiento')
+  if (tarjetas.value.personas && recientesFallo.value) fallos.push('recientes')
+  return fallos
+})
 const consolidaciones = ref<any[]>([])
 const miembrosRecientes = ref<any[]>([])
 
@@ -322,38 +352,44 @@ function variacion(actual: number, previo: number) {
 const superadmins = ref<number | null>(null)
 const faltaSegundoSuper = computed(() => auth.can('usuarios.gestionar') && superadmins.value !== null && superadmins.value < 2)
 
-onMounted(async () => {
+async function cargar() {
+  const t0 = tarjetas.value
+  errorPanel.value = ''
+  alertasFallo.value = false
+  recientesFallo.value = false
+  const hace48 = haceHoras(48)
+  const hace72 = haceHoras(72)
+  const cuenta = (tabla: string, filtro: (q: any) => any = q => q) => filtro(supabase.from(tabla).select('*', { count: 'exact', head: true }))
   supabase.rpc('adn_panel_inicio').then(({ data, error }) => {
     if (error) { errorPanel.value = t('panel.errorPanel'); return }
     panel.value = data as PanelInicio
   })
   supabase.from('perfiles').select('*', { count: 'exact', head: true }).eq('rol', 'propietario').eq('activo', true)
     .then(({ count }) => { superadmins.value = count ?? null })
-  const [miembrosRes, casasRes, consolRes, recientesRes] = await Promise.all([
-    supabase.from('miembros').select('*', { count: 'exact', head: true }).eq('activo', true),
-    supabase.from('casas_oracion').select('*', { count: 'exact', head: true }).eq('activa', true),
-    supabase.from('consolidaciones').select('*', { count: 'exact', head: true }).eq('completado', false),
-    supabase.from('consolidaciones')
-      .select('*, miembros(nombre, apellido)')
-      .lt('fecha_conversion', haceHoras(48))
-      .eq('completado', false)
-      .order('fecha_conversion', { ascending: true })
-      .limit(5),
+  // Solo se consulta lo que el rol puede ver: sin permiso no hay tarjeta ni consulta, y un fallo se queda en «—» en vez de pasar por cero
+  const [personas, casas, seguimiento, criticas, enAlerta, lista, recientes] = await Promise.all([
+    t0.personas ? cuenta('miembros', q => q.eq('activo', true)) : null,
+    t0.casas ? cuenta('casas_oracion', q => q.eq('activa', true)) : null,
+    t0.seguimiento ? cuenta('consolidaciones', q => q.eq('completado', false)) : null,
+    t0.seguimiento ? cuenta('consolidaciones', q => q.eq('completado', false).lt('fecha_conversion', hace72)) : null,
+    t0.seguimiento ? cuenta('consolidaciones', q => q.eq('completado', false).lt('fecha_conversion', hace48)) : null,
+    t0.seguimiento
+      ? supabase.from('consolidaciones').select('*, miembros(nombre, apellido)').lt('fecha_conversion', hace48).eq('completado', false).order('fecha_conversion', { ascending: true }).limit(5)
+      : null,
+    t0.personas
+      ? supabase.from('miembros').select('id, nombre, apellido, crm_id, nivel_compromiso').eq('activo', true).order('created_at', { ascending: false }).limit(5)
+      : null,
   ])
+  stats.value = {
+    personas: personas ? medida(personas) : SIN_DATO, casas: casas ? medida(casas) : SIN_DATO,
+    seguimiento: seguimiento ? medida(seguimiento) : SIN_DATO, criticas: criticas ? medida(criticas) : SIN_DATO,
+    enAlerta: enAlerta ? medida(enAlerta) : SIN_DATO,
+  }
+  alertasFallo.value = !!lista?.error
+  consolidaciones.value = (lista?.data ?? []).map(conAlerta)
+  recientesFallo.value = !!recientes?.error
+  miembrosRecientes.value = recientes?.data ?? []
+}
 
-  stats.value.totalMiembros = miembrosRes.count ?? 0
-  stats.value.totalCasas = casasRes.count ?? 0
-  stats.value.consolidacionesActivas = consolRes.count ?? 0
-  consolidaciones.value = (recientesRes.data ?? []).map(conAlerta)
-  stats.value.alertasCriticas = consolidaciones.value.filter(c => c.estado_alerta === 'rojo').length
-
-  const { data: recientes } = await supabase
-    .from('miembros')
-    .select('id, nombre, apellido, crm_id, nivel_compromiso')
-    .eq('activo', true)
-    .order('created_at', { ascending: false })
-    .limit(5)
-
-  miembrosRecientes.value = recientes ?? []
-})
+onMounted(cargar)
 </script>

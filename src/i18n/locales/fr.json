@@ -154,7 +154,23 @@
       "mensajes": "Messages en 30 jours",
       "enviados": "Enregistrés",
       "nota": "Chiffres de la boîte de test : il n'y a pas encore d'envoi réel."
-    }
+    },
+    "erroresCarga": "Chargement impossible : {secciones}. Un « — » n’est pas un zéro : cette donnée n’a pas pu être lue.",
+    "reintentar": "Réessayer",
+    "seccion": {
+      "panel": "le résumé",
+      "personas": "les personnes",
+      "casas": "les maisons",
+      "seguimiento": "le suivi",
+      "recientes": "les personnes récentes"
+    },
+    "personasACargo": "Personnes dont je m’occupe",
+    "misCasas": "Mes maisons",
+    "enSeguimientoACargo": "En suivi dont je m’occupe",
+    "alertasCriticasACargo": "Alertes critiques dont je m’occupe",
+    "alertasFallo": "Les alertes de suivi n’ont pas pu être chargées.",
+    "mostrandoAlertas": "{n} sur {total} en alerte affichées.",
+    "recientesFallo": "Les personnes récentes n’ont pas pu être chargées."
   },
   "miembros": {
     "titulo": "Membres",
@@ -305,7 +321,36 @@
     "informacion": "Informations",
     "registrado": "Inscrit le",
     "estado": "Statut",
-    "zona": "Zone"
+    "zona": "Zone",
+    "editar": "Modifier",
+    "editando": "Modifier la fiche",
+    "guardar": "Enregistrer les modifications",
+    "guardado": "Modifications enregistrées.",
+    "sinCambios": "Il n’y avait rien à enregistrer.",
+    "errorGuardar": "Les modifications n’ont pas pu être enregistrées. Vérifiez la connexion ou vos autorisations et réessayez.",
+    "errorCarga": "La fiche n’a pas pu être chargée.",
+    "reintentar": "Réessayer",
+    "lecturasFallidas": "Chargement impossible : {partes}. Ce que vous voyez peut être incomplet.",
+    "parte": {
+      "historial": "l’historique de suivi",
+      "formacion": "la progression de formation",
+      "logros": "les réussites",
+      "contactos": "les coordonnées"
+    },
+    "fechaNacimiento": "Date de naissance",
+    "notas": "Notes",
+    "activaAyuda": "Personne active (si vous décochez, elle n’apparaît plus dans les listes ni les totaux).",
+    "errores": {
+      "nombre": "Saisissez le prénom.",
+      "nombreInvalido": "Le prénom est trop long ou contient des caractères non valides.",
+      "apellido": "Saisissez le nom.",
+      "apellidoInvalido": "Le nom est trop long ou contient des caractères non valides.",
+      "email": "Saisissez une adresse e-mail valide.",
+      "telefono": "Saisissez un numéro valide d’au moins 7 chiffres.",
+      "fechaNacimiento": "Saisissez une date de naissance valide, non future.",
+      "notas": "Les notes ne peuvent pas dépasser 2000 caractères.",
+      "nivel": "Choisissez un niveau d’engagement dans la liste."
+    }
   },
   "casas": {
     "titulo": "Maisons de prière",

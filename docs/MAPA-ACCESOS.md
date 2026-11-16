@@ -52,7 +52,7 @@ Además de esta tabla, `/datos-iglesia` (descarga y baja) solo la completa el pr
 
 ### Tarjetas del panel de inicio por rol
 
-El panel de inicio muestra una tarjeta por permiso: asistencia (`asistencia.ver`), dos de miembros (`miembros.ver`), eventos (`eventos.ver`), formación (`formacion.ver`) y comunicación (`comunicacion.ver`). Aplicado a los permisos sembrados [E]: propietario, administrador y co-administrador ven las cinco; el líder de escuela ve miembros, eventos y formación; el resto (líder de zona, líder de casa, consolidador, colaborador y miembro) ve solo la tarjeta de eventos. Ese panel se rehace en el paso E.
+Las cuatro cifras de arriba (personas, casas, personas en seguimiento y alertas críticas) salen de `tarjetasDeInicio` (`src/lib/panelInicio.ts`) con los permisos del rol: con el permiso amplio (`miembros.ver`, `casas.ver`, `consolidacion.ver`) cuentan toda la iglesia; con uno acotado (`ver_asignados`, `ver_zona`, `ver_propios`, `ver_propia`, `ver_casa`) cuentan lo que el rol tiene a su cargo y el rótulo lo dice; sin permiso, no hay tarjeta. El panel de inicio muestra además un bloque por permiso: asistencia (`asistencia.ver`), crecimiento y cumpleaños (`miembros.ver`), eventos (`eventos.ver`), formación (`formacion.ver`) y comunicación (`comunicacion.ver`). Aplicado a los permisos sembrados [E]: propietario, administrador y co-administrador ven todo; el líder de zona, el líder de casa, el consolidador y el colaborador ven las cifras acotadas de lo suyo; el líder de escuela, miembros, eventos y formación; el miembro, solo eventos. Un dato que no carga se muestra como «—» con aviso y botón de reintentar, nunca como cero.
 
 ## 4. Qué ruta lleva a cada sitio tras iniciar sesión
 

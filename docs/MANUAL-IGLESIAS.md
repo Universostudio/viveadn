@@ -20,11 +20,18 @@ Estado a 11 de noviembre de 2026. Es el manual de quien lleva una iglesia en Viv
 
 ## 3. Panel de inicio
 
-Muestra el total de miembros, las casas de oración, las personas en consolidación y las alertas críticas, la asistencia de las últimas semanas con su variación frente al periodo anterior, el crecimiento y los miembros nuevos. Cada cifra lleva a su pantalla. Si no se pueden cargar, lo dice en lugar de mostrar ceros.
+Muestra el total de miembros, las casas de oración, las personas en seguimiento y las alertas críticas, la asistencia de las últimas semanas con su variación frente al periodo anterior, el crecimiento y los miembros nuevos.
+
+**Qué es honesto en este panel [E, `scripts/probar-inicio-ui.mjs`]:**
+1. **Cada rol ve lo suyo.** Con permiso amplio la tarjeta cuenta toda la iglesia («Total de miembros»); con un permiso acotado (líder de casa, líder de zona, consolidador, colaborador) cuenta solo lo que tiene a su cargo y lo dice en el rótulo («Personas a mi cargo», «Mis casas», «En seguimiento a mi cargo»). Quien no tiene el permiso no recibe la tarjeta: ni un cero que no le corresponde ni una consulta que no va a mostrar. El botón «Nuevo miembro» solo aparece con permiso de crear.
+2. **Las alertas se cuentan sobre el total.** «Alertas críticas» son las personas con más de 72 horas sin completar el seguimiento, contadas en la base sobre todas ellas y no sobre las cinco filas de la lista. La lista dice «Mostrando 5 de 11 en alerta» cuando hay más.
+3. **Un dato que no carga no es un cero.** Si una lectura falla, la cifra muestra «—», un aviso rojo nombra lo que no cargó («el seguimiento», «las casas»...) y un botón **Reintentar** lo vuelve a pedir. Una lista de alertas que falló no dice «sin alertas pendientes».
 
 ## 4. Miembros
 
 **Alta.** «Nuevo miembro» pide nombre y apellido; correo, teléfono (WhatsApp), casa de oración y nivel de compromiso son opcionales. La lista se filtra por nivel y por activos o inactivos, y se busca por nombre, correo o código. Abre una ficha con «Ver perfil».
+
+**Editar la ficha.** Quien tiene permiso de editar miembros ve el botón «Editar» en la ficha: nombre (o alias), apellido, correo, teléfono, fecha de nacimiento, casa de oración, nivel de compromiso, notas y si la persona está activa. Antes de enviar se validan los datos (correo y teléfono con forma válida, fecha de nacimiento real y no futura) y se muestra cada error junto a su campo. Solo se envían los campos que cambian, ya normalizados (un espacio o una mayúscula de más no cuentan como cambio; vaciar un dato lo deja vacío de verdad). Si la base rechaza el cambio, la ficha no se da por guardada: sigue abierta con lo escrito y un aviso rojo. En una iglesia en modo alias no se tocan el apellido ni el correo. Desmarcar «Persona activa» la saca de las listas y de los recuentos. Si falla la carga de la ficha se dice (con «Reintentar») en vez de decir que la persona no existe, y si falla una parte (historial, formación, logros o contactos) se avisa de que lo que se ve puede estar incompleto [E, `scripts/probar-ficha.mts`, `scripts/probar-ficha-ui.mjs`].
 
 **Límites del plan.** Cada plan tiene un tope de miembros y de usuarios. Al alcanzarlo, la aplicación rechaza el alta con el aviso `PLAN_LIMITE`: no hay excepciones silenciosas. Los planes son Semilla (50 miembros y 3 usuarios), Básico (300 y 10) y Premium (5.000 miembros y sin tope de usuarios); más de 5.000, plan a medida.
 

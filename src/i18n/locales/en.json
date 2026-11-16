@@ -154,7 +154,23 @@
       "mensajes": "Messages in 30 days",
       "enviados": "Recorded",
       "nota": "Test mailbox figures: there is no real sending yet."
-    }
+    },
+    "erroresCarga": "Could not load: {secciones}. A “—” is not a zero: it means that figure could not be read.",
+    "reintentar": "Try again",
+    "seccion": {
+      "panel": "the summary",
+      "personas": "people",
+      "casas": "houses",
+      "seguimiento": "follow-up",
+      "recientes": "recent people"
+    },
+    "personasACargo": "People in my care",
+    "misCasas": "My houses",
+    "enSeguimientoACargo": "In follow-up in my care",
+    "alertasCriticasACargo": "Critical alerts in my care",
+    "alertasFallo": "The follow-up alerts could not be loaded.",
+    "mostrandoAlertas": "Showing {n} of {total} in alert.",
+    "recientesFallo": "Recent people could not be loaded."
   },
   "miembros": {
     "titulo": "Members",
@@ -305,7 +321,36 @@
     "informacion": "Information",
     "registrado": "Registered",
     "estado": "Status",
-    "zona": "Zone"
+    "zona": "Zone",
+    "editar": "Edit",
+    "editando": "Edit profile",
+    "guardar": "Save changes",
+    "guardado": "Changes saved.",
+    "sinCambios": "There was nothing to save.",
+    "errorGuardar": "The changes could not be saved. Check your connection or permissions and try again.",
+    "errorCarga": "The profile could not be loaded.",
+    "reintentar": "Try again",
+    "lecturasFallidas": "Could not load: {partes}. What you see may be incomplete.",
+    "parte": {
+      "historial": "the follow-up history",
+      "formacion": "training progress",
+      "logros": "achievements",
+      "contactos": "contact details"
+    },
+    "fechaNacimiento": "Date of birth",
+    "notas": "Notes",
+    "activaAyuda": "Active person (if you clear this, they stop appearing in lists and counts).",
+    "errores": {
+      "nombre": "Enter the first name.",
+      "nombreInvalido": "The first name is too long or has invalid characters.",
+      "apellido": "Enter the last name.",
+      "apellidoInvalido": "The last name is too long or has invalid characters.",
+      "email": "Enter a valid email address.",
+      "telefono": "Enter a valid phone number with at least 7 digits.",
+      "fechaNacimiento": "Enter a valid date of birth that is not in the future.",
+      "notas": "Notes cannot exceed 2000 characters.",
+      "nivel": "Choose a commitment level from the list."
+    }
   },
   "casas": {
     "titulo": "Prayer Houses",

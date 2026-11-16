@@ -4,6 +4,7 @@
 // en la base: si alguien cambia los permisos de un rol, fallan los dos y hay que actualizar esta tabla y el mapa docs/MAPA-ACCESOS.md.
 import assert from 'node:assert/strict'
 import { createHash } from 'node:crypto'
+import { tarjetasDeInicio } from '../src/lib/panelInicio.ts'
 import { REQUISITOS_RUTA, aterrizajeDe, cumple, esLiderDeCasa, itemsVisibles, type ContextoAcceso } from '../src/lib/acceso.ts'
 
 const ROLES: Record<string, { md5: string; permisos: string[] }> = {
@@ -179,6 +180,15 @@ function ctxDe(rol: string, { modulos = new Set(['eventos', 'comunicacion']), se
   return { can: (...c) => c.some(x => propietario || perms.has(x)), tieneModulo: m => modulos.has(m), esPropietario: propietario, tieneSedes: sedes }
 }
 const menuDe = (rol: string, o?: Parameters<typeof ctxDe>[1]) => itemsVisibles(ctxDe(rol, o)).map(i => i.clave)
+
+// Tarjetas del panel de inicio por rol, con los permisos reales: amplio cuenta todo, acotado cuenta lo suyo, sin permiso no hay tarjeta
+const tarjetas = (rol: string) => tarjetasDeInicio(ctxDe(rol).can)
+for (const r of ['propietario', 'administrador', 'coadministrador']) assert.deepEqual(tarjetas(r), { personas: 'todo', casas: 'todo', seguimiento: 'todo', nuevaPersona: true }, r)
+assert.deepEqual(tarjetas('lider_zona'), { personas: 'acotado', casas: 'acotado', seguimiento: 'acotado', nuevaPersona: false }, 'el líder de zona cuenta lo de su zona')
+assert.deepEqual(tarjetas('lider_casa'), { personas: 'acotado', casas: 'acotado', seguimiento: 'acotado', nuevaPersona: false }, 'el líder de casa cuenta lo suyo')
+assert.equal(tarjetas('consolidador').seguimiento, 'acotado'); assert.equal(tarjetas('consolidador').casas, null, 'el consolidador no ve casas')
+assert.deepEqual(tarjetas('miembro'), { personas: null, casas: null, seguimiento: null, nuevaPersona: false }, 'el miembro no recibe estadísticas')
+assert.equal(tarjetas('lider_escuela').seguimiento, null)
 
 const COMPLETO = ['inicio', 'miembros', 'eventos', 'casas', 'zonas', 'consolidacion', 'formacion', 'logros', 'comunicacion', 'reportes', 'configuracion']
 assert.deepEqual(menuDe('propietario'), COMPLETO)

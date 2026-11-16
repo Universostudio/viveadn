@@ -108,7 +108,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch, type Component } from 'vue'
+import { computed, ref, watch, type Component } from 'vue'
 import {
   LayoutDashboard, Users, House, HeartHandshake, GraduationCap, MessageSquare,
   ChartColumn, CalendarDays, Settings, ShieldCheck, LogOut, Menu, Network, MapPinned, LayoutList, Trophy,
@@ -159,8 +159,10 @@ async function logout() {
   router.push('/login')
 }
 
-onMounted(async () => {
-  // Contar consolidaciones críticas (naranja + rojo)
+// Contar consolidaciones críticas (naranja + rojo): solo si este rol ve la sección, sin pedir lo que no va a mostrar.
+// Se vuelve a evaluar si cambia lo que ve el rol (por ejemplo con «Ver como»).
+async function contarPendientes() {
+  if (!navItems.value.some(i => i.badge)) { consolidacionPendientes.value = 0; return }
   const { count } = await supabase
     .from('consolidaciones')
     .select('*', { count: 'exact', head: true })
@@ -168,5 +170,6 @@ onMounted(async () => {
     .eq('completado', false)
 
   consolidacionPendientes.value = count ?? 0
-})
+}
+watch(() => navItems.value.some(i => i.badge), contarPendientes, { immediate: true })
 </script>

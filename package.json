@@ -43,7 +43,11 @@
     "test:acceso": "node scripts/probar-acceso.mts",
     "test:asistencia": "node scripts/probar-asistencia.mts",
     "test:acceso-ui": "node scripts/probar-acceso-ui.mjs",
-    "test:checkin-ui": "node scripts/probar-checkin-ui.mjs"
+    "test:checkin-ui": "node scripts/probar-checkin-ui.mjs",
+    "test:ficha": "node scripts/probar-ficha.mts",
+    "test:ficha-ui": "node scripts/probar-ficha-ui.mjs",
+    "test:panel-inicio": "node scripts/probar-panel-inicio.mts",
+    "test:inicio-ui": "node scripts/probar-inicio-ui.mjs"
   },
   "dependencies": {
     "@fontsource/dm-sans": "^5.3.0",

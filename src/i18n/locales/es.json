@@ -154,7 +154,23 @@
       "mensajes": "Mensajes en 30 días",
       "enviados": "Registrados",
       "nota": "Cifras del buzón de pruebas: todavía no hay envío real."
-    }
+    },
+    "erroresCarga": "No se pudo cargar: {secciones}. Un «—» no es un cero: significa que ese dato no se pudo leer.",
+    "reintentar": "Reintentar",
+    "seccion": {
+      "panel": "el resumen",
+      "personas": "las personas",
+      "casas": "las casas",
+      "seguimiento": "el seguimiento",
+      "recientes": "las personas recientes"
+    },
+    "personasACargo": "Personas a mi cargo",
+    "misCasas": "Mis casas",
+    "enSeguimientoACargo": "En seguimiento a mi cargo",
+    "alertasCriticasACargo": "Alertas críticas a mi cargo",
+    "alertasFallo": "No se pudieron cargar las alertas de seguimiento.",
+    "mostrandoAlertas": "Mostrando {n} de {total} en alerta.",
+    "recientesFallo": "No se pudieron cargar las personas recientes."
   },
   "miembros": {
     "titulo": "Miembros",
@@ -305,7 +321,36 @@
     "informacion": "Información",
     "registrado": "Registrado",
     "estado": "Estado",
-    "zona": "Zona"
+    "zona": "Zona",
+    "editar": "Editar",
+    "editando": "Editar ficha",
+    "guardar": "Guardar cambios",
+    "guardado": "Cambios guardados.",
+    "sinCambios": "No había nada que guardar.",
+    "errorGuardar": "No se pudieron guardar los cambios. Revisa la conexión o tus permisos e inténtalo de nuevo.",
+    "errorCarga": "No se pudo cargar la ficha.",
+    "reintentar": "Reintentar",
+    "lecturasFallidas": "No se pudo cargar: {partes}. Lo que ves puede estar incompleto.",
+    "parte": {
+      "historial": "el historial de seguimiento",
+      "formacion": "el progreso de formación",
+      "logros": "los logros",
+      "contactos": "los datos de contacto"
+    },
+    "fechaNacimiento": "Fecha de nacimiento",
+    "notas": "Notas",
+    "activaAyuda": "Persona activa (si la desmarcas, deja de aparecer en las listas y los recuentos).",
+    "errores": {
+      "nombre": "Escribe el nombre.",
+      "nombreInvalido": "El nombre es demasiado largo o tiene caracteres no válidos.",
+      "apellido": "Escribe el apellido.",
+      "apellidoInvalido": "El apellido es demasiado largo o tiene caracteres no válidos.",
+      "email": "Escribe un correo válido.",
+      "telefono": "Escribe un teléfono válido, con al menos 7 cifras.",
+      "fechaNacimiento": "Escribe una fecha de nacimiento válida que no sea futura.",
+      "notas": "Las notas no pueden pasar de 2000 caracteres.",
+      "nivel": "Elige un nivel de compromiso de la lista."
+    }
   },
   "casas": {
     "titulo": "Casas de Oración",
