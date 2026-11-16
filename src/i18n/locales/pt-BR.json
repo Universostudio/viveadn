@@ -20,7 +20,7 @@
     "dashboard": "Painel",
     "miembros": "Membros",
     "casas": "Casas de Oração",
-    "consolidacion": "Consolidação",
+    "consolidacion": "Acompanhamento",
     "formacion": "Formação",
     "comunicacion": "Comunicação",
     "reportes": "Relatórios",
@@ -105,7 +105,7 @@
     "casas": "Casas de Oração",
     "enConsolidacion": "Em consolidação",
     "alertasCriticas": "Alertas críticos",
-    "consolidacion": "Consolidação 72 h",
+    "consolidacion": "Acompanhamento de novas pessoas",
     "verTodas": "Ver todas →",
     "sinAlertas": "Nenhum alerta pendente",
     "horasDesde": "{horas}h desde a conversão",
@@ -393,7 +393,7 @@
     "errorCrear": "Não foi possível criar a casa. Verifique os dados ou sua permissão para criar casas."
   },
   "consolidacion": {
-    "titulo": "Consolidação 72 h",
+    "titulo": "Acompanhamento de novas pessoas",
     "subtitulo": "Acompanhamento automático de novos convertidos",
     "nuevo": "Novo convertido",
     "activas": "Consolidações ativas",
@@ -408,7 +408,7 @@
     "transcurridas": "{horas} h decorridas",
     "verDetalles": "Ver detalhes",
     "completar": "Concluir",
-    "progreso": "Progresso das 72 h",
+    "progreso": "Progresso até o prazo de {horas} h",
     "limiteFecha": "Prazo: {fecha}",
     "registrarTitulo": "Registrar novo convertido",
     "miembro": "Membro *",
@@ -422,7 +422,7 @@
     "estado": "Status",
     "horasTranscurridas": "Horas decorridas",
     "conversion": "Conversão",
-    "limite": "Prazo de 72h",
+    "limite": "Prazo",
     "marcarCompletado": "Marcar como concluída",
     "metricas": {
       "titulo": "Métricas OP72",
@@ -431,9 +431,9 @@
       "error": "Não foi possível carregar as métricas.",
       "sinDatos": "Ainda não há consolidações neste período.",
       "total": "Consolidações",
-      "contacto24h": "Primeiro contato em 24 h",
+      "contacto24h": "Primeiro contato no prazo",
       "horasPrimerContacto": "Horas médias até o primeiro contato",
-      "completados72h": "Concluídas em 72 h",
+      "completados72h": "Concluídas dentro do prazo",
       "completados": "Concluídas",
       "abiertos": "Abertas",
       "vencidos": "Vencidas sem concluir",
@@ -443,7 +443,7 @@
       "sinAsignar": "Sem responsável",
       "vencidosN": "{n} vencidas",
       "promo": "Métricas avançadas do OP72",
-      "promoAyuda": "Tempos de contato, cumprimento das 72 horas e detalhe por consolidador e por casa. Incluídas nos planos Básico e Premium, ou como complemento."
+      "promoAyuda": "Tempos de contato, cumprimento do prazo e detalhe por consolidador e por casa. Incluídas nos planos Básico e Premium, ou como complemento."
     },
     "sinAsignar": "Sem acompanhante designado",
     "asignar": {
@@ -473,7 +473,8 @@
       "futura": "A data do contato não pode ser futura."
     },
     "errorCrear": "Não foi possível registrar o novo convertido. Tente de novo.",
-    "errorCompletar": "Não foi possível marcar como concluído. Tente de novo."
+    "errorCompletar": "Não foi possível marcar como concluído. Tente de novo.",
+    "metodo": "Método"
   },
   "formacion": {
     "titulo": "Formação",
@@ -676,7 +677,7 @@
     "tasaExito": "{n}% de êxito",
     "casasActivas": "Casas ativas",
     "enFormacion": "Em formação",
-    "consolidacion": "Consolidação 72 h",
+    "consolidacion": "Acompanhamento de novas pessoas",
     "alumnosPorNivel": "Alunos por nível",
     "distribucionZona": "Distribuição por zona",
     "sinZonas": "Sem dados de zonas",
@@ -715,7 +716,8 @@
       "usuarios": "Usuários",
       "integraciones": "Integrações",
       "seguridad": "Segurança",
-      "dar": "Contribuir"
+      "dar": "Contribuir",
+      "seguimiento": "Acompanhamento"
     },
     "identidad": "Identidade da igreja",
     "nombreIglesia": "Nome da igreja *",
@@ -1857,5 +1859,72 @@
     "sinNuevos": "Não há novos convertidos em acompanhamento na sua casa.",
     "errorLista": "Não foi possível salvar a lista completa. Confira os dados e tente de novo.",
     "listaGuardada": "Lista salva."
+  },
+  "seguimiento": {
+    "titulo": "Método de acompanhamento de novas pessoas",
+    "ayuda": "Escolha como acompanhar quem chega: quantos contatos, em quanto tempo e a partir de quando a cor do alerta muda. Os processos que já estão abertos mantêm o método com o qual começaram.",
+    "noDisponible": "O método de acompanhamento ainda não está disponível neste banco de dados. Enquanto isso, tudo continua com o OP72: três contatos em 72 horas.",
+    "errorCarga": "Não foi possível carregar o método de acompanhamento.",
+    "reintentar": "Tentar de novo",
+    "enUso": "Em uso",
+    "plantilla": "Modelo",
+    "propio": "Próprio",
+    "porValidar": "Valores a confirmar",
+    "resumen": "Contatos: {pasos}. Prazo: {plazo} h.",
+    "tramos": "Verde até {verde} h, amarelo até {amarillo} h, laranja até {naranja} h e vermelho depois.",
+    "usar": "Usar este método",
+    "copiar": "Criar meu método a partir deste",
+    "editar": "Editar",
+    "cerrar": "Fechar",
+    "soloPremium": "Criar e editar um método próprio faz parte do plano Premium. Com o seu plano você pode escolher entre os modelos.",
+    "maximo": "Você já tem {n} métodos próprios, o máximo. Arquive algum para criar outro.",
+    "campos": {
+      "nombre": "Nome do método",
+      "pasos": "Número de contatos",
+      "pasosAyuda": "De 1 a 3 contatos por pessoa.",
+      "plazo": "Prazo total (horas)",
+      "plazoAyuda": "Passado este prazo sem concluir, o processo fica vermelho.",
+      "amarillo": "Amarelo depois de (horas)",
+      "naranja": "Laranja depois de (horas)",
+      "primer": "Meta do primeiro contato (horas, opcional)",
+      "primerAyuda": "Usada nas métricas avançadas para medir o primeiro contato no prazo."
+    },
+    "guardar": "Salvar alterações",
+    "guardando": "Salvando…",
+    "restaurar": "Restaurar os valores de {nombre}",
+    "archivar": "Arquivar método",
+    "archivarConfirma": "Arquivar “{nombre}”? Os processos abertos o mantêm, mas ele não poderá mais ser escolhido.",
+    "archivarSi": "Sim, arquivar",
+    "archivarNo": "Não",
+    "activoNoArchiva": "Para arquivá-lo, escolha antes outro método como o que está em uso.",
+    "uso": "Processos com este método: {total} no total, {abiertos} abertos.",
+    "avisoProcesos": "{n} processos abertos usam este método. Se você mudar o prazo ou as cores, a data limite e a cor deles são recalculadas ao salvar.",
+    "avisos": {
+      "elegido": "Agora “{nombre}” é usado para as pessoas novas. Os processos abertos continuam com o seu.",
+      "creado": "Método criado. Ajuste os valores e salve.",
+      "guardado": "Alterações salvas.",
+      "archivado": "Método arquivado.",
+      "restaurado": "Valores restaurados no formulário. Salve para aplicá-los."
+    },
+    "errores": {
+      "revisa": "Revise os campos marcados antes de salvar.",
+      "nombreVacio": "Escreva um nome.",
+      "nombreLargo": "O nome admite até 80 caracteres.",
+      "pasos": "O número de contatos vai de 1 a 3.",
+      "plazo": "O prazo vai de 1 a 720 horas.",
+      "amarillo": "Escreva as horas até o amarelo (pelo menos 1).",
+      "naranja": "Escreva as horas até o laranja.",
+      "naranjaMenor": "O laranja precisa começar depois do amarelo.",
+      "naranjaMayorPlazo": "O laranja não pode passar do prazo total.",
+      "primer": "O primeiro contato começa em 1 hora, ou deixe vazio.",
+      "primerMayorPlazo": "O primeiro contato não pode passar do prazo total.",
+      "demasiados": "Há um máximo de 10 métodos próprios não arquivados.",
+      "activo": "O método em uso não pode ser arquivado. Escolha outro antes.",
+      "archivado": "Esse método está arquivado.",
+      "ajeno": "Esse método não é da sua igreja.",
+      "repetido": "Já existe um método com essa chave. Tente de novo.",
+      "permiso": "Você não tem permissão para alterar isto, ou o seu plano não inclui o método próprio.",
+      "generico": "Não foi possível salvar. Tente de novo."
+    }
   }
 }

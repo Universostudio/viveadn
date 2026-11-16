@@ -18,7 +18,10 @@ begin
   end;
   raise exception 'FALLO: % (no fallo)', msg;
 end $$;
-grant execute on function pg_temp.igual(text, text, text), pg_temp.falla(text, text, text) to authenticated, anon, service_role;
+create or replace function pg_temp.filas(sentencia text) returns text language plpgsql as $$
+declare n integer;
+begin execute sentencia; get diagnostics n = row_count; return n::text; end $$;
+grant execute on function pg_temp.igual(text, text, text), pg_temp.falla(text, text, text), pg_temp.filas(text) to authenticated, anon, service_role;
 
 insert into auth.users (id) values ('af800000-0000-0000-0000-000000000001'), ('af800000-0000-0000-0000-000000000002');
 insert into public.iglesias (id, nombre, slug, pais, ciudad, plan) values
@@ -115,10 +118,10 @@ select set_config('request.jwt.claim.sub', 'af800000-0000-0000-0000-000000000001
 set local role authenticated;
 select pg_temp.igual((select string_agg(clave, ',' order by clave) from public.adn_seguimiento_metodos), 'op72,propio,simple', 'A ve las dos plantillas y su propio método, no el de B (ni «otra» de B)');
 select pg_temp.igual((select count(*)::text from public.adn_seguimiento_config), '1', 'A ve su configuración');
-select pg_temp.falla($$insert into public.adn_seguimiento_metodos (iglesia_id, clave, nombre, pasos, plazo_horas, umbral_amarillo_horas, umbral_naranja_horas) values ('af810000-0000-0000-0000-00000000000a', 'mio', 'M', 1, 72, 24, 48)$$, '42501', 'con sesión no se crean métodos todavía (lo hará la fase 3)');
-select pg_temp.falla($$update public.adn_seguimiento_metodos set plazo_horas = 1 where id = '5e000000-0000-4000-8000-000000000072'$$, '42501', 'nadie con sesión edita las plantillas de plataforma');
+select pg_temp.falla($$insert into public.adn_seguimiento_metodos (iglesia_id, clave, nombre, pasos, plazo_horas, umbral_amarillo_horas, umbral_naranja_horas) values ('af810000-0000-0000-0000-00000000000b', 'mio', 'M', 1, 72, 24, 48)$$, '42501', 'con sesión no se crea un método a nombre de otra iglesia (crear los propios es de la fase 3, probada aparte)');
+select pg_temp.igual(pg_temp.filas($$update public.adn_seguimiento_metodos set nombre = 'Cambiada' where id = '5e000000-0000-4000-8000-000000000072'$$), '0', 'nadie con sesión edita las plantillas de plataforma (la fase 3 permite editar los propios, no estos: ninguna fila cambia)');
 select pg_temp.falla($$delete from public.adn_seguimiento_metodos where id = 'af830000-0000-0000-0000-0000000000a1'$$, '42501', 'ni borra métodos');
-select pg_temp.falla($$update public.adn_seguimiento_config set metodo_id = '5e000000-0000-4000-8000-000000000001'$$, '42501', 'ni cambia la configuración (fase 3)');
+select pg_temp.falla($$update public.adn_seguimiento_config set metodo_id = 'af830000-0000-0000-0000-0000000000b1'$$, 'ADN_METODO_DE_OTRA_IGLESIA', 'ni elige el método propio de otra iglesia (elegir los suyos es de la fase 3, probada aparte)');
 select pg_temp.igual((select count(*)::text from public.adn_seguimiento_estado), '6', 'la vista de estado muestra solo los procesos de A (seis)');
 select pg_temp.igual((select estado from public.adn_seguimiento_estado where id = 'af840000-0000-0000-0000-000000000060'), 'naranja', 'la vista da el color calculado ahora (60 horas con OP72 es naranja)');
 reset role;

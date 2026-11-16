@@ -22,7 +22,8 @@ metricas() { metricas_crudas | tail -1; }
 "${PSQL[@]}" -d $DB -f tests/stub_supabase.sql
 "${PSQL[@]}" -d $DB -f schema/esquema_completo.sql
 "${PSQL[@]}" -d $DB -f schema/seed.sql
-for m in migrations/*.sql; do [ "$m" = "migrations/$MIG.sql" ] && continue; "${PSQL[@]}" -d $DB -f "$m" > /dev/null; done
+# Solo las migraciones anteriores a la que se prueba: las posteriores pueden depender de ella
+for m in migrations/*.sql; do [[ "$m" > "migrations/$MIG.sql" || "$m" == "migrations/$MIG.sql" ]] && continue; "${PSQL[@]}" -d $DB -f "$m" > /dev/null; done
 "${PSQL[@]}" -d $DB <<'SQL'
 insert into auth.users (id) values ('ae400000-0000-0000-0000-000000000001');
 insert into public.iglesias (id, nombre, slug, pais, ciudad, plan) values ('ae410000-0000-0000-0000-00000000000a', 'Prueba Met', 'prueba-met', 'ES', 'Sevilla', 'premium');

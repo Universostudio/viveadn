@@ -79,6 +79,9 @@
     <!-- Tab: Dar (fondos, apariencia y página pública) -->
     <ConfigDar v-if="tabActivo === 'dar'" />
 
+    <!-- Tab: Método de seguimiento de nuevas personas -->
+    <ConfigSeguimiento v-if="tabActivo === 'seguimiento'" />
+
     <!-- Tab: Usuarios y roles -->
     <div v-if="tabActivo === 'usuarios'" class="space-y-6">
       <div class="card">
@@ -342,6 +345,7 @@ import { Check, Church, Database, ExternalLink, HandHeart, KeyRound, Lightbulb, 
 import { ref, computed, onMounted } from 'vue'
 import { supabase } from '@/lib/supabase'
 import ConfigDar from '@/components/ConfigDar.vue'
+import ConfigSeguimiento from '@/components/ConfigSeguimiento.vue'
 import { useAuthStore } from '@/stores/auth'
 import { useI18n } from 'vue-i18n'
 import { CONFIG_LEGAL } from '@/lib/legalConfig'
@@ -368,13 +372,15 @@ const usuarios = ref<any[]>([])
 const camposIntegracion = ref<Record<string, string>>({})
 
 // Nombre de cada pestaña: configuracion.tabs.<id> en src/i18n
-const tabs = [
+// El método de seguimiento solo lo ve y cambia quien puede configurar la iglesia y tiene el módulo de seguimiento
+const tabs = computed(() => [
   { id: 'iglesia', icono: Church },
   { id: 'usuarios', icono: Users },
   { id: 'dar', icono: HandHeart },
+  ...(auth.can('iglesia.configurar') && auth.tieneModulo('consolidacion') ? [{ id: 'seguimiento', icono: ListChecks }] : []),
   { id: 'integraciones', icono: Plug },
   { id: 'seguridad', icono: ShieldCheck },
-]
+])
 
 const iglesia = ref({ nombre: '', pais: '', ciudad: '', email: '', modoAlias: false })
 

@@ -191,10 +191,10 @@
             </button>
           </div>
 
-          <!-- Barra de progreso 72h -->
+          <!-- Barra de progreso hacia el plazo del método -->
           <div class="mt-3">
             <div class="flex justify-between text-xs text-gray-400 mb-1">
-              <span>{{ t('consolidacion.progreso') }}</span>
+              <span>{{ t('consolidacion.progreso', { horas: plazoDe(c) }) }}</span>
               <span>{{ t('consolidacion.limiteFecha', { fecha: formatFecha(c.fecha_limite) }) }}</span>
             </div>
             <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
@@ -288,6 +288,10 @@
             <div class="bg-gray-50 rounded-lg p-3">
               <p class="text-xs text-gray-400">{{ t('consolidacion.conversion') }}</p>
               <p class="font-semibold">{{ formatFecha(detalleActivo.fecha_conversion) }}</p>
+            </div>
+            <div v-if="detalleActivo.metodo?.nombre" class="bg-gray-50 rounded-lg p-3" data-test="detalle-metodo">
+              <p class="text-xs text-gray-400">{{ t('consolidacion.metodo') }}</p>
+              <p class="font-semibold">{{ detalleActivo.metodo.nombre }}</p>
             </div>
             <div class="bg-gray-50 rounded-lg p-3">
               <p class="text-xs text-gray-400">{{ t('consolidacion.limite') }}</p>

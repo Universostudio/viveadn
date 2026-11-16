@@ -21,9 +21,10 @@ with f(nombre, obtenido, esperado) as (values
   ('f08_dos_plantillas_de_plataforma',
     (select string_agg(clave || ':' || pasos || ':' || plazo_horas || ':' || umbral_amarillo_horas || ':' || umbral_naranja_horas, ',' order by clave)
        from public.adn_seguimiento_metodos where iglesia_id is null), 'op72:3:72:24:48,simple:1:168:72:120'),
-  ('f09_consolidaciones_tiene_metodo_con_op72_por_defecto',
-    (select pg_get_expr(d.adbin, d.adrelid) from pg_attrdef d join pg_attribute a on a.attrelid = d.adrelid and a.attnum = d.adnum
-       where d.adrelid = 'public.consolidaciones'::regclass and a.attname = 'metodo_id'), '''5e000000-0000-4000-8000-000000000072''::uuid'),
+  ('f09_consolidaciones_conserva_op72_por_defecto_y_tiene_el_disparador_del_metodo_activo',
+    (select (select pg_get_expr(d.adbin, d.adrelid) from pg_attrdef d join pg_attribute a on a.attrelid = d.adrelid and a.attnum = d.adnum
+       where d.adrelid = 'public.consolidaciones'::regclass and a.attname = 'metodo_id') || '/' ||
+       (select count(*)::text from pg_trigger t where t.tgrelid = 'public.consolidaciones'::regclass and t.tgname = 'consolidaciones_a_metodo' and not t.tgisinternal)), '''5e000000-0000-4000-8000-000000000072''::uuid/1'),
   ('f10_ningun_proceso_sin_metodo',
     (select count(*)::text from public.consolidaciones where metodo_id is null), '0'),
   ('f11_existe_la_configuracion_por_iglesia',
@@ -43,7 +44,19 @@ with f(nombre, obtenido, esperado) as (values
   ('f16_las_metricas_leen_el_metodo_de_cada_proceso',
     (select (p.prosrc like '%adn_seguimiento_metodos%' and p.prosrc like '%make_interval%')::text from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname = 'metricas_op72'), 'true'),
   ('f17_las_metricas_siguen_con_las_mismas_claves',
-    (select (p.prosrc like '%objetivo_primer%' and p.prosrc like '%plazo%')::text from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname = 'metricas_op72'), 'true')
+    (select (p.prosrc like '%objetivo_primer%' and p.prosrc like '%plazo%')::text from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname = 'metricas_op72'), 'true'),
+  ('f18_el_modulo_de_metodo_propio_esta_solo_en_premium',
+    (select coalesce(string_agg(plan, ',' order by plan), 'ninguno') from public.plan_modulos where modulo = 'seguimiento_propio'), 'premium'),
+  ('f19_hay_cuatro_politicas_de_escritura_de_metodos_y_configuracion',
+    (select count(*)::text from pg_policies where schemaname = 'public' and policyname in ('adn_seguimiento_metodos_crear', 'adn_seguimiento_metodos_editar', 'adn_seguimiento_config_elegir', 'adn_seguimiento_config_cambiar')), '4'),
+  ('f20_con_sesion_se_crea_y_edita_el_contenido_pero_no_se_borra_ni_se_cambia_la_clave',
+    (select (has_column_privilege('authenticated', 'public.adn_seguimiento_metodos', 'nombre', 'insert') and has_column_privilege('authenticated', 'public.adn_seguimiento_metodos', 'plazo_horas', 'update')
+       and not has_column_privilege('authenticated', 'public.adn_seguimiento_metodos', 'clave', 'update') and not has_column_privilege('authenticated', 'public.adn_seguimiento_metodos', 'iglesia_id', 'update')
+       and not has_table_privilege('authenticated', 'public.adn_seguimiento_metodos', 'delete'))::text), 'true'),
+  ('f21_existe_la_consulta_de_uso_de_un_metodo',
+    (select count(*)::text from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname = 'adn_seguimiento_en_uso'), '1'),
+  ('f22_el_proceso_nuevo_toma_el_metodo_activo',
+    (select (p.prosrc like '%adn_metodo_activo%')::text from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname = 'private' and p.proname = 'adn_consolidacion_metodo_activo'), 'true')
 )
 select nombre, obtenido, esperado, (obtenido is not distinct from esperado) as ok from f
 union all

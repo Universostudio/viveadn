@@ -5,7 +5,7 @@ import type { AlertaColor } from '@/lib/supabase'
 export interface MetodoSeguimiento { plazo_horas: number; umbral_amarillo_horas: number; umbral_naranja_horas: number }
 export const METODO_OP72: MetodoSeguimiento = { plazo_horas: 72, umbral_amarillo_horas: 24, umbral_naranja_horas: 48 }
 /** Para pedirlo junto a cada proceso: la fila trae su método en `metodo` (solo si la base ya tiene los métodos; ver el almacén de seguimiento) */
-export const SELECT_METODO = 'metodo:adn_seguimiento_metodos(plazo_horas, umbral_amarillo_horas, umbral_naranja_horas)'
+export const SELECT_METODO = 'metodo:adn_seguimiento_metodos(nombre, plazo_horas, umbral_amarillo_horas, umbral_naranja_horas)'
 
 // El color de una consolidacion depende de las horas desde la conversion, asi que se calcula al leer.
 // La columna estado_alerta de la base solo se actualiza al escribir y envejece sola: no se usa para mostrar ni para filtrar.

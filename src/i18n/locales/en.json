@@ -20,7 +20,7 @@
     "dashboard": "Dashboard",
     "miembros": "Members",
     "casas": "Prayer Houses",
-    "consolidacion": "Consolidation",
+    "consolidacion": "Follow-up",
     "formacion": "Discipleship training",
     "comunicacion": "Communication",
     "reportes": "Reports",
@@ -105,7 +105,7 @@
     "casas": "Prayer Houses",
     "enConsolidacion": "In consolidation",
     "alertasCriticas": "Critical alerts",
-    "consolidacion": "72-hour consolidation",
+    "consolidacion": "Follow-up of new people",
     "verTodas": "View all →",
     "sinAlertas": "No pending alerts",
     "horasDesde": "{horas}h since conversion",
@@ -393,7 +393,7 @@
     "errorCrear": "We couldn't create the house. Check the details or your permission to create houses."
   },
   "consolidacion": {
-    "titulo": "72-hour consolidation",
+    "titulo": "Follow-up of new people",
     "subtitulo": "Automatic follow-up of new believers",
     "nuevo": "New believer",
     "activas": "Active consolidations",
@@ -408,7 +408,7 @@
     "transcurridas": "{horas} h elapsed",
     "verDetalles": "View details",
     "completar": "Complete",
-    "progreso": "72-hour progress",
+    "progreso": "Progress toward the {horas} h deadline",
     "limiteFecha": "Deadline: {fecha}",
     "registrarTitulo": "Register a new believer",
     "miembro": "Member *",
@@ -422,7 +422,7 @@
     "estado": "Status",
     "horasTranscurridas": "Hours elapsed",
     "conversion": "Conversion",
-    "limite": "72h deadline",
+    "limite": "Deadline",
     "marcarCompletado": "Mark as completed",
     "metricas": {
       "titulo": "OP72 metrics",
@@ -431,9 +431,9 @@
       "error": "The metrics could not be loaded.",
       "sinDatos": "There are no consolidations in this period yet.",
       "total": "Consolidations",
-      "contacto24h": "First contact within 24 h",
+      "contacto24h": "First contact on time",
       "horasPrimerContacto": "Average hours to first contact",
-      "completados72h": "Completed within 72 h",
+      "completados72h": "Completed within the deadline",
       "completados": "Completed",
       "abiertos": "Open",
       "vencidos": "Overdue, not completed",
@@ -443,7 +443,7 @@
       "sinAsignar": "Unassigned",
       "vencidosN": "{n} overdue",
       "promo": "Advanced OP72 metrics",
-      "promoAyuda": "Contact times, 72-hour compliance and a breakdown by consolidator and house. Included in the Basic and Premium plans, or as an add-on."
+      "promoAyuda": "Contact times, deadline compliance and a breakdown by consolidator and house. Included in the Basic and Premium plans, or as an add-on."
     },
     "sinAsignar": "No follow-up person assigned",
     "asignar": {
@@ -473,7 +473,8 @@
       "futura": "The contact date cannot be in the future."
     },
     "errorCrear": "The new convert could not be registered. Please try again.",
-    "errorCompletar": "It could not be marked as completed. Please try again."
+    "errorCompletar": "It could not be marked as completed. Please try again.",
+    "metodo": "Method"
   },
   "formacion": {
     "titulo": "Discipleship training",
@@ -676,7 +677,7 @@
     "tasaExito": "{n}% success rate",
     "casasActivas": "Active houses",
     "enFormacion": "In discipleship training",
-    "consolidacion": "72-hour consolidation",
+    "consolidacion": "Follow-up of new people",
     "alumnosPorNivel": "Students per level",
     "distribucionZona": "Distribution by zone",
     "sinZonas": "No zone data",
@@ -715,7 +716,8 @@
       "usuarios": "Users",
       "integraciones": "Integrations",
       "seguridad": "Security",
-      "dar": "Give"
+      "dar": "Give",
+      "seguimiento": "Follow-up"
     },
     "identidad": "Church identity",
     "nombreIglesia": "Church name *",
@@ -1857,5 +1859,72 @@
     "sinNuevos": "There are no new believers in follow-up in your house.",
     "errorLista": "The full list could not be saved. Check the data and try again.",
     "listaGuardada": "List saved."
+  },
+  "seguimiento": {
+    "titulo": "Follow-up method for new people",
+    "ayuda": "Choose how new people are followed up: how many contacts, in how much time and when the alert colour changes. Processes that are already open keep the method they started with.",
+    "noDisponible": "The follow-up method is not available in this database yet. Until then everything keeps using OP72: three contacts in 72 hours.",
+    "errorCarga": "The follow-up method could not be loaded.",
+    "reintentar": "Try again",
+    "enUso": "In use",
+    "plantilla": "Template",
+    "propio": "Your own",
+    "porValidar": "Values to be confirmed",
+    "resumen": "Contacts: {pasos}. Deadline: {plazo} h.",
+    "tramos": "Green up to {verde} h, yellow up to {amarillo} h, orange up to {naranja} h and red after that.",
+    "usar": "Use this method",
+    "copiar": "Create my own method from this one",
+    "editar": "Edit",
+    "cerrar": "Close",
+    "soloPremium": "Creating and editing your own method is part of the Premium plan. With your plan you can choose between the templates.",
+    "maximo": "You already have {n} methods of your own, the maximum. Archive one to create another.",
+    "campos": {
+      "nombre": "Method name",
+      "pasos": "Number of contacts",
+      "pasosAyuda": "From 1 to 3 contacts per person.",
+      "plazo": "Total deadline (hours)",
+      "plazoAyuda": "Once this deadline passes without completion, the process turns red.",
+      "amarillo": "Yellow after (hours)",
+      "naranja": "Orange after (hours)",
+      "primer": "First contact target (hours, optional)",
+      "primerAyuda": "Used in the advanced metrics to measure first contact on time."
+    },
+    "guardar": "Save changes",
+    "guardando": "Saving…",
+    "restaurar": "Restore the values of {nombre}",
+    "archivar": "Archive method",
+    "archivarConfirma": "Archive “{nombre}”? Open processes keep it, but it can no longer be chosen.",
+    "archivarSi": "Yes, archive",
+    "archivarNo": "No",
+    "activoNoArchiva": "To archive it, first choose another method as the one in use.",
+    "uso": "Processes with this method: {total} in total, {abiertos} open.",
+    "avisoProcesos": "{n} open processes use this method. If you change the deadline or the colours, their due date and colour are recalculated when you save.",
+    "avisos": {
+      "elegido": "“{nombre}” is now used for new people. Open processes keep their own.",
+      "creado": "Method created. Adjust the values and save.",
+      "guardado": "Changes saved.",
+      "archivado": "Method archived.",
+      "restaurado": "Values restored in the form. Save to apply them."
+    },
+    "errores": {
+      "revisa": "Check the marked fields before saving.",
+      "nombreVacio": "Enter a name.",
+      "nombreLargo": "The name can be up to 80 characters.",
+      "pasos": "The number of contacts goes from 1 to 3.",
+      "plazo": "The deadline goes from 1 to 720 hours.",
+      "amarillo": "Enter the hours until yellow (at least 1).",
+      "naranja": "Enter the hours until orange.",
+      "naranjaMenor": "Orange has to start after yellow.",
+      "naranjaMayorPlazo": "Orange cannot go beyond the total deadline.",
+      "primer": "The first contact starts at 1 hour, or leave it empty.",
+      "primerMayorPlazo": "The first contact cannot go beyond the total deadline.",
+      "demasiados": "There is a maximum of 10 methods of your own that are not archived.",
+      "activo": "The method in use cannot be archived. Choose another one first.",
+      "archivado": "That method is archived.",
+      "ajeno": "That method does not belong to your church.",
+      "repetido": "A method with that key already exists. Try again.",
+      "permiso": "You do not have permission to change this, or your plan does not include your own method.",
+      "generico": "It could not be saved. Try again."
+    }
   }
 }

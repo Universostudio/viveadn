@@ -20,7 +20,7 @@
     "dashboard": "Tableau de bord",
     "miembros": "Membres",
     "casas": "Maisons de prière",
-    "consolidacion": "Consolidation",
+    "consolidacion": "Suivi",
     "formacion": "Formation",
     "comunicacion": "Communication",
     "reportes": "Rapports",
@@ -105,7 +105,7 @@
     "casas": "Maisons de prière",
     "enConsolidacion": "En consolidation",
     "alertasCriticas": "Alertes critiques",
-    "consolidacion": "Consolidation 72 h",
+    "consolidacion": "Suivi des nouvelles personnes",
     "verTodas": "Tout voir →",
     "sinAlertas": "Aucune alerte en attente",
     "horasDesde": "{horas} h depuis la conversion",
@@ -393,7 +393,7 @@
     "errorCrear": "Impossible de créer la maison. Vérifiez les informations ou votre autorisation à créer des maisons."
   },
   "consolidacion": {
-    "titulo": "Consolidation 72 h",
+    "titulo": "Suivi des nouvelles personnes",
     "subtitulo": "Suivi automatique des nouveaux convertis",
     "nuevo": "Nouveau converti",
     "activas": "Consolidations en cours",
@@ -408,7 +408,7 @@
     "transcurridas": "{horas} h écoulées",
     "verDetalles": "Voir le détail",
     "completar": "Terminer",
-    "progreso": "Avancement des 72 h",
+    "progreso": "Avancement vers l'échéance de {horas} h",
     "limiteFecha": "Échéance : {fecha}",
     "registrarTitulo": "Enregistrer un nouveau converti",
     "miembro": "Membre *",
@@ -422,7 +422,7 @@
     "estado": "Statut",
     "horasTranscurridas": "Heures écoulées",
     "conversion": "Conversion",
-    "limite": "Échéance 72 h",
+    "limite": "Échéance",
     "marcarCompletado": "Marquer comme terminée",
     "metricas": {
       "titulo": "Indicateurs OP72",
@@ -431,9 +431,9 @@
       "error": "Impossible de charger les indicateurs.",
       "sinDatos": "Il n'y a encore aucune consolidation sur cette période.",
       "total": "Consolidations",
-      "contacto24h": "Premier contact sous 24 h",
+      "contacto24h": "Premier contact dans les temps",
       "horasPrimerContacto": "Heures moyennes avant le premier contact",
-      "completados72h": "Terminées sous 72 h",
+      "completados72h": "Terminées dans le délai",
       "completados": "Terminées",
       "abiertos": "Ouvertes",
       "vencidos": "En retard, non terminées",
@@ -443,7 +443,7 @@
       "sinAsignar": "Non assignées",
       "vencidosN": "{n} en retard",
       "promo": "Indicateurs avancés OP72",
-      "promoAyuda": "Délais de contact, respect des 72 heures et détail par consolidateur et par maison. Inclus dans les forfaits Basique et Premium, ou en option."
+      "promoAyuda": "Délais de contact, respect du délai et détail par consolidateur et par maison. Inclus dans les forfaits Basique et Premium, ou en option."
     },
     "sinAsignar": "Aucun accompagnateur assigné",
     "asignar": {
@@ -473,7 +473,8 @@
       "futura": "La date du contact ne peut pas être dans le futur."
     },
     "errorCrear": "Le nouveau converti n’a pas pu être enregistré. Réessayez.",
-    "errorCompletar": "Impossible de le marquer comme terminé. Réessayez."
+    "errorCompletar": "Impossible de le marquer comme terminé. Réessayez.",
+    "metodo": "Méthode"
   },
   "formacion": {
     "titulo": "Formation",
@@ -676,7 +677,7 @@
     "tasaExito": "{n} % de réussite",
     "casasActivas": "Maisons actives",
     "enFormacion": "En formation",
-    "consolidacion": "Consolidation 72 h",
+    "consolidacion": "Suivi des nouvelles personnes",
     "alumnosPorNivel": "Élèves par niveau",
     "distribucionZona": "Répartition par zone",
     "sinZonas": "Aucune donnée de zone",
@@ -715,7 +716,8 @@
       "usuarios": "Utilisateurs",
       "integraciones": "Intégrations",
       "seguridad": "Sécurité",
-      "dar": "Donner"
+      "dar": "Donner",
+      "seguimiento": "Suivi"
     },
     "identidad": "Identité de l'église",
     "nombreIglesia": "Nom de l'église *",
@@ -1857,5 +1859,72 @@
     "sinNuevos": "Aucun nouveau croyant en suivi dans votre maison.",
     "errorLista": "La liste complète n’a pas pu être enregistrée. Vérifiez les données et réessayez.",
     "listaGuardada": "Liste enregistrée."
+  },
+  "seguimiento": {
+    "titulo": "Méthode de suivi des nouvelles personnes",
+    "ayuda": "Choisissez comment accompagner les nouveaux arrivants : combien de contacts, en combien de temps et à partir de quand la couleur d'alerte change. Les processus déjà ouverts gardent la méthode avec laquelle ils ont commencé.",
+    "noDisponible": "La méthode de suivi n'est pas encore disponible dans cette base de données. En attendant, tout continue avec OP72 : trois contacts en 72 heures.",
+    "errorCarga": "Impossible de charger la méthode de suivi.",
+    "reintentar": "Réessayer",
+    "enUso": "Utilisée",
+    "plantilla": "Modèle",
+    "propio": "Personnalisée",
+    "porValidar": "Valeurs à confirmer",
+    "resumen": "Contacts : {pasos}. Délai : {plazo} h.",
+    "tramos": "Vert jusqu'à {verde} h, jaune jusqu'à {amarillo} h, orange jusqu'à {naranja} h et rouge ensuite.",
+    "usar": "Utiliser cette méthode",
+    "copiar": "Créer ma méthode à partir de celle-ci",
+    "editar": "Modifier",
+    "cerrar": "Fermer",
+    "soloPremium": "Créer et modifier votre propre méthode fait partie du forfait Premium. Avec votre forfait, vous pouvez choisir parmi les modèles.",
+    "maximo": "Vous avez déjà {n} méthodes personnalisées, le maximum. Archivez-en une pour en créer une autre.",
+    "campos": {
+      "nombre": "Nom de la méthode",
+      "pasos": "Nombre de contacts",
+      "pasosAyuda": "De 1 à 3 contacts par personne.",
+      "plazo": "Délai total (heures)",
+      "plazoAyuda": "Une fois ce délai dépassé sans achèvement, le processus passe au rouge.",
+      "amarillo": "Jaune après (heures)",
+      "naranja": "Orange après (heures)",
+      "primer": "Objectif du premier contact (heures, facultatif)",
+      "primerAyuda": "Utilisé dans les indicateurs avancés pour mesurer le premier contact dans les temps."
+    },
+    "guardar": "Enregistrer les modifications",
+    "guardando": "Enregistrement…",
+    "restaurar": "Restaurer les valeurs de {nombre}",
+    "archivar": "Archiver la méthode",
+    "archivarConfirma": "Archiver « {nombre} » ? Les processus ouverts la conservent, mais elle ne pourra plus être choisie.",
+    "archivarSi": "Oui, archiver",
+    "archivarNo": "Non",
+    "activoNoArchiva": "Pour l'archiver, choisissez d'abord une autre méthode comme méthode utilisée.",
+    "uso": "Processus avec cette méthode : {total} au total, {abiertos} ouverts.",
+    "avisoProcesos": "{n} processus ouverts utilisent cette méthode. Si vous changez le délai ou les couleurs, leur échéance et leur couleur sont recalculées à l'enregistrement.",
+    "avisos": {
+      "elegido": "« {nombre} » est désormais utilisée pour les nouvelles personnes. Les processus ouverts gardent la leur.",
+      "creado": "Méthode créée. Ajustez les valeurs et enregistrez.",
+      "guardado": "Modifications enregistrées.",
+      "archivado": "Méthode archivée.",
+      "restaurado": "Valeurs restaurées dans le formulaire. Enregistrez pour les appliquer."
+    },
+    "errores": {
+      "revisa": "Vérifiez les champs signalés avant d'enregistrer.",
+      "nombreVacio": "Saisissez un nom.",
+      "nombreLargo": "Le nom peut compter jusqu'à 80 caractères.",
+      "pasos": "Le nombre de contacts va de 1 à 3.",
+      "plazo": "Le délai va de 1 à 720 heures.",
+      "amarillo": "Saisissez les heures jusqu'au jaune (au moins 1).",
+      "naranja": "Saisissez les heures jusqu'à l'orange.",
+      "naranjaMenor": "L'orange doit commencer après le jaune.",
+      "naranjaMayorPlazo": "L'orange ne peut pas dépasser le délai total.",
+      "primer": "Le premier contact commence à 1 heure, ou laissez le champ vide.",
+      "primerMayorPlazo": "Le premier contact ne peut pas dépasser le délai total.",
+      "demasiados": "Il y a un maximum de 10 méthodes personnalisées non archivées.",
+      "activo": "La méthode utilisée ne peut pas être archivée. Choisissez-en d'abord une autre.",
+      "archivado": "Cette méthode est archivée.",
+      "ajeno": "Cette méthode n'appartient pas à votre église.",
+      "repetido": "Une méthode avec cette clé existe déjà. Réessayez.",
+      "permiso": "Vous n'avez pas la permission de modifier ceci, ou votre forfait n'inclut pas la méthode personnalisée.",
+      "generico": "Impossible d'enregistrer. Réessayez."
+    }
   }
 }

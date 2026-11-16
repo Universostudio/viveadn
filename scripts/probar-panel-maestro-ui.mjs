@@ -108,7 +108,7 @@ try {
     await page.waitForSelector('[data-test=etiqueta-panel]')
     assert.equal(new URL(page.url()).pathname, '/plataforma')
     assert.equal((await page.textContent('[data-test=etiqueta-panel]')).trim(), 'Panel Maestro')
-    for (const t of ['Miembros', 'Casas', 'Consolidación', 'Formación']) assert.equal(await page.locator('nav a', { hasText: new RegExp(`^\\s*${t}\\s*$`) }).count(), 0, `no debe verse «${t}»`)
+    for (const t of ['Miembros', 'Casas', 'Seguimiento', 'Formación']) assert.equal(await page.locator('nav a', { hasText: new RegExp(`^\\s*${t}\\s*$`) }).count(), 0, `no debe verse «${t}»`)
     assert.equal(await page.locator('[data-test=entrar-iglesia]').count(), 0, 'sin iglesia no hay botón de cambio de contexto')
     // una ruta de iglesia redirige de vuelta
     await page.goto(url('/miembros'))

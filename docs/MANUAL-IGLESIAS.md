@@ -87,7 +87,10 @@ Cada rol ve en el menú solo lo que puede abrir, incluidas las secciones acotada
 
 **Qué guarda Vive ADN.** Solo una **persona nueva** que marca un canal queda suscrita en ese canal, con origen QR. A una persona que ya existía no se le cambia el consentimiento: solo se guarda la evidencia de lo que marcó. Cada marca guarda el texto exacto que se le mostró, con su versión. La doble confirmación por correo existe pero está apagada (`docs/COMUNICACION.md`).
 
-## 7. Consolidación 72 horas
+## 7. Consolidación 72 horas (seguimiento de nuevas personas)
+
+**Método de seguimiento.** Por defecto cada persona nueva se acompaña con **OP72**: tres contactos en 72 horas, con el color verde hasta las 24 horas, amarillo hasta las 48, naranja hasta las 72 y rojo después. Quien puede configurar la iglesia elige otro en **Configuración, pestaña «Seguimiento»**: la plantilla **Seguimiento simple** (un contacto en una semana; sus valores todavía están por confirmar) o, en el plan Premium, **un método propio** que se crea copiando una plantilla y se ajusta (de 1 a 3 contactos, plazo de hasta 720 horas y las horas a las que cambia el color). Cambiar el método usado solo afecta a las personas nuevas: los procesos abiertos siguen con el suyo. Editar los plazos de un método propio **sí** cambia la fecha límite y el color de sus procesos abiertos, y la pantalla avisa de cuántos son antes de guardar. Un método propio que ya no se quiere se archiva (no se borra) y nunca el que se está usando [E, `scripts/probar-seguimiento-config-ui.mjs`, `supabase/tests/adn_seguimiento_propio.sql`].
+
 
 Para cada nuevo convertido se registra el miembro, la fecha de conversión y notas. La pantalla muestra el progreso de las 72 horas, el límite, las horas transcurridas y el estado, y se ordena por urgencia, fecha o nombre. «Completar» cierra el seguimiento. Las consolidaciones pendientes aparecen en el panel como alertas, con las horas transcurridas desde la conversión.
 

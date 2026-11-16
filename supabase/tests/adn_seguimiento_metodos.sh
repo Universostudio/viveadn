@@ -14,7 +14,8 @@ huella() { "${PSQL[@]}" -d $DB -At -c "select md5(string_agg(id::text || '|' || 
 "${PSQL[@]}" -d $DB -f tests/stub_supabase.sql
 "${PSQL[@]}" -d $DB -f schema/esquema_completo.sql
 "${PSQL[@]}" -d $DB -f schema/seed.sql
-for m in migrations/*.sql; do [ "$m" = "migrations/$MIG.sql" ] && continue; "${PSQL[@]}" -d $DB -f "$m" > /dev/null; done
+# Solo las migraciones anteriores a la que se prueba: las posteriores pueden depender de ella
+for m in migrations/*.sql; do [[ "$m" > "migrations/$MIG.sql" || "$m" == "migrations/$MIG.sql" ]] && continue; "${PSQL[@]}" -d $DB -f "$m" > /dev/null; done
 "${PSQL[@]}" -d $DB <<'SQL'
 insert into public.iglesias (id, nombre, slug, pais, ciudad, plan) values ('ae300000-0000-0000-0000-00000000000a', 'Prueba Seg', 'prueba-seg', 'ES', 'Sevilla', 'premium');
 insert into public.miembros (id, iglesia_id, nombre, apellido) select ('ae310000-0000-0000-0000-0000000000' || lpad(n::text, 2, '0'))::uuid, 'ae300000-0000-0000-0000-00000000000a', 'M' || n, 'Prueba' from generate_series(1, 12) n;
