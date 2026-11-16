@@ -200,7 +200,7 @@
             <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
               <div
                 :class="['h-full rounded-full transition-all', claseBarra(c.estado_alerta)]"
-                :style="{ width: `${Math.min(progresoHoras(c.fecha_conversion), 100)}%` }"
+                :style="{ width: `${Math.min(progresoHoras(c), 100)}%` }"
               ></div>
             </div>
           </div>
@@ -349,7 +349,8 @@ import EstadoAlerta from '@/components/EstadoAlerta.vue'
 import { CalendarDays, ChartColumn, Check, CircleCheck, ClipboardPen, Clock, LoaderCircle, MessageCircle, Phone, Siren, Timer, TriangleAlert, UserPlus, UserRound } from '@lucide/vue'
 import { ref, computed, nextTick, onMounted, watch } from 'vue'
 import { supabase } from '@/lib/supabase'
-import { conAlerta } from '@/lib/alertas'
+import { conAlerta, plazoDe } from '@/lib/alertas'
+import { useSeguimientoStore } from '@/stores/seguimiento'
 import type { AlertaColor } from '@/lib/supabase'
 import { useI18n } from 'vue-i18n'
 import { formatoFechaHora } from '@/i18n'
@@ -359,6 +360,7 @@ import { camposContacto, contactosDe, enlaceLlamar, enlaceWhatsApp, fechaDeConta
 
 const { t, te } = useI18n()
 const auth = useAuthStore()
+const seg = useSeguimientoStore()
 
 // ---- OP72 avanzado (de pago) ----
 const verMetricas = computed(() => auth.tieneModulo('op72_avanzado') && auth.can('consolidacion.ver'))
@@ -479,8 +481,9 @@ function horasTranscurridas(fecha: string) {
   return Math.floor((Date.now() - new Date(fecha).getTime()) / 3600000)
 }
 
-function progresoHoras(fecha: string) {
-  return (horasTranscurridas(fecha) / 72) * 100
+// Progreso hacia el plazo del método del proceso (72 horas en OP72)
+function progresoHoras(c: { fecha_conversion: string; metodo?: any }) {
+  return (horasTranscurridas(c.fecha_conversion) / plazoDe(c)) * 100
 }
 
 function formatFecha(fecha: string) {
@@ -546,10 +549,11 @@ function verDetalle(c: any) {
 
 async function cargarDatos() {
   cargando.value = true
+  await seg.asegurar()
   const [consolRes, miembrosRes] = await Promise.all([
     supabase
       .from('consolidaciones')
-      .select('*, miembros!consolidaciones_miembro_fk(id, nombre, apellido, crm_id, telefono), consolidador_perfil:perfiles!consolidaciones_consolidador_fk(nombre, apellido)')
+      .select('*, miembros!consolidaciones_miembro_fk(id, nombre, apellido, crm_id, telefono), consolidador_perfil:perfiles!consolidaciones_consolidador_fk(nombre, apellido)' + seg.embeber())
       .eq('completado', false)
       .order('fecha_conversion', { ascending: true }),
     puedeCrear.value

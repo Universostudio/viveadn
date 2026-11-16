@@ -259,6 +259,7 @@ import { useI18n } from 'vue-i18n'
 import { formatoFecha } from '@/i18n'
 import { supabase } from '@/lib/supabase'
 import { conAlerta, haceHoras } from '@/lib/alertas'
+import { useSeguimientoStore } from '@/stores/seguimiento'
 import { tarjetasDeInicio, medida, textoMedida, hayMas, type Medida } from '@/lib/panelInicio'
 import {
   Users, House, HeartHandshake, Siren, CircleCheck, UserPlus,
@@ -271,6 +272,7 @@ import { ETIQUETAS_COMPROMISO } from '@/lib/supabase'
 import type { AlertaColor, NivelCompromiso } from '@/lib/supabase'
 
 const auth = useAuthStore()
+const seg = useSeguimientoStore()
 const { t } = useI18n()
 
 // Sigue al idioma elegido
@@ -359,6 +361,9 @@ async function cargar() {
   recientesFallo.value = false
   const hace48 = haceHoras(48)
   const hace72 = haceHoras(72)
+  // Con métodos de seguimiento en la base, críticas y en alerta salen del color de cada proceso según su método (vista adn_seguimiento_estado);
+  // sin ellos, como siempre: más de 72 y de 48 horas
+  const conMetodos = t0.seguimiento ? await seg.asegurar() : false
   const cuenta = (tabla: string, filtro: (q: any) => any = q => q) => filtro(supabase.from(tabla).select('*', { count: 'exact', head: true }))
   supabase.rpc('adn_panel_inicio').then(({ data, error }) => {
     if (error) { errorPanel.value = t('panel.errorPanel'); return }
@@ -371,11 +376,13 @@ async function cargar() {
     t0.personas ? cuenta('miembros', q => q.eq('activo', true)) : null,
     t0.casas ? cuenta('casas_oracion', q => q.eq('activa', true)) : null,
     t0.seguimiento ? cuenta('consolidaciones', q => q.eq('completado', false)) : null,
-    t0.seguimiento ? cuenta('consolidaciones', q => q.eq('completado', false).lt('fecha_conversion', hace72)) : null,
-    t0.seguimiento ? cuenta('consolidaciones', q => q.eq('completado', false).lt('fecha_conversion', hace48)) : null,
-    t0.seguimiento
-      ? supabase.from('consolidaciones').select('*, miembros(nombre, apellido)').lt('fecha_conversion', hace48).eq('completado', false).order('fecha_conversion', { ascending: true }).limit(5)
-      : null,
+    !t0.seguimiento ? null
+      : conMetodos ? cuenta('adn_seguimiento_estado', q => q.eq('completado', false).eq('estado', 'rojo'))
+      : cuenta('consolidaciones', q => q.eq('completado', false).lt('fecha_conversion', hace72)),
+    !t0.seguimiento ? null
+      : conMetodos ? cuenta('adn_seguimiento_estado', q => q.eq('completado', false).in('estado', ['naranja', 'rojo']))
+      : cuenta('consolidaciones', q => q.eq('completado', false).lt('fecha_conversion', hace48)),
+    !t0.seguimiento ? null : listaDeAlertas(conMetodos, hace48),
     t0.personas
       ? supabase.from('miembros').select('id, nombre, apellido, crm_id, nivel_compromiso').eq('activo', true).order('created_at', { ascending: false }).limit(5)
       : null,
@@ -389,6 +396,18 @@ async function cargar() {
   consolidaciones.value = (lista?.data ?? []).map(conAlerta)
   recientesFallo.value = !!recientes?.error
   miembrosRecientes.value = recientes?.data ?? []
+}
+
+// Los cinco procesos más antiguos en alerta (naranja o rojo), con su persona y su método
+async function listaDeAlertas(conMetodos: boolean, hace48: string) {
+  if (!conMetodos) {
+    return supabase.from('consolidaciones').select('*, miembros(nombre, apellido)').lt('fecha_conversion', hace48).eq('completado', false).order('fecha_conversion', { ascending: true }).limit(5)
+  }
+  const ids = await supabase.from('adn_seguimiento_estado').select('id').eq('completado', false).in('estado', ['naranja', 'rojo']).order('fecha_conversion', { ascending: true }).limit(5)
+  if (ids.error) return ids
+  const lista = (ids.data ?? []).map((x: any) => x.id)
+  if (!lista.length) return { data: [], error: null }
+  return supabase.from('consolidaciones').select('*, miembros(nombre, apellido)' + seg.embeber()).in('id', lista).order('fecha_conversion', { ascending: true })
 }
 
 onMounted(cargar)

@@ -121,8 +121,10 @@ import { useAuthStore } from '@/stores/auth'
 import { supabase } from '@/lib/supabase'
 import { haceHoras } from '@/lib/alertas'
 import { itemsVisibles } from '@/lib/acceso'
+import { useSeguimientoStore } from '@/stores/seguimiento'
 
 const auth = useAuthStore()
+const seg = useSeguimientoStore()
 const router = useRouter()
 const route = useRoute()
 const menuAbierto = ref(false)
@@ -163,11 +165,11 @@ async function logout() {
 // Se vuelve a evaluar si cambia lo que ve el rol (por ejemplo con «Ver como»).
 async function contarPendientes() {
   if (!navItems.value.some(i => i.badge)) { consolidacionPendientes.value = 0; return }
-  const { count } = await supabase
-    .from('consolidaciones')
-    .select('*', { count: 'exact', head: true })
-    .lt('fecha_conversion', haceHoras(48))
-    .eq('completado', false)
+  // Con métodos, «pendiente» es naranja o rojo según el método de cada proceso; sin ellos, más de 48 horas como siempre
+  const conMetodos = await seg.asegurar()
+  const { count } = conMetodos
+    ? await supabase.from('adn_seguimiento_estado').select('*', { count: 'exact', head: true }).in('estado', ['naranja', 'rojo']).eq('completado', false)
+    : await supabase.from('consolidaciones').select('*', { count: 'exact', head: true }).lt('fecha_conversion', haceHoras(48)).eq('completado', false)
 
   consolidacionPendientes.value = count ?? 0
 }

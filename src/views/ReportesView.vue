@@ -146,7 +146,8 @@
 import { Check, CircleCheck, Clock, GraduationCap, HandHelping, HeartHandshake, House, Leaf, MapIcon, Rocket, Siren, Sprout, Star, TriangleAlert, Users } from '@lucide/vue'
 import { ref, computed, onMounted, watch } from 'vue'
 import { supabase } from '@/lib/supabase'
-import { alertaDe } from '@/lib/alertas'
+import { alertaDe, metodoDe } from '@/lib/alertas'
+import { useSeguimientoStore } from '@/stores/seguimiento'
 import { useI18n } from 'vue-i18n'
 import { formatoFecha } from '@/i18n'
 import DescargarInformes from '@/components/DescargarInformes.vue'
@@ -199,12 +200,15 @@ function fechaDesde() {
   return d.toISOString()
 }
 
+const seg = useSeguimientoStore()
+
 async function cargarReportes() {
   const desde = fechaDesde()
+  await seg.asegurar()
   const [miembrosRes, miembrosNuevosRes, consolRes, consolCompRes, casasRes, formacionRes, zonasRes, completadasRes] = await Promise.all([
     supabase.from('miembros').select('*', { count: 'exact', head: true }).eq('activo', true),
     supabase.from('miembros').select('*', { count: 'exact', head: true }).gte('created_at', desde),
-    supabase.from('consolidaciones').select('fecha_conversion').eq('completado', false),
+    supabase.from('consolidaciones').select('fecha_conversion' + seg.embeber()).eq('completado', false),
     supabase.from('consolidaciones').select('*', { count: 'exact', head: true }).eq('completado', true).gte('updated_at', desde),
     supabase.from('casas_oracion').select('*', { count: 'exact', head: true }).eq('activa', true),
     supabase.from('progreso_formacion').select('nivel').is('fecha_completado', null),
@@ -223,7 +227,7 @@ async function cargarReportes() {
 
   // Consolidación por estado
   const cd = { verde: 0, amarillo: 0, naranja: 0, rojo: 0, completadas: consolCompRes.count ?? 0 }
-  consolRes.data?.forEach((c: any) => { cd[alertaDe(c.fecha_conversion, false)]++ })
+  consolRes.data?.forEach((c: any) => { cd[alertaDe(c.fecha_conversion, false, Date.now(), metodoDe(c))]++ })
   consolidacionData.value = cd
 
   // Formación por nivel

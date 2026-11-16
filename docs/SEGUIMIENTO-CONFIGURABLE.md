@@ -177,7 +177,7 @@ Aprobado por Gerencia el 16 de noviembre de 2026: se construyen las fases 1, 2 y
 | Fase | Paquete | Estado |
 | --- | --- | --- |
 | 1. Esquema sin cambio visible | `20261111320000_adn_seguimiento_metodos` | Hecha, sin aplicar. Tablas `adn_seguimiento_metodos` y `adn_seguimiento_config`, columna `consolidaciones.metodo_id` con OP72 por defecto, disparador que lee el método, `adn_seguimiento_alerta()` y la vista `adn_seguimiento_estado` [E, `supabase/tests/adn_seguimiento_metodos.sql` 48 comprobaciones y `supabase/tests/adn_seguimiento_metodos.sh` 8 con datos previos] |
-| 2. La interfaz lee el método | pendiente | |
+| 2. La interfaz lee el método | `20261111330000_adn_seguimiento_metricas` | Hecha, sin aplicar. Las pantallas calculan el color y el plazo con el método de cada proceso (`src/lib/alertas.ts`, `src/stores/seguimiento.ts`) y las métricas avanzadas de OP72 usan el plazo y el objetivo de primer contacto de cada método, con las mismas claves de siempre. Con todos los procesos en OP72 el resultado es idéntico al anterior [E, `supabase/tests/adn_seguimiento_metricas.sh`, 4 comprobaciones, la primera compara el JSON completo de 14 procesos]. Si la migración de la fase 1 no está aplicada, la interfaz detecta que falta `adn_seguimiento_metodos` y sigue con 48 y 72 horas, de modo que el orden de despliegue no importa [E, `scripts/probar-inicio-ui.mjs`, modos con y sin métodos] |
 | 3. Configuración y método propio | pendiente | |
 | 4. Más de tres pasos | en espera | |
 

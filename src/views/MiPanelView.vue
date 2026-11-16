@@ -101,11 +101,13 @@ import { formatoFecha } from '@/i18n'
 import { useAuthStore } from '@/stores/auth'
 import EstadoAlerta from '@/components/EstadoAlerta.vue'
 import { conAlerta } from '@/lib/alertas'
+import { useSeguimientoStore } from '@/stores/seguimiento'
 import { contactosDe, enlaceLlamar, enlaceWhatsApp } from '@/lib/seguimiento'
 import { hoyLocal, planDeAsistencia, resumenPorFecha } from '@/lib/asistencia'
 
 const { t } = useI18n()
 const auth = useAuthStore()
+const seg = useSeguimientoStore()
 const puedePasarLista = computed(() => auth.can('asistencia.registrar_propia', 'asistencia.registrar'))
 
 const cargando = ref(true)
@@ -140,11 +142,12 @@ async function cargarCasas() {
 async function cargarCasa() {
   if (!casaId.value) return
   cargando.value = true
+  await seg.asegurar()
   const desde = new Date(Date.now() - 28 * 86_400_000).toISOString().slice(0, 10)
   const [p, n, r] = await Promise.all([
     supabase.from('miembros').select('id, nombre, apellido, telefono').eq('casa_oracion_id', casaId.value).eq('activo', true).order('nombre'),
     auth.can('consolidacion.ver_casa')
-      ? supabase.from('consolidaciones').select('*, miembros!consolidaciones_miembro_fk(nombre, apellido, telefono)').eq('casa_oracion_id', casaId.value).eq('completado', false)
+      ? supabase.from('consolidaciones').select('*, miembros!consolidaciones_miembro_fk(nombre, apellido, telefono)' + seg.embeber()).eq('casa_oracion_id', casaId.value).eq('completado', false)
       : Promise.resolve({ data: [] as any[] }),
     puedePasarLista.value ? supabase.from('asistencias').select('fecha, presente').eq('casa_oracion_id', casaId.value).gte('fecha', desde) : Promise.resolve({ data: [] as any[] }),
   ])

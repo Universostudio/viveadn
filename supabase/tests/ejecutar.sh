@@ -49,6 +49,7 @@ bash tests/checkin_concurrencia.sh "$DB"
 bash tests/adn_asistencias_unico.sh
 "${PSQL[@]}" -d $DB -f tests/adn_seguimiento_metodos.sql
 bash tests/adn_seguimiento_metodos.sh
+bash tests/adn_seguimiento_metricas.sh
 "${PSQL[@]}" -d $DB -f tests/adn_doble_confirmacion.sql
 "${PSQL[@]}" -d $DB -f tests/adn_purga_programada.sql
 "${PSQL[@]}" -d $DB -f tests/adn_libro_purgas.sql

@@ -23,7 +23,16 @@ const catalogo = [...new Set(Object.values(PERMISOS).flat())]
 const modulo = c => c.split('.')[0]
 const horas = h => new Date(Date.now() - h * 3_600_000).toISOString()
 
-async function escenario(rol, { consolidacionesFalla = false } = {}) {
+const METODOS = [
+  { id: '5e000000-0000-4000-8000-000000000072', plazo_horas: 72, umbral_amarillo_horas: 24, umbral_naranja_horas: 48 },
+  { id: '5e000000-0000-4000-8000-000000000001', plazo_horas: 168, umbral_amarillo_horas: 72, umbral_naranja_horas: 120 },
+]
+const OP72 = METODOS[0].id
+const colorDe = (c) => { const m = METODOS.find(x => x.id === (c.metodo_id ?? OP72)); const h = (Date.now() - Date.parse(c.fecha_conversion)) / 3_600_000; return c.completado ? 'verde' : h <= m.umbral_amarillo_horas ? 'verde' : h <= m.umbral_naranja_horas ? 'amarillo' : h <= m.plazo_horas ? 'naranja' : 'rojo' }
+
+// conMetodos: la base ya tiene los métodos (migración aplicada); sin ellos la tabla no existe y la interfaz debe seguir como siempre.
+// extraSimple: dos procesos más con el método Seguimiento simple (a 100 horas es amarillo y a 200 es rojo).
+async function escenario(rol, { consolidacionesFalla = false, conMetodos = true, extraSimple = false } = {}) {
   const e = { falla: consolidacionesFalla, consultas: [] }
   // 8 rojas (más de 72 h), 3 naranjas (entre 48 y 72 h), 2 verdes: 13 en seguimiento, 8 críticas, 11 en alerta
   const consolidaciones = [
@@ -31,6 +40,9 @@ async function escenario(rol, { consolidacionesFalla = false } = {}) {
     ...Array.from({ length: 3 }, (_, i) => ({ id: 'n' + i, completado: false, fecha_conversion: horas(55 + i), miembros: { nombre: 'Naranja' + i, apellido: 'X' } })),
     ...Array.from({ length: 2 }, (_, i) => ({ id: 'v' + i, completado: false, fecha_conversion: horas(5 + i), miembros: { nombre: 'Verde' + i, apellido: 'X' } })),
   ]
+  if (extraSimple) consolidaciones.push(
+    { id: 's1', completado: false, fecha_conversion: horas(100), metodo_id: METODOS[1].id, miembros: { nombre: 'SimpleAmarilla', apellido: 'X' } },
+    { id: 's2', completado: false, fecha_conversion: horas(200), metodo_id: METODOS[1].id, miembros: { nombre: 'SimpleRoja', apellido: 'X' } })
   const miembros = Array.from({ length: 7 }, (_, i) => ({ id: 'm' + i, nombre: 'Persona' + i, apellido: 'Y', crm_id: 'ADN-00' + i, nivel_compromiso: 'nuevo', activo: true, created_at: horas(i) }))
   const casas = [{ id: 'c1', activa: true }, { id: 'c2', activa: true }]
   const browser = await chromium.launch()
@@ -45,6 +57,8 @@ async function escenario(rol, { consolidacionesFalla = false } = {}) {
     plan_modulos: [...new Set(catalogo.map(modulo))].map(m => ({ modulo: m })), iglesia_modulos: [],
     permisos: catalogo.map(clave => ({ clave, modulo: modulo(clave) })), plataforma_admins: [],
     miembros, casas_oracion: casas, consolidaciones,
+    adn_seguimiento_metodos: METODOS,
+    adn_seguimiento_estado: consolidaciones.map(c => ({ id: c.id, completado: c.completado, fecha_conversion: c.fecha_conversion, metodo_id: c.metodo_id ?? OP72, estado: colorDe(c) })),
   })
   const cors = { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'access-control-allow-methods': '*', 'access-control-expose-headers': '*' }
   await ctx.route(`${SB}/**`, async ruta => {
@@ -55,11 +69,13 @@ async function escenario(rol, { consolidacionesFalla = false } = {}) {
     if (url.pathname.includes('/rpc/')) return json(200, null)
     const tabla = url.pathname.split('/').pop()
     e.consultas.push(tabla)
-    if (tabla === 'consolidaciones' && e.falla) return json(500, { message: 'caído', code: 'XX000' })
+    if (tabla === 'adn_seguimiento_metodos' && !conMetodos) return json(404, { message: 'relation does not exist', code: '42P01' })
+    if ((tabla === 'consolidaciones' || tabla === 'adn_seguimiento_estado') && e.falla) return json(500, { message: 'caído', code: 'XX000' })
     let filas = tablas()[tabla] ?? []
     for (const [k, v] of url.searchParams) {
       if (v.startsWith('eq.') && filas.some(f => k in f)) filas = filas.filter(f => String(f[k]) === v.slice(3))
       if (v.startsWith('lt.')) filas = filas.filter(f => String(f[k]) < v.slice(3))
+      if (v.startsWith('in.(')) { const lista = v.slice(4, -1).split(','); filas = filas.filter(f => lista.includes(String(f[k]))) }
     }
     const limite = Number(url.searchParams.get('limit') ?? 0)
     const total = filas.length
@@ -126,6 +142,44 @@ try {
     assert.match(await texto(page, '[data-test=stat-personas]'), /^7\b/, 'lo que sí cargó se ve')
     assert.equal(await page.locator('[data-test=alertas-fallo]').count(), 1, 'la lista de alertas dice que falló, no «no hay alertas»')
     assert.equal(await page.locator('text=Todo al día').count() + await page.locator('text=No hay alertas').count(), 0)
+    e.falla = false
+    await page.click('[data-test=reintentar]')
+    await page.waitForFunction(() => !document.querySelector('[data-test=errores-carga]'))
+    assert.match(await texto(page, '[data-test=stat-criticas]'), /^8\b/)
+    await browser.close()
+  })
+
+  // Con métodos de seguimiento en la base el panel cuenta con el color de cada proceso según su método; sin ellos, como siempre
+  await prueba('con métodos en la base: críticas y en alerta salen del método de cada proceso (un Seguimiento simple a 100 horas es amarillo, no alerta)', async () => {
+    const { browser, page, e, errores } = await escenario('administrador', { extraSimple: true })
+    await page.goto(url('/')); await page.waitForSelector('[data-test=alertas-72h]')
+    await page.waitForFunction(() => document.querySelector('[data-test=stat-criticas]')?.textContent?.match(/\d/))
+    assert.match(await texto(page, '[data-test=stat-seguimiento]'), /^15\b/)
+    assert.match(await texto(page, '[data-test=stat-criticas]'), /^9\b/, '8 de OP72 más la de Seguimiento simple a 200 h; la de 100 h no cuenta')
+    assert.match(await texto(page, '[data-test=mostrando-alertas]'), /Mostrando 5 de 12 en alerta/, '11 de OP72 más la roja de Seguimiento simple (la amarilla no)')
+    assert.ok(e.consultas.includes('adn_seguimiento_estado'), 'usa la vista de estado')
+    assert.equal(await page.locator('text=SimpleAmarilla').count(), 0, 'la amarilla de Seguimiento simple no sale en la lista de alertas')
+    assert.deepEqual(errores, [])
+    await browser.close()
+  })
+
+  await prueba('sin métodos en la base (migración sin aplicar): el panel cuenta como siempre y no pide la vista de estado ni falla', async () => {
+    const { browser, page, e, errores } = await escenario('administrador', { conMetodos: false })
+    await page.goto(url('/')); await page.waitForSelector('[data-test=alertas-72h]')
+    await page.waitForFunction(() => document.querySelector('[data-test=stat-criticas]')?.textContent?.match(/\d/))
+    assert.match(await texto(page, '[data-test=stat-seguimiento]'), /^13\b/)
+    assert.match(await texto(page, '[data-test=stat-criticas]'), /^8\b/)
+    assert.match(await texto(page, '[data-test=mostrando-alertas]'), /Mostrando 5 de 11 en alerta/)
+    assert.ok(!e.consultas.includes('adn_seguimiento_estado'), 'no pide una vista que no existe')
+    assert.equal(await page.locator('[data-test=errores-carga]').count(), 0, 'sin avisos de error')
+    assert.deepEqual(errores, [])
+    await browser.close()
+  })
+
+  await prueba('con métodos y una lectura que falla: «—», aviso y reintentar también por la vista de estado', async () => {
+    const { browser, page, e } = await escenario('administrador', { consolidacionesFalla: true })
+    await page.goto(url('/')); await page.waitForSelector('[data-test=errores-carga]')
+    for (const s of ['stat-seguimiento', 'stat-criticas']) assert.match(await texto(page, `[data-test=${s}]`), /^—/, s)
     e.falla = false
     await page.click('[data-test=reintentar]')
     await page.waitForFunction(() => !document.querySelector('[data-test=errores-carga]'))

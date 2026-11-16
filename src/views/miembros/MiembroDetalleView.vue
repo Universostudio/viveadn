@@ -274,6 +274,7 @@ import { ref, reactive, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { supabase } from '@/lib/supabase'
 import { conAlerta } from '@/lib/alertas'
+import { useSeguimientoStore } from '@/stores/seguimiento'
 import { ETIQUETAS_COMPROMISO, NIVELES_COMPROMISO } from '@/lib/supabase'
 import type { NivelCompromiso } from '@/lib/supabase'
 import { aFormulario, cambiosDe, validarFicha, type ErroresFicha, type FichaForm } from '@/lib/ficha'
@@ -288,6 +289,7 @@ const route = useRoute()
 const { t, te } = useI18n()
 const cargando = ref(true)
 const auth = useAuthStore()
+const seg = useSeguimientoStore()
 const miembro = ref<any>(null)
 const consolidaciones = ref<any[]>([])
 const progreso = ref<any[]>([])
@@ -375,6 +377,7 @@ async function cargar() {
   errorCarga.value = false
   lecturasFallidas.value = []
   const id = route.params.id as string
+  await seg.asegurar()
   const [miembroRes, consolRes, progresoRes, logrosRes, contactosRes, casasRes] = await Promise.all([
     supabase
       .from('miembros')
@@ -383,7 +386,7 @@ async function cargar() {
       .single(),
     supabase
       .from('consolidaciones')
-      .select('id, fecha_conversion, completado, notas')
+      .select('id, fecha_conversion, completado, notas' + seg.embeber())
       .eq('miembro_id', id)
       .order('fecha_conversion', { ascending: false }),
     supabase

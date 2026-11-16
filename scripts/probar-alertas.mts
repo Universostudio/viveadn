@@ -1,6 +1,6 @@
 // Pruebas del color de alerta de OP72. Uso: npm run test:alertas
 import assert from 'node:assert/strict'
-const { alertaDe, haceHoras, conAlerta } = await import('../src/lib/alertas.ts')
+const { alertaDe, haceHoras, conAlerta, plazoDe, metodoDe, METODO_OP72 } = await import('../src/lib/alertas.ts')
 
 const ahora = Date.parse('2026-11-05T12:00:00Z')
 const hace = (h: number) => new Date(ahora - h * 3_600_000).toISOString()
@@ -23,4 +23,19 @@ for (const h of [10, 47, 49, 80]) {
 // Una fila con el color guardado envejecido se corrige al leerla
 const vieja = conAlerta({ fecha_conversion: new Date(Date.now() - 100 * 3_600_000).toISOString(), completado: false, estado_alerta: 'verde' } as any)
 assert.equal(vieja.estado_alerta, 'rojo')
+
+// Con un método: los mismos bordes, con sus números (Seguimiento simple: 72, 120 y 168 horas)
+const simple = { plazo_horas: 168, umbral_amarillo_horas: 72, umbral_naranja_horas: 120 }
+const casosSimple: [number, string][] = [[0, 'verde'], [72, 'verde'], [72.01, 'amarillo'], [120, 'amarillo'], [120.01, 'naranja'], [168, 'naranja'], [168.01, 'rojo']]
+for (const [h, esperado] of casosSimple) assert.equal(alertaDe(hace(h), false, ahora, simple), esperado, `simple ${h} horas`)
+// Sin método (o con null) se comporta exactamente como OP72
+for (const [h, esperado] of casos) assert.equal(alertaDe(hace(h), false, ahora, undefined), esperado, `sin método ${h} horas`)
+assert.deepEqual(METODO_OP72, { plazo_horas: 72, umbral_amarillo_horas: 24, umbral_naranja_horas: 48 }, 'OP72 lleva los valores de siempre')
+assert.equal(plazoDe({}), 72); assert.equal(plazoDe({ metodo: null }), 72); assert.equal(plazoDe({ metodo: simple }), 168)
+assert.deepEqual(metodoDe({ metodo: null }), METODO_OP72)
+// conAlerta usa el método de la fila
+const hace100 = new Date(Date.now() - 100 * 3_600_000).toISOString()
+assert.equal(conAlerta({ fecha_conversion: hace100, completado: false } as any).estado_alerta, 'rojo', 'sin método, 100 horas es rojo')
+assert.equal(conAlerta({ fecha_conversion: hace100, completado: false, metodo: simple } as any).estado_alerta, 'amarillo', 'con Seguimiento simple, 100 horas es amarillo')
+assert.equal(conAlerta({ fecha_conversion: hace100, completado: true, metodo: simple } as any).estado_alerta, 'verde', 'completado nunca alerta')
 console.log('OK: todas las pruebas del color de alerta pasan')

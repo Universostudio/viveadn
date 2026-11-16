@@ -39,6 +39,11 @@ with f(nombre, obtenido, esperado) as (values
     (select (p.prosrc like '%adn_seguimiento_metodos%' and p.prosrc like '%adn_alerta_con_umbrales%')::text from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname = 'gestionar_consolidacion'), 'true'),
   ('f15_con_sesion_solo_se_leen_los_metodos',
     (select (has_table_privilege('authenticated', 'public.adn_seguimiento_metodos', 'select') and not has_table_privilege('authenticated', 'public.adn_seguimiento_metodos', 'insert, update, delete'))::text), 'true')
+,
+  ('f16_las_metricas_leen_el_metodo_de_cada_proceso',
+    (select (p.prosrc like '%adn_seguimiento_metodos%' and p.prosrc like '%make_interval%')::text from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname = 'metricas_op72'), 'true'),
+  ('f17_las_metricas_siguen_con_las_mismas_claves',
+    (select (p.prosrc like '%objetivo_primer%' and p.prosrc like '%plazo%')::text from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname = 'metricas_op72'), 'true')
 )
 select nombre, obtenido, esperado, (obtenido is not distinct from esperado) as ok from f
 union all
