@@ -22,7 +22,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, watch } from 'vue'
 import { Activity, Church, CirclePlus, KeyRound, LayoutDashboard, LifeBuoy, Layers, Receipt, Timer, ChartColumn } from '@lucide/vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
@@ -40,6 +40,8 @@ const route = useRoute()
 const router = useRouter()
 
 onMounted(() => { void pm.asegurarCargada(); void pm.cargarSoporte() })
+// El soporte cuenta con el mismo interruptor de demostraciones que el resto de las cifras
+watch(() => pm.incluirDemo, () => { void pm.cargarSoporte() })
 
 const seccion = computed(() => {
   const s = route.meta.seccion as string | undefined
@@ -51,7 +53,7 @@ const seccion = computed(() => {
 const contadorIglesias = computed(() => pm.visibles.length || null)
 // Tickets que esperan respuesta de la plataforma; sin dato (tablas ausentes o error) no se pinta ningún número
 const contadorSoporte = computed(() => (pm.soporte.estado === 'ok' ? Number(pm.soporte.resumen?.tickets?.abiertos) : 0) || null)
-const contadorPruebas = computed(() => pm.visibles.filter(i => (i.etapa ?? (i.activa ? 'activa' : 'suspendida')) === 'prueba' && !i.es_demo).length || null)
+const contadorPruebas = computed(() => pm.visibles.filter(i => (i.etapa ?? (i.activa ? 'activa' : 'suspendida')) === 'prueba').length || null)
 
 const grupos = computed<GrupoMenu[]>(() => [
   { titulo: t('plataformaPanel.grupo.control'), items: [

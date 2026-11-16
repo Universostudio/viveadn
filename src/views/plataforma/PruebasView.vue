@@ -45,9 +45,9 @@ const pm = usePlataformaStore()
 onMounted(() => { void pm.asegurarCargada() })
 
 const nombrePlan = (clave: string) => pm.planes.find(p => p.clave === clave)?.nombre ?? clave
-// Las pruebas reales (no demos) por orden de vencimiento: las que vencen antes, primero
-const filas = computed(() => pm.iglesias
-  .filter(i => etapaDe(i) === 'prueba' && !i.es_demo)
+// Las pruebas de la lista que se ve (respeta «Incluir demostraciones») por orden de vencimiento: las que vencen antes, primero
+const filas = computed(() => [...pm.visibles]
+  .filter(i => etapaDe(i) === 'prueba')
   .sort((a, b) => (diasDePrueba(a) ?? Infinity) - (diasDePrueba(b) ?? Infinity))
   .map(ig => {
     const d = detalleDeEstado(ig, t as any, iso => new Date(iso).toLocaleDateString(locale.value))

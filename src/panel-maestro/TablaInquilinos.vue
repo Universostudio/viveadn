@@ -127,7 +127,9 @@ const props = withDefaults(defineProps<{
   /** Título de la primera columna; por defecto «Nombre» */
   etiquetaNombre?: string
   id?: string
-}>(), { busquedaInicial: '', filtroInicial: 'todas' })
+  /** Filas que se enseñan al principio; los filtros, la búsqueda y los contadores trabajan siempre con la lista completa */
+  limiteInicial?: number
+}>(), { busquedaInicial: '', filtroInicial: 'todas', limiteInicial: TAMANO })
 const emit = defineEmits<{ (e: 'accion', clave: string, inquilino: Inquilino): void }>()
 
 const { t, locale } = useI18n()
@@ -135,11 +137,11 @@ const idTitulo = `ti-${props.id ?? 'tabla'}`
 const idBuscar = `ti-buscar-${props.id ?? 'tabla'}`
 const texto = ref(props.busquedaInicial)
 const filtro = ref<FiltroInquilinos>(props.filtroInicial)
-const limite = ref(TAMANO)
+const limite = ref(props.limiteInicial)
 
 // La búsqueda de la barra superior cambia la consulta de la ruta: la tabla la sigue
 watch(() => props.busquedaInicial, v => { texto.value = v })
-watch([texto, filtro], () => { limite.value = TAMANO })
+watch([texto, filtro], () => { limite.value = props.limiteInicial })
 
 const cuentas = computed(() => contarPorFiltro(props.inquilinos))
 // El filtro «Demo» solo aparece si la lista que se ve tiene alguna: con las demostraciones fuera de las cifras no hay nada que filtrar

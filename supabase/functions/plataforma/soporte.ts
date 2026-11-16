@@ -92,6 +92,11 @@ export function ticketAbierto(t: FilaTicket, mensajes: FilaMensaje[] | null | un
   }
 }
 
+/** Quita las filas de iglesias de demostración cuando el panel tiene «Incluir demostraciones» apagado: el soporte usa el mismo interruptor que el resto de las cifras */
+export function sinDemos<T extends { iglesia_id: string | null }>(filas: T[] | null, idsDemo: ReadonlySet<string>, incluirDemo: boolean): T[] | null {
+  return incluirDemo || !filas ? filas : filas.filter(f => !f.iglesia_id || !idsDemo.has(f.iglesia_id))
+}
+
 /** Cifras de soporte para la portada del soporte y el contador del menú */
 export function resumenDeSoporte(tickets: { estado: string; prioridad: string }[] | null, novedades: { version: string; publicada_en: string }[] | null,
   avisos: { id: string }[] | null, entregas: { aviso_id: string; leido_en: string | null; descartado_en: string | null }[] | null) {

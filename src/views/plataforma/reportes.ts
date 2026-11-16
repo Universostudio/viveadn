@@ -1,12 +1,11 @@
 // Reportes de la plataforma: crecimiento, altas y bajas, distribución, personas y módulos. Puro (sin Vue ni red) para probarlo en Node.
 // Parte de la misma lista `visibles` que el resto del Panel Maestro, así que respeta el interruptor «Incluir demostraciones». Solo cuenta: nunca datos de personas.
-import { etapaDe, type Catalogo, type IglesiaFila } from './adaptador.ts'
+import { etapaDe, viva, type Catalogo, type IglesiaFila } from './adaptador.ts'
 
 export const ETAPAS = ['onboarding', 'prueba', 'activa', 'receso', 'suspendida'] as const
 const ETAPAS_CON_SERVICIO = new Set<string>(['onboarding', 'prueba', 'activa'])
 const mesDe = (d: Date) => `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}`
 const finDeMes = (a: number, m: number) => Date.UTC(a, m + 1, 1) - 1
-const viva = (i: IglesiaFila) => !i.adn_borrada_en
 
 export interface MesCrecimiento { mes: string; altas: number; bajas: number; acumuladas: number }
 

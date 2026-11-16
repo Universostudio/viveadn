@@ -1,7 +1,8 @@
 // Prueba del adaptador y del filtrado del Panel Maestro, sin navegador ni red.
 // Uso: npm run test:panel-adaptador
 import assert from 'node:assert/strict'
-import { aInquilino, alertasGlobales, kpisDe, resumir, vistaDe, incluirDemoPorDefecto, situacionDe, etapaDe, diasDePrueba, pruebaPorVencer, pruebaVencida, borradoVencido, eventosParaPanel, saludDe, DIA } from '../src/views/plataforma/adaptador.ts'
+import { readFileSync } from 'node:fs'
+import { viva, aInquilino, alertasGlobales, kpisDe, resumir, vistaDe, incluirDemoPorDefecto, situacionDe, etapaDe, diasDePrueba, pruebaPorVencer, pruebaVencida, borradoVencido, eventosParaPanel, saludDe, DIA } from '../src/views/plataforma/adaptador.ts'
 import { filtrarInquilinos, contarPorFiltro } from '../src/panel-maestro/filtros.ts'
 import { textoDeAccion } from '../src/views/plataforma/acciones.ts'
 
@@ -21,7 +22,7 @@ assert.equal(diasDePrueba(base({ prueba_hasta: iso(0.2) }), AHORA), 1, 'se redon
 assert.equal(diasDePrueba(base({ prueba_hasta: null }), AHORA), null)
 assert.ok(pruebaPorVencer(base({ etapa: 'prueba', prueba_hasta: iso(7) }), AHORA), 'a 7 días vence pronto')
 assert.ok(!pruebaPorVencer(base({ etapa: 'prueba', prueba_hasta: iso(8) }), AHORA), 'a 8 días aún no')
-assert.ok(!pruebaPorVencer(base({ etapa: 'prueba', prueba_hasta: iso(3), es_demo: true }), AHORA), 'una demo nunca cuenta')
+assert.ok(pruebaPorVencer(base({ etapa: 'prueba', prueba_hasta: iso(3), es_demo: true }), AHORA), 'la demo cuenta igual que las demás: el interruptor decide si entra en la lista (vistaDe), no cada cifra')
 assert.ok(pruebaVencida(base({ etapa: 'prueba', prueba_hasta: iso(-1) }), AHORA))
 assert.ok(!pruebaVencida(base({ etapa: 'activa', prueba_hasta: iso(-1) }), AHORA), 'solo las que están en etapa de prueba')
 assert.ok(borradoVencido(base({ borrado_programado_en: iso(-1) }), AHORA))
@@ -172,3 +173,30 @@ sal = saludDe(null, null, t)
 assert.deepEqual(sal.map(s => s.situacion), ['sin_conectar', 'sin_conectar', 'sin_conectar'], 'si no responden, se dice y no se inventa un estado sano')
 
 console.log('Panel Maestro (adaptador y filtros): todo correcto')
+
+// M4: criterio único de «miembros»: las iglesias en borrado suave no suman en ninguna pantalla (portada, reportes y facturación comparten `viva`)
+{
+  const conBorrada = [base({ id: 'x', miembros: 10 }), base({ id: 'y', miembros: 90, adn_borrada_en: iso(-1), borrado_programado_en: iso(20) })]
+  assert.ok(viva(conBorrada[0]) && !viva(conBorrada[1]))
+  assert.equal(resumir(conBorrada, AHORA).miembros, 10, 'la portada no suma los miembros de una iglesia en borrado suave')
+}
+// M4: con el interruptor encendido, una demo en prueba cuenta en «por vencer» y en «prueba»; apagado, en ninguna
+{
+  const l = [base({ id: 'p', etapa: 'prueba', prueba_hasta: iso(3) }), base({ id: 'q', etapa: 'prueba', prueba_hasta: iso(2), es_demo: true })]
+  assert.deepEqual([resumir(vistaDe(l, true), AHORA).prueba, resumir(vistaDe(l, true), AHORA).porVencer], [2, 2])
+  assert.deepEqual([resumir(vistaDe(l, false), AHORA).prueba, resumir(vistaDe(l, false), AHORA).porVencer], [1, 1])
+}
+
+// M4: la portada no recorta la lista a 8 antes de filtrar: los contadores y los filtros usan todas las iglesias de la lista que se ve
+{
+  const portada = readFileSync(new URL('../src/views/plataforma/PortadaView.vue', import.meta.url), 'utf8')
+  assert.ok(!/\.slice\(0, 8\)/.test(portada), 'la portada ya no recorta con slice(0, 8)')
+  assert.match(portada, /:limite-inicial="8"/)
+  const tabla = readFileSync(new URL('../src/panel-maestro/TablaInquilinos.vue', import.meta.url), 'utf8')
+  assert.match(tabla, /contarPorFiltro\(props\.inquilinos\)/)
+  const layout = readFileSync(new URL('../src/views/plataforma/PlataformaLayout.vue', import.meta.url), 'utf8')
+  const pruebas = readFileSync(new URL('../src/views/plataforma/PruebasView.vue', import.meta.url), 'utf8')
+  assert.ok(!/contadorPruebas[^\n]*es_demo/.test(layout) && !/es_demo/.test(pruebas), 'Pruebas y su contador obedecen al interruptor, sin excluir demos por su cuenta')
+  assert.match(layout, /watch\(\(\) => pm\.incluirDemo/)
+  console.log('Panel (inicio): portada con contadores reales y un solo interruptor de demostraciones')
+}

@@ -31,7 +31,7 @@
         <TarjetaSinConectar id="facturacion-reciente" :titulo="t('plataformaPanel.portada.facturacionReciente')" :falta="t('plataformaPanel.faltaFacturacion')" />
       </div>
 
-      <TablaInquilinos :titulo="t('plataformaPanel.iglesias.tabla')" :inquilinos="inquilinos" :acciones="acciones" id="portada" :etiqueta-nombre="t('plataformaPanel.iglesias.columna')">
+      <TablaInquilinos :titulo="t('plataformaPanel.iglesias.tabla')" :inquilinos="inquilinos" :acciones="acciones" id="portada" :limite-inicial="8" :etiqueta-nombre="t('plataformaPanel.iglesias.columna')">
         <template #cabecera><RouterLink to="/plataforma/iglesias" class="text-sm text-adn-verde hover:underline">{{ t('plataformaPanel.portada.verTodas') }}</RouterLink></template>
       </TablaInquilinos>
     </template>
@@ -61,10 +61,10 @@ const catalogo = computed(() => ({ planes: pm.planes, modulos: pm.modulos, planM
 const resumen = computed(() => resumir(pm.visibles, Date.now(), pm.totalDemos))
 const alertas = computed(() => alertasGlobales(pm.visibles, pm.purga, t as any))
 const kpis = computed(() => kpisDe(resumen.value, alertas.value, t as any, n => n.toLocaleString(locale.value)))
-// La portada enseña las iglesias más recientes; la lista completa está en Iglesias
+// La portada enseña de entrada las 8 iglesias más recientes, pero filtros, búsqueda y contadores trabajan con todas las de la lista que se ve
 const inquilinos = computed(() => [...pm.visibles]
   .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-  .slice(0, 8).map(ig => aInquilino(ig, catalogo.value, t as any, fecha)))
+  .map(ig => aInquilino(ig, catalogo.value, t as any, fecha)))
 const eventos = computed(() => eventosParaPanel(pm.actividad, t as any, te as any))
 // La purga se toma del estado más reciente que haya (la lista ya la carga) y el envío de «sistema»
 const salud = computed(() => saludDe(pm.sistema?.purga ?? pm.purga, pm.sistema?.envio ?? null, t as any))

@@ -30,13 +30,16 @@ export function diasDePrueba(ig: IglesiaFila, ahora = Date.now()): number | null
   return Math.ceil((new Date(ig.prueba_hasta).getTime() - ahora) / DIA)
 }
 
+/** Una iglesia «viva» no está en borrado suave. Es el único criterio para contar miembros y usuarios: portada, reportes y facturación lo comparten. */
+export const viva = (ig: IglesiaFila) => !ig.adn_borrada_en
+
 export const pruebaPorVencer = (ig: IglesiaFila, ahora = Date.now()) => {
   const d = diasDePrueba(ig, ahora)
-  return etapaDe(ig) === 'prueba' && !ig.es_demo && d !== null && d >= 0 && d <= DIAS_POR_VENCER
+  return etapaDe(ig) === 'prueba' && d !== null && d >= 0 && d <= DIAS_POR_VENCER
 }
 export const pruebaVencida = (ig: IglesiaFila, ahora = Date.now()) => {
   const d = diasDePrueba(ig, ahora)
-  return etapaDe(ig) === 'prueba' && !ig.es_demo && d !== null && d < 0
+  return etapaDe(ig) === 'prueba' && d !== null && d < 0
 }
 /** Está en baja: tiene una purga (borrado suave) o un borrado programado. Suspendidas, en receso y en baja no se solapan. */
 export const enBaja = (ig: IglesiaFila) => !!ig.borrado_programado_en
@@ -152,7 +155,7 @@ export function resumir(visibles: IglesiaFila[], ahora = Date.now(), totalDemos?
     receso: visibles.filter(i => etapaDe(i) === 'receso' && !enBaja(i)).length,
     baja: visibles.filter(enBaja).length,
     proximaPurgaDias: visibles.filter(enBaja).reduce<number | null>((m, i) => { const d = diasParaPurga(i, ahora)!; return m === null || d < m ? d : m }, null),
-    miembros: visibles.reduce((n, i) => n + (Number(i.miembros) || 0), 0),
+    miembros: visibles.filter(viva).reduce((n, i) => n + (Number(i.miembros) || 0), 0),
     altasMes: altas(ahora - 30 * DIA, ahora),
     altasMesAnterior: altas(ahora - 60 * DIA, ahora - 30 * DIA),
     demos: totalDemos ?? dentro,

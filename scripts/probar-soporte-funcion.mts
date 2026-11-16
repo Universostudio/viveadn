@@ -72,3 +72,15 @@ const abrir = fuente.slice(fuente.indexOf("case 'ticket_abrir'"), fuente.indexOf
 assert.ok(abrir.indexOf("auditar('ticket_abrir'") > -1 && abrir.indexOf("auditar('ticket_abrir'") < abrir.indexOf('adn_ticket_mensajes'), 'ticket_abrir audita antes de leer los mensajes')
 assert.match(abrir, /if \(!auditado\) return json\(\{ error: [^}]*\}, 503\)/, 'si la auditoría falla, ticket_abrir responde 503 sin texto')
 console.log('Soporte (función): lectura de tickets audita antes y falla si no pudo auditar')
+
+// M4: el resumen de soporte respeta «Incluir demostraciones»
+import { sinDemos } from '../supabase/functions/plataforma/soporte.ts'
+{
+  const demo = new Set(['D'])
+  const filas = [{ iglesia_id: 'A', n: 1 }, { iglesia_id: 'D', n: 2 }, { iglesia_id: null, n: 3 }]
+  assert.deepEqual(sinDemos(filas, demo, false)!.map(f => f.n), [1, 3], 'apagado: las filas de demostración no cuentan')
+  assert.deepEqual(sinDemos(filas, demo, true)!.map(f => f.n), [1, 2, 3], 'encendido: cuentan todas')
+  assert.equal(sinDemos(null, demo, false), null)
+  assert.match(fuente.slice(fuente.indexOf("case 'soporte_resumen'"), fuente.indexOf("case 'ticket_listar'")), /body\.incluir_demo !== false/)
+  console.log('Soporte (función): el resumen usa el mismo interruptor de demostraciones')
+}

@@ -2,7 +2,7 @@ import { createClient } from 'npm:@supabase/supabase-js@2'
 import { claveCronValida, errorDeCiclo, tamanoLote } from './ciclo.ts'
 import { avisoPurga, enviarAviso, leerConfig, type TipoEnvio } from './envio.ts'
 import { simular, validarPrecio } from './facturacion.ts'
-import { correoDeAviso, esUuid, estadisticasDeAvisos, listaDeTickets, resumenDeSoporte, ticketAbierto, validarAviso, validarNovedad, validarRespuesta } from './soporte.ts'
+import { correoDeAviso, esUuid, estadisticasDeAvisos, listaDeTickets, resumenDeSoporte, sinDemos, ticketAbierto, validarAviso, validarNovedad, validarRespuesta } from './soporte.ts'
 import { conteosPorIglesia, envioDelDia, eventosDeActividad, faltaLaFuncion, historialDeIglesia, MAX_LIBRO, salidaSegura } from './panel.ts'
 
 // Panel de plataforma: solo para usuarios en plataforma_admins.
@@ -612,17 +612,21 @@ Deno.serve(async (req) => {
 
       // ---- Soporte: tickets, novedades y avisos dentro de la aplicacion. Lo lee y lo escribe solo la plataforma (service_role); cada iglesia ve lo suyo por seguridad de filas.
       case 'soporte_resumen': {
-        const [t, n, a] = await Promise.all([
-          admin.from('adn_tickets').select('estado, prioridad'),
+        // Mismo interruptor que el resto del panel: sin «Incluir demostraciones», los tickets y entregas de iglesias de demostración no cuentan
+        const incluirDemo = body.incluir_demo !== false
+        const [t, n, a, d] = await Promise.all([
+          admin.from('adn_tickets').select('iglesia_id, estado, prioridad'),
           admin.from('adn_novedades').select('version, publicada_en').is('retirada_en', null).order('publicada_en', { ascending: false }),
           admin.from('adn_avisos').select('id').is('retirado_en', null).lte('desde', new Date().toISOString()).or(`hasta.is.null,hasta.gt.${new Date().toISOString()}`),
+          incluirDemo ? Promise.resolve({ data: [], error: null }) : admin.from('iglesias').select('id').eq('es_demo', true),
         ])
-        const fallo = t.error ?? n.error ?? a.error
+        const fallo = t.error ?? n.error ?? a.error ?? d.error
         if (fallo) return json({ error: faltaLaFuncion(fallo) ? 'El soporte no esta disponible hasta aplicar su migracion' : 'No se pudo leer el soporte' }, faltaLaFuncion(fallo) ? 501 : 500)
+        const idsDemo = new Set<string>((d.data ?? []).map((x: { id: string }) => x.id))
         const ids = (a.data ?? []).map((x: { id: string }) => x.id)
-        const e = ids.length ? await admin.from('adn_avisos_entregas').select('aviso_id, leido_en, descartado_en').in('aviso_id', ids) : { data: [], error: null }
+        const e = ids.length ? await admin.from('adn_avisos_entregas').select('aviso_id, iglesia_id, leido_en, descartado_en').in('aviso_id', ids) : { data: [], error: null }
         if (e.error) return json({ error: 'No se pudo leer el soporte' }, 500)
-        return json(salidaSegura({ ok: true, ...resumenDeSoporte(t.data, n.data, a.data, e.data) }))
+        return json(salidaSegura({ ok: true, ...resumenDeSoporte(sinDemos(t.data, idsDemo, incluirDemo), n.data, a.data, sinDemos(e.data, idsDemo, incluirDemo)) }))
       }
 
       case 'ticket_listar': {

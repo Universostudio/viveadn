@@ -101,7 +101,7 @@ export const usePlataformaStore = defineStore('plataforma', () => {
   const soporte = ref<{ estado: 'pendiente' | 'ok' | 'falta' | 'error'; resumen: any | null }>({ estado: 'pendiente', resumen: null })
   async function cargarSoporte() {
     try {
-      const d = await llamar({ accion: 'soporte_resumen' })
+      const d = await llamar({ accion: 'soporte_resumen', incluir_demo: incluirDemo.value })
       soporte.value = { estado: 'ok', resumen: d }
     } catch (e) {
       soporte.value = { estado: /no esta disponible/i.test((e as Error).message) ? 'falta' : 'error', resumen: null }
