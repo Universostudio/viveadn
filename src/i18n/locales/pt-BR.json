@@ -585,7 +585,9 @@
     "correoEnviado": "Enviamos o convite por e-mail para {email}. Peça que verifique também a pasta de spam. Se não chegar, copie o link e envie você mesmo.",
     "correoNoEnviado": "Não foi possível enviar o e-mail automaticamente. Copie o link e envie para {email}.",
     "modoAlias": "Registrar as pessoas com um apelido",
-    "modoAliasAyuda": "As pessoas novas são salvas com um apelido ou ID interno: sem sobrenome nem e-mail. O telefone é mantido para contato. Os membros que já existem não mudam."
+    "modoAliasAyuda": "As pessoas novas são salvas com um apelido ou ID interno: sem sobrenome nem e-mail. O telefone é mantido para contato. Os membros que já existem não mudam.",
+    "sugeridosTitulo": "Equipe proposta ao registrar a igreja",
+    "sugeridosAyuda": "Ainda não enviamos nada a eles. Convide cada pessoa quando quiser."
   },
   "plataforma": {
     "titulo": "Plataforma",
@@ -1026,10 +1028,72 @@
       "codigo": "O código não é válido, já foi usado ou venceu.",
       "slug": "Esse endereço curto já está em uso. Tente outro.",
       "limite": "Muitas tentativas. Aguarde um pouco e tente de novo.",
-      "generico": "Não foi possível concluir o cadastro. Tente novamente em alguns minutos."
+      "generico": "Não foi possível concluir o cadastro. Tente novamente em alguns minutos.",
+      "plan": "O plano escolhido não cobre o tamanho da sua igreja. Escolha outro.",
+      "modulos": "Algum dos módulos escolhidos não está disponível. Revise-os."
     },
     "nombre": "Nome",
-    "apellido": "Sobrenome"
+    "apellido": "Sobrenome",
+    "pasoDe": "Passo {n} de {total}",
+    "atras": "Voltar",
+    "siguiente": "Avançar",
+    "pasos": {
+      "iglesia": "Sua igreja",
+      "estructura": "Como está organizada",
+      "equipo": "Sua equipe",
+      "modulos": "Módulos",
+      "plan": "Seu plano",
+      "confirmar": "Confirmar"
+    },
+    "estructura": {
+      "titulo": "Como sua igreja está organizada?",
+      "unica": "Uma única igreja",
+      "unicaAyuda": "Um só lugar e uma só equipe.",
+      "con_sedes": "Igreja com sedes",
+      "con_sedesAyuda": "Uma igreja-mãe com sedes; cada sede tem sua própria equipe e seu próprio plano.",
+      "red": "Rede de igrejas",
+      "redAyuda": "Igrejas independentes que se coordenam entre si.",
+      "personas": "Quantas pessoas ela tem hoje?",
+      "personasAyuda": "Conte todas as que você acompanha. Uma megaigreja é questão de tamanho: aqui se indica com este número.",
+      "sedes": "Quantas sedes?",
+      "sedesAyuda": "Sem contar a igreja-mãe."
+    },
+    "equipo": {
+      "propietarioAyuda": "Você será o superadministrador da igreja.",
+      "adminTitulo": "Outros administradores (opcional)",
+      "adminAyuda": "Ainda não enviamos nada a eles: você os convida quando entrar.",
+      "adminAnadir": "Adicionar administrador",
+      "adminQuitar": "Remover"
+    },
+    "modulosPaso": {
+      "titulo": "Quais módulos você quer?",
+      "ayuda": "Marque os que precisa. Os que não vêm no seu plano entram na estimativa de custo.",
+      "precio": "+{importe} por mês se o seu plano não o incluir",
+      "sinPrecio": "Preço a confirmar"
+    },
+    "planPaso": {
+      "titulo": "Seu plano",
+      "ayuda": "Recomendamos o mais barato que cobre seu tamanho e seus módulos. Você pode escolher outro."
+    },
+    "confirmarPaso": {
+      "titulo": "Revise e crie sua igreja",
+      "iglesia": "Igreja: {nombre}, {ciudad}",
+      "estructura": "Organização: {tipo}, cerca de {personas} pessoas",
+      "propietario": "Superadministrador: {nombre} ({email})",
+      "admins": "Administradores propostos: {n}, ainda sem enviar nada a eles",
+      "plan": "Plano: {plan}, {importe} por mês (estimativa)",
+      "sinCobro": "Nada é cobrado nesta etapa de testes."
+    },
+    "validacion": {
+      "iglesia": "Preencha o nome, o país e a cidade.",
+      "direccion": "O endereço curto só tem minúsculas, números e hifens, com pelo menos 3 caracteres.",
+      "personas": "Informe quantas pessoas sua igreja tem (pelo menos uma).",
+      "sedes": "Informe quantas sedes ela tem (pode ser zero).",
+      "equipo": "Preencha seu nome, sobrenome e um e-mail válido.",
+      "admin": "Cada administrador precisa de nome, sobrenome e um e-mail válido.",
+      "adminRepetido": "Há um e-mail repetido na equipe.",
+      "plan": "Escolha um plano que cubra o tamanho da sua igreja."
+    }
   },
   "plan": {
     "limiteMiembros": "Seu plano atingiu o limite de membros. Para adicionar mais pessoas, desative alguém ou mude de plano.",

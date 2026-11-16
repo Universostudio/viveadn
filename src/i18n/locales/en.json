@@ -585,7 +585,9 @@
     "correoEnviado": "We emailed the invitation to {email}. Ask them to check the spam folder too. If it does not arrive, copy the link and send it yourself.",
     "correoNoEnviado": "The email could not be sent automatically. Copy the link and send it to {email}.",
     "modoAlias": "Register people with an alias",
-    "modoAliasAyuda": "New people are saved with an alias or internal ID: no last name or email. The phone number is kept for contact. Existing members do not change."
+    "modoAliasAyuda": "New people are saved with an alias or internal ID: no last name or email. The phone number is kept for contact. Existing members do not change.",
+    "sugeridosTitulo": "Team proposed when the church was registered",
+    "sugeridosAyuda": "We have not sent them anything yet. Invite each person whenever you like."
   },
   "plataforma": {
     "titulo": "Platform",
@@ -1026,10 +1028,72 @@
       "codigo": "The code is not valid, has already been used, or has expired.",
       "slug": "That short address is already in use. Try another one.",
       "limite": "Too many attempts. Wait a while and try again.",
-      "generico": "We could not complete the registration. Try again in a few minutes."
+      "generico": "We could not complete the registration. Try again in a few minutes.",
+      "plan": "The chosen plan does not cover the size of your church. Pick another.",
+      "modulos": "One of the chosen modules is not available. Please review them."
     },
     "nombre": "First name",
-    "apellido": "Last name"
+    "apellido": "Last name",
+    "pasoDe": "Step {n} of {total}",
+    "atras": "Back",
+    "siguiente": "Next",
+    "pasos": {
+      "iglesia": "Your church",
+      "estructura": "How it is organized",
+      "equipo": "Your team",
+      "modulos": "Modules",
+      "plan": "Your plan",
+      "confirmar": "Confirm"
+    },
+    "estructura": {
+      "titulo": "How is your church organized?",
+      "unica": "A single church",
+      "unicaAyuda": "One place and one team.",
+      "con_sedes": "Church with campuses",
+      "con_sedesAyuda": "A mother church with campuses; each campus has its own team and its own plan.",
+      "red": "Network of churches",
+      "redAyuda": "Independent churches that coordinate with each other.",
+      "personas": "How many people does it have today?",
+      "personasAyuda": "Count everyone you serve. A megachurch is a matter of size: you indicate it with this number.",
+      "sedes": "How many campuses?",
+      "sedesAyuda": "Not counting the mother church."
+    },
+    "equipo": {
+      "propietarioAyuda": "You will be the church super administrator.",
+      "adminTitulo": "Other administrators (optional)",
+      "adminAyuda": "We do not send them anything yet: you invite them when you sign in.",
+      "adminAnadir": "Add administrator",
+      "adminQuitar": "Remove"
+    },
+    "modulosPaso": {
+      "titulo": "Which modules do you want?",
+      "ayuda": "Tick the ones you need. Those not in your plan are added to the estimated cost.",
+      "precio": "+{importe} per month if your plan does not include it",
+      "sinPrecio": "Price to be confirmed"
+    },
+    "planPaso": {
+      "titulo": "Your plan",
+      "ayuda": "We recommend the cheapest one that covers your size and modules. You can pick another."
+    },
+    "confirmarPaso": {
+      "titulo": "Review and create your church",
+      "iglesia": "Church: {nombre}, {ciudad}",
+      "estructura": "Organization: {tipo}, about {personas} people",
+      "propietario": "Super administrator: {nombre} ({email})",
+      "admins": "Proposed administrators: {n}, nothing sent to them yet",
+      "plan": "Plan: {plan}, {importe} per month (estimate)",
+      "sinCobro": "Nothing is charged during this test stage."
+    },
+    "validacion": {
+      "iglesia": "Fill in the name, country and city.",
+      "direccion": "The short address only has lowercase letters, numbers and hyphens, at least 3 characters.",
+      "personas": "Enter how many people your church has (at least one).",
+      "sedes": "Enter how many campuses it has (can be zero).",
+      "equipo": "Fill in your first name, last name and a valid email.",
+      "admin": "Each administrator needs a first name, last name and a valid email.",
+      "adminRepetido": "An email is repeated in the team.",
+      "plan": "Choose a plan that covers the size of your church."
+    }
   },
   "plan": {
     "limiteMiembros": "Your plan has reached its member limit. To add more people, deactivate someone or change plan.",

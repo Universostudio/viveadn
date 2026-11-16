@@ -79,7 +79,7 @@ Criterio de terminado: con Finance y los vecinos apagados siete días, ViveADN p
 1. Credenciales como módulo del catálogo (PR #31, listo, esperando su migración).
 2. Este documento.
 3. Precios en el catálogo, candado en los módulos bloqueados y calculadora que solo estima.
-4. Asistente de alta antes de elegir plan.
+4. Asistente de alta antes de elegir plan (hecho, en un PR apilado sobre el del cotizador).
 5. Suscripción, cobro y recibos del plan en modo de prueba, con la cola de salida.
 6. Panel de pasarelas de la iglesia con credenciales cifradas.
 7. Paquete legal y informe de separación.
