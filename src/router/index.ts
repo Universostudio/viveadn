@@ -138,6 +138,11 @@ const router = createRouter({
           component: () => import('@/views/casas/CasasView.vue')
         },
         {
+          path: 'zonas',
+          name: 'zonas',
+          component: () => import('@/views/casas/ZonasView.vue')
+        },
+        {
           path: 'consolidacion',
           name: 'consolidacion',
           component: () => import('@/views/consolidacion/ConsolidacionView.vue')

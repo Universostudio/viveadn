@@ -6,10 +6,12 @@
         <h1 class="text-2xl font-bold text-gray-900">{{ t('casas.titulo') }}</h1>
         <p class="text-gray-500 text-sm mt-0.5">{{ t('casas.subtitulo') }}</p>
       </div>
-      <button @click="abrirNueva = true" class="btn-primary flex items-center gap-2">
+      <button v-if="puedeCrearCasa" @click="abrirNueva = true" class="btn-primary flex items-center gap-2" data-test="nueva-casa">
         <Plus class="w-4 h-4" aria-hidden="true" /> {{ t('casas.nueva') }}
       </button>
     </div>
+
+    <p v-if="aviso" role="status" data-test="aviso" :class="['text-sm px-4 py-3 rounded-lg border', aviso.error ? 'bg-red-50 text-red-700 border-red-200' : 'bg-green-50 text-green-700 border-green-200']">{{ aviso.texto }}</p>
 
     <!-- Stats -->
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -81,7 +83,9 @@
         v-for="casa in casasFiltradas"
         :key="casa.id"
         class="card hover:shadow-md transition-shadow cursor-pointer"
-        @click="casaActiva = casa"
+        :data-casa="casa.id"
+        tabindex="0" role="button" :aria-label="casa.nombre"
+        @click="casaActiva = casa" @keydown.enter.self="casaActiva = casa" @keydown.space.self.prevent="casaActiva = casa"
       >
         <!-- Cabecera -->
         <div class="flex items-start justify-between mb-3">
@@ -104,6 +108,8 @@
             <UserRound class="w-4 h-4 text-gray-400 flex-shrink-0" aria-hidden="true" />
             <span>{{ casa.lider_perfil.nombre }} {{ casa.lider_perfil.apellido }}</span>
           </div>
+          <p v-else class="text-xs text-amber-700" data-test="sin-lider">{{ t('lideres.sinLider') }}</p>
+          <p v-if="!casa.zona_id" class="text-xs text-amber-700" data-test="sin-zona">{{ t('lideres.casa.sinZona') }}</p>
         </div>
 
         <!-- Contador miembros -->
@@ -120,12 +126,12 @@
     <div
       v-if="casaActiva"
       class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center p-4 z-50"
-      @click.self="casaActiva = null"
+      @click.self="casaActiva = null" @keydown.esc="casaActiva = null"
     >
-      <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6 max-h-[85vh] overflow-y-auto">
+      <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6 max-h-[85vh] overflow-y-auto" role="dialog" aria-modal="true" aria-labelledby="ca-titulo" data-test="detalle-casa" tabindex="-1" ref="dialogoCasa">
         <div class="flex items-center justify-between mb-4">
           <div>
-            <h2 class="text-lg font-bold text-gray-900">{{ casaActiva.nombre }}</h2>
+            <h2 id="ca-titulo" class="text-lg font-bold text-gray-900">{{ casaActiva.nombre }}</h2>
             <p class="text-sm font-mono text-adn-verde">{{ casaActiva.codigo_zona }}</p>
           </div>
           <button @click="casaActiva = null" class="text-gray-400 hover:text-gray-600 text-xl" :aria-label="t('comun.cerrar')">×</button>
@@ -155,8 +161,28 @@
             </dl>
           </div>
 
-          <!-- Líder -->
-          <div v-if="casaActiva.lider_perfil" class="bg-adn-arena rounded-xl p-4">
+          <!-- Zona de supervisión y líder: los cambia quien puede editar casas -->
+          <div v-if="puedeEditarCasa" class="bg-adn-arena rounded-xl p-4 space-y-3" data-test="liderazgo">
+            <div>
+              <label for="ca-zona" class="text-xs font-semibold text-gray-500 uppercase tracking-wide block mb-1">{{ t('lideres.casa.zona') }}</label>
+              <select id="ca-zona" data-test="casa-zona" :value="casaActiva.zona_id ?? ''" @change="cambiarZona(($event.target as HTMLSelectElement).value || null)"
+                class="w-full text-sm border border-gray-200 rounded-lg px-2 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-adn-verde">
+                <option value="">{{ t('lideres.casa.sinZona') }}</option>
+                <option v-for="z in zonas.filter(z => z.activa !== false)" :key="z.id" :value="z.id">{{ z.nombre }} ({{ z.codigo }})</option>
+              </select>
+              <p v-if="!zonas.length" class="text-xs text-gray-500 mt-1">{{ t('lideres.casa.sinZonasCreadas') }} <RouterLink to="/zonas" class="underline text-adn-verde">{{ t('lideres.casa.crearZonas') }}</RouterLink></p>
+            </div>
+            <div>
+              <label for="ca-lider" class="text-xs font-semibold text-gray-500 uppercase tracking-wide block mb-1">{{ t('casas.lider') }}</label>
+              <select id="ca-lider" data-test="casa-lider" :value="casaActiva.lider_id ?? ''" @change="cambiarLiderCasa(($event.target as HTMLSelectElement).value || null)"
+                class="w-full text-sm border border-gray-200 rounded-lg px-2 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-adn-verde">
+                <option value="">{{ t('lideres.sinLider') }}</option>
+                <option v-for="p in candidatosCasa" :key="p.id" :value="p.id">{{ p.nombre }} {{ p.apellido }}</option>
+              </select>
+              <p v-if="!candidatosCasa.length" class="text-xs text-amber-800 mt-1" data-test="sin-candidatos-casa">{{ t('lideres.casa.sinCandidatos') }}</p>
+            </div>
+          </div>
+          <div v-else-if="casaActiva.lider_perfil" class="bg-adn-arena rounded-xl p-4">
             <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">{{ t('casas.lider') }}</p>
             <p class="font-semibold text-gray-900">{{ casaActiva.lider_perfil.nombre }} {{ casaActiva.lider_perfil.apellido }}</p>
           </div>
@@ -178,7 +204,23 @@
                 </div>
                 <span class="text-sm">{{ m.nombre }} {{ m.apellido }}</span>
                 <span class="ml-auto text-xs text-gray-400 font-mono">{{ m.crm_id }}</span>
+                <button v-if="puedeAsignarPersonas" type="button" data-test="quitar-persona" class="text-xs text-red-700 underline focus:outline-none focus-visible:ring-2 focus-visible:ring-adn-verde rounded"
+                  @click="quitarPersona(m)">{{ t('lideres.casa.quitar') }}<span class="sr-only"> {{ m.nombre }} {{ m.apellido }}</span></button>
               </div>
+            </div>
+            <div v-if="puedeAsignarPersonas" class="mt-3 space-y-2" data-test="anadir-persona">
+              <label for="ca-buscar" class="text-xs font-medium text-gray-600 block">{{ t('lideres.casa.anadir') }}</label>
+              <input id="ca-buscar" v-model="busquedaSinCasa" type="search" autocomplete="off" :placeholder="t('lideres.casa.buscarPersona')" data-test="buscar-persona"
+                class="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-adn-verde" />
+              <p v-if="!sinCasaFiltradas.length" class="text-xs text-gray-500" data-test="nadie-sin-casa">{{ t('lideres.casa.nadieSinCasa') }}</p>
+              <ul v-else class="max-h-36 overflow-y-auto divide-y divide-gray-50 border border-gray-100 rounded-lg">
+                <li v-for="m in sinCasaFiltradas.slice(0, 20)" :key="m.id" class="flex items-center gap-2 px-2 py-1.5 text-sm" data-test="sin-casa-fila">
+                  <span class="flex-1 truncate">{{ m.nombre }} {{ m.apellido }}</span>
+                  <button type="button" class="text-xs px-2 py-1 rounded border border-adn-verde text-adn-verde focus:outline-none focus-visible:ring-2 focus-visible:ring-adn-verde" data-test="anadir"
+                    @click="anadirPersona(m)">{{ t('lideres.casa.anadirA') }}<span class="sr-only"> {{ m.nombre }} {{ m.apellido }}</span></button>
+                </li>
+              </ul>
+              <p v-if="sinCasaFiltradas.length > 20" class="text-xs text-gray-500">{{ t('lideres.casa.afinaBusqueda', { n: sinCasaFiltradas.length - 20 }) }}</p>
             </div>
           </div>
         </div>
@@ -240,11 +282,31 @@
 
 <script setup lang="ts">
 import { ChartColumn, CircleCheck, House, LoaderCircle, MapPin, Plus, Search, SearchX, UserRound, Users } from '@lucide/vue'
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, nextTick, onMounted, watch } from 'vue'
 import { supabase } from '@/lib/supabase'
 import { useI18n } from 'vue-i18n'
+import { useAuthStore } from '@/stores/auth'
+import { candidatos, type PerfilBasico } from '@/lib/lideres'
 
 const { t } = useI18n()
+const auth = useAuthStore()
+
+// Permisos de esta pantalla (la base los exige igualmente): se ofrece solo lo que la persona puede hacer
+const puedeCrearCasa = computed(() => auth.can('casas.crear'))
+const puedeEditarCasa = computed(() => auth.can('casas.editar'))
+const puedeAsignarPersonas = computed(() => auth.can('miembros.editar'))
+const aviso = ref<{ texto: string; error: boolean } | null>(null)
+const avisar = (texto: string, error = false) => { aviso.value = { texto, error } }
+const perfiles = ref<PerfilBasico[]>([])
+const roles = ref<any[]>([])
+const sinCasa = ref<any[]>([])
+const busquedaSinCasa = ref('')
+const candidatosCasa = computed(() => candidatos(roles.value, perfiles.value, 'casas.ver_propia'))
+const sinCasaFiltradas = computed(() => {
+  const q = busquedaSinCasa.value.trim().toLowerCase()
+  return q ? sinCasa.value.filter(m => `${m.nombre} ${m.apellido}`.toLowerCase().includes(q)) : sinCasa.value
+})
+const dialogoCasa = ref<HTMLElement | null>(null)
 
 const cargando = ref(true)
 const casas = ref<any[]>([])
@@ -295,8 +357,14 @@ const casasFiltradas = computed(() => {
 })
 
 // Cargar miembros al abrir detalle de casa
-watch(casaActiva, async (casa) => {
-  if (!casa) { miembrosCasa.value = []; return }
+let focoPrevio: HTMLElement | null = null
+watch(casaActiva, async (casa, anterior) => {
+  if (!casa) { miembrosCasa.value = []; busquedaSinCasa.value = ''; if (anterior) { focoPrevio?.focus?.(); focoPrevio = null } return }
+  if (!anterior) { focoPrevio = document.activeElement as HTMLElement | null; await nextTick(); dialogoCasa.value?.focus() }
+  await cargarPersonas(casa)
+})
+
+async function cargarPersonas(casa: any) {
   const { data } = await supabase
     .from('miembros')
     .select('id, nombre, apellido, crm_id')
@@ -304,7 +372,62 @@ watch(casaActiva, async (casa) => {
     .eq('activo', true)
     .order('nombre')
   miembrosCasa.value = data ?? []
-})
+  if (puedeAsignarPersonas.value) await cargarSinCasa()
+}
+
+async function cargarSinCasa() {
+  const { data } = await supabase.from('miembros').select('id, nombre, apellido').is('casa_oracion_id', null).eq('activo', true).order('nombre').limit(500)
+  sinCasa.value = data ?? []
+}
+
+async function cargarCandidatos() {
+  if (!puedeEditarCasa.value) return
+  const [r, p] = await Promise.all([
+    supabase.from('roles').select('clave, es_propietario, rol_permisos(permiso)'),
+    supabase.from('perfiles').select('id, nombre, apellido, rol, activo').eq('activo', true).order('nombre'),
+  ])
+  roles.value = r.data ?? []; perfiles.value = p.data ?? []
+}
+
+async function actualizarCasa(campos: Record<string, any>, okTexto: string) {
+  const casa = casaActiva.value
+  if (!casa) return false
+  const { error } = await supabase.from('casas_oracion').update(campos).eq('id', casa.id)
+  if (error) { avisar(t('lideres.error'), true); return false }
+  Object.assign(casa, campos)
+  avisar(okTexto)
+  return true
+}
+const cambiarZona = (id: string | null) => actualizarCasa({ zona_id: id }, t('lideres.casa.zonaGuardada'))
+async function cambiarLiderCasa(id: string | null) {
+  const ok = await actualizarCasa({ lider_id: id }, t('lideres.casa.liderGuardado'))
+  if (ok && casaActiva.value) {
+    const p = perfiles.value.find(x => x.id === id)
+    casaActiva.value.lider_perfil = p ? { nombre: p.nombre, apellido: p.apellido } : null
+  }
+}
+
+async function anadirPersona(m: any) {
+  const casa = casaActiva.value
+  if (!casa) return
+  const { error } = await supabase.from('miembros').update({ casa_oracion_id: casa.id }).eq('id', m.id)
+  if (error) { avisar(t('lideres.error'), true); return }
+  sinCasa.value = sinCasa.value.filter(x => x.id !== m.id)
+  miembrosCasa.value = [...miembrosCasa.value, { ...m, crm_id: m.crm_id ?? '' }].sort((a, b) => a.nombre.localeCompare(b.nombre))
+  casa.count_miembros = (casa.count_miembros ?? 0) + 1
+  avisar(t('lideres.casa.personaAnadida', { nombre: `${m.nombre} ${m.apellido}` }))
+}
+
+async function quitarPersona(m: any) {
+  const casa = casaActiva.value
+  if (!casa) return
+  const { error } = await supabase.from('miembros').update({ casa_oracion_id: null }).eq('id', m.id)
+  if (error) { avisar(t('lideres.error'), true); return }
+  miembrosCasa.value = miembrosCasa.value.filter(x => x.id !== m.id)
+  sinCasa.value = [...sinCasa.value, m].sort((a, b) => a.nombre.localeCompare(b.nombre))
+  casa.count_miembros = Math.max(0, (casa.count_miembros ?? 1) - 1)
+  avisar(t('lideres.casa.personaQuitada', { nombre: `${m.nombre} ${m.apellido}` }))
+}
 
 async function cargarDatos() {
   cargando.value = true
@@ -313,7 +436,7 @@ async function cargarDatos() {
       .from('casas_oracion')
       .select('*, lider_perfil:perfiles!casas_oracion_lider_fk(nombre, apellido), count_miembros:miembros!miembros_casa_oracion_fk(count)')
       .order('nombre'),
-    supabase.from('zonas').select('id, nombre, codigo').order('nombre'),
+    supabase.from('zonas').select('id, nombre, codigo, activa').order('nombre'),
   ])
   // Normalizar el count
   casas.value = (casasRes.data ?? []).map(c => ({
@@ -346,5 +469,5 @@ async function crearCasa() {
   await cargarDatos()
 }
 
-onMounted(cargarDatos)
+onMounted(() => { void cargarDatos(); void cargarCandidatos() })
 </script>

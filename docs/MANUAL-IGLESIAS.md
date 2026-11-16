@@ -54,6 +54,14 @@ El consentimiento al reimportar **nunca se relaja**: una baja del archivo se apl
 
 «Casas de Oración» lista tus casas con su zona, su líder y sus miembros, y permite crear nuevas con nombre, zona, país, ciudad y dirección. El código de la casa se genera solo, con la forma `ZN-849402`. Se filtra por zona y se busca por nombre, zona o líder. Cada casa tiene su ficha con sus miembros.
 
+**Zonas y líderes.** Hay dos cosas distintas con el nombre de zona: el prefijo del código de la casa (`ZN`, `ZS`...), que solo ordena, y la **zona de supervisión**, que es la que decide qué ve cada líder. Para que un líder de zona o de casa vea algo hace falta montarlo en este orden:
+1. **Crear las zonas** en «Zonas» (menú, para quien gestiona zonas): código de 2 a 10 letras o números (se pasa a mayúsculas y se quitan símbolos) y nombre. Una zona se desactiva, no se borra.
+2. **Tener cuentas con el rol adecuado.** Quien lidera una zona necesita el rol Líder de Zona, y quien lidera una casa, el rol Líder de Casa de Oración; se invitan desde Configuración. La pantalla solo ofrece como candidatos a personas activas con un rol que les deja ver lo que lideran, y si no hay ninguna, lo dice.
+3. **Nombrar al líder de cada zona** en «Zonas» y, en la ficha de cada casa, **su zona de supervisión y su líder**. Una casa sin líder o sin zona lo muestra en su tarjeta.
+4. **Asignar casa a cada persona**: en la ficha de la casa, «Añadir personas a esta casa» busca entre las que no tienen casa, y «Quitar» la saca. Hasta que se asignan, los líderes ven la lista vacía.
+
+Los cambios los hace quien tiene permiso (zonas, edición de casas y edición de miembros). El líder de casa y el líder de zona solo miran. Lo que ve cada líder después está probado en la base de datos (`supabase/tests/adn_lideres.sql`): el líder de zona ve solo las casas de su zona y a sus personas; el de casa, la suya y su gente; al mover a una persona, ambos dejan de verla.
+
 ## 6. Eventos, asistencia y registro por QR
 
 **Crear un evento.** «Nuevo evento» pide título, tipo (culto, casa de oración, formación, especial u otro), inicio, fin opcional, lugar y descripción. Con «Repetir cada semana» creas una serie de entre 2 y el máximo de reuniones. Un evento cancelado se marca como tal.

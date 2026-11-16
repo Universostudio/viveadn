@@ -354,6 +354,7 @@ import type { AlertaColor } from '@/lib/supabase'
 import { useI18n } from 'vue-i18n'
 import { formatoFechaHora } from '@/i18n'
 import { useAuthStore } from '@/stores/auth'
+import { candidatos } from '@/lib/lideres'
 import { camposContacto, contactosDe, enlaceLlamar, enlaceWhatsApp, fechaDeContactoValida, siguienteHueco } from '@/lib/seguimiento'
 
 const { t, te } = useI18n()
@@ -432,8 +433,7 @@ async function cargarConsolidadores() {
     supabase.from('roles').select('clave, es_propietario, rol_permisos(permiso)'),
     supabase.from('perfiles').select('id, nombre, apellido, rol, activo').eq('activo', true).order('nombre'),
   ])
-  const validos = new Set((roles ?? []).filter((r: any) => r.es_propietario || (r.rol_permisos ?? []).some((x: any) => x.permiso === 'consolidacion.registrar_contacto')).map((r: any) => r.clave))
-  consolidadores.value = (perfiles ?? []).filter((p: any) => validos.has(p.rol)).map((p: any) => ({ id: p.id, nombre: p.nombre, apellido: p.apellido }))
+  consolidadores.value = candidatos((roles ?? []) as any[], (perfiles ?? []) as any[], 'consolidacion.registrar_contacto').map(p => ({ id: p.id, nombre: p.nombre, apellido: p.apellido }))
 }
 
 const ahoraLocal = () => { const d = new Date(); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0, 16) }

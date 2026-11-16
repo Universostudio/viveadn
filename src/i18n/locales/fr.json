@@ -29,7 +29,8 @@
     "salir": "Se déconnecter",
     "abrirMenu": "Ouvrir le menu",
     "eventos": "Événements",
-    "red": "Réseau"
+    "red": "Réseau",
+    "zonas": "Zones"
   },
   "login": {
     "subtitulo": "Système de gestion d'église",
@@ -1707,6 +1708,51 @@
       "auditoriaVacia": "Aucune action consignée.",
       "noDisponible": "Ces informations n’ont pas pu être chargées. Le reste de l’écran fonctionne.",
       "reintentar": "Réessayer"
+    }
+  },
+  "lideres": {
+    "sinLider": "Sans responsable",
+    "error": "Le changement n’a pas pu être enregistré. Réessayez.",
+    "zonas": {
+      "titulo": "Zones et responsables",
+      "subtitulo": "Regroupez les maisons de prière en zones et nommez qui supervise chacune.",
+      "nueva": "Nouvelle zone",
+      "codigo": "Code",
+      "nombre": "Nom de la zone",
+      "crear": "Créer la zone",
+      "codigoAyuda": "Le code comporte de 2 à 10 lettres ou chiffres, par exemple NORD ou Z1.",
+      "lista": "Zones ({n})",
+      "vacia": "Il n’y a pas encore de zones. Créez la première ci-dessus.",
+      "sinCandidatos": "Personne ne peut encore être responsable de zone : invitez quelqu’un avec le rôle Responsable de zone depuis les réglages.",
+      "casasN": "{n} maison | {n} maisons",
+      "lider": "Responsable de zone",
+      "activar": "Activer",
+      "desactivar": "Désactiver",
+      "casasSinZona": "{n} maison sans zone | {n} maisons sans zone",
+      "codigoInvalido": "Le code doit avoir de 2 à 10 lettres ou chiffres, sans espaces ni symboles.",
+      "errorCrear": "La zone n’a pas pu être créée. Ce code existe peut-être déjà.",
+      "creada": "Zone créée.",
+      "errorLider": "Le responsable de la zone n’a pas pu être changé.",
+      "liderGuardado": "Responsable de zone mis à jour.",
+      "activada": "Zone activée.",
+      "desactivada": "Zone désactivée."
+    },
+    "casa": {
+      "sinZona": "Sans zone",
+      "zona": "Zone de supervision",
+      "sinZonasCreadas": "Il n’y a pas encore de zones.",
+      "crearZonas": "Créer des zones",
+      "sinCandidatos": "Personne ne peut encore être responsable de maison : invitez quelqu’un avec le rôle Responsable de maison depuis les réglages.",
+      "quitar": "Retirer",
+      "anadir": "Ajouter des personnes à cette maison",
+      "buscarPersona": "Chercher parmi les personnes sans maison",
+      "nadieSinCasa": "Aucune personne sans maison ne correspond.",
+      "anadirA": "Ajouter",
+      "afinaBusqueda": "Il y en a {n} de plus : affinez la recherche.",
+      "zonaGuardada": "La zone de la maison a été mise à jour.",
+      "liderGuardado": "Le responsable de la maison a été mis à jour.",
+      "personaAnadida": "{nombre} est maintenant dans cette maison.",
+      "personaQuitada": "{nombre} n’est plus dans cette maison."
     }
   }
 }

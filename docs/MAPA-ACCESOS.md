@@ -88,4 +88,4 @@ Decididas por Gerencia:
 
 Orden de construcción acordado: A seguimiento de nuevos creyentes, B líderes (zonas, líder de casa y de zona, casa de cada persona), C menú y router por permisos con «Mi panel» del líder de casa, D registro por QR con la pregunta «¿Es nuevo creyente?», E ficha del miembro editable y panel de inicio honesto, F diseño del método de seguimiento configurable (solo documento) y G siembra de cuatro iglesias de prueba.
 
-Estado: A hecho (ver `docs/MANUAL-IGLESIAS.md`, apartado 7). El resto, pendiente.
+Estado: A hecho (`docs/MANUAL-IGLESIAS.md`, apartado 7) y B hecho (apartado 5: zonas, líderes y asignación de casa a cada persona; entrada «Zonas» en el menú para quien gestiona zonas). El resto, pendiente.

@@ -111,7 +111,7 @@
 import { computed, onMounted, ref, watch, type Component } from 'vue'
 import {
   LayoutDashboard, Users, House, HeartHandshake, GraduationCap, MessageSquare,
-  ChartColumn, CalendarDays, Settings, ShieldCheck, LogOut, Menu, Network,
+  ChartColumn, CalendarDays, Settings, ShieldCheck, LogOut, Menu, Network, MapPinned,
 } from '@lucide/vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
@@ -142,6 +142,7 @@ const todosLosItems: { to: string; icon: Component; label: string; badge?: boole
   { to: '/miembros',      icon: Users, label: 'menu.miembros', permisos: ['miembros.ver', 'miembros.ver_asignados'] },
   { to: '/eventos',       icon: CalendarDays, label: 'menu.eventos', modulo: 'eventos', permisos: ['eventos.ver'] },
   { to: '/casas',         icon: House, label: 'menu.casas', permisos: ['casas.ver', 'casas.ver_propia'] },
+  { to: '/zonas',         icon: MapPinned, label: 'menu.zonas', permisos: ['zonas.gestionar'] },
   { to: '/consolidacion', icon: HeartHandshake, label: 'menu.consolidacion', badge: true, permisos: ['consolidacion.ver', 'consolidacion.ver_asignados', 'consolidacion.ver_casa'] },
   { to: '/formacion',     icon: GraduationCap, label: 'menu.formacion', permisos: ['formacion.ver'] },
   { to: '/comunicacion',  icon: MessageSquare, label: 'menu.comunicacion', modulo: 'comunicacion', permisos: ['comunicacion.ver', 'comunicacion.enviar'] },

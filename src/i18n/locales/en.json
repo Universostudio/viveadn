@@ -29,7 +29,8 @@
     "salir": "Sign out",
     "abrirMenu": "Open menu",
     "eventos": "Events",
-    "red": "Network"
+    "red": "Network",
+    "zonas": "Zones"
   },
   "login": {
     "subtitulo": "Church Management System",
@@ -1707,6 +1708,51 @@
       "auditoriaVacia": "No actions recorded.",
       "noDisponible": "This information could not be loaded. The rest of the screen works.",
       "reintentar": "Retry"
+    }
+  },
+  "lideres": {
+    "sinLider": "No leader",
+    "error": "The change could not be saved. Please try again.",
+    "zonas": {
+      "titulo": "Zones and leaders",
+      "subtitulo": "Group the prayer houses into zones and name who oversees each one.",
+      "nueva": "New zone",
+      "codigo": "Code",
+      "nombre": "Zone name",
+      "crear": "Create zone",
+      "codigoAyuda": "The code has 2 to 10 letters or numbers, for example NORTH or Z1.",
+      "lista": "Zones ({n})",
+      "vacia": "There are no zones yet. Create the first one above.",
+      "sinCandidatos": "Nobody can be a zone leader yet: invite someone with the Zone Leader role from Settings.",
+      "casasN": "{n} house | {n} houses",
+      "lider": "Zone leader",
+      "activar": "Activate",
+      "desactivar": "Deactivate",
+      "casasSinZona": "{n} house without a zone | {n} houses without a zone",
+      "codigoInvalido": "The code must have 2 to 10 letters or numbers, with no spaces or symbols.",
+      "errorCrear": "The zone could not be created. That code may already exist.",
+      "creada": "Zone created.",
+      "errorLider": "The zone leader could not be changed.",
+      "liderGuardado": "Zone leader updated.",
+      "activada": "Zone activated.",
+      "desactivada": "Zone deactivated."
+    },
+    "casa": {
+      "sinZona": "No zone",
+      "zona": "Oversight zone",
+      "sinZonasCreadas": "There are no zones yet.",
+      "crearZonas": "Create zones",
+      "sinCandidatos": "Nobody can be a house leader yet: invite someone with the House Leader role from Settings.",
+      "quitar": "Remove",
+      "anadir": "Add people to this house",
+      "buscarPersona": "Search among people without a house",
+      "nadieSinCasa": "No people without a house match.",
+      "anadirA": "Add",
+      "afinaBusqueda": "There are {n} more: narrow the search.",
+      "zonaGuardada": "The house zone was updated.",
+      "liderGuardado": "The house leader was updated.",
+      "personaAnadida": "{nombre} is now in this house.",
+      "personaQuitada": "{nombre} is no longer in this house."
     }
   }
 }

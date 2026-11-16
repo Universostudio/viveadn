@@ -29,7 +29,8 @@
     "salir": "Salir",
     "abrirMenu": "Abrir menú",
     "eventos": "Eventos",
-    "red": "Red"
+    "red": "Red",
+    "zonas": "Zonas"
   },
   "login": {
     "subtitulo": "Sistema de Gestión Eclesiástica",
@@ -1707,6 +1708,51 @@
       "auditoriaVacia": "Sin acciones anotadas.",
       "noDisponible": "No se pudo cargar esta información. El resto de la pantalla funciona.",
       "reintentar": "Reintentar"
+    }
+  },
+  "lideres": {
+    "sinLider": "Sin líder",
+    "error": "No se pudo guardar el cambio. Inténtalo de nuevo.",
+    "zonas": {
+      "titulo": "Zonas y líderes",
+      "subtitulo": "Agrupa las casas de oración en zonas y nombra a quien supervisa cada una.",
+      "nueva": "Nueva zona",
+      "codigo": "Código",
+      "nombre": "Nombre de la zona",
+      "crear": "Crear zona",
+      "codigoAyuda": "El código lleva de 2 a 10 letras o números, por ejemplo NORTE o Z1.",
+      "lista": "Zonas ({n})",
+      "vacia": "Todavía no hay zonas. Crea la primera arriba.",
+      "sinCandidatos": "Nadie puede ser líder de zona todavía: invita a una persona con el rol Líder de Zona desde Configuración.",
+      "casasN": "{n} casa | {n} casas",
+      "lider": "Líder de zona",
+      "activar": "Activar",
+      "desactivar": "Desactivar",
+      "casasSinZona": "{n} casa sin zona asignada | {n} casas sin zona asignada",
+      "codigoInvalido": "El código debe tener de 2 a 10 letras o números, sin espacios ni símbolos.",
+      "errorCrear": "No se pudo crear la zona. Puede que ya exista ese código.",
+      "creada": "Zona creada.",
+      "errorLider": "No se pudo cambiar el líder de la zona.",
+      "liderGuardado": "Líder de zona actualizado.",
+      "activada": "Zona activada.",
+      "desactivada": "Zona desactivada."
+    },
+    "casa": {
+      "sinZona": "Sin zona",
+      "zona": "Zona de supervisión",
+      "sinZonasCreadas": "Todavía no hay zonas.",
+      "crearZonas": "Crear zonas",
+      "sinCandidatos": "Nadie puede ser líder de casa todavía: invita a una persona con el rol Líder de Casa desde Configuración.",
+      "quitar": "Quitar",
+      "anadir": "Añadir personas a esta casa",
+      "buscarPersona": "Buscar entre las personas sin casa",
+      "nadieSinCasa": "No hay personas sin casa que coincidan.",
+      "anadirA": "Añadir",
+      "afinaBusqueda": "Hay {n} más: afina la búsqueda.",
+      "zonaGuardada": "Zona de la casa actualizada.",
+      "liderGuardado": "Líder de la casa actualizado.",
+      "personaAnadida": "{nombre} ya está en esta casa.",
+      "personaQuitada": "{nombre} ya no está en esta casa."
     }
   }
 }

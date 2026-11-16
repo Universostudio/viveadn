@@ -29,7 +29,8 @@
     "salir": "Sair",
     "abrirMenu": "Abrir menu",
     "eventos": "Eventos",
-    "red": "Rede"
+    "red": "Rede",
+    "zonas": "Zonas"
   },
   "login": {
     "subtitulo": "Sistema de Gestão de Igrejas",
@@ -1707,6 +1708,51 @@
       "auditoriaVacia": "Nenhuma ação registrada.",
       "noDisponible": "Não foi possível carregar esta informação. O resto da tela funciona.",
       "reintentar": "Tentar de novo"
+    }
+  },
+  "lideres": {
+    "sinLider": "Sem líder",
+    "error": "Não foi possível salvar a mudança. Tente de novo.",
+    "zonas": {
+      "titulo": "Zonas e líderes",
+      "subtitulo": "Agrupe as casas de oração em zonas e nomeie quem supervisiona cada uma.",
+      "nueva": "Nova zona",
+      "codigo": "Código",
+      "nombre": "Nome da zona",
+      "crear": "Criar zona",
+      "codigoAyuda": "O código tem de 2 a 10 letras ou números, por exemplo NORTE ou Z1.",
+      "lista": "Zonas ({n})",
+      "vacia": "Ainda não há zonas. Crie a primeira acima.",
+      "sinCandidatos": "Ninguém pode ser líder de zona ainda: convide alguém com o papel Líder de Zona em Configurações.",
+      "casasN": "{n} casa | {n} casas",
+      "lider": "Líder de zona",
+      "activar": "Ativar",
+      "desactivar": "Desativar",
+      "casasSinZona": "{n} casa sem zona | {n} casas sem zona",
+      "codigoInvalido": "O código deve ter de 2 a 10 letras ou números, sem espaços nem símbolos.",
+      "errorCrear": "Não foi possível criar a zona. Esse código talvez já exista.",
+      "creada": "Zona criada.",
+      "errorLider": "Não foi possível trocar o líder da zona.",
+      "liderGuardado": "Líder de zona atualizado.",
+      "activada": "Zona ativada.",
+      "desactivada": "Zona desativada."
+    },
+    "casa": {
+      "sinZona": "Sem zona",
+      "zona": "Zona de supervisão",
+      "sinZonasCreadas": "Ainda não há zonas.",
+      "crearZonas": "Criar zonas",
+      "sinCandidatos": "Ninguém pode ser líder de casa ainda: convide alguém com o papel Líder de Casa em Configurações.",
+      "quitar": "Remover",
+      "anadir": "Adicionar pessoas a esta casa",
+      "buscarPersona": "Buscar entre as pessoas sem casa",
+      "nadieSinCasa": "Nenhuma pessoa sem casa corresponde.",
+      "anadirA": "Adicionar",
+      "afinaBusqueda": "Há mais {n}: refine a busca.",
+      "zonaGuardada": "A zona da casa foi atualizada.",
+      "liderGuardado": "O líder da casa foi atualizado.",
+      "personaAnadida": "{nombre} agora está nesta casa.",
+      "personaQuitada": "{nombre} não está mais nesta casa."
     }
   }
 }
