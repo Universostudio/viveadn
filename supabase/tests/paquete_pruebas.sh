@@ -107,11 +107,11 @@ echo "OK: datos_demo.sql se niega a repetirse"
 # Siembra de las iglesias de prueba: sin psql, seis filas en iglesias, más de 500 personas, contactos enmascarados y de un solo uso
 ! grep -q '^\\' "$PAQ/sembrar_iglesias_prueba.sql" || falla "sembrar_iglesias_prueba.sql contiene órdenes de psql"
 psql -q -X -v ON_ERROR_STOP=1 -d $A -f "$PAQ/sembrar_iglesias_prueba.sql" >/dev/null 2>&1 || falla "sembrar_iglesias_prueba.sql falla"
-cifras=$(psql -q -X -At -d $A -c "select count(*) || ',' || (select count(*) from public.miembros m join public.iglesias i on i.id = m.iglesia_id where i.slug like 'prueba-%') from public.iglesias where slug like 'prueba-%' and es_demo")
-[ "$cifras" = "6,530" ] || falla "la siembra dejó $cifras en lugar de 6,530"
-malos=$(psql -q -X -At -d $A -c "select count(*) from public.miembros m join public.iglesias i on i.id = m.iglesia_id where i.slug like 'prueba-%' and ((m.email is not null and m.email !~ '@demo[.]invalid$') or m.telefono !~ '^[+]999 ')")
+cifras=$(psql -q -X -At -d $A -c "select count(*) || ',' || (select count(*) from public.miembros m join public.iglesias i on i.id = m.iglesia_id where i.es_demo and i.slug <> 'iglesia-demo') from public.iglesias where es_demo and slug <> 'iglesia-demo'")
+[ "$cifras" = "6,36" ] || falla "la siembra dejó $cifras en lugar de 6,36"
+malos=$(psql -q -X -At -d $A -c "select count(*) from public.miembros m join public.iglesias i on i.id = m.iglesia_id where i.es_demo and i.slug <> 'iglesia-demo' and ((m.email is not null and m.email !~ '@demo[.]invalid$') or m.telefono !~ '^[+]999 ')")
 [ "$malos" = "0" ] || falla "la siembra dejó $malos contactos que no están enmascarados"
-echo "OK: sembrar_iglesias_prueba.sql, sin psql, crea 6 iglesias de prueba con 530 personas y contactos enmascarados"
+echo "OK: sembrar_iglesias_prueba.sql, sin psql, crea 6 iglesias de prueba con 36 personas sintéticas y contactos enmascarados"
 if psql -q -X -v ON_ERROR_STOP=1 -d $A -f "$PAQ/sembrar_iglesias_prueba.sql" >/dev/null 2>&1; then falla "sembrar_iglesias_prueba.sql se puede aplicar dos veces"; fi
 echo "OK: sembrar_iglesias_prueba.sql se niega a repetirse"
 
