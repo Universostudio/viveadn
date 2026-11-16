@@ -45,6 +45,7 @@
     "test:acceso-ui": "node scripts/probar-acceso-ui.mjs",
     "test:checkin-ui": "node scripts/probar-checkin-ui.mjs",
     "test:ficha": "node scripts/probar-ficha.mts",
+    "test:slug": "node scripts/probar-slug.mts",
     "test:ficha-ui": "node scripts/probar-ficha-ui.mjs",
     "test:panel-inicio": "node scripts/probar-panel-inicio.mts",
     "test:inicio-ui": "node scripts/probar-inicio-ui.mjs"

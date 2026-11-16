@@ -283,6 +283,26 @@ try {
     await browser.close()
   })
 
+  await prueba('Nueva iglesia: la dirección web se explica y se normaliza en vivo; una dirección postal escrita por error se ve antes de enviar y se envía normalizada', async () => {
+    const { browser, page, estado } = await escenario()
+    await page.goto(url('/plataforma/nueva-iglesia')); await page.waitForSelector('[role=dialog]')
+    assert.match(await page.textContent('label[for=ni-slug]'), /Dirección web \(identificador\)/)
+    assert.match(await page.textContent('[data-test=slug-previa]'), /Ejemplo: casa-reino/)
+    await page.fill('#ni-slug', 'Calle Pegaso 9, Piso 1, derecha')
+    assert.match(await page.textContent('[data-test=slug-previa]'), /Se guardará como: calle-pegaso-9-piso-1-derecha/)
+    await page.fill('#ni-slug', 'a!')
+    assert.match(await page.textContent('[data-test=slug-previa]'), /al menos 3/)
+    await page.fill('#ni-nombre', 'Iglesia Nueva'); await page.fill('#ni-pais', 'España'); await page.fill('#ni-ciudad', 'León')
+    await page.fill('input[type=email]', 'dueno@prueba.test'); await page.fill('[aria-label="Nombre"]', 'Dueño'); await page.fill('[aria-label="Apellido"]', 'Prueba')
+    await page.click('button[type=submit]')
+    await new Promise(r => setTimeout(r, 400))
+    assert.equal(estado.cuerpos.filter(x => x.accion === 'crear_iglesia').length, 0, 'con una dirección demasiado corta no se envía')
+    await page.fill('#ni-slug', 'Casa del Reino'); await page.click('button[type=submit]')
+    await new Promise(r => setTimeout(r, 500))
+    assert.equal(estado.cuerpos.find(x => x.accion === 'crear_iglesia')?.slug, 'casa-del-reino', 'se envía la versión normalizada')
+    await browser.close()
+  })
+
   await prueba('registro y códigos, pruebas, planes, sistema, facturación y soporte se muestran y dicen «sin conectar» donde toca', async () => {
     const { browser, page, errores } = await escenario()
     await page.goto(url('/plataforma/registro')); await page.waitForSelector('[data-test=registro-abierto]')

@@ -350,7 +350,11 @@
       "fechaNacimiento": "Digite uma data de nascimento válida que não seja futura.",
       "notas": "As notas não podem passar de 2000 caracteres.",
       "nivel": "Escolha um nível de compromisso da lista."
-    }
+    },
+    "confirmarDesactivarTitulo": "Desativar esta pessoa?",
+    "confirmarDesactivarTexto": "{nombre} deixará de aparecer nas listas e nas contagens. Você poderá reativá-la pela ficha.",
+    "confirmarDesactivarSi": "Sim, desativar",
+    "confirmarDesactivarNo": "Voltar"
   },
   "casas": {
     "titulo": "Casas de Oração",
@@ -839,8 +843,8 @@
     "suspender": "Suspender igreja",
     "reactivar": "Reativar igreja",
     "nombre": "Nome *",
-    "direccionInterna": "Endereço interno *",
-    "slugAyuda": "Apenas letras minúsculas, números e hifens",
+    "direccionInterna": "Endereço web (identificador) *",
+    "slugAyuda": "É a parte do endereço web da igreja, não o endereço postal. Use letras minúsculas, números e hifens.",
     "pais": "País *",
     "ciudad": "Cidade *",
     "propietario": "Superadministrador (receberá um convite por e-mail)",
@@ -939,7 +943,10 @@
       "reintentar": "Consultar novamente"
     },
     "exportando": "Exportando {iglesia}: {tabla} ({indice} de {tablas})…",
-    "exportadaConCambios": "Exportação de {iglesia} baixada, mas a igreja mudou durante a exportação: o manifesto indica isso. Repita a exportação para ter uma cópia coerente."
+    "exportadaConCambios": "Exportação de {iglesia} baixada, mas a igreja mudou durante a exportação: o manifesto indica isso. Repita a exportação para ter uma cópia coerente.",
+    "slugEjemplo": "Exemplo: casa-reino",
+    "slugPrevia": "Será salvo como: {slug}",
+    "slugCorto": "Digite pelo menos 3 letras ou números: viram o endereço web, por exemplo casa-reino."
   },
   "invitacion": {
     "comprobando": "Verificando seu convite…",
@@ -1494,7 +1501,7 @@
     "cookies": "Política de cookies",
     "soporte": "Suporte",
     "pie": "Informações legais",
-    "version": "Versão {v}",
+    "version": "Versão do aplicativo (commit)",
     "actualizado": "Atualizada em {fecha}",
     "indice": "Conteúdo",
     "historial": "Histórico de versões",

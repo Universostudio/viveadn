@@ -117,6 +117,15 @@
             <input v-model="form.activo" type="checkbox" class="mt-0.5 rounded border-gray-300 text-adn-verde" data-test="f-activo" />
             <span>{{ t('ficha.activaAyuda') }}</span>
           </label>
+          <!-- Desactivar saca a la persona de listas y recuentos: se pide confirmación antes de guardarlo -->
+          <div v-if="confirmandoDesactivar" role="alertdialog" aria-labelledby="fi-conf-t" aria-describedby="fi-conf-d" class="rounded-lg border border-amber-300 bg-amber-50 p-3 space-y-2" data-test="confirmar-desactivar">
+            <p id="fi-conf-t" class="text-sm font-semibold text-amber-900">{{ t('ficha.confirmarDesactivarTitulo') }}</p>
+            <p id="fi-conf-d" class="text-sm text-amber-900">{{ t('ficha.confirmarDesactivarTexto', { nombre: form.nombre }) }}</p>
+            <div class="flex gap-2">
+              <button type="button" class="btn-secondary text-sm" data-test="desactivar-no" @click="confirmandoDesactivar = false">{{ t('ficha.confirmarDesactivarNo') }}</button>
+              <button type="button" class="btn-primary text-sm" data-test="desactivar-si" @click="guardar(true)">{{ t('ficha.confirmarDesactivarSi') }}</button>
+            </div>
+          </div>
           <div class="flex gap-3 pt-1">
             <button type="button" class="btn-secondary flex-1" data-test="cancelar" @click="cancelarEdicion">{{ t('comun.cancelar') }}</button>
             <button type="submit" :disabled="guardando" class="btn-primary flex-1 disabled:opacity-60" data-test="guardar">{{ guardando ? t('comun.guardando') : t('ficha.guardar') }}</button>
@@ -329,6 +338,7 @@ const lecturasFallidas = ref<string[]>([])
 const aviso = ref<{ texto: string; error: boolean } | null>(null)
 const editando = ref(false)
 const guardando = ref(false)
+const confirmandoDesactivar = ref(false)
 const errores = ref<ErroresFicha>({})
 const form = reactive<FichaForm>({ nombre: '', apellido: '', email: '', telefono: '', fecha_nacimiento: '', nivel_compromiso: 'nuevo', casa_oracion_id: '', notas: '', activo: true })
 const opciones = () => ({ alias: auth.modoAlias, niveles: NIVELES_COMPROMISO as readonly string[], hoy })
@@ -339,14 +349,17 @@ function empezarEdicion() {
   aviso.value = null
   editando.value = true
 }
-function cancelarEdicion() { editando.value = false; errores.value = {} }
+function cancelarEdicion() { editando.value = false; confirmandoDesactivar.value = false; errores.value = {} }
 
-async function guardar() {
+async function guardar(confirmado: boolean | Event = false) {
   aviso.value = null
+  const yaConfirmado = confirmado === true
+  confirmandoDesactivar.value = false
   errores.value = validarFicha(form, opciones())
   if (Object.keys(errores.value).length) return
   const cambios = cambiosDe(aFormulario(miembro.value), form, opciones())
   if (!Object.keys(cambios).length) { editando.value = false; aviso.value = { texto: t('ficha.sinCambios'), error: false }; return }
+  if (cambios.activo === false && !yaConfirmado) { confirmandoDesactivar.value = true; return }
   guardando.value = true
   const { data, error: err } = await supabase.from('miembros').update(cambios).eq('id', miembro.value.id).select('*, casas_oracion(nombre, codigo_zona)').single()
   guardando.value = false

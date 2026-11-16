@@ -350,7 +350,11 @@
       "fechaNacimiento": "Enter a valid date of birth that is not in the future.",
       "notas": "Notes cannot exceed 2000 characters.",
       "nivel": "Choose a commitment level from the list."
-    }
+    },
+    "confirmarDesactivarTitulo": "Deactivate this person?",
+    "confirmarDesactivarTexto": "{nombre} will stop appearing in lists and counts. You can reactivate them from their profile.",
+    "confirmarDesactivarSi": "Yes, deactivate",
+    "confirmarDesactivarNo": "Go back"
   },
   "casas": {
     "titulo": "Prayer Houses",
@@ -839,8 +843,8 @@
     "suspender": "Suspend church",
     "reactivar": "Reactivate church",
     "nombre": "Name *",
-    "direccionInterna": "Internal address *",
-    "slugAyuda": "Lowercase letters, numbers and hyphens only",
+    "direccionInterna": "Web address (identifier) *",
+    "slugAyuda": "It is the part of the church’s web address, not its postal address. Use lowercase letters, numbers and hyphens.",
     "pais": "Country *",
     "ciudad": "City *",
     "propietario": "Super administrator (will receive an email invitation)",
@@ -939,7 +943,10 @@
       "reintentar": "Check again"
     },
     "exportando": "Exporting {iglesia}: {tabla} ({indice} of {tablas})…",
-    "exportadaConCambios": "Export of {iglesia} downloaded, but the church changed while it was being exported: the manifest says so. Repeat the export to get a consistent copy."
+    "exportadaConCambios": "Export of {iglesia} downloaded, but the church changed while it was being exported: the manifest says so. Repeat the export to get a consistent copy.",
+    "slugEjemplo": "Example: casa-reino",
+    "slugPrevia": "It will be saved as: {slug}",
+    "slugCorto": "Enter at least 3 letters or numbers: they become the web address, for example casa-reino."
   },
   "invitacion": {
     "comprobando": "Checking your invitation…",
@@ -1494,7 +1501,7 @@
     "cookies": "Cookie policy",
     "soporte": "Support",
     "pie": "Legal information",
-    "version": "Version {v}",
+    "version": "Application version (commit)",
     "actualizado": "Updated on {fecha}",
     "indice": "Contents",
     "historial": "Version history",

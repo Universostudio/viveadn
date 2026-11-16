@@ -350,7 +350,11 @@
       "fechaNacimiento": "Saisissez une date de naissance valide, non future.",
       "notas": "Les notes ne peuvent pas dépasser 2000 caractères.",
       "nivel": "Choisissez un niveau d’engagement dans la liste."
-    }
+    },
+    "confirmarDesactivarTitulo": "Désactiver cette personne ?",
+    "confirmarDesactivarTexto": "{nombre} n’apparaîtra plus dans les listes ni les totaux. Vous pourrez la réactiver depuis sa fiche.",
+    "confirmarDesactivarSi": "Oui, désactiver",
+    "confirmarDesactivarNo": "Retour"
   },
   "casas": {
     "titulo": "Maisons de prière",
@@ -839,8 +843,8 @@
     "suspender": "Suspendre l'église",
     "reactivar": "Réactiver l'église",
     "nombre": "Nom *",
-    "direccionInterna": "Adresse interne *",
-    "slugAyuda": "Minuscules, chiffres et tirets uniquement",
+    "direccionInterna": "Adresse web (identifiant) *",
+    "slugAyuda": "C’est la partie de l’adresse web de l’église, pas son adresse postale. Minuscules, chiffres et tirets.",
     "pais": "Pays *",
     "ciudad": "Ville *",
     "propietario": "Super-administrateur (recevra une invitation par e-mail)",
@@ -939,7 +943,10 @@
       "reintentar": "Consulter à nouveau"
     },
     "exportando": "Exportation de {iglesia} : {tabla} ({indice} sur {tablas})…",
-    "exportadaConCambios": "Exportation de {iglesia} téléchargée, mais l'église a changé pendant l'exportation : le manifeste l'indique. Répétez l'exportation pour obtenir une copie cohérente."
+    "exportadaConCambios": "Exportation de {iglesia} téléchargée, mais l'église a changé pendant l'exportation : le manifeste l'indique. Répétez l'exportation pour obtenir une copie cohérente.",
+    "slugEjemplo": "Exemple : casa-reino",
+    "slugPrevia": "Elle sera enregistrée ainsi : {slug}",
+    "slugCorto": "Saisissez au moins 3 lettres ou chiffres : ils deviendront l’adresse web, par exemple casa-reino."
   },
   "invitacion": {
     "comprobando": "Vérification de votre invitation…",
@@ -1494,7 +1501,7 @@
     "cookies": "Politique de cookies",
     "soporte": "Assistance",
     "pie": "Informations légales",
-    "version": "Version {v}",
+    "version": "Version de l’application (commit)",
     "actualizado": "Mise à jour le {fecha}",
     "indice": "Sommaire",
     "historial": "Historique des versions",

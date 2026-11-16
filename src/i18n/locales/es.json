@@ -350,7 +350,11 @@
       "fechaNacimiento": "Escribe una fecha de nacimiento válida que no sea futura.",
       "notas": "Las notas no pueden pasar de 2000 caracteres.",
       "nivel": "Elige un nivel de compromiso de la lista."
-    }
+    },
+    "confirmarDesactivarTitulo": "¿Desactivar a esta persona?",
+    "confirmarDesactivarTexto": "{nombre} dejará de salir en las listas y en los recuentos. Podrás volver a activarla desde su ficha.",
+    "confirmarDesactivarSi": "Sí, desactivar",
+    "confirmarDesactivarNo": "Volver"
   },
   "casas": {
     "titulo": "Casas de Oración",
@@ -839,8 +843,8 @@
     "suspender": "Suspender iglesia",
     "reactivar": "Reactivar iglesia",
     "nombre": "Nombre *",
-    "direccionInterna": "Dirección interna *",
-    "slugAyuda": "Solo minúsculas, números y guiones",
+    "direccionInterna": "Dirección web (identificador) *",
+    "slugAyuda": "Es la parte de la dirección web de la iglesia, no su dirección postal. Se escribe en minúsculas, con números y guiones.",
     "pais": "País *",
     "ciudad": "Ciudad *",
     "propietario": "Superadministrador (recibirá una invitación por correo)",
@@ -939,7 +943,10 @@
       "reintentar": "Volver a consultar"
     },
     "exportando": "Exportando {iglesia}: {tabla} ({indice} de {tablas})…",
-    "exportadaConCambios": "Exportación de {iglesia} descargada, pero la iglesia cambió mientras se exportaba: el manifiesto lo indica. Repite la exportación para tener una copia coherente."
+    "exportadaConCambios": "Exportación de {iglesia} descargada, pero la iglesia cambió mientras se exportaba: el manifiesto lo indica. Repite la exportación para tener una copia coherente.",
+    "slugEjemplo": "Ejemplo: casa-reino",
+    "slugPrevia": "Se guardará como: {slug}",
+    "slugCorto": "Escribe al menos 3 letras o números: se convertirán en la dirección web, por ejemplo casa-reino."
   },
   "invitacion": {
     "comprobando": "Comprobando tu invitación…",
@@ -1494,7 +1501,7 @@
     "cookies": "Política de cookies",
     "soporte": "Soporte",
     "pie": "Información legal",
-    "version": "Versión {v}",
+    "version": "Versión de la aplicación (commit)",
     "actualizado": "Actualizada el {fecha}",
     "indice": "Contenido",
     "historial": "Historial de versiones",

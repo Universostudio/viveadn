@@ -9,8 +9,14 @@
         </div>
         <div>
           <label for="ni-slug" class="block text-sm font-medium text-gray-700 mb-1">{{ t('plataforma.direccionInterna') }}</label>
-          <input id="ni-slug" v-model="nueva.slug" required pattern="[a-z0-9]+(-[a-z0-9]+)*" minlength="3" maxlength="40" placeholder="casa-reino" class="campo" aria-describedby="ni-slug-ayuda" />
+          <input id="ni-slug" v-model="nueva.slug" required maxlength="80" placeholder="casa-reino" autocomplete="off" class="campo" aria-describedby="ni-slug-ayuda ni-slug-previa" />
           <p id="ni-slug-ayuda" class="text-xs text-gray-500 mt-1">{{ t('plataforma.slugAyuda') }}</p>
+          <!-- Lo que se guardará, en vivo: quien escribe una dirección postal por error lo ve antes de enviar -->
+          <p id="ni-slug-previa" class="text-xs mt-1" :class="slugOk || !nueva.slug ? 'text-gray-700' : 'text-red-600'" data-test="slug-previa" aria-live="polite">
+            <template v-if="!nueva.slug">{{ t('plataforma.slugEjemplo') }}</template>
+            <template v-else-if="slugOk">{{ t('plataforma.slugPrevia', { slug: slugNorm }) }}</template>
+            <template v-else>{{ t('plataforma.slugCorto') }}</template>
+          </p>
         </div>
         <div class="grid grid-cols-2 gap-3">
           <div>
@@ -50,7 +56,8 @@
 </template>
 
 <script setup lang="ts">
-import { nextTick, onMounted, ref } from 'vue'
+import { computed, nextTick, onMounted, ref } from 'vue'
+import { normalizarSlug, slugValido } from '@/lib/slug'
 import { useI18n } from 'vue-i18n'
 import { usePlataformaStore } from '@/stores/plataforma'
 
@@ -66,16 +73,19 @@ const vacia = () => ({
   nombre_propietario: '', apellido_propietario: '', email: '', es_demo: false,
 })
 const nueva = ref(vacia())
+const slugNorm = computed(() => normalizarSlug(nueva.value.slug))
+const slugOk = computed(() => slugValido(slugNorm.value))
 
 onMounted(() => { void pm.asegurarCargada(); nextTick(() => primero.value?.focus()) })
 
 function cerrar() { emit('cerrar') }
 
 async function crear() {
+  if (!slugOk.value) { error.value = t('plataforma.slugCorto'); return }
   creando.value = true
   error.value = ''
   try {
-    await pm.llamar({ accion: 'crear_iglesia', ...nueva.value })
+    await pm.llamar({ accion: 'crear_iglesia', ...nueva.value, slug: slugNorm.value })
     const correo = nueva.value.email
     pm.avisar(() => t('plataforma.creada', { correo }))
     await pm.cargar()
