@@ -1734,7 +1734,11 @@
       "novedad_retirar": "Retiró una novedad",
       "aviso_crear": "Envió un aviso a las iglesias",
       "aviso_retirar": "Retiró un aviso",
-      "plan_precio_fijar": "Fijó el precio de un plan"
+      "plan_precio_fijar": "Fijó el precio de un plan",
+      "activar_iglesia": "Activó una iglesia",
+      "suspender_iglesia": "Suspendió una iglesia",
+      "codigo_activar": "Activó un código de registro",
+      "codigo_desactivar": "Desactivó un código de registro"
     },
     "pruebas": {
       "titulo": "Pruebas activas",

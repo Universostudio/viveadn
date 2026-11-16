@@ -1734,7 +1734,11 @@
       "novedad_retirar": "Withdrew news",
       "aviso_crear": "Sent a notice to churches",
       "aviso_retirar": "Withdrew a notice",
-      "plan_precio_fijar": "Set the price of a plan"
+      "plan_precio_fijar": "Set the price of a plan",
+      "activar_iglesia": "Activated a church",
+      "suspender_iglesia": "Suspended a church",
+      "codigo_activar": "Activated a sign-up code",
+      "codigo_desactivar": "Deactivated a sign-up code"
     },
     "pruebas": {
       "titulo": "Active trials",

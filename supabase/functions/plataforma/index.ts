@@ -340,6 +340,9 @@ Deno.serve(async (req) => {
         const iglesiaId = await iglesiaValida(body.iglesia_id)
         if (!iglesiaId) return json({ error: 'La iglesia no existe' }, 404)
         if (!ETAPAS.includes(body.etapa)) return json({ error: 'La etapa no es valida' }, 400)
+        // Una iglesia en baja suave no cambia de etapa a mano: se recupera con «recuperar», que respeta el plazo y deja su rastro
+        const { data: enBaja } = await admin.from('iglesias').select('adn_borrada_en').eq('id', iglesiaId).maybeSingle()
+        if (enBaja?.adn_borrada_en) return json({ error: 'La iglesia esta en baja: usa «Recuperar» para devolverla a su estado' }, 409)
         const cambios: Record<string, unknown> = { etapa: body.etapa }
         if (body.etapa === 'prueba') {
           const dias = Number(body.prueba_dias ?? 30)
@@ -670,7 +673,7 @@ Deno.serve(async (req) => {
         const [t, n, a] = await Promise.all([
           admin.from('adn_tickets').select('estado, prioridad'),
           admin.from('adn_novedades').select('version, publicada_en').is('retirada_en', null).order('publicada_en', { ascending: false }),
-          admin.from('adn_avisos').select('id').is('retirado_en', null),
+          admin.from('adn_avisos').select('id').is('retirado_en', null).lte('desde', new Date().toISOString()).or(`hasta.is.null,hasta.gt.${new Date().toISOString()}`),
         ])
         const fallo = t.error ?? n.error ?? a.error
         if (fallo) return json({ error: faltaLaFuncion(fallo) ? 'El soporte no esta disponible hasta aplicar su migracion' : 'No se pudo leer el soporte' }, faltaLaFuncion(fallo) ? 501 : 500)

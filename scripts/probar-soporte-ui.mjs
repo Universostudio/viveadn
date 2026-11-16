@@ -97,7 +97,7 @@ async function plataforma({ resumen = 'ok', ticketsVacios = false } = {}) {
     if (u.pathname !== '/functions/v1/plataforma') return json(200, [])
     const c = req.postDataJSON(); e.cuerpos.push(c)
     switch (c.accion) {
-      case 'listar': return json(200, { iglesias: [], planes: [{ id: 'semilla', nombre: 'Semilla' }, { id: 'premium', nombre: 'Premium' }], modulos: [], plan_modulos: [] })
+      case 'listar': return json(200, { iglesias: [], planes: [{ clave: 'semilla', nombre: 'Semilla' }, { clave: 'premium', nombre: 'Premium' }], modulos: [], plan_modulos: [] })
       case 'registro_estado': return json(200, { abierto: false, requiere_codigo: true, codigos: [] })
       case 'estado_purga': return json(200, { ok: true, atrasada: false, en_borrado: 0, vencidas: 0, horas_mas_atrasada: 0 })
       case 'soporte_resumen':

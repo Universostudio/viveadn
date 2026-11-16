@@ -102,7 +102,7 @@
             <label class="flex items-center gap-2 text-sm"><input type="radio" value="filtro" v-model="av.dest" data-test="av-dest-filtro" /> {{ t('plataformaPanel.soporte.destFiltro') }}</label>
             <div v-if="av.dest === 'filtro'" class="pl-6 space-y-2">
               <p class="text-xs text-gray-500">{{ t('plataformaPanel.soporte.porPlan') }}</p>
-              <div class="flex flex-wrap gap-3"><label v-for="p in pm.planes" :key="p.id" class="flex items-center gap-1 text-sm"><input type="checkbox" :value="p.id" v-model="av.planes" /> {{ p.nombre ?? p.id }}</label></div>
+              <div class="flex flex-wrap gap-3"><label v-for="p in pm.planes" :key="p.clave" class="flex items-center gap-1 text-sm"><input type="checkbox" :value="p.clave" v-model="av.planes" /> {{ p.nombre ?? p.clave }}</label></div>
               <p class="text-xs text-gray-500">{{ t('plataformaPanel.soporte.porEstado') }}</p>
               <div class="flex flex-wrap gap-3"><label v-for="e in ETAPAS" :key="e" class="flex items-center gap-1 text-sm"><input type="checkbox" :value="e" v-model="av.estados" /> {{ t('plataformaPanel.soporte.etapas.' + e) }}</label></div>
             </div>

@@ -1734,7 +1734,11 @@
       "novedad_retirar": "A retiré une nouveauté",
       "aviso_crear": "A envoyé un avis aux églises",
       "aviso_retirar": "A retiré un avis",
-      "plan_precio_fijar": "A fixé le prix d'une formule"
+      "plan_precio_fijar": "A fixé le prix d'une formule",
+      "activar_iglesia": "A activé une église",
+      "suspender_iglesia": "A suspendu une église",
+      "codigo_activar": "A activé un code d'inscription",
+      "codigo_desactivar": "A désactivé un code d'inscription"
     },
     "pruebas": {
       "titulo": "Essais en cours",

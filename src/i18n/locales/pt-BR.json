@@ -1734,7 +1734,11 @@
       "novedad_retirar": "Retirou uma novidade",
       "aviso_crear": "Enviou um aviso às igrejas",
       "aviso_retirar": "Retirou um aviso",
-      "plan_precio_fijar": "Definiu o preço de um plano"
+      "plan_precio_fijar": "Definiu o preço de um plano",
+      "activar_iglesia": "Ativou uma igreja",
+      "suspender_iglesia": "Suspendeu uma igreja",
+      "codigo_activar": "Ativou um código de cadastro",
+      "codigo_desactivar": "Desativou um código de cadastro"
     },
     "pruebas": {
       "titulo": "Testes ativos",
