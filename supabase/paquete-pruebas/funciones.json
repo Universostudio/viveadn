@@ -133,9 +133,14 @@
           "sha256": "9ab58ee3153810e1607908878a173812939396eb2205bbc5913474df45b9c67e"
         },
         {
+          "ruta": "facturacion.ts",
+          "bytes": 5176,
+          "sha256": "35bcd5e9df58f1401c99235491499a8c7c31c37c6bd7c75d825b25a971cdcac7"
+        },
+        {
           "ruta": "index.ts",
-          "bytes": 51634,
-          "sha256": "b98081d25c0deedf439a4e51443664a1fc1cca8de6c00f503cdb58d4dc3bd218"
+          "bytes": 53445,
+          "sha256": "47ef1c8c1d1869719701ebf3ccbf2e3b2f6c661a3a806e835bddb6bf824f28e1"
         },
         {
           "ruta": "panel.ts",

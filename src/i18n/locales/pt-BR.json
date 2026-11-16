@@ -1731,7 +1731,8 @@
       "novedad_publicar": "Publicou uma novidade",
       "novedad_retirar": "Retirou uma novidade",
       "aviso_crear": "Enviou um aviso às igrejas",
-      "aviso_retirar": "Retirou um aviso"
+      "aviso_retirar": "Retirou um aviso",
+      "plan_precio_fijar": "Definiu o preço de um plano"
     },
     "pruebas": {
       "titulo": "Testes ativos",
@@ -1751,7 +1752,42 @@
       "noIncluido": "Não incluído"
     },
     "facturacion": {
-      "titulo": "Faturamento e cobranças"
+      "titulo": "Faturamento e cobranças",
+      "datosDePrueba": "Dados de teste",
+      "explicacion": "Uma estimativa, não cobranças: soma, por plano, as igrejas em estado ativo (sem demonstrações, testes, cadastros inacabados, recessos nem suspensas) vezes o preço mensal que você definiu. Nada foi cobrado e nenhum gateway de pagamento está conectado.",
+      "errorCarga": "Não foi possível calcular a estimativa. Tente de novo em alguns minutos.",
+      "sinMigracion": "Os preços ainda não estão disponíveis no banco deste ambiente: todos os planos aparecem sem preço. Nenhum pode ser definido até aplicar sua migração.",
+      "ingresoEsperado": "Receita mensal esperada",
+      "incompleto": "O total é parcial: há igrejas que pagam um plano sem preço definido, e nenhum preço inventado foi atribuído a elas.",
+      "ceroSinIglesias": "Zero porque nenhuma igreja está hoje ativa e pagando.",
+      "plan": "Plano",
+      "pagan": "Igrejas que pagam",
+      "mensual": "Preço mensal",
+      "anual": "Preço anual",
+      "ingreso": "Receita mensal",
+      "sinPrecio": "Sem preço definido",
+      "noCalculable": "Não calculável: falta o preço",
+      "causaSinIglesias": "nenhuma igreja neste plano",
+      "fijar": "Definir preço",
+      "planDesconocido": "{n} igrejas ativas têm um plano que não está mais no catálogo e não entram no cálculo.",
+      "fijarPara": "Preço do plano {plan}",
+      "fijarNota": "Na moeda indicada, com decimais (por exemplo 19,00). Deixar vazio apaga o preço. São valores de teste até serem validados.",
+      "moneda": "Moeda (3 letras)",
+      "guardar": "Salvar preço",
+      "cancelar": "Cancelar",
+      "precioNoValido": "Escreva um número válido ou deixe o campo vazio.",
+      "guardado": "Preço salvo.",
+      "fuera": "Igrejas fora do cálculo",
+      "fueraNota": "Não contam para a receita esperada, por isso cada uma aparece com seu motivo.",
+      "cobrosReales": "Cobranças reais",
+      "motivo": {
+        "demo": "Demonstrações",
+        "onboarding": "Cadastro inacabado",
+        "prueba": "Em teste",
+        "receso": "Em recesso",
+        "suspendida": "Suspensas",
+        "borrada": "Encerradas"
+      }
     },
     "soporte": {
       "tickets": "Tickets abertos",

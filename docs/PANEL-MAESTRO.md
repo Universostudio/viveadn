@@ -26,7 +26,7 @@ El administrador de plataforma ve conteos, estados, planes, fechas y nombres de 
 | `/plataforma/planes` | Planes y módulos | Matriz de lectura: qué incluye cada plan |
 | `/plataforma/registro` | Registro y códigos | Apertura del registro y códigos de acceso |
 | `/plataforma/sistema` | Sistema | Estado de la purga, libro de purgas, funciones de envío, auditoría de plataforma |
-| `/plataforma/facturacion` | Facturación | «Sin conectar»: falta una pasarela de cobro, porque hoy no existe ningún dato de precios ni de cobros |
+| `/plataforma/facturacion` | Facturación | Precio por plan y estimación del ingreso mensual esperado, etiquetada «Datos de prueba»; los cobros reales siguen «sin conectar» (`docs/FACTURACION.md`) |
 | `/plataforma/soporte` | Soporte | Tickets, novedades y avisos dentro de la aplicación, sin servicios externos de pago. «Sin conectar» solo mientras la base no tenga la migración `20261111350000_adn_soporte` |
 
 Regla de honestidad: si un bloque no tiene datos reales detrás, muestra «Sin conectar» y una línea que dice qué falta. No hay cifras inventadas ni datos de ejemplo en pantalla [E].

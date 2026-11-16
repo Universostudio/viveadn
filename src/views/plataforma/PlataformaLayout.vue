@@ -61,7 +61,7 @@ const grupos = computed<GrupoMenu[]>(() => [
   { titulo: t('plataformaPanel.grupo.negocio'), items: [
     { to: '/plataforma/pruebas', etiqueta: t('plataformaPanel.menu.pruebas'), icono: Timer, contador: contadorPruebas.value },
     { to: '/plataforma/planes', etiqueta: t('plataformaPanel.menu.planes'), icono: Layers },
-    { to: '/plataforma/facturacion', etiqueta: t('plataformaPanel.menu.facturacion'), icono: Receipt, sinConectar: true },
+    { to: '/plataforma/facturacion', etiqueta: t('plataformaPanel.menu.facturacion'), icono: Receipt },
   ] },
   { titulo: t('plataformaPanel.grupo.sistema'), items: [
     { to: '/plataforma/registro', etiqueta: t('plataformaPanel.menu.registro'), icono: KeyRound },

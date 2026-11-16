@@ -1731,7 +1731,8 @@
       "novedad_publicar": "Published news",
       "novedad_retirar": "Withdrew news",
       "aviso_crear": "Sent a notice to churches",
-      "aviso_retirar": "Withdrew a notice"
+      "aviso_retirar": "Withdrew a notice",
+      "plan_precio_fijar": "Set the price of a plan"
     },
     "pruebas": {
       "titulo": "Active trials",
@@ -1751,7 +1752,42 @@
       "noIncluido": "Not included"
     },
     "facturacion": {
-      "titulo": "Billing and payments"
+      "titulo": "Billing and payments",
+      "datosDePrueba": "Test data",
+      "explicacion": "An estimate, not charges: for each plan it adds up the churches in the active stage (no demos, trials, unfinished sign-ups, recess or suspended) times the monthly price you have set. Nothing has been charged and no payment gateway is connected.",
+      "errorCarga": "The estimate could not be calculated. Try again in a few minutes.",
+      "sinMigracion": "Prices are not yet available in this environment's database: every plan shows no price. None can be set until its migration is applied.",
+      "ingresoEsperado": "Expected monthly income",
+      "incompleto": "The total is partial: some churches pay a plan with no price set, and no made-up price was assigned.",
+      "ceroSinIglesias": "Zero because no church is currently active and paying.",
+      "plan": "Plan",
+      "pagan": "Paying churches",
+      "mensual": "Monthly price",
+      "anual": "Yearly price",
+      "ingreso": "Monthly income",
+      "sinPrecio": "No price set",
+      "noCalculable": "Cannot be calculated: price missing",
+      "causaSinIglesias": "no church on this plan",
+      "fijar": "Set price",
+      "planDesconocido": "{n} active churches have a plan that is no longer in the catalogue and are not counted.",
+      "fijarPara": "Price of the {plan} plan",
+      "fijarNota": "In the given currency, with decimals (for example 19.00). Leaving it empty clears the price. These are test values until validated.",
+      "moneda": "Currency (3 letters)",
+      "guardar": "Save price",
+      "cancelar": "Cancel",
+      "precioNoValido": "Write a valid number or leave the field empty.",
+      "guardado": "Price saved.",
+      "fuera": "Churches outside the calculation",
+      "fueraNota": "They do not count toward expected income, so each appears with its reason.",
+      "cobrosReales": "Real charges",
+      "motivo": {
+        "demo": "Demos",
+        "onboarding": "Unfinished sign-up",
+        "prueba": "On trial",
+        "receso": "In recess",
+        "suspendida": "Suspended",
+        "borrada": "Closed down"
+      }
     },
     "soporte": {
       "tickets": "Open tickets",

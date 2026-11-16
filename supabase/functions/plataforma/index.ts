@@ -1,6 +1,7 @@
 import { createClient } from 'npm:@supabase/supabase-js@2'
 import { claveCronValida, errorDeCiclo, tamanoLote } from './ciclo.ts'
 import { avisoPurga, enviarAviso, leerConfig, type TipoEnvio } from './envio.ts'
+import { simular, validarPrecio } from './facturacion.ts'
 import { correoDeAviso, esUuid, estadisticasDeAvisos, listaDeTickets, resumenDeSoporte, ticketAbierto, validarAviso, validarNovedad, validarRespuesta } from './soporte.ts'
 import { conteosPorIglesia, envioDelDia, eventosDeActividad, faltaLaFuncion, historialDeIglesia, MAX_LIBRO, salidaSegura } from './panel.ts'
 
@@ -779,6 +780,29 @@ Deno.serve(async (req) => {
         if (error) return json({ error: 'No se pudo retirar el aviso' }, 500)
         if (!data) return json({ error: 'El aviso no existe o ya esta retirado' }, 404)
         const auditado = await auditar('aviso_retirar', null, { aviso_id: data.id })
+        return json({ ok: true, auditado })
+      }
+
+      // ---- Facturacion en modo de prueba: solo estima el ingreso mensual esperado con el precio que alguien haya fijado. No cobra ni conecta ninguna pasarela.
+      case 'facturacion_simulacion': {
+        const [{ data: iglesias, error: e1 }, { data: planes, error: e2 }] = await Promise.all([
+          admin.from('iglesias').select('plan, activa, etapa, es_demo, adn_borrada_en'),
+          admin.from('planes').select('*').order('orden'),
+        ])
+        if (e1 || e2) return json({ error: 'No se pudo leer la facturacion' }, 500)
+        // Si la migracion de precios aun no esta aplicada, las columnas no vienen: todos los planes salen «sin precio», que es la verdad
+        const migrado = (planes ?? []).length === 0 || 'precio_mensual_centimos' in (planes as Record<string, unknown>[])[0]
+        return json({ ok: true, migrado, ...simular(iglesias, planes) })
+      }
+
+      case 'plan_precio_fijar': {
+        const v = validarPrecio(body)
+        if (!v.ok) return json({ error: v.error }, 400)
+        const { data: plan } = await admin.from('planes').select('clave').eq('clave', v.clave).maybeSingle()
+        if (!plan) return json({ error: 'El plan no existe' }, 404)
+        const { error } = await admin.from('planes').update({ precio_mensual_centimos: v.mensual, precio_anual_centimos: v.anual, moneda: v.moneda }).eq('clave', v.clave)
+        if (error) return json({ error: faltaLaFuncion(error) ? 'Los precios no estan disponibles hasta aplicar su migracion' : 'No se pudo guardar el precio' }, faltaLaFuncion(error) ? 501 : 500)
+        const auditado = await auditar('plan_precio_fijar', null, { plan: v.clave, mensual: v.mensual, anual: v.anual, moneda: v.moneda })
         return json({ ok: true, auditado })
       }
 

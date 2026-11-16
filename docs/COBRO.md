@@ -49,6 +49,8 @@ Cifrado de sobre, por inquilino:
 - Vive ADN no comparte tablas ni funciones con otros negocios.
 - Los términos dicen que Visualiza es proveedor de software y que reembolsos y disputas se gestionan en la pasarela del cliente [H, abogado].
 
+Estado de la construcción: los precios por plan y la simulación de ingreso ya existen en modo de prueba, y el diseño de la conexión con Stripe en pruebas está en `docs/FACTURACION.md`.
+
 ## 7. Modelo de datos (propuesta)
 
 | Tabla | Para qué | Notas |

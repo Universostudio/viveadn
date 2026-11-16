@@ -43,7 +43,7 @@ const modulos = [{ clave: 'miembros', nombre: 'Miembros', tipo: 'nucleo', orden:
 const planModulos = [{ plan: 'semilla', modulo: 'miembros' }, { plan: 'premium', modulo: 'miembros' }, { plan: 'premium', modulo: 'comunicacion' }]
 
 async function escenario({ admin = true, conIglesia = false, ancho = 1366, alto = 900, purgaAtrasada = false, detalleFalla = false, actividadFalla = false, envioActivo = false, demo = 'no', sinDemos = false, ciclo = false } = {}) {
-  const estado = { llamadas: [], cuerpos: [] }
+  const estado = { llamadas: [], cuerpos: [], precio: null }
   const browser = await chromium.launch()
   const ctx = await browser.newContext({ acceptDownloads: true, locale: 'es-ES', viewport: { width: ancho, height: alto }, deviceScaleFactor: 1 })
   const sesion = { access_token: 'x.y.z', refresh_token: 'r', token_type: 'bearer', expires_in: 3600, expires_at: Math.floor(Date.now() / 1000) + 3600,
@@ -73,6 +73,15 @@ async function escenario({ admin = true, conIglesia = false, ancho = 1366, alto 
       switch (cuerpo.accion) {
         case 'listar': return json(200, { iglesias: (sinDemos ? iglesias.filter(i => !i.es_demo) : iglesias).concat(ciclo ? iglesiasCiclo : []), planes, modulos, plan_modulos: planModulos })
         case 'registro_estado': return json(200, { abierto: false, requiere_codigo: true, codigos: [] })
+        case 'facturacion_simulacion': {
+          const pr = estado.precio
+          const fila = (clave, nombre, n, precio) => ({ clave, nombre, iglesias: n, precio_mensual_centimos: precio?.m ?? null, precio_anual_centimos: precio?.a ?? null, moneda: precio?.mon ?? null,
+            ingreso_mensual_centimos: n === 0 ? 0 : precio ? n * precio.m : null, causa: n === 0 ? 'sin_iglesias' : precio ? null : 'sin_precio' })
+          const planesSim = [fila('semilla', 'Semilla', 0, null), fila('premium', 'Premium', 1, pr)]
+          return json(200, { ok: true, migrado: true, etiqueta: 'datos_de_prueba', planes: planesSim, pagando: 1, incompleto: !pr, plan_desconocido: 0,
+            ingreso_mensual_por_moneda: pr ? { EUR: pr.m } : {}, fuera_del_calculo: { demo: 1, onboarding: 1, prueba: 2, receso: 0, suspendida: 1, borrada: 0 } })
+        }
+        case 'plan_precio_fijar': estado.precio = cuerpo.precio_mensual_centimos === null ? null : { m: cuerpo.precio_mensual_centimos, a: cuerpo.precio_anual_centimos, mon: cuerpo.moneda }; return json(200, { ok: true, auditado: true })
         case 'soporte_resumen': return json(501, { error: 'El soporte no esta disponible hasta aplicar su migracion' }) // esta prueba es de una base sin las tablas del soporte
         case 'estado_purga': return json(200, { ok: true, atrasada: purgaAtrasada, en_borrado: 1, vencidas: purgaAtrasada ? 1 : 0, horas_mas_atrasada: purgaAtrasada ? 60 : 0 })
         case 'detalle':
@@ -430,8 +439,31 @@ try {
     await page.waitForFunction(() => document.querySelector('[data-test=libro-purgas]')?.textContent?.includes('00000000-0000-4000-8000-000000000009'))
     await page.waitForSelector('[data-test=auditoria-plataforma] li')
     await captura(page, 'escritorio-sistema')
-    await page.goto(url('/plataforma/facturacion')); await page.waitForSelector('[data-test=sin-conectar]')
+    await page.goto(url('/plataforma/facturacion')); await page.waitForSelector('[data-test=fact-tabla]'); await page.waitForSelector('[data-test=sin-conectar]')
     await page.goto(url('/plataforma/soporte')); await page.waitForSelector('[data-test=sin-conectar]'); assert.equal(await page.locator('[data-test=sin-conectar]').count(), 2)
+    assert.deepEqual(errores, [])
+    await browser.close()
+  })
+
+  await prueba('facturación de prueba: etiqueta «Datos de prueba», cero honesto con su causa, el total es parcial sin precio y se completa al fijarlo', async () => {
+    const { browser, page, estado, errores } = await escenario()
+    await page.goto(url('/plataforma/facturacion')); await page.waitForSelector('[data-test=fact-tabla]')
+    assert.match(await page.textContent('[data-test=datos-de-prueba]'), /Datos de prueba/)
+    assert.match(await page.textContent('[data-plan=semilla] [data-campo=ingreso]'), /0/); assert.match(await page.textContent('[data-plan=semilla] [data-campo=ingreso]'), /ninguna iglesia en este plan/, 'cero con su causa')
+    assert.match(await page.textContent('[data-plan=premium] [data-campo=ingreso]'), /No calculable: falta el precio/, 'con iglesias y sin precio no se inventa un cero')
+    assert.equal(await page.locator('[data-test=fact-incompleto]').count(), 1)
+    assert.match(await page.textContent('[data-test=fact-fuera]'), /Demostraciones: 1/); assert.match(await page.textContent('[data-test=fact-fuera]'), /En prueba: 2/)
+    assert.equal(await page.locator('[data-test=sin-conectar]').count(), 1, 'los cobros reales siguen sin conectar')
+    // Un precio no válido no se envía
+    await page.click('[data-fijar=premium]')
+    await page.fill('[data-test=fp-mensual]', 'abc'); await page.fill('[data-test=fp-moneda]', 'eur'); await page.click('[data-test=fp-guardar]')
+    assert.match(await page.textContent('[data-test=fact-fallo]'), /número válido/); assert.equal(estado.cuerpos.filter(c => c.accion === 'plan_precio_fijar').length, 0)
+    await page.fill('[data-test=fp-mensual]', '49,5'); await page.fill('[data-test=fp-anual]', '495'); await page.click('[data-test=fp-guardar]')
+    await page.waitForFunction(() => /Precio guardado/.test(document.querySelector('[data-test=fact-aviso]')?.textContent ?? ''))
+    const c = estado.cuerpos.find(x => x.accion === 'plan_precio_fijar')
+    assert.equal(c.precio_mensual_centimos, 4950); assert.equal(c.precio_anual_centimos, 49500); assert.equal(c.moneda, 'eur'); assert.equal(c.plan, 'premium')
+    assert.equal(await page.locator('[data-test=fact-incompleto]').count(), 0)
+    assert.match(await page.textContent('[data-test=fact-total]'), /49,50/)
     assert.deepEqual(errores, [])
     await browser.close()
   })

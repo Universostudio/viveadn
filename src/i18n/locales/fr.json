@@ -1731,7 +1731,8 @@
       "novedad_publicar": "A publié une nouveauté",
       "novedad_retirar": "A retiré une nouveauté",
       "aviso_crear": "A envoyé un avis aux églises",
-      "aviso_retirar": "A retiré un avis"
+      "aviso_retirar": "A retiré un avis",
+      "plan_precio_fijar": "A fixé le prix d'une formule"
     },
     "pruebas": {
       "titulo": "Essais en cours",
@@ -1751,7 +1752,42 @@
       "noIncluido": "Non inclus"
     },
     "facturacion": {
-      "titulo": "Facturation et paiements"
+      "titulo": "Facturation et paiements",
+      "datosDePrueba": "Données de test",
+      "explicacion": "Une estimation, pas des encaissements : pour chaque formule, elle additionne les églises à l'état actif (hors démonstrations, essais, inscriptions inachevées, pauses ou suspendues) multipliées par le prix mensuel que vous avez fixé. Rien n'a été encaissé et aucune passerelle de paiement n'est connectée.",
+      "errorCarga": "Impossible de calculer l'estimation. Réessayez dans quelques minutes.",
+      "sinMigracion": "Les prix ne sont pas encore disponibles dans la base de cet environnement : toutes les formules apparaissent sans prix. Aucun ne peut être fixé tant que sa migration n'est pas appliquée.",
+      "ingresoEsperado": "Revenu mensuel attendu",
+      "incompleto": "Le total est partiel : certaines églises paient une formule sans prix fixé, et aucun prix inventé ne leur a été attribué.",
+      "ceroSinIglesias": "Zéro parce qu'aucune église n'est actuellement active et payante.",
+      "plan": "Formule",
+      "pagan": "Églises payantes",
+      "mensual": "Prix mensuel",
+      "anual": "Prix annuel",
+      "ingreso": "Revenu mensuel",
+      "sinPrecio": "Prix non fixé",
+      "noCalculable": "Non calculable : prix manquant",
+      "causaSinIglesias": "aucune église dans cette formule",
+      "fijar": "Fixer le prix",
+      "planDesconocido": "{n} églises actives ont une formule qui n'est plus au catalogue et ne sont pas comptées.",
+      "fijarPara": "Prix de la formule {plan}",
+      "fijarNota": "Dans la devise indiquée, avec décimales (par exemple 19,00). Laisser vide efface le prix. Ce sont des valeurs de test tant qu'elles ne sont pas validées.",
+      "moneda": "Devise (3 lettres)",
+      "guardar": "Enregistrer le prix",
+      "cancelar": "Annuler",
+      "precioNoValido": "Saisissez un nombre valide ou laissez le champ vide.",
+      "guardado": "Prix enregistré.",
+      "fuera": "Églises hors du calcul",
+      "fueraNota": "Elles ne comptent pas dans le revenu attendu, c'est pourquoi chacune apparaît avec son motif.",
+      "cobrosReales": "Encaissements réels",
+      "motivo": {
+        "demo": "Démonstrations",
+        "onboarding": "Inscription inachevée",
+        "prueba": "À l'essai",
+        "receso": "En pause",
+        "suspendida": "Suspendues",
+        "borrada": "Résiliées"
+      }
     },
     "soporte": {
       "tickets": "Tickets ouverts",
