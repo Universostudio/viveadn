@@ -51,6 +51,9 @@ export const ITEMS_MENU: ItemMenu[] = [
   { clave: 'reportes', to: '/reportes', etiqueta: 'menu.reportes', permisos: ['reportes.ver'] },
   { clave: 'configuracion', to: '/configuracion', etiqueta: 'menu.configuracion', permisos: ['usuarios.gestionar', 'roles.gestionar', 'iglesia.configurar'] },
   { clave: 'red', to: '/red', etiqueta: 'menu.red', soloPropietario: true, red: true },
+  // Novedades de la plataforma (todas las personas con sesión) y soporte (quien puede configurar la iglesia). Solo se ofrecen si la base ya tiene las tablas (AppLayout)
+  { clave: 'novedades', to: '/novedades', etiqueta: 'menu.novedades' },
+  { clave: 'soporte', to: '/soporte', etiqueta: 'menu.soporte', permisos: ['iglesia.configurar'] },
 ]
 
 export const itemsVisibles = (c: ContextoAcceso) => ITEMS_MENU.filter(i => cumple(i, c))
@@ -81,6 +84,7 @@ export const REQUISITOS_RUTA: Record<string, Requisitos> = {
   reportes: deMenu('reportes'),
   configuracion: deMenu('configuracion'),
   red: deMenu('red'),
+  soporte: deMenu('soporte'),
   // Descargar los datos y pedir la baja es del propietario; el propietario de una iglesia suspendida también entra
   'datos-iglesia': { soloPropietario: true },
 }

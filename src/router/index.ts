@@ -199,6 +199,16 @@ const router = createRouter({
           component: () => import('@/views/DatosIglesiaView.vue')
         },
         {
+          path: 'novedades',
+          name: 'novedades',
+          component: () => import('@/views/NovedadesView.vue')
+        },
+        {
+          path: 'soporte',
+          name: 'soporte',
+          component: () => import('@/views/SoporteView.vue')
+        },
+        {
           path: 'red',
           name: 'red',
           component: () => import('@/views/RedView.vue')

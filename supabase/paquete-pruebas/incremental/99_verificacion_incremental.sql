@@ -1,62 +1,43 @@
--- Vive ADN, verificación del incremental (20261111310000_adn_asistencias_unico y 20261111320000_adn_seguimiento_metodos). Solo lee. Resultado correcto: TODAS las filas con ok = true.
+-- Vive ADN, verificación del incremental (20261111350000_adn_soporte: tickets, novedades y avisos dentro de la aplicación). Solo lee. Resultado correcto: TODAS las filas con ok = true.
 set search_path = pg_catalog;
 with f(nombre, obtenido, esperado) as (values
-  ('f01_indice_unico_de_asistencias',
-    (select count(*)::text from pg_index i join pg_class c on c.oid = i.indexrelid join pg_namespace n on n.oid = c.relnamespace
-      where n.nspname = 'public' and c.relname = 'adn_asistencias_unica_idx' and i.indisunique), '1'),
-  ('f02_columnas_del_indice',
-    (select pg_get_indexdef(c.oid) from pg_class c join pg_namespace n on n.oid = c.relnamespace where n.nspname = 'public' and c.relname = 'adn_asistencias_unica_idx'),
-    'CREATE UNIQUE INDEX adn_asistencias_unica_idx ON public.asistencias USING btree (casa_oracion_id, miembro_id, fecha)'),
-  ('f03_no_quedan_asistencias_repetidas',
-    (select count(*)::text from (select 1 from public.asistencias group by casa_oracion_id, miembro_id, fecha having count(*) > 1) x), '0'),
-  ('f04_existe_el_archivo_de_duplicados',
-    (select count(*)::text from pg_class c join pg_namespace n on n.oid = c.relnamespace where n.nspname = 'public' and c.relname = 'adn_asistencias_duplicadas' and c.relkind = 'r'), '1'),
-  ('f05_el_archivo_tiene_seguridad_por_filas',
-    (select c.relrowsecurity::text from pg_class c join pg_namespace n on n.oid = c.relnamespace where n.nspname = 'public' and c.relname = 'adn_asistencias_duplicadas'), 'true'),
-  ('f06_con_sesion_no_se_lee_el_archivo',
-    (select case when to_regclass('public.adn_asistencias_duplicadas') is null then 'sin tabla'
-       else (has_table_privilege('anon', 'public.adn_asistencias_duplicadas', 'select') or has_table_privilege('authenticated', 'public.adn_asistencias_duplicadas', 'select'))::text end), 'false'),
-  ('f07_el_servidor_si_lo_lee',
-    (select case when to_regclass('public.adn_asistencias_duplicadas') is null then 'sin tabla' else has_table_privilege('service_role', 'public.adn_asistencias_duplicadas', 'select')::text end), 'true'),
-  ('f08_dos_plantillas_de_plataforma',
-    (select string_agg(clave || ':' || pasos || ':' || plazo_horas || ':' || umbral_amarillo_horas || ':' || umbral_naranja_horas, ',' order by clave)
-       from public.adn_seguimiento_metodos where iglesia_id is null), 'op72:3:72:24:48,simple:1:168:72:120'),
-  ('f09_consolidaciones_conserva_op72_por_defecto_y_tiene_el_disparador_del_metodo_activo',
-    (select (select pg_get_expr(d.adbin, d.adrelid) from pg_attrdef d join pg_attribute a on a.attrelid = d.adrelid and a.attnum = d.adnum
-       where d.adrelid = 'public.consolidaciones'::regclass and a.attname = 'metodo_id') || '/' ||
-       (select count(*)::text from pg_trigger t where t.tgrelid = 'public.consolidaciones'::regclass and t.tgname = 'consolidaciones_a_metodo' and not t.tgisinternal)), '''5e000000-0000-4000-8000-000000000072''::uuid/1'),
-  ('f10_ningun_proceso_sin_metodo',
-    (select count(*)::text from public.consolidaciones where metodo_id is null), '0'),
-  ('f11_existe_la_configuracion_por_iglesia',
-    (select count(*)::text from pg_class c join pg_namespace n on n.oid = c.relnamespace where n.nspname = 'public' and c.relname = 'adn_seguimiento_config' and c.relrowsecurity), '1'),
-  ('f12_el_color_con_op72_coincide_con_el_de_siempre',
-    (select public.adn_seguimiento_alerta(timestamptz '2026-11-16 12:00+00' - interval '24 hours', false, '5e000000-0000-4000-8000-000000000072', timestamptz '2026-11-16 12:00+00') || '/' ||
-            public.adn_seguimiento_alerta(timestamptz '2026-11-16 12:00+00' - interval '48 hours', false, '5e000000-0000-4000-8000-000000000072', timestamptz '2026-11-16 12:00+00') || '/' ||
-            public.adn_seguimiento_alerta(timestamptz '2026-11-16 12:00+00' - interval '72 hours', false, '5e000000-0000-4000-8000-000000000072', timestamptz '2026-11-16 12:00+00') || '/' ||
-            public.adn_seguimiento_alerta(timestamptz '2026-11-16 12:00+00' - interval '73 hours', false, '5e000000-0000-4000-8000-000000000072', timestamptz '2026-11-16 12:00+00')), 'verde/amarillo/naranja/rojo'),
-  ('f13_la_vista_de_estado_es_security_invoker',
-    (select coalesce(c.reloptions @> array['security_invoker=true'], false)::text from pg_class c join pg_namespace n on n.oid = c.relnamespace where n.nspname = 'public' and c.relname = 'adn_seguimiento_estado'), 'true'),
-  ('f14_el_disparador_lee_el_metodo',
-    (select (p.prosrc like '%adn_seguimiento_metodos%' and p.prosrc like '%adn_alerta_con_umbrales%')::text from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname = 'gestionar_consolidacion'), 'true'),
-  ('f15_con_sesion_solo_se_leen_los_metodos',
-    (select (has_table_privilege('authenticated', 'public.adn_seguimiento_metodos', 'select') and not has_table_privilege('authenticated', 'public.adn_seguimiento_metodos', 'insert, update, delete'))::text), 'true')
-,
-  ('f16_las_metricas_leen_el_metodo_de_cada_proceso',
-    (select (p.prosrc like '%adn_seguimiento_metodos%' and p.prosrc like '%make_interval%')::text from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname = 'metricas_op72'), 'true'),
-  ('f17_las_metricas_siguen_con_las_mismas_claves',
-    (select (p.prosrc like '%objetivo_primer%' and p.prosrc like '%plazo%')::text from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname = 'metricas_op72'), 'true'),
-  ('f18_el_modulo_de_metodo_propio_esta_solo_en_premium',
-    (select coalesce(string_agg(plan, ',' order by plan), 'ninguno') from public.plan_modulos where modulo = 'seguimiento_propio'), 'premium'),
-  ('f19_hay_cuatro_politicas_de_escritura_de_metodos_y_configuracion',
-    (select count(*)::text from pg_policies where schemaname = 'public' and policyname in ('adn_seguimiento_metodos_crear', 'adn_seguimiento_metodos_editar', 'adn_seguimiento_config_elegir', 'adn_seguimiento_config_cambiar')), '4'),
-  ('f20_con_sesion_se_crea_y_edita_el_contenido_pero_no_se_borra_ni_se_cambia_la_clave',
-    (select (has_column_privilege('authenticated', 'public.adn_seguimiento_metodos', 'nombre', 'insert') and has_column_privilege('authenticated', 'public.adn_seguimiento_metodos', 'plazo_horas', 'update')
-       and not has_column_privilege('authenticated', 'public.adn_seguimiento_metodos', 'clave', 'update') and not has_column_privilege('authenticated', 'public.adn_seguimiento_metodos', 'iglesia_id', 'update')
-       and not has_table_privilege('authenticated', 'public.adn_seguimiento_metodos', 'delete'))::text), 'true'),
-  ('f21_existe_la_consulta_de_uso_de_un_metodo',
-    (select count(*)::text from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname = 'adn_seguimiento_en_uso'), '1'),
-  ('f22_el_proceso_nuevo_toma_el_metodo_activo',
-    (select (p.prosrc like '%adn_metodo_activo%')::text from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname = 'private' and p.proname = 'adn_consolidacion_metodo_activo'), 'true')
+  ('g01_existen_las_seis_tablas',
+    (select string_agg(c.relname, ',' order by c.relname) from pg_class c join pg_namespace n on n.oid = c.relnamespace
+      where n.nspname = 'public' and c.relkind = 'r' and c.relname in ('adn_tickets','adn_ticket_mensajes','adn_novedades','adn_novedades_vistas','adn_avisos','adn_avisos_entregas')),
+    'adn_avisos,adn_avisos_entregas,adn_novedades,adn_novedades_vistas,adn_ticket_mensajes,adn_tickets'),
+  ('g02_todas_con_seguridad_por_filas',
+    (select count(*)::text from pg_class c join pg_namespace n on n.oid = c.relnamespace
+      where n.nspname = 'public' and c.relname in ('adn_tickets','adn_ticket_mensajes','adn_novedades','adn_novedades_vistas','adn_avisos','adn_avisos_entregas') and c.relrowsecurity), '6'),
+  ('g03_nadie_sin_sesion_toca_nada',
+    (select (not exists (select 1 from unnest(array['adn_tickets','adn_ticket_mensajes','adn_novedades','adn_novedades_vistas','adn_avisos','adn_avisos_entregas']) t
+       where to_regclass('public.' || t) is not null and (has_table_privilege('anon', 'public.' || t, 'select') or has_table_privilege('anon', 'public.' || t, 'insert'))))::text), 'true'),
+  ('g04_la_iglesia_no_borra_ni_cambia_tickets',
+    (select (not has_table_privilege('authenticated', 'public.adn_tickets', 'update') and not has_table_privilege('authenticated', 'public.adn_tickets', 'delete')
+       and not has_table_privilege('authenticated', 'public.adn_ticket_mensajes', 'update') and not has_table_privilege('authenticated', 'public.adn_ticket_mensajes', 'delete'))::text), 'true'),
+  ('g05_la_iglesia_solo_escribe_asunto_prioridad_y_texto',
+    (select (has_column_privilege('authenticated', 'public.adn_tickets', 'asunto', 'insert') and has_column_privilege('authenticated', 'public.adn_tickets', 'prioridad', 'insert')
+       and not has_column_privilege('authenticated', 'public.adn_tickets', 'estado', 'insert') and not has_column_privilege('authenticated', 'public.adn_tickets', 'iglesia_id', 'insert')
+       and has_column_privilege('authenticated', 'public.adn_ticket_mensajes', 'texto', 'insert') and not has_column_privilege('authenticated', 'public.adn_ticket_mensajes', 'autor_tipo', 'insert'))::text), 'true'),
+  ('g06_la_iglesia_no_escribe_novedades_ni_avisos',
+    (select (not has_table_privilege('authenticated', 'public.adn_novedades', 'insert') and not has_table_privilege('authenticated', 'public.adn_avisos', 'insert')
+       and not has_table_privilege('authenticated', 'public.adn_avisos', 'update'))::text), 'true'),
+  ('g07_de_una_entrega_solo_se_cambia_leido_y_descartado',
+    (select (has_column_privilege('authenticated', 'public.adn_avisos_entregas', 'leido_en', 'update') and has_column_privilege('authenticated', 'public.adn_avisos_entregas', 'descartado_en', 'update')
+       and not has_column_privilege('authenticated', 'public.adn_avisos_entregas', 'iglesia_id', 'update') and not has_table_privilege('authenticated', 'public.adn_avisos_entregas', 'insert'))::text), 'true'),
+  ('g08_funciones_de_la_iglesia_son_invoker',
+    (select string_agg(p.proname || ':' || p.prosecdef::text, ',' order by p.proname) from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+      where n.nspname = 'public' and p.proname in ('adn_ticket_crear','adn_novedades_marcar_vistas','adn_aviso_entregar')),
+    'adn_aviso_entregar:false,adn_novedades_marcar_vistas:false,adn_ticket_crear:false'),
+  ('g09_repartir_un_aviso_solo_lo_hace_el_servidor',
+    (select (has_function_privilege('service_role', 'public.adn_aviso_entregar(uuid)', 'execute') and not has_function_privilege('authenticated', 'public.adn_aviso_entregar(uuid)', 'execute')
+       and not has_function_privilege('anon', 'public.adn_aviso_entregar(uuid)', 'execute'))::text), 'true'),
+  ('g10_tres_disparadores_de_tickets',
+    (select string_agg(t.tgname, ',' order by t.tgname) from pg_trigger t where not t.tgisinternal and t.tgrelid in ('public.adn_tickets'::regclass, 'public.adn_ticket_mensajes'::regclass)),
+    'adn_ticket_mensajes_estado,adn_ticket_mensajes_iglesia,adn_tickets_limite'),
+  ('g11_la_exportacion_no_incluye_las_entregas_de_avisos',
+    (select count(*)::text from public.adn_tablas_exportables() where nombre = 'adn_avisos_entregas'), '0'),
+  ('g12_la_exportacion_si_incluye_tickets_y_mensajes',
+    (select string_agg(nombre, ',' order by nombre) from public.adn_tablas_exportables() where nombre in ('adn_tickets','adn_ticket_mensajes','adn_novedades_vistas')), 'adn_novedades_vistas,adn_ticket_mensajes,adn_tickets')
 )
 select nombre, obtenido, esperado, (obtenido is not distinct from esperado) as ok from f
 union all

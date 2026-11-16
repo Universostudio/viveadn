@@ -32,7 +32,9 @@
     "red": "Rede",
     "zonas": "Zonas",
     "miPanel": "Meu painel",
-    "logros": "Conquistas"
+    "logros": "Conquistas",
+    "novedades": "Novidades",
+    "soporte": "Suporte"
   },
   "login": {
     "subtitulo": "Sistema de Gestão de Igrejas",
@@ -1558,7 +1560,8 @@
   },
   "layout": {
     "avisoSuspendida": "Sua igreja está suspensa. Se você pediu o cancelamento, pode desfazê-lo ou baixar seus dados daqui.",
-    "avisoAbrir": "Abrir dados e cancelamento"
+    "avisoAbrir": "Abrir dados e cancelamento",
+    "descartarAviso": "Dispensar"
   },
   "panelMaestro": {
     "saltar": "Ir para o conteúdo",
@@ -1721,7 +1724,14 @@
       "recuperar_iglesia": "Igreja recuperada",
       "registro_ajustes": "Ajustes de cadastro",
       "repurgar_registradas": "Limpeza repetida",
-      "vincular_red": "Mudança na rede de igrejas"
+      "vincular_red": "Mudança na rede de igrejas",
+      "ticket_abrir": "Abriu um ticket de suporte",
+      "ticket_responder": "Respondeu um ticket de suporte",
+      "ticket_cerrar": "Fechou um ticket de suporte",
+      "novedad_publicar": "Publicou uma novidade",
+      "novedad_retirar": "Retirou uma novidade",
+      "aviso_crear": "Enviou um aviso às igrejas",
+      "aviso_retirar": "Retirou um aviso"
     },
     "pruebas": {
       "titulo": "Testes ativos",
@@ -1747,7 +1757,77 @@
       "tickets": "Tickets abertos",
       "faltaTickets": "Falta conectar um sistema de tickets: hoje o suporte não é registrado dentro da plataforma.",
       "cambios": "Registro de mudanças",
-      "faltaCambios": "Falta publicar o registro de mudanças da versão: hoje não há uma fonte de dados para mostrá-lo."
+      "faltaCambios": "Falta publicar o registro de mudanças da versão: hoje não há uma fonte de dados para mostrá-lo.",
+      "errorCarga": "Não foi possível ler o suporte. Tente de novo em alguns minutos.",
+      "abiertos": "Tickets abertos",
+      "respondidos": "Respondidos",
+      "urgentes": "Urgentes não fechados",
+      "avisosVigentes": "Avisos vigentes",
+      "pest": {
+        "tickets": "Tickets",
+        "novedades": "Novidades",
+        "avisos": "Avisos"
+      },
+      "ticketsNota": "Aqui você vê só igreja, assunto e estado. O texto abre ticket por ticket e fica registrado na auditoria.",
+      "sinTickets": "Não há tickets.",
+      "mensajes": "{n} mensagens",
+      "prio": {
+        "baja": "Baixa",
+        "normal": "Normal",
+        "alta": "Alta",
+        "urgente": "Urgente"
+      },
+      "estado": {
+        "abierto": "Aberto",
+        "respondido": "Respondido",
+        "cerrado": "Fechado"
+      },
+      "cerrar": "Fechar ticket",
+      "dePlataforma": "Plataforma",
+      "deIglesia": "Igreja",
+      "responder": "Sua resposta",
+      "enviar": "Enviar resposta",
+      "respondido": "Resposta enviada.",
+      "cerrado": "Ticket fechado.",
+      "nuevaNovedad": "Publicar novidade",
+      "version": "Versão",
+      "titulo": "Título",
+      "texto": "Texto",
+      "publicar": "Publicar",
+      "sinNovedades": "Nenhuma novidade publicada.",
+      "retirada": "Retirada",
+      "retirar": "Retirar",
+      "novedadPublicada": "Novidade publicada.",
+      "novedadRetirada": "Novidade retirada.",
+      "nuevoAviso": "Novo aviso dentro do aplicativo",
+      "tipo": "Tipo",
+      "tipos": {
+        "actualizacion": "Atualização",
+        "mantenimiento": "Manutenção",
+        "alerta": "Alerta"
+      },
+      "destinatarios": "Destinatários",
+      "destTodas": "Todas as igrejas em cadastro, em teste ou ativas",
+      "destFiltro": "Só as que atendam estes filtros",
+      "porPlan": "Por plano",
+      "porEstado": "Por estado",
+      "etapas": {
+        "onboarding": "Cadastro",
+        "prueba": "Teste",
+        "activa": "Ativa",
+        "receso": "Recesso",
+        "suspendida": "Suspensa"
+      },
+      "incluirDemo": "Incluir igrejas de demonstração",
+      "porCorreo": "Pedir também o envio por e-mail",
+      "correoNota": "O e-mail em massa está desligado: o pedido só é registrado, nada é enviado.",
+      "enviarAviso": "Enviar aviso",
+      "sinAvisos": "Não há avisos.",
+      "entregas": "{e} entregues · {l} lidos · {d} dispensados",
+      "correoApagado": "e-mail pedido, não enviado (envio desligado)",
+      "retirado": "Retirado",
+      "avisoEnviado": "Aviso entregue a {n} igrejas.",
+      "avisoRetirado": "Aviso retirado."
     },
     "actividad": {
       "alta": "Cadastro de {iglesia}",
@@ -1985,6 +2065,59 @@
       "repetido": "Já existe um método com essa chave. Tente de novo.",
       "permiso": "Você não tem permissão para alterar isto, ou o seu plano não inclui o método próprio.",
       "generico": "Não foi possível salvar. Tente de novo."
+    }
+  },
+  "novedades": {
+    "titulo": "Novidades da plataforma",
+    "subtitulo": "O que mudou no Vive ADN, da mais recente à mais antiga.",
+    "error": "Não foi possível carregar as novidades.",
+    "vacio": "Ainda não há novidades publicadas.",
+    "version": "Versão {v}",
+    "nueva": "Nova"
+  },
+  "soporte": {
+    "titulo": "Suporte",
+    "subtitulo": "Escreva à equipe da plataforma quando algo não funcionar ou você tiver uma dúvida.",
+    "noDisponible": "O suporte dentro da plataforma ainda não está ativado neste ambiente.",
+    "nuevo": "Novo ticket",
+    "asunto": "Assunto",
+    "prioridad": "Prioridade",
+    "texto": "Conte o que está acontecendo",
+    "sinDatos": "Não escreva senhas nem dados pessoais de membros: a equipe não precisa deles.",
+    "enviar": "Enviar",
+    "enviando": "Enviando…",
+    "misTickets": "Seus tickets",
+    "errorCarga": "Não foi possível carregar os tickets.",
+    "reintentar": "Tentar de novo",
+    "vacio": "Você ainda não abriu nenhum ticket.",
+    "dePlataforma": "Equipe da plataforma",
+    "deTuIglesia": "Sua igreja",
+    "responder": "Responder",
+    "cerradoAviso": "Este ticket está fechado. Se o problema continuar, abra um novo.",
+    "creado": "Ticket criado. Responderemos aqui mesmo.",
+    "respuestaEnviada": "Resposta enviada.",
+    "prio": {
+      "baja": "Baixa",
+      "normal": "Normal",
+      "alta": "Alta",
+      "urgente": "Urgente"
+    },
+    "estado": {
+      "abierto": "Aberto",
+      "respondido": "Respondido",
+      "cerrado": "Fechado"
+    },
+    "errores": {
+      "cerrado": "O ticket está fechado.",
+      "lleno": "Este ticket tem mensagens demais: abra um novo.",
+      "demasiados": "Você já tem 10 tickets abertos. Aguarde uma resposta ou feche alguns antes de abrir outro.",
+      "permiso": "Você não tem permissão para escrever ao suporte.",
+      "generico": "Não foi possível concluir a ação. Tente de novo.",
+      "asuntoCorto": "O assunto precisa ter pelo menos 3 caracteres.",
+      "asuntoLargo": "O assunto não pode passar de 120 caracteres.",
+      "prioridad": "Escolha uma prioridade.",
+      "textoVacio": "Escreva a mensagem.",
+      "textoLargo": "A mensagem não pode passar de 4000 caracteres."
     }
   }
 }

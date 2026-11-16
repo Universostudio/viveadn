@@ -411,7 +411,7 @@ async function cargar() {
   if (progresoRes.error) lecturasFallidas.value.push('formacion')
   if (logrosRes.error) lecturasFallidas.value.push('logros')
   if (contactosRes.error) lecturasFallidas.value.push('contactos')
-  consolidaciones.value = (consolRes.data ?? []).map(conAlerta)
+  consolidaciones.value = ((consolRes.data ?? []) as any[]).map(conAlerta)
   progreso.value = progresoRes.data ?? []
   logros.value = logrosRes.data ?? []
   contactos.value = contactosRes.data ?? []

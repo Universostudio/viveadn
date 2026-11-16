@@ -38,7 +38,7 @@ const pm = usePlataformaStore()
 const route = useRoute()
 const router = useRouter()
 
-onMounted(() => { void pm.asegurarCargada() })
+onMounted(() => { void pm.asegurarCargada(); void pm.cargarSoporte() })
 
 const seccion = computed(() => {
   const s = route.meta.seccion as string | undefined
@@ -48,6 +48,8 @@ const seccion = computed(() => {
 
 // Contadores del menú: salen de la misma lista que ya carga el panel, sin consultas aparte
 const contadorIglesias = computed(() => pm.visibles.length || null)
+// Tickets que esperan respuesta de la plataforma; sin dato (tablas ausentes o error) no se pinta ningún número
+const contadorSoporte = computed(() => (pm.soporte.estado === 'ok' ? Number(pm.soporte.resumen?.tickets?.abiertos) : 0) || null)
 const contadorPruebas = computed(() => pm.visibles.filter(i => (i.etapa ?? (i.activa ? 'activa' : 'suspendida')) === 'prueba' && !i.es_demo).length || null)
 
 const grupos = computed<GrupoMenu[]>(() => [
@@ -66,7 +68,7 @@ const grupos = computed<GrupoMenu[]>(() => [
     { to: '/plataforma/sistema', etiqueta: t('plataformaPanel.menu.sistema'), icono: Activity },
   ] },
   { titulo: t('plataformaPanel.grupo.soporte'), items: [
-    { to: '/plataforma/soporte', etiqueta: t('plataformaPanel.menu.soporte'), icono: LifeBuoy, sinConectar: true },
+    { to: '/plataforma/soporte', etiqueta: t('plataformaPanel.menu.soporte'), icono: LifeBuoy, contador: contadorSoporte.value, sinConectar: pm.soporte.estado === 'falta' },
   ] },
 ])
 

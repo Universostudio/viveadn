@@ -93,6 +93,17 @@ export const usePlataformaStore = defineStore('plataforma', () => {
     } catch { sistema.value = null; sistemaEstado.value = 'no' }
   }
 
+  // Soporte: cifras para el menú y la pantalla. Si la base aún no tiene sus tablas, el panel lo dice en vez de mostrar ceros inventados
+  const soporte = ref<{ estado: 'pendiente' | 'ok' | 'falta' | 'error'; resumen: any | null }>({ estado: 'pendiente', resumen: null })
+  async function cargarSoporte() {
+    try {
+      const d = await llamar({ accion: 'soporte_resumen' })
+      soporte.value = { estado: 'ok', resumen: d }
+    } catch (e) {
+      soporte.value = { estado: /no esta disponible/i.test((e as Error).message) ? 'falta' : 'error', resumen: null }
+    }
+  }
+
   async function cargar() {
     cargando.value = true
     try {
@@ -132,5 +143,5 @@ export const usePlataformaStore = defineStore('plataforma', () => {
     actividad.value = []; actividadEstado.value = 'pendiente'; sistema.value = null; sistemaEstado.value = 'pendiente'
   }
 
-  return { iglesias, incluirDemo, fijarIncluirDemo, hayDemos, totalDemos, visibles, planes, modulos, planModulos, registro, purga, cargando, cargada, aviso, actividad, actividadEstado, sistema, sistemaEstado, avisar, limpiarAviso, llamar, cargar, cargarPurga, cargarActividad, cargarSistema, asegurarCargada, ejecutar, limpiar }
+  return { iglesias, incluirDemo, fijarIncluirDemo, hayDemos, totalDemos, visibles, planes, modulos, planModulos, registro, purga, cargando, cargada, aviso, actividad, actividadEstado, sistema, sistemaEstado, soporte, cargarSoporte, avisar, limpiarAviso, llamar, cargar, cargarPurga, cargarActividad, cargarSistema, asegurarCargada, ejecutar, limpiar }
 })

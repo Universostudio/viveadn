@@ -32,7 +32,9 @@
     "red": "Network",
     "zonas": "Zones",
     "miPanel": "My panel",
-    "logros": "Achievements"
+    "logros": "Achievements",
+    "novedades": "What's new",
+    "soporte": "Support"
   },
   "login": {
     "subtitulo": "Church Management System",
@@ -1558,7 +1560,8 @@
   },
   "layout": {
     "avisoSuspendida": "Your church is suspended. If you requested the cancellation, you can undo it or download your data from here.",
-    "avisoAbrir": "Open data and cancellation"
+    "avisoAbrir": "Open data and cancellation",
+    "descartarAviso": "Dismiss"
   },
   "panelMaestro": {
     "saltar": "Skip to content",
@@ -1721,7 +1724,14 @@
       "recuperar_iglesia": "Church recovered",
       "registro_ajustes": "Sign-up settings",
       "repurgar_registradas": "Repeated purge",
-      "vincular_red": "Church network change"
+      "vincular_red": "Church network change",
+      "ticket_abrir": "Opened a support ticket",
+      "ticket_responder": "Answered a support ticket",
+      "ticket_cerrar": "Closed a support ticket",
+      "novedad_publicar": "Published news",
+      "novedad_retirar": "Withdrew news",
+      "aviso_crear": "Sent a notice to churches",
+      "aviso_retirar": "Withdrew a notice"
     },
     "pruebas": {
       "titulo": "Active trials",
@@ -1747,7 +1757,77 @@
       "tickets": "Open tickets",
       "faltaTickets": "A ticket system still needs to be connected: support is not recorded inside the platform today.",
       "cambios": "Changelog",
-      "faltaCambios": "The version changelog still needs to be published: there is no data source to show it today."
+      "faltaCambios": "The version changelog still needs to be published: there is no data source to show it today.",
+      "errorCarga": "Support could not be read. Try again in a few minutes.",
+      "abiertos": "Open tickets",
+      "respondidos": "Answered",
+      "urgentes": "Urgent, not closed",
+      "avisosVigentes": "Active notices",
+      "pest": {
+        "tickets": "Tickets",
+        "novedades": "News",
+        "avisos": "Notices"
+      },
+      "ticketsNota": "Here you only see church, subject and status. The text opens ticket by ticket and is recorded in the audit log.",
+      "sinTickets": "There are no tickets.",
+      "mensajes": "{n} messages",
+      "prio": {
+        "baja": "Low",
+        "normal": "Normal",
+        "alta": "High",
+        "urgente": "Urgent"
+      },
+      "estado": {
+        "abierto": "Open",
+        "respondido": "Answered",
+        "cerrado": "Closed"
+      },
+      "cerrar": "Close ticket",
+      "dePlataforma": "Platform",
+      "deIglesia": "Church",
+      "responder": "Your reply",
+      "enviar": "Send reply",
+      "respondido": "Reply sent.",
+      "cerrado": "Ticket closed.",
+      "nuevaNovedad": "Publish news",
+      "version": "Version",
+      "titulo": "Title",
+      "texto": "Text",
+      "publicar": "Publish",
+      "sinNovedades": "No news published.",
+      "retirada": "Withdrawn",
+      "retirar": "Withdraw",
+      "novedadPublicada": "News published.",
+      "novedadRetirada": "News withdrawn.",
+      "nuevoAviso": "New in-app notice",
+      "tipo": "Type",
+      "tipos": {
+        "actualizacion": "Update",
+        "mantenimiento": "Maintenance",
+        "alerta": "Alert"
+      },
+      "destinatarios": "Recipients",
+      "destTodas": "All churches in sign-up, trial or active stage",
+      "destFiltro": "Only those matching these filters",
+      "porPlan": "By plan",
+      "porEstado": "By stage",
+      "etapas": {
+        "onboarding": "Sign-up",
+        "prueba": "Trial",
+        "activa": "Active",
+        "receso": "Recess",
+        "suspendida": "Suspended"
+      },
+      "incluirDemo": "Include demo churches",
+      "porCorreo": "Also request delivery by email",
+      "correoNota": "Mass email is off: the request is only recorded, nothing is sent.",
+      "enviarAviso": "Send notice",
+      "sinAvisos": "There are no notices.",
+      "entregas": "{e} delivered · {l} read · {d} dismissed",
+      "correoApagado": "email requested, not sent (sending off)",
+      "retirado": "Withdrawn",
+      "avisoEnviado": "Notice delivered to {n} churches.",
+      "avisoRetirado": "Notice withdrawn."
     },
     "actividad": {
       "alta": "{iglesia} created",
@@ -1985,6 +2065,59 @@
       "repetido": "A method with that key already exists. Try again.",
       "permiso": "You do not have permission to change this, or your plan does not include your own method.",
       "generico": "It could not be saved. Try again."
+    }
+  },
+  "novedades": {
+    "titulo": "Platform news",
+    "subtitulo": "What has changed in Vive ADN, newest first.",
+    "error": "The news could not be loaded.",
+    "vacio": "No news has been published yet.",
+    "version": "Version {v}",
+    "nueva": "New"
+  },
+  "soporte": {
+    "titulo": "Support",
+    "subtitulo": "Write to the platform team when something fails or you have a question.",
+    "noDisponible": "In-platform support is not yet switched on in this environment.",
+    "nuevo": "New ticket",
+    "asunto": "Subject",
+    "prioridad": "Priority",
+    "texto": "Tell us what is happening",
+    "sinDatos": "Do not write passwords or members' personal data: the team does not need them.",
+    "enviar": "Send",
+    "enviando": "Sending…",
+    "misTickets": "Your tickets",
+    "errorCarga": "The tickets could not be loaded.",
+    "reintentar": "Retry",
+    "vacio": "You have not opened any ticket yet.",
+    "dePlataforma": "Platform team",
+    "deTuIglesia": "Your church",
+    "responder": "Reply",
+    "cerradoAviso": "This ticket is closed. If the problem continues, open a new one.",
+    "creado": "Ticket created. We will answer you right here.",
+    "respuestaEnviada": "Reply sent.",
+    "prio": {
+      "baja": "Low",
+      "normal": "Normal",
+      "alta": "High",
+      "urgente": "Urgent"
+    },
+    "estado": {
+      "abierto": "Open",
+      "respondido": "Answered",
+      "cerrado": "Closed"
+    },
+    "errores": {
+      "cerrado": "The ticket is closed.",
+      "lleno": "This ticket has too many messages: open a new one.",
+      "demasiados": "You already have 10 open tickets. Wait for an answer or close some before opening another.",
+      "permiso": "You do not have permission to write to support.",
+      "generico": "The action could not be completed. Try again.",
+      "asuntoCorto": "The subject needs at least 3 characters.",
+      "asuntoLargo": "The subject cannot exceed 120 characters.",
+      "prioridad": "Choose a priority.",
+      "textoVacio": "Write the message.",
+      "textoLargo": "The message cannot exceed 4000 characters."
     }
   }
 }

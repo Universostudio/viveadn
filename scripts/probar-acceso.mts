@@ -179,7 +179,9 @@ function ctxDe(rol: string, { modulos = new Set(['eventos', 'comunicacion']), se
   const perms = new Set(ROLES[rol].permisos)
   return { can: (...c) => c.some(x => propietario || perms.has(x)), tieneModulo: m => modulos.has(m), esPropietario: propietario, tieneSedes: sedes }
 }
-const menuDe = (rol: string, o?: Parameters<typeof ctxDe>[1]) => itemsVisibles(ctxDe(rol, o)).map(i => i.clave)
+const menuCompleto = (rol: string, o?: Parameters<typeof ctxDe>[1]) => itemsVisibles(ctxDe(rol, o)).map(i => i.clave)
+// Novedades y soporte se comprueban aparte: el menú de trabajo no cambia con ellos
+const menuDe = (rol: string, o?: Parameters<typeof ctxDe>[1]) => menuCompleto(rol, o).filter(c => c !== 'novedades' && c !== 'soporte')
 
 // Tarjetas del panel de inicio por rol, con los permisos reales: amplio cuenta todo, acotado cuenta lo suyo, sin permiso no hay tarjeta
 const tarjetas = (rol: string) => tarjetasDeInicio(ctxDe(rol).can)
@@ -203,6 +205,11 @@ assert.deepEqual(menuDe('colaborador'), ['inicio', 'miembros', 'eventos', 'casas
 assert.deepEqual(menuDe('miembro'), ['inicio', 'eventos'])
 // Sin el módulo en el plan, la sección no se ofrece aunque el rol tenga el permiso
 assert.ok(!menuDe('administrador', { modulos: new Set() }).includes('eventos')); assert.ok(!menuDe('administrador', { modulos: new Set() }).includes('comunicacion'))
+// Novedades de la plataforma las ve todo el que tiene sesión; soporte solo quien puede configurar la iglesia
+for (const r of Object.keys(ROLES)) {
+  assert.ok(menuCompleto(r).includes('novedades'), `novedades: ${r}`)
+  assert.equal(menuCompleto(r).includes('soporte'), ctxDe(r).can('iglesia.configurar'), `soporte: ${r}`)
+}
 // Solo el líder de casa tiene «Mi panel»
 for (const r of Object.keys(ROLES)) assert.equal(menuDe(r).includes('miPanel'), r === 'lider_casa', `miPanel: ${r}`)
 assert.ok(esLiderDeCasa(ctxDe('lider_casa'))); assert.ok(!esLiderDeCasa(ctxDe('administrador'))); assert.ok(!esLiderDeCasa(ctxDe('propietario')))
@@ -211,7 +218,7 @@ assert.ok(esLiderDeCasa(ctxDe('lider_casa'))); assert.ok(!esLiderDeCasa(ctxDe('a
 for (const r of Object.keys(ROLES)) assert.equal(aterrizajeDe(ctxDe(r)), r === 'lider_casa' ? 'mi-panel' : 'dashboard', `aterrizaje: ${r}`)
 
 // El menú y la comprobación de la ruta usan las mismas reglas: lo que el menú ofrece, la ruta lo permite, y viceversa
-const RUTA_DE_ITEM: Record<string, string> = { miPanel: 'mi-panel', miembros: 'miembros', eventos: 'eventos', casas: 'casas', zonas: 'zonas', consolidacion: 'consolidacion', formacion: 'formacion', logros: 'logros', comunicacion: 'comunicacion', reportes: 'reportes', configuracion: 'configuracion', red: 'red' }
+const RUTA_DE_ITEM: Record<string, string> = { miPanel: 'mi-panel', miembros: 'miembros', eventos: 'eventos', casas: 'casas', zonas: 'zonas', consolidacion: 'consolidacion', formacion: 'formacion', logros: 'logros', comunicacion: 'comunicacion', reportes: 'reportes', configuracion: 'configuracion', red: 'red', soporte: 'soporte' }
 for (const rol of Object.keys(ROLES)) for (const sedes of [false, true]) {
   const c = ctxDe(rol, { sedes }); const visibles = new Set(itemsVisibles(c).map(i => i.clave))
   for (const [item, ruta] of Object.entries(RUTA_DE_ITEM)) assert.equal(cumple(REQUISITOS_RUTA[ruta], c), visibles.has(item), `${rol}: el menú y la ruta ${ruta} deben coincidir`)

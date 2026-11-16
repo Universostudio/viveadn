@@ -63,6 +63,14 @@ insert into public.asistencias (iglesia_id, casa_oracion_id, miembro_id, fecha, 
 insert into public.adn_seguimiento_metodos (id, iglesia_id, clave, nombre, plantilla_origen, pasos, plazo_horas, umbral_amarillo_horas, umbral_naranja_horas, primer_contacto_horas) values
   ('ea600000-0000-0000-0000-000000000001', 'ea100000-0000-0000-0000-00000000000a', 'propio', 'Método propio de A', '5e000000-0000-4000-8000-000000000072', 2, 96, 30, 60, 30);
 insert into public.adn_seguimiento_config (iglesia_id, metodo_id) values ('ea100000-0000-0000-0000-00000000000a', 'ea600000-0000-0000-0000-000000000001');
+-- Soporte: un ticket con dos mensajes, la marca de novedades vistas de una persona y la entrega de un aviso (el aviso y las novedades son globales)
+insert into public.adn_tickets (id, iglesia_id, creado_por, asunto, prioridad, estado) values ('ea700000-0000-0000-0000-000000000001', 'ea100000-0000-0000-0000-00000000000a', 'ea000000-0000-0000-0000-000000000001', 'Ticket de «exportación», con "comillas"', 'alta', 'abierto');
+insert into public.adn_ticket_mensajes (ticket_id, iglesia_id, autor_tipo, autor, texto) values
+  ('ea700000-0000-0000-0000-000000000001', 'ea100000-0000-0000-0000-00000000000a', 'iglesia', 'ea000000-0000-0000-0000-000000000001', E'Primera línea\r\nSegunda línea, con coma'),
+  ('ea700000-0000-0000-0000-000000000001', 'ea100000-0000-0000-0000-00000000000a', 'plataforma', null, 'Respuesta de la plataforma');
+insert into public.adn_novedades_vistas (usuario, iglesia_id, vista_en) values ('ea000000-0000-0000-0000-000000000001', 'ea100000-0000-0000-0000-00000000000a', '2026-11-10 10:00:00+00');
+insert into public.adn_avisos (id, tipo, titulo, texto) values ('ea800000-0000-0000-0000-000000000001', 'actualizacion', 'Aviso de prueba', 'Texto del aviso');
+insert into public.adn_avisos_entregas (aviso_id, iglesia_id, leido_en) values ('ea800000-0000-0000-0000-000000000001', 'ea100000-0000-0000-0000-00000000000a', '2026-11-10 11:00:00+00');
 insert into public.adn_asistencias_duplicadas (id, iglesia_id, casa_oracion_id, miembro_id, fecha, presente, created_at) values
   (gen_random_uuid(), 'ea100000-0000-0000-0000-00000000000a', 'ea300000-0000-0000-0000-000000000001', 'ea400000-0000-0000-0000-000000000001', '2026-11-04', true, '2026-11-04 19:00:00+00');
 insert into public.progreso_formacion (iglesia_id, miembro_id, nivel, nombre_nivel, porcentaje, fecha_inicio) values

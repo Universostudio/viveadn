@@ -50,7 +50,10 @@
     "test:panel-inicio": "node scripts/probar-panel-inicio.mts",
     "test:inicio-ui": "node scripts/probar-inicio-ui.mjs",
     "test:metodo-seguimiento": "node scripts/probar-metodo-seguimiento.mts",
-    "test:seguimiento-config-ui": "node scripts/probar-seguimiento-config-ui.mjs"
+    "test:seguimiento-config-ui": "node scripts/probar-seguimiento-config-ui.mjs",
+    "test:soporte-funcion": "node scripts/probar-soporte-funcion.mts",
+    "test:soporte": "node scripts/probar-soporte.mts",
+    "test:soporte-ui": "node scripts/probar-soporte-ui.mjs"
   },
   "dependencies": {
     "@fontsource/dm-sans": "^5.3.0",

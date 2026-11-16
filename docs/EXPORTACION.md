@@ -18,6 +18,8 @@ Entran 32 tablas [E]: la iglesia, toda tabla con `iglesia_id` y `rol_permisos`. 
 
 Los tokens del QR de eventos y de invitaciones y las huellas de IP son secretos: quien tuviera el archivo podría registrar asistencia o aceptar invitaciones. Tampoco salen los secretos anidados en la auditoría ni las marcas internas del borrado suave. El manifiesto lista las columnas omitidas de cada tabla [E, la prueba busca los valores secretos en todos los archivos y no aparecen]. Los datos de otras iglesias tampoco salen [E]. Las cuentas de acceso (Auth) no viajan: las personas deben volver a ser invitadas.
 
+Del soporte (`docs/PANEL-MAESTRO.md`, apartado 3.3) salen los tickets con sus mensajes y la marca de novedades vistas de cada persona. No salen las entregas de avisos (`adn_avisos_entregas`): apuntan a avisos de la plataforma, que no son de la iglesia, y se vuelven a generar al repartir un aviso nuevo; por eso quedan fuera de `adn_tablas_exportables` [E, prueba de integridad de la carga]. Las novedades y los avisos son globales de la plataforma y tampoco salen.
+
 Una advertencia que también va en el `LEEME.txt` del ZIP: los CSV conservan el texto tal cual, de modo que una celda que empiece por `=`, `+`, `-` o `@` puede interpretarse como fórmula si se abre en una hoja de cálculo. Los informes en Excel (trabajo 4) neutralizan esas celdas; la exportación no, porque debe devolver exactamente lo guardado.
 
 ## Cómo se genera

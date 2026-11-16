@@ -15,7 +15,7 @@ falla() { echo "FALLO: $*"; exit 1; }
 
 # 2. Cobertura: el manifiesto cubre todas las tablas con iglesia_id, mas iglesias y rol_permisos, y todas llevan filas
 esperadas=$("${PSQL[@]}" -At -d "$DB" -c "select string_agg(nombre, ',' order by nombre collate \"C\") from public.adn_tablas_exportables()")
-reales=$("${PSQL[@]}" -At -d "$DB" -c "select string_agg(relname, ',' order by relname collate \"C\") from (select c.relname from pg_class c where c.relnamespace='public'::regnamespace and c.relkind='r' and (c.relname in ('iglesias','rol_permisos') or c.relname not in ('plataforma_auditoria','adn_bajas_enlaces','adn_confirmaciones') and exists (select 1 from pg_attribute a where a.attrelid=c.oid and a.attname='iglesia_id' and not a.attisdropped))) t")
+reales=$("${PSQL[@]}" -At -d "$DB" -c "select string_agg(relname, ',' order by relname collate \"C\") from (select c.relname from pg_class c where c.relnamespace='public'::regnamespace and c.relkind='r' and (c.relname in ('iglesias','rol_permisos') or c.relname not in ('plataforma_auditoria','adn_bajas_enlaces','adn_confirmaciones','adn_avisos_entregas') and exists (select 1 from pg_attribute a where a.attrelid=c.oid and a.attname='iglesia_id' and not a.attisdropped))) t")
 [ "$esperadas" = "$reales" ] || falla "adn_tablas_exportables no cubre todas las tablas de iglesia ($esperadas / $reales)"
 python3 - "$EXP/manifest.json" <<'PY'
 import json, sys

@@ -27,7 +27,7 @@ El administrador de plataforma ve conteos, estados, planes, fechas y nombres de 
 | `/plataforma/registro` | Registro y códigos | Apertura del registro y códigos de acceso |
 | `/plataforma/sistema` | Sistema | Estado de la purga, libro de purgas, funciones de envío, auditoría de plataforma |
 | `/plataforma/facturacion` | Facturación | «Sin conectar»: falta una pasarela de cobro, porque hoy no existe ningún dato de precios ni de cobros |
-| `/plataforma/soporte` | Soporte | «Sin conectar»: faltan un sistema de tickets y un registro de cambios publicado |
+| `/plataforma/soporte` | Soporte | Tickets, novedades y avisos dentro de la aplicación, sin servicios externos de pago. «Sin conectar» solo mientras la base no tenga la migración `20261111350000_adn_soporte` |
 
 Regla de honestidad: si un bloque no tiene datos reales detrás, muestra «Sin conectar» y una línea que dice qué falta. No hay cifras inventadas ni datos de ejemplo en pantalla [E].
 
@@ -49,6 +49,18 @@ Las iglesias de demostración (`es_demo`) pueden entrar o no en las cifras, pero
 ### 3.2 Estados de vida
 
 Suspendidas, en receso y en baja tienen tarjeta en la portada, filtro con su número y, en «Gestionar», un bloque que explica el estado en lenguaje llano con sus botones. No se solapan: una iglesia con purga o borrado programado cuenta solo como «en baja». La política que aplica el código y la propuesta mejorada están en `docs/CICLO-DE-VIDA.md`.
+
+### 3.3 Soporte dentro de la plataforma
+
+Tres piezas, todas en la base y la función `plataforma`, sin servicios de pago [E, `supabase/tests/adn_soporte.sql`, `scripts/probar-soporte-ui.mjs`].
+
+- **Tickets.** La iglesia (quien tiene `iglesia.configurar`) abre un ticket con asunto, prioridad y texto desde «Soporte» en su menú y conversa dentro de él. La plataforma lo ve en «Soporte», responde y cierra. Estados: abierto, respondido (cuando responde la plataforma) y cerrado; un ticket cerrado no admite más mensajes. Límites: 10 tickets abiertos por iglesia y 200 mensajes por ticket. La iglesia solo ve lo suyo por seguridad de filas; no puede borrar ni editar nada. La lista de la plataforma lleva iglesia, asunto, prioridad, estado, fechas y número de mensajes. **El texto solo se ve al abrir un ticket concreto, y abrirlo queda en la auditoría** (`ticket_abrir`); responder y cerrar también (`ticket_responder`, `ticket_cerrar`). La pantalla avisa de que no se escriban contraseñas ni datos de miembros.
+- **Novedades.** La plataforma publica una entrada con versión, título y texto y puede retirarla. Cada iglesia las ve en «Novedades»; el menú muestra cuántas se publicaron desde la última vez que esa persona las miró, y verlas apaga el aviso.
+- **Avisos.** Tipo (actualización, mantenimiento o alerta), título y texto, para todas las iglesias activas, en prueba o en alta, o solo para las de ciertos planes o estados. Las demostraciones solo reciben el aviso si se marca. Si se eligen planes y estados a la vez, la iglesia debe cumplir los dos. El aviso sale como franja descartable bajo la cabecera de la iglesia y queda registrado, por iglesia, cuándo se entregó, se leyó y se descartó; la plataforma ve las cifras («4 entregados, 1 leído, 0 descartados») y puede retirarlo. Las iglesias en receso o suspendidas solo lo reciben si se filtra por esos estados. Una iglesia dada de baja nunca lo recibe.
+
+**Correo masivo: apagado.** Al crear un aviso se puede pedir que además vaya por correo, pero eso solo se anota (`correo_estado`: `no_pedido`, `apagado` o `pendiente`) y la pantalla lo dice: «correo pedido, no enviado». No se envía nada mientras el interruptor general `ADN_ENVIO_ACTIVO` siga apagado, y cuando se encienda haría falta además el reparto con los topes aprobados (`docs/COSTE-ENVIO.md`). Hoy es solo la pista de lo que se pidió.
+
+**Despliegue seguro.** La web puede desplegarse antes que la migración: la iglesia comprueba una vez por carga si existen las tablas y, si no, no ofrece menú, avisos ni novedades; la plataforma muestra «Sin conectar» en vez de ceros inventados. Los ceros de verdad solo aparecen cuando la base ya tiene las tablas. Las tablas de soporte se exportan con el resto de datos de la iglesia, salvo las entregas de avisos (se reconstruyen al repartir un aviso nuevo).
 
 ## 4. Estructura reutilizable
 

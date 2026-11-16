@@ -54,7 +54,7 @@ export function envioDelDia(
 export function faltaLaFuncion(error: { code?: string; message?: string } | null | undefined): boolean {
   if (!error) return false
   const m = `${error.code ?? ''} ${error.message ?? ''}`
-  return /42883|PGRST202|could not find the function|does not exist/i.test(m)
+  return /42883|42P01|PGRST202|PGRST205|could not find the function|could not find the table|does not exist/i.test(m)
 }
 
 export const MAX_LIBRO = 20

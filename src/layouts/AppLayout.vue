@@ -35,7 +35,11 @@
             :class="['nav-item', (item.to === '/' ? isExactActive : isActive) ? 'active' : '']">
             <component :is="item.icon" class="w-5 h-5 flex-shrink-0" aria-hidden="true" />
             <span class="text-sm font-medium">{{ t(item.label) }}</span>
-            <!-- Badge alerta consolidación -->
+            <!-- Aviso de novedades sin ver y alerta de consolidación -->
+            <span v-if="item.clave === 'novedades' && soporte.novedadesSinVer > 0" data-test="badge-novedades"
+              class="ml-auto bg-adn-verde text-white text-xs rounded-full px-2 py-0.5 font-bold">
+              {{ soporte.novedadesSinVer }}
+            </span>
             <span v-if="item.badge && consolidacionPendientes > 0"
               class="ml-auto bg-red-500 text-white text-xs rounded-full px-2 py-0.5 font-bold">
               {{ consolidacionPendientes }}
@@ -100,6 +104,14 @@
         <span>{{ t('layout.avisoSuspendida') }}</span>
         <RouterLink to="/datos-iglesia" class="underline font-medium">{{ t('layout.avisoAbrir') }}</RouterLink>
       </div>
+      <!-- Avisos de la plataforma para la iglesia: se pueden descartar -->
+      <div v-if="soporte.avisos.length" class="space-y-px" data-test="avisos">
+        <div v-for="a in soporte.avisos" :key="a.id" :role="a.tipo === 'alerta' ? 'alert' : 'status'" :data-aviso="a.id" :data-tipo="a.tipo"
+          :class="['text-sm px-4 py-2 flex items-start justify-between gap-3', a.tipo === 'alerta' ? 'bg-red-100 text-red-900' : a.tipo === 'mantenimiento' ? 'bg-amber-100 text-amber-900' : 'bg-blue-100 text-blue-900']">
+          <p><strong>{{ a.titulo }}.</strong> {{ a.texto }}</p>
+          <button type="button" class="flex-shrink-0 underline text-xs" data-test="descartar-aviso" @click="soporte.descartar(a.id)">{{ t('layout.descartarAviso') }}</button>
+        </div>
+      </div>
       <main class="flex-1 overflow-y-auto">
         <RouterView />
       </main>
@@ -111,7 +123,7 @@
 import { computed, ref, watch, type Component } from 'vue'
 import {
   LayoutDashboard, Users, House, HeartHandshake, GraduationCap, MessageSquare,
-  ChartColumn, CalendarDays, Settings, ShieldCheck, LogOut, Menu, Network, MapPinned, LayoutList, Trophy,
+  ChartColumn, CalendarDays, Settings, ShieldCheck, LogOut, Menu, Network, MapPinned, LayoutList, Trophy, Megaphone, LifeBuoy,
 } from '@lucide/vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
@@ -122,9 +134,11 @@ import { supabase } from '@/lib/supabase'
 import { haceHoras } from '@/lib/alertas'
 import { itemsVisibles } from '@/lib/acceso'
 import { useSeguimientoStore } from '@/stores/seguimiento'
+import { useSoporteStore } from '@/stores/soporte'
 
 const auth = useAuthStore()
 const seg = useSeguimientoStore()
+const soporte = useSoporteStore()
 const router = useRouter()
 const route = useRoute()
 const menuAbierto = ref(false)
@@ -143,12 +157,14 @@ const consolidacionPendientes = ref(0)
 const ICONOS: Record<string, Component> = {
   miPanel: LayoutList, inicio: LayoutDashboard, miembros: Users, eventos: CalendarDays, casas: House, zonas: MapPinned,
   consolidacion: HeartHandshake, formacion: GraduationCap, logros: Trophy, comunicacion: MessageSquare, reportes: ChartColumn,
-  configuracion: Settings, red: Network,
+  configuracion: Settings, red: Network, novedades: Megaphone, soporte: LifeBuoy,
 }
 
 const navItems = computed(() =>
   itemsVisibles({ can: auth.can, tieneModulo: auth.tieneModulo, esPropietario: auth.rolInfo?.es_propietario === true, tieneSedes: auth.tieneSedes })
-    .map(i => ({ to: i.to, icon: ICONOS[i.clave], label: i.etiqueta, badge: i.clave === 'consolidacion' }))
+    // Novedades y soporte solo se ofrecen cuando la base ya tiene sus tablas (si no, no hay nada que mostrar)
+    .filter(i => !['novedades', 'soporte'].includes(i.clave) || soporte.disponible === true)
+    .map(i => ({ clave: i.clave, to: i.to, icon: ICONOS[i.clave], label: i.etiqueta, badge: i.clave === 'consolidacion' }))
 )
 
 function volverAlPanel() {
@@ -174,4 +190,8 @@ async function contarPendientes() {
   consolidacionPendientes.value = count ?? 0
 }
 watch(() => navItems.value.some(i => i.badge), contarPendientes, { immediate: true })
+
+// Novedades y avisos de la plataforma: se comprueba si existen, y se vuelven a leer al cambiar de página para que el aviso de «novedades» se apague al verlas
+void soporte.asegurar().then(() => { void soporte.contarNovedades(); void soporte.cargarAvisos() })
+watch(() => route.fullPath, () => { if (soporte.disponible) void soporte.contarNovedades() })
 </script>

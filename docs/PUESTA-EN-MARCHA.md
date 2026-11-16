@@ -162,6 +162,8 @@ Para ensayarla sin esperar 30 días, sobre una iglesia ficticia que se borró co
 
 ## 6. Qué no está activo en pruebas, a propósito
 
+- El **correo masivo de los avisos de la plataforma** (soporte, `docs/PANEL-MAESTRO.md` apartado 3.3): al crear un aviso se puede pedir también por correo, pero solo se anota como «pedido, no enviado» mientras `ADN_ENVIO_ACTIVO` esté apagado. Los tickets, novedades y avisos dentro de la aplicación sí funcionan en cuanto se aplica la migración `20261111350000_adn_soporte` y se despliega la función `plataforma`.
+
 - El envío real de mensajes a personas: no hay clave de proveedor de producción y no se pone.
 - La doble confirmación: apagada por defecto con tres cerrojos (`docs/COMUNICACION.md`).
 - Los avisos del sistema (baja pedida o cancelada, alerta de purga atrasada): apagados; solo `ADN_ENVIO_ACTIVO=si` los enciende, con orden escrita de Gerencia y con topes (`docs/COSTE-ENVIO.md`).

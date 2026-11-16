@@ -73,6 +73,7 @@ async function escenario({ admin = true, conIglesia = false, ancho = 1366, alto 
       switch (cuerpo.accion) {
         case 'listar': return json(200, { iglesias: (sinDemos ? iglesias.filter(i => !i.es_demo) : iglesias).concat(ciclo ? iglesiasCiclo : []), planes, modulos, plan_modulos: planModulos })
         case 'registro_estado': return json(200, { abierto: false, requiere_codigo: true, codigos: [] })
+        case 'soporte_resumen': return json(501, { error: 'El soporte no esta disponible hasta aplicar su migracion' }) // esta prueba es de una base sin las tablas del soporte
         case 'estado_purga': return json(200, { ok: true, atrasada: purgaAtrasada, en_borrado: 1, vencidas: purgaAtrasada ? 1 : 0, horas_mas_atrasada: purgaAtrasada ? 60 : 0 })
         case 'detalle':
           if (detalleFalla) return json(500, { error: 'No se pudo cargar' })

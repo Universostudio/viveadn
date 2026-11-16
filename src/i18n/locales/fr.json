@@ -32,7 +32,9 @@
     "red": "Réseau",
     "zonas": "Zones",
     "miPanel": "Mon tableau",
-    "logros": "Réussites"
+    "logros": "Réussites",
+    "novedades": "Nouveautés",
+    "soporte": "Assistance"
   },
   "login": {
     "subtitulo": "Système de gestion d'église",
@@ -1558,7 +1560,8 @@
   },
   "layout": {
     "avisoSuspendida": "Votre église est suspendue. Si vous avez demandé la résiliation, vous pouvez l'annuler ou télécharger vos données depuis ici.",
-    "avisoAbrir": "Ouvrir données et résiliation"
+    "avisoAbrir": "Ouvrir données et résiliation",
+    "descartarAviso": "Fermer"
   },
   "panelMaestro": {
     "saltar": "Aller au contenu",
@@ -1721,7 +1724,14 @@
       "recuperar_iglesia": "Église récupérée",
       "registro_ajustes": "Réglages d’inscription",
       "repurgar_registradas": "Purge répétée",
-      "vincular_red": "Changement dans le réseau d’églises"
+      "vincular_red": "Changement dans le réseau d’églises",
+      "ticket_abrir": "A ouvert un ticket d'assistance",
+      "ticket_responder": "A répondu à un ticket d'assistance",
+      "ticket_cerrar": "A fermé un ticket d'assistance",
+      "novedad_publicar": "A publié une nouveauté",
+      "novedad_retirar": "A retiré une nouveauté",
+      "aviso_crear": "A envoyé un avis aux églises",
+      "aviso_retirar": "A retiré un avis"
     },
     "pruebas": {
       "titulo": "Essais en cours",
@@ -1747,7 +1757,77 @@
       "tickets": "Tickets ouverts",
       "faltaTickets": "Il faut encore connecter un système de tickets : le support n’est pas consigné dans la plateforme aujourd’hui.",
       "cambios": "Journal des modifications",
-      "faltaCambios": "Il faut encore publier le journal des modifications de la version : il n’existe aujourd’hui aucune source de données pour l’afficher."
+      "faltaCambios": "Il faut encore publier le journal des modifications de la version : il n’existe aujourd’hui aucune source de données pour l’afficher.",
+      "errorCarga": "Impossible de lire l'assistance. Réessayez dans quelques minutes.",
+      "abiertos": "Tickets ouverts",
+      "respondidos": "Répondus",
+      "urgentes": "Urgents non fermés",
+      "avisosVigentes": "Avis en cours",
+      "pest": {
+        "tickets": "Tickets",
+        "novedades": "Nouveautés",
+        "avisos": "Avis"
+      },
+      "ticketsNota": "Ici vous ne voyez que l'église, l'objet et l'état. Le texte s'ouvre ticket par ticket et figure dans le journal d'audit.",
+      "sinTickets": "Aucun ticket.",
+      "mensajes": "{n} messages",
+      "prio": {
+        "baja": "Basse",
+        "normal": "Normale",
+        "alta": "Haute",
+        "urgente": "Urgente"
+      },
+      "estado": {
+        "abierto": "Ouvert",
+        "respondido": "Répondu",
+        "cerrado": "Fermé"
+      },
+      "cerrar": "Fermer le ticket",
+      "dePlataforma": "Plateforme",
+      "deIglesia": "Église",
+      "responder": "Votre réponse",
+      "enviar": "Envoyer la réponse",
+      "respondido": "Réponse envoyée.",
+      "cerrado": "Ticket fermé.",
+      "nuevaNovedad": "Publier une nouveauté",
+      "version": "Version",
+      "titulo": "Titre",
+      "texto": "Texte",
+      "publicar": "Publier",
+      "sinNovedades": "Aucune nouveauté publiée.",
+      "retirada": "Retirée",
+      "retirar": "Retirer",
+      "novedadPublicada": "Nouveauté publiée.",
+      "novedadRetirada": "Nouveauté retirée.",
+      "nuevoAviso": "Nouvel avis dans l'application",
+      "tipo": "Type",
+      "tipos": {
+        "actualizacion": "Mise à jour",
+        "mantenimiento": "Maintenance",
+        "alerta": "Alerte"
+      },
+      "destinatarios": "Destinataires",
+      "destTodas": "Toutes les églises en inscription, en essai ou actives",
+      "destFiltro": "Seulement celles qui correspondent à ces filtres",
+      "porPlan": "Par formule",
+      "porEstado": "Par état",
+      "etapas": {
+        "onboarding": "Inscription",
+        "prueba": "Essai",
+        "activa": "Active",
+        "receso": "Pause",
+        "suspendida": "Suspendue"
+      },
+      "incluirDemo": "Inclure les églises de démonstration",
+      "porCorreo": "Demander aussi l'envoi par e-mail",
+      "correoNota": "L'e-mail de masse est désactivé : la demande est seulement enregistrée, rien n'est envoyé.",
+      "enviarAviso": "Envoyer l'avis",
+      "sinAvisos": "Aucun avis.",
+      "entregas": "{e} remis · {l} lus · {d} fermés",
+      "correoApagado": "e-mail demandé, non envoyé (envoi désactivé)",
+      "retirado": "Retiré",
+      "avisoEnviado": "Avis remis à {n} églises.",
+      "avisoRetirado": "Avis retiré."
     },
     "actividad": {
       "alta": "Création de {iglesia}",
@@ -1985,6 +2065,59 @@
       "repetido": "Une méthode avec cette clé existe déjà. Réessayez.",
       "permiso": "Vous n'avez pas la permission de modifier ceci, ou votre forfait n'inclut pas la méthode personnalisée.",
       "generico": "Impossible d'enregistrer. Réessayez."
+    }
+  },
+  "novedades": {
+    "titulo": "Nouveautés de la plateforme",
+    "subtitulo": "Ce qui a changé dans Vive ADN, du plus récent au plus ancien.",
+    "error": "Impossible de charger les nouveautés.",
+    "vacio": "Aucune nouveauté publiée pour le moment.",
+    "version": "Version {v}",
+    "nueva": "Nouveau"
+  },
+  "soporte": {
+    "titulo": "Assistance",
+    "subtitulo": "Écrivez à l'équipe de la plateforme quand quelque chose ne fonctionne pas ou si vous avez une question.",
+    "noDisponible": "L'assistance intégrée à la plateforme n'est pas encore activée dans cet environnement.",
+    "nuevo": "Nouveau ticket",
+    "asunto": "Objet",
+    "prioridad": "Priorité",
+    "texto": "Dites-nous ce qui se passe",
+    "sinDatos": "N'écrivez ni mots de passe ni données personnelles de membres : l'équipe n'en a pas besoin.",
+    "enviar": "Envoyer",
+    "enviando": "Envoi…",
+    "misTickets": "Vos tickets",
+    "errorCarga": "Impossible de charger les tickets.",
+    "reintentar": "Réessayer",
+    "vacio": "Vous n'avez encore ouvert aucun ticket.",
+    "dePlataforma": "Équipe de la plateforme",
+    "deTuIglesia": "Votre église",
+    "responder": "Répondre",
+    "cerradoAviso": "Ce ticket est fermé. Si le problème continue, ouvrez-en un nouveau.",
+    "creado": "Ticket créé. Nous vous répondrons ici même.",
+    "respuestaEnviada": "Réponse envoyée.",
+    "prio": {
+      "baja": "Basse",
+      "normal": "Normale",
+      "alta": "Haute",
+      "urgente": "Urgente"
+    },
+    "estado": {
+      "abierto": "Ouvert",
+      "respondido": "Répondu",
+      "cerrado": "Fermé"
+    },
+    "errores": {
+      "cerrado": "Le ticket est fermé.",
+      "lleno": "Ce ticket contient trop de messages : ouvrez-en un nouveau.",
+      "demasiados": "Vous avez déjà 10 tickets ouverts. Attendez une réponse ou fermez-en avant d'en ouvrir un autre.",
+      "permiso": "Vous n'avez pas l'autorisation d'écrire à l'assistance.",
+      "generico": "L'action n'a pas pu être menée à bien. Réessayez.",
+      "asuntoCorto": "L'objet doit contenir au moins 3 caractères.",
+      "asuntoLargo": "L'objet ne peut pas dépasser 120 caractères.",
+      "prioridad": "Choisissez une priorité.",
+      "textoVacio": "Écrivez le message.",
+      "textoLargo": "Le message ne peut pas dépasser 4000 caractères."
     }
   }
 }

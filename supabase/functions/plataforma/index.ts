@@ -1,6 +1,7 @@
 import { createClient } from 'npm:@supabase/supabase-js@2'
 import { claveCronValida, errorDeCiclo, tamanoLote } from './ciclo.ts'
 import { avisoPurga, enviarAviso, leerConfig, type TipoEnvio } from './envio.ts'
+import { correoDeAviso, esUuid, estadisticasDeAvisos, listaDeTickets, resumenDeSoporte, ticketAbierto, validarAviso, validarNovedad, validarRespuesta } from './soporte.ts'
 import { conteosPorIglesia, envioDelDia, eventosDeActividad, faltaLaFuncion, historialDeIglesia, MAX_LIBRO, salidaSegura } from './panel.ts'
 
 // Panel de plataforma: solo para usuarios en plataforma_admins.
@@ -658,6 +659,126 @@ Deno.serve(async (req) => {
         if (error) return json({ error: 'No se pudo cambiar el codigo' }, 500)
         if (!data) return json({ error: 'El codigo no existe' }, 404)
         const auditado = await auditar(body.activo ? 'codigo_activar' : 'codigo_desactivar', null, { codigo_id: body.id })
+        return json({ ok: true, auditado })
+      }
+
+      // ---- Soporte: tickets, novedades y avisos dentro de la aplicacion. Lo lee y lo escribe solo la plataforma (service_role); cada iglesia ve lo suyo por seguridad de filas.
+      case 'soporte_resumen': {
+        const [t, n, a] = await Promise.all([
+          admin.from('adn_tickets').select('estado, prioridad'),
+          admin.from('adn_novedades').select('version, publicada_en').is('retirada_en', null).order('publicada_en', { ascending: false }),
+          admin.from('adn_avisos').select('id').is('retirado_en', null),
+        ])
+        const fallo = t.error ?? n.error ?? a.error
+        if (fallo) return json({ error: faltaLaFuncion(fallo) ? 'El soporte no esta disponible hasta aplicar su migracion' : 'No se pudo leer el soporte' }, faltaLaFuncion(fallo) ? 501 : 500)
+        const ids = (a.data ?? []).map((x: { id: string }) => x.id)
+        const e = ids.length ? await admin.from('adn_avisos_entregas').select('aviso_id, leido_en, descartado_en').in('aviso_id', ids) : { data: [], error: null }
+        if (e.error) return json({ error: 'No se pudo leer el soporte' }, 500)
+        return json(salidaSegura({ ok: true, ...resumenDeSoporte(t.data, n.data, a.data, e.data) }))
+      }
+
+      case 'ticket_listar': {
+        // Cifras y asunto: el texto de las conversaciones no sale en la lista
+        const estado = ['abierto', 'respondido', 'cerrado'].includes(String(body.estado)) ? String(body.estado) : null
+        let q = admin.from('adn_tickets').select('id, iglesia_id, asunto, prioridad, estado, created_at, updated_at, cerrado_en, iglesias(nombre), mensajes:adn_ticket_mensajes(count)')
+          .order('updated_at', { ascending: false }).limit(100)
+        if (estado) q = q.eq('estado', estado)
+        const { data, error } = await q
+        if (error) return json({ error: faltaLaFuncion(error) ? 'El soporte no esta disponible hasta aplicar su migracion' : 'No se pudieron leer los tickets' }, faltaLaFuncion(error) ? 501 : 500)
+        return json(salidaSegura({ ok: true, tickets: listaDeTickets(data) }))
+      }
+
+      case 'ticket_abrir': {
+        // Abrir un ticket para leerlo es una accion con rastro: queda en la auditoria
+        if (!esUuid(body.id)) return json({ error: 'Identificador de ticket no valido' }, 400)
+        const { data: t, error } = await admin.from('adn_tickets').select('id, iglesia_id, asunto, prioridad, estado, created_at, updated_at, cerrado_en, iglesias(nombre)').eq('id', body.id).maybeSingle()
+        if (error) return json({ error: 'No se pudo leer el ticket' }, 500)
+        if (!t) return json({ error: 'El ticket no existe' }, 404)
+        const { data: m, error: eM } = await admin.from('adn_ticket_mensajes').select('id, autor_tipo, texto, created_at').eq('ticket_id', body.id).order('id')
+        if (eM) return json({ error: 'No se pudo leer el ticket' }, 500)
+        const auditado = await auditar('ticket_abrir', t.iglesia_id, { ticket_id: t.id })
+        return json(salidaSegura({ ok: true, ticket: ticketAbierto(t, m), auditado }))
+      }
+
+      case 'ticket_responder': {
+        const v = validarRespuesta(body)
+        if (!v.ok) return json({ error: v.error }, 400)
+        const { data: t } = await admin.from('adn_tickets').select('id, iglesia_id, estado').eq('id', v.id).maybeSingle()
+        if (!t) return json({ error: 'El ticket no existe' }, 404)
+        if (t.estado === 'cerrado') return json({ error: 'El ticket esta cerrado' }, 409)
+        const { error } = await admin.from('adn_ticket_mensajes').insert({ ticket_id: v.id, autor_tipo: 'plataforma', autor: user?.id ?? null, texto: v.texto })
+        if (error) return json({ error: /ADN_TICKET_LLENO/.test(error.message) ? 'El ticket tiene demasiados mensajes' : 'No se pudo responder' }, /ADN_TICKET_/.test(error.message) ? 409 : 500)
+        const auditado = await auditar('ticket_responder', t.iglesia_id, { ticket_id: v.id })
+        return json({ ok: true, auditado })
+      }
+
+      case 'ticket_cerrar': {
+        if (!esUuid(body.id)) return json({ error: 'Identificador de ticket no valido' }, 400)
+        const { data: t, error } = await admin.from('adn_tickets').update({ estado: 'cerrado', cerrado_en: new Date().toISOString() }).eq('id', body.id).neq('estado', 'cerrado').select('id, iglesia_id').maybeSingle()
+        if (error) return json({ error: 'No se pudo cerrar el ticket' }, 500)
+        if (!t) return json({ error: 'El ticket no existe o ya esta cerrado' }, 404)
+        const auditado = await auditar('ticket_cerrar', t.iglesia_id, { ticket_id: t.id })
+        return json({ ok: true, auditado })
+      }
+
+      case 'novedad_listar': {
+        const { data, error } = await admin.from('adn_novedades').select('id, version, titulo, texto, publicada_en, retirada_en').order('publicada_en', { ascending: false }).limit(50)
+        if (error) return json({ error: faltaLaFuncion(error) ? 'El soporte no esta disponible hasta aplicar su migracion' : 'No se pudieron leer las novedades' }, faltaLaFuncion(error) ? 501 : 500)
+        return json(salidaSegura({ ok: true, novedades: data }))
+      }
+
+      case 'novedad_publicar': {
+        const v = validarNovedad(body)
+        if (!v.ok) return json({ error: v.error }, 400)
+        const { data, error } = await admin.from('adn_novedades').insert({ version: v.version, titulo: v.titulo, texto: v.texto, publicada_por: user?.id ?? null }).select('id').single()
+        if (error || !data) return json({ error: 'No se pudo publicar la novedad' }, 500)
+        const auditado = await auditar('novedad_publicar', null, { novedad_id: data.id, version: v.version })
+        return json({ ok: true, id: data.id, auditado })
+      }
+
+      case 'novedad_retirar': {
+        if (!esUuid(body.id)) return json({ error: 'Identificador no valido' }, 400)
+        const { data, error } = await admin.from('adn_novedades').update({ retirada_en: new Date().toISOString() }).eq('id', body.id).is('retirada_en', null).select('id').maybeSingle()
+        if (error) return json({ error: 'No se pudo retirar la novedad' }, 500)
+        if (!data) return json({ error: 'La novedad no existe o ya esta retirada' }, 404)
+        const auditado = await auditar('novedad_retirar', null, { novedad_id: data.id })
+        return json({ ok: true, auditado })
+      }
+
+      case 'aviso_listar': {
+        const { data, error } = await admin.from('adn_avisos').select('id, tipo, titulo, texto, destino, incluir_demo, desde, hasta, created_at, retirado_en, por_correo, correo_estado').order('created_at', { ascending: false }).limit(50)
+        if (error) return json({ error: faltaLaFuncion(error) ? 'El soporte no esta disponible hasta aplicar su migracion' : 'No se pudieron leer los avisos' }, faltaLaFuncion(error) ? 501 : 500)
+        const ids = (data ?? []).map((x: { id: string }) => x.id)
+        const e = ids.length ? await admin.from('adn_avisos_entregas').select('aviso_id, leido_en, descartado_en').in('aviso_id', ids) : { data: [], error: null }
+        if (e.error) return json({ error: 'No se pudieron leer los avisos' }, 500)
+        const est = estadisticasDeAvisos(e.data)
+        return json(salidaSegura({ ok: true, avisos: (data ?? []).map((a: { id: string }) => ({ ...a, ...(est[a.id] ?? { entregas: 0, leidos: 0, descartados: 0 }) })) }))
+      }
+
+      case 'aviso_crear': {
+        const v = validarAviso(body)
+        if (!v.ok) return json({ error: v.error }, 400)
+        const config = leerConfig(k => Deno.env.get(k))
+        // El correo masivo no se envia: solo se anota si se pidio y si el interruptor general (ADN_ENVIO_ACTIVO) esta apagado
+        const correo = correoDeAviso(v.aviso.por_correo, config.activo)
+        const { data, error } = await admin.from('adn_avisos').insert({ ...v.aviso, correo_estado: correo, creado_por: user?.id ?? null }).select('id').single()
+        if (error || !data) return json({ error: faltaLaFuncion(error) ? 'Los avisos no estan disponibles hasta aplicar la migracion del soporte' : 'No se pudo crear el aviso' }, faltaLaFuncion(error) ? 501 : 500)
+        const { data: n, error: eEntrega } = await admin.rpc('adn_aviso_entregar', { p_aviso: data.id })
+        if (eEntrega) {
+          // Un aviso sin reparto no debe quedar vigente: se retira para que nadie lo vea a medias
+          await admin.from('adn_avisos').update({ retirado_en: new Date().toISOString() }).eq('id', data.id)
+          return json({ error: 'No se pudo repartir el aviso' }, 500)
+        }
+        const auditado = await auditar('aviso_crear', null, { aviso_id: data.id, tipo: v.aviso.tipo, destino: v.aviso.destino, entregas: n, correo })
+        return json({ ok: true, id: data.id, entregas: Number(n) || 0, correo, auditado })
+      }
+
+      case 'aviso_retirar': {
+        if (!esUuid(body.id)) return json({ error: 'Identificador no valido' }, 400)
+        const { data, error } = await admin.from('adn_avisos').update({ retirado_en: new Date().toISOString() }).eq('id', body.id).is('retirado_en', null).select('id').maybeSingle()
+        if (error) return json({ error: 'No se pudo retirar el aviso' }, 500)
+        if (!data) return json({ error: 'El aviso no existe o ya esta retirado' }, 404)
+        const auditado = await auditar('aviso_retirar', null, { aviso_id: data.id })
         return json({ ok: true, auditado })
       }
 

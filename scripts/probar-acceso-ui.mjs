@@ -52,6 +52,8 @@ async function escenario(rol, { postFalla = false, asistenciasHoy = [] } = {}) {
     const json = (status, body) => ruta.fulfill({ status, headers: { ...cors, 'content-type': 'application/json' }, body: JSON.stringify(body) })
     if (!url.pathname.startsWith('/rest/v1/')) return json(200, [])
     const tabla = url.pathname.split('/').pop()
+    // Esta prueba es de un entorno sin las tablas del soporte (migración 350000 aún sin aplicar): el menú no ofrece Novedades ni Soporte
+    if (tabla === 'adn_novedades') return json(404, { message: 'relation does not exist', code: '42P01' })
     if (req.method() === 'PATCH') {
       const id = (url.searchParams.get('id') ?? '').replace('eq.', '')
       e.patches.push({ tabla, id, cuerpo: req.postDataJSON() })

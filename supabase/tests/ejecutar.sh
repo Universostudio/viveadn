@@ -52,6 +52,8 @@ bash tests/adn_asistencias_unico.sh
 bash tests/adn_seguimiento_metodos.sh
 bash tests/adn_seguimiento_metricas.sh
 bash tests/adn_seguimiento_propio.sh
+"${PSQL[@]}" -d $DB -f tests/adn_soporte.sql
+bash tests/adn_soporte.sh
 "${PSQL[@]}" -d $DB -f tests/adn_doble_confirmacion.sql
 "${PSQL[@]}" -d $DB -f tests/adn_purga_programada.sql
 "${PSQL[@]}" -d $DB -f tests/adn_libro_purgas.sql

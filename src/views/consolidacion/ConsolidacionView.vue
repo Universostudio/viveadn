@@ -564,7 +564,7 @@ async function cargarDatos() {
       ? supabase.from('miembros').select('id, nombre, apellido, crm_id').eq('activo', true).order('nombre')
       : Promise.resolve({ data: [] as any[] }),
   ])
-  consolidaciones.value = (consolRes.data ?? []).map(conAlerta)
+  consolidaciones.value = ((consolRes.data ?? []) as any[]).map(conAlerta)
   miembrosDisponibles.value = miembrosRes.data ?? []
   cargando.value = false
 }
