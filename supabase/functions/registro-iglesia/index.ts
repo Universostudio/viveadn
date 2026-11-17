@@ -65,8 +65,8 @@ Deno.serve(async (req) => {
         admin.from('planes').select('clave, nombre, descripcion, max_miembros, max_usuarios, orden').eq('activo', true).order('orden'),
         admin.from('modulos').select('clave, nombre, descripcion, tipo, orden').order('orden'),
         admin.from('plan_modulos').select('plan, modulo'),
-        admin.from('precios_plan').select('plan, importe_centimos'),
-        admin.from('precios_modulo').select('modulo, importe_centimos'),
+        admin.from('precios_plan').select('plan, moneda, importe_centimos'),
+        admin.from('precios_modulo').select('modulo, moneda, importe_centimos'),
         admin.from('precios_ajustes').select('moneda, impuestos_incluidos, propuesta').maybeSingle(),
       ])
       if (pl.error || mo.error || pm.error || !pl.data || !mo.data) { console.error('catalogo', pl.error?.message ?? mo.error?.message ?? pm.error?.message); return json({ error: 'interno' }, 500) }
@@ -136,7 +136,7 @@ Deno.serve(async (req) => {
 
     // Lo declarado en el asistente y los modulos que el plan no incluye (cortesia durante la prueba). Si algo falla, la iglesia se deshace entera.
     const { error: eAlta } = await admin.from('altas_iglesia').insert({
-      iglesia_id: ig.id, estructura: datos.estructura.tipo, personas: datos.estructura.personas, sedes: datos.estructura.sedes,
+      iglesia_id: ig.id, pais_iso: datos.paisIso, moneda: datos.moneda, estructura: datos.estructura.tipo, personas: datos.estructura.personas, sedes: datos.estructura.sedes,
       modulos: datos.modulos, administradores: datos.administradores,
     })
     if (eAlta) { await deshacerIglesia(); await devolverCodigo(); console.error('alta', eAlta.message); return json({ error: 'interno' }, 500) }

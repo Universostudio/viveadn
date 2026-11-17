@@ -44,7 +44,10 @@
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label for="rg-pais" class="block text-sm font-medium text-gray-700 mb-1">{{ t('registro.pais') }}</label>
-              <input id="rg-pais" v-model="form.pais" maxlength="80" required autocomplete="country-name" class="campo" />
+              <select id="rg-pais" v-model="form.paisIso" required autocomplete="country" class="campo">
+                <option value="" disabled>{{ t('registro.paisElegir') }}</option>
+                <option v-for="p in paises" :key="p.codigo" :value="p.codigo">{{ p.nombre }}</option>
+              </select>
             </div>
             <div>
               <label for="rg-ciudad" class="block text-sm font-medium text-gray-700 mb-1">{{ t('registro.ciudad') }}</label>
@@ -122,7 +125,7 @@
         <fieldset v-if="cat" v-show="pasoActual === 'plan'" class="space-y-3">
           <legend class="text-sm font-semibold text-gray-900 mb-1">{{ t('registro.planPaso.titulo') }}</legend>
           <p class="text-xs text-gray-500">{{ t('registro.planPaso.ayuda') }}</p>
-          <p v-if="ajustes?.propuesta" role="note" class="text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">{{ t('planes.aviso') }} <span v-if="!ajustes.moneda">{{ t('planes.sinMoneda') }}</span></p>
+          <p role="note" class="text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">{{ t('planes.aviso') }} {{ t('planes.monedaNota', { moneda }) }}</p>
           <label v-for="c in comparacion" :key="c.plan" :class="['flex items-start gap-3 border rounded-xl px-4 py-3', !c.cabe ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer', form.plan === c.plan ? 'border-adn-verde bg-green-50/50' : 'border-gray-200']">
             <input type="radio" name="rg-plan" :value="c.plan" v-model="form.plan" :disabled="!c.cabe" class="mt-1 accent-green-700" />
             <span class="flex-1 min-w-0">
@@ -190,8 +193,9 @@ import { MailCheck } from '@lucide/vue'
 import { supabase } from '@/lib/supabase'
 import LogoAdn from '@/components/LogoAdn.vue'
 import SelectorIdioma from '@/components/SelectorIdioma.vue'
-import { compararPlanes, recomendado, modulosContratables, formatoImporte } from '@/lib/cotizador'
-import type { Catalogo, PlanCat, ModuloCat } from '@/lib/cotizador'
+import { compararPlanes, recomendado, modulosContratables, formatoImporte, monedaDePais, preciosDeMoneda } from '@/lib/cotizador'
+import type { Catalogo, PlanCat, ModuloCat, FilaPrecio } from '@/lib/cotizador'
+import { listaPaises, nombrePais } from '@/lib/paises'
 
 const { t, locale } = useI18n()
 const TIPOS = ['unica', 'con_sedes', 'red'] as const
@@ -204,11 +208,21 @@ const requiereCodigo = ref(true)
 const enviando = ref(false)
 const error = ref('')
 const direccionEditada = ref(false)
-const cat = ref<Catalogo | null>(null)
+const catBase = ref<Omit<Catalogo, 'precioPlan' | 'precioModulo'> | null>(null)
+const filasPlan = ref<FilaPrecio[]>([])
+const filasModulo = ref<FilaPrecio[]>([])
+const paises = computed(() => listaPaises(locale.value))
+// La lista de precios es la de la moneda del pais elegido; sin pais todavia, la base (USD)
+const moneda = computed(() => monedaDePais(form.paisIso))
+const cat = computed<Catalogo | null>(() => (catBase.value ? {
+  ...catBase.value,
+  precioPlan: preciosDeMoneda(filasPlan.value, 'plan', moneda.value),
+  precioModulo: preciosDeMoneda(filasModulo.value, 'modulo', moneda.value),
+} : null))
 const ajustes = ref<{ moneda: string | null; impuestos_incluidos: boolean | null; propuesta: boolean } | null>(null)
 const indice = ref(0)
 const form = reactive({
-  nombre: '', slug: '', pais: '', ciudad: '',
+  nombre: '', slug: '', paisIso: '', ciudad: '',
   tipo: 'unica' as (typeof TIPOS)[number], personas: null as number | null, sedes: 0 as number | null,
   pnombre: '', papellido: '', email: '', admins: [] as { nombre: string; apellido: string; email: string }[],
   modulos: [] as string[], plan: '', codigo: '', web: '', consentimiento: false,
@@ -219,7 +233,7 @@ const pasos = computed(() => (cat.value ? ['iglesia', 'estructura', 'equipo', 'm
 const pasoActual = computed(() => pasos.value[indice.value] ?? 'iglesia')
 const esUltimo = computed(() => indice.value === pasos.value.length - 1)
 
-const fmt = (c: number) => formatoImporte(c, ajustes.value?.moneda ?? null, locale.value)
+const fmt = (c: number) => formatoImporte(c, moneda.value, locale.value)
 const contratables = computed<ModuloCat[]>(() => (cat.value ? modulosContratables(cat.value) : []))
 const requisitos = computed(() => ({ personas: form.personas }))
 const comparacion = computed(() => (cat.value ? compararPlanes(cat.value, form.modulos, requisitos.value) : []))
@@ -259,11 +273,9 @@ onMounted(async () => {
     requiereCodigo.value = data.requiere_codigo !== false
     const planModulos: Record<string, string[]> = {}
     for (const r of data.plan_modulos ?? []) (planModulos[r.plan] ??= []).push(r.modulo)
-    cat.value = {
-      planes: data.planes as PlanCat[], modulos: data.modulos as ModuloCat[], planModulos,
-      precioPlan: Object.fromEntries((data.precios_plan ?? []).map((r: any) => [r.plan, r.importe_centimos])),
-      precioModulo: Object.fromEntries((data.precios_modulo ?? []).map((r: any) => [r.modulo, r.importe_centimos])),
-    }
+    catBase.value = { planes: data.planes as PlanCat[], modulos: data.modulos as ModuloCat[], planModulos }
+    filasPlan.value = data.precios_plan ?? []
+    filasModulo.value = data.precios_modulo ?? []
     ajustes.value = data.ajustes ?? null
     estado.value = data.abierto ? 'abierto' : 'cerrado'
     return
@@ -281,7 +293,7 @@ function validarPaso(): string {
   if (p === 'iglesia') {
     if (form.nombre.trim().length < 2) return 'registro.validacion.iglesia'
     if (!SLUG_RE.test(form.slug) || form.slug.length < 3) return 'registro.validacion.direccion'
-    if (!form.pais.trim() || !form.ciudad.trim()) return 'registro.validacion.iglesia'
+    if (!form.paisIso || !form.ciudad.trim()) return 'registro.validacion.iglesia'
   } else if (p === 'estructura') {
     if (!Number.isInteger(form.personas) || (form.personas as number) < 1) return 'registro.validacion.personas'
     if (form.tipo !== 'unica' && (!Number.isInteger(form.sedes) || (form.sedes as number) < 0)) return 'registro.validacion.sedes'
@@ -315,7 +327,7 @@ async function enviar() {
   enviando.value = true
   const cuerpo: Record<string, unknown> = {
     accion: 'registrar', web: form.web, consentimiento: form.consentimiento, codigo: form.codigo,
-    iglesia: { nombre: form.nombre, slug: form.slug, pais: form.pais, ciudad: form.ciudad },
+    iglesia: { nombre: form.nombre, slug: form.slug, pais: nombrePais(form.paisIso, locale.value), pais_iso: form.paisIso, ciudad: form.ciudad },
     propietario: { nombre: form.pnombre, apellido: form.papellido, email: form.email },
     estructura: { tipo: form.tipo, personas: form.personas, sedes: form.tipo === 'unica' ? 0 : (form.sedes ?? 0) },
     administradores: form.admins.map(a => ({ nombre: a.nombre, apellido: a.apellido, email: a.email })),

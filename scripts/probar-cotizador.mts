@@ -1,6 +1,6 @@
 // Pruebas del cotizador de planes. Uso: npm run test:cotizador
 import assert from 'node:assert/strict'
-const { cotizar, compararPlanes, recomendado, modulosContratables, formatoImporte } = await import('../src/lib/cotizador.ts')
+const { cotizar, compararPlanes, recomendado, modulosContratables, formatoImporte, preciosDeMoneda, monedaDePais } = await import('../src/lib/cotizador.ts')
 
 const m = (clave: string, tipo: string, orden: number) => ({ clave, nombre: clave, descripcion: null, tipo, orden })
 const cat = {
@@ -66,3 +66,14 @@ assert.equal(formatoImporte(2900, null, 'en'), '29.00')
 assert.match(formatoImporte(2900, 'EUR', 'es'), /29,00\s?€/)
 assert.match(formatoImporte(2900, 'USD', 'en'), /\$29\.00/)
 console.log('OK: todas las pruebas del cotizador pasan')
+
+// Listas por moneda: se toma la de la moneda pedida y, sin lista, no se inventa precio
+const filas = [
+  { plan: 'basico', moneda: 'USD', importe_centimos: 2900 }, { plan: 'basico', moneda: 'EUR', importe_centimos: 2700 },
+  { plan: 'semilla', moneda: 'USD', importe_centimos: 900 },
+]
+assert.deepEqual(preciosDeMoneda(filas, 'plan', 'EUR'), { basico: 2700 })
+assert.deepEqual(preciosDeMoneda(filas, 'plan', 'USD'), { basico: 2900, semilla: 900 })
+assert.deepEqual(preciosDeMoneda(filas, 'plan', 'MXN'), {}, 'sin lista en esa moneda no hay precio inventado')
+assert.equal(monedaDePais('es'), 'EUR'); assert.equal(monedaDePais(null), 'USD'); assert.equal(monedaDePais('MX'), 'USD')
+console.log('OK: precios por moneda')

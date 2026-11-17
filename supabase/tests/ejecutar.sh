@@ -40,14 +40,21 @@ bash tests/checkin_concurrencia.sh "$DB"
 "${PSQL[@]}" -d $DB -f tests/limites_plan.sql
 bash tests/limites_concurrencia.sh "$DB"
 bash tests/formacion_concurrencia.sh "$DB"
+# La reversion de los precios por moneda deja un precio por plan y modulo, sin tocar iglesias ni altas
+"${PSQL[@]}" -d $DB -f reversiones/20261117100000_precios_por_moneda.down.sql
+"${PSQL[@]}" -d $DB -c "do \$\$ begin if to_regclass('public.monedas') is not null or exists (select 1 from information_schema.columns where table_name = 'precios_plan' and column_name = 'moneda') or (select count(*) from public.precios_plan) <> 3 or exists (select 1 from information_schema.columns where table_name = 'altas_iglesia' and column_name in ('moneda', 'pais_iso')) then raise exception 'FALLO: la reversion de monedas no dejo la base como antes'; end if; raise notice 'OK: la reversion de monedas deja la base como antes'; end \$\$"
 # La reversion del catalogo de precios lo borra sin tocar planes ni modulos, y se puede volver a aplicar
 "${PSQL[@]}" -d $DB -f reversiones/20261116120000_precios_catalogo.down.sql
 "${PSQL[@]}" -d $DB -c "do \$\$ begin if to_regclass('public.precios_plan') is not null or (select count(*) from public.planes) <> 3 then raise exception 'FALLO: la reversion de precios no dejo la base como antes'; end if; raise notice 'OK: la reversion de precios deja la base como antes'; end \$\$"
 "${PSQL[@]}" -d $DB -f migrations/20261116120000_precios_catalogo.sql
-"${PSQL[@]}" -d $DB -f tests/precios_catalogo.sql
 
 # La reversion de altas deja la base como antes y se puede volver a aplicar
 "${PSQL[@]}" -d $DB -f reversiones/20261116130000_altas_iglesia.down.sql
 "${PSQL[@]}" -d $DB -c "do \$\$ begin if to_regclass('public.altas_iglesia') is not null or to_regclass('public.iglesias') is null then raise exception 'FALLO: la reversion de altas no dejo la base como antes'; end if; raise notice 'OK: la reversion de altas deja la base como antes'; end \$\$"
 "${PSQL[@]}" -d $DB -f migrations/20261116130000_altas_iglesia.sql
 "${PSQL[@]}" -d $DB -f tests/altas_iglesia.sql
+
+# Se vuelven a aplicar los precios por moneda y se prueban
+"${PSQL[@]}" -d $DB -f migrations/20261117100000_precios_por_moneda.sql
+"${PSQL[@]}" -d $DB -f tests/precios_catalogo.sql
+"${PSQL[@]}" -d $DB -f tests/precios_moneda.sql

@@ -21,6 +21,20 @@ export interface Cotizacion {
   cabe: boolean          // el plan cubre las personas y usuarios pedidos
 }
 
+// Monedas con lista de precios propia (base interna USD). Debe coincidir con supabase/functions/registro-iglesia/validar.ts
+export type Moneda = 'USD' | 'EUR'
+export const PAISES_EURO = ['AD', 'AT', 'BE', 'BG', 'CY', 'DE', 'EE', 'ES', 'FI', 'FR', 'GR', 'HR', 'IE', 'IT', 'LT', 'LU', 'LV', 'MC', 'ME', 'MT', 'NL', 'PT', 'SI', 'SK', 'SM', 'VA']
+export const monedaDePais = (iso: string | null | undefined): Moneda => (iso && PAISES_EURO.includes(iso.toUpperCase()) ? 'EUR' : 'USD')
+
+export interface FilaPrecio { plan?: string; modulo?: string; moneda: string; importe_centimos: number }
+// De las filas del catalogo (una por plan o modulo y moneda) se queda con la lista de una moneda. Sin lista en esa moneda, no inventa:
+// los precios quedan vacios y la calculadora dice "precio por confirmar".
+export function preciosDeMoneda(filas: FilaPrecio[], clave: 'plan' | 'modulo', moneda: string): Record<string, number> {
+  const r: Record<string, number> = {}
+  for (const f of filas) { const k = f[clave]; if (f.moneda === moneda && k) r[k] = f.importe_centimos }
+  return r
+}
+
 // Los modulos de nucleo vienen siempre; el resto se puede contratar o ya viene en el plan
 export const modulosContratables = (cat: Catalogo): ModuloCat[] =>
   cat.modulos.filter(m => m.tipo !== 'nucleo').sort((a, b) => a.orden - b.orden)

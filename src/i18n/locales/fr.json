@@ -1093,7 +1093,8 @@
       "admin": "Chaque administrateur a besoin d'un prénom, d'un nom et d'un e-mail valide.",
       "adminRepetido": "Un e-mail est répété dans l'équipe.",
       "plan": "Choisissez une offre qui couvre la taille de votre église."
-    }
+    },
+    "paisElegir": "Choisissez votre pays"
   },
   "plan": {
     "limiteMiembros": "Votre offre a atteint sa limite de membres. Pour ajouter des personnes, désactivez-en une ou changez d'offre.",
@@ -1154,6 +1155,7 @@
       "diferenciaMas": "{importe} de plus qu'aujourd'hui",
       "diferenciaMenos": "{importe} de moins qu'aujourd'hui",
       "igual": "Identique à aujourd'hui"
-    }
+    },
+    "monedaNota": "Montants en {moneda}, selon le pays de l'église. Les taxes seront confirmées avant tout prélèvement."
   }
 }

@@ -15,9 +15,19 @@ export const MAX_MODULOS = 30
 export const MAX_PERSONAS = 1_000_000
 export const MAX_SEDES = 200
 
+// Monedas con lista de precios propia. La base interna es USD: un pais sin lista propia paga en USD. Debe coincidir con src/lib/cotizador.ts
+// (lo comprueba npm run test:registro). Zona euro y los micro-estados que usan el euro.
+export const MONEDAS = ['USD', 'EUR'] as const
+export type Moneda = (typeof MONEDAS)[number]
+export const PAISES_EURO = ['AD', 'AT', 'BE', 'BG', 'CY', 'DE', 'EE', 'ES', 'FI', 'FR', 'GR', 'HR', 'IE', 'IT', 'LT', 'LU', 'LV', 'MC', 'ME', 'MT', 'NL', 'PT', 'SI', 'SK', 'SM', 'VA']
+export const monedaDePais = (iso: string | null): Moneda => (iso !== null && PAISES_EURO.includes(iso) ? 'EUR' : 'USD')
+const ISO_RE = /^[A-Z]{2}$/
+
 export interface Persona { nombre: string; apellido: string; email: string }
 export interface DatosRegistro {
   iglesia: { nombre: string; slug: string; pais: string; ciudad: string }
+  paisIso: string | null   // ISO 3166-1 alfa-2 si el navegador lo manda; de el sale la moneda
+  moneda: Moneda
   propietario: Persona
   codigo: string
   // Asistente de alta. Si el navegador manda el formato antiguo (sin estos campos) se usan los valores de antes: plan semilla, sin modulos
@@ -51,6 +61,11 @@ export function validarRegistro(b: Record<string, unknown>, requiereCodigo: bool
   if (!iglesia.pais || !iglesia.ciudad || iglesia.pais.length > 80 || iglesia.ciudad.length > 80) return { ok: false, error: 'datos' }
   if (!propietario.nombre || !propietario.apellido || propietario.nombre.length > 60 || propietario.apellido.length > 60) return { ok: false, error: 'datos' }
   if (propietario.email.length > 254 || !EMAIL_RE.test(propietario.email)) return { ok: false, error: 'datos' }
+  let paisIso: string | null = null
+  if (ig.pais_iso !== undefined && ig.pais_iso !== null) {
+    if (typeof ig.pais_iso !== 'string' || !ISO_RE.test(ig.pais_iso)) return { ok: false, error: 'datos' }
+    paisIso = ig.pais_iso
+  }
   const todos = [iglesia.nombre, iglesia.slug, iglesia.pais, iglesia.ciudad, propietario.nombre, propietario.apellido, propietario.email]
   if (todos.some(t => RARO_RE.test(t))) return { ok: false, error: 'datos' }
   const codigo = normalizarCodigo(b.codigo)
@@ -102,7 +117,7 @@ export function validarRegistro(b: Record<string, unknown>, requiereCodigo: bool
       administradores.push(p)
     }
   }
-  return { ok: true, datos: { iglesia, propietario, codigo, plan, estructura, modulos, administradores } }
+  return { ok: true, datos: { iglesia, paisIso, moneda: monedaDePais(paisIso), propietario, codigo, plan, estructura, modulos, administradores } }
 }
 
 export interface PlanCatalogo { clave: string; max_miembros: number | null }

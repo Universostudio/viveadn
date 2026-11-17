@@ -1093,7 +1093,8 @@
       "admin": "Cada administrador precisa de nome, sobrenome e um e-mail válido.",
       "adminRepetido": "Há um e-mail repetido na equipe.",
       "plan": "Escolha um plano que cubra o tamanho da sua igreja."
-    }
+    },
+    "paisElegir": "Escolha seu país"
   },
   "plan": {
     "limiteMiembros": "Seu plano atingiu o limite de membros. Para adicionar mais pessoas, desative alguém ou mude de plano.",
@@ -1154,6 +1155,7 @@
       "diferenciaMas": "{importe} a mais que agora",
       "diferenciaMenos": "{importe} a menos que agora",
       "igual": "Igual a agora"
-    }
+    },
+    "monedaNota": "Valores em {moneda}, conforme o país da igreja. Os impostos serão confirmados antes de qualquer cobrança."
   }
 }

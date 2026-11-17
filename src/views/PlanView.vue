@@ -6,7 +6,7 @@
     </div>
 
     <p v-if="ajustes?.propuesta" role="note" class="text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-4 py-3">
-      {{ t('planes.aviso') }} <span v-if="!ajustes.moneda">{{ t('planes.sinMoneda') }}</span>
+      {{ t('planes.aviso') }} {{ t('planes.monedaNota', { moneda }) }}
     </p>
 
     <p v-if="cargando" class="py-10 text-center text-gray-400" role="status">{{ t('comun.cargando') }}</p>
@@ -112,7 +112,7 @@ import { useI18n } from 'vue-i18n'
 import { Lock, Check } from '@lucide/vue'
 import { supabase } from '@/lib/supabase'
 import { useAuthStore } from '@/stores/auth'
-import { cotizar, compararPlanes, recomendado, modulosContratables, formatoImporte } from '@/lib/cotizador'
+import { cotizar, compararPlanes, recomendado, modulosContratables, formatoImporte, preciosDeMoneda } from '@/lib/cotizador'
 import type { Catalogo, PlanCat, ModuloCat } from '@/lib/cotizador'
 
 const { t, locale } = useI18n()
@@ -126,7 +126,9 @@ const elegidos = ref<string[]>([])
 const personas = ref<number | null>(null)
 const usuarios = ref<number | null>(null)
 
-const fmt = (centimos: number) => formatoImporte(centimos, ajustes.value?.moneda ?? null, locale.value)
+// La moneda es la que la iglesia declaro al registrarse; las anteriores al asistente pagan en la base (USD)
+const moneda = ref('USD')
+const fmt = (centimos: number) => formatoImporte(centimos, moneda.value, locale.value)
 const contratables = computed(() => (cat.value ? modulosContratables(cat.value) : []))
 // Lo que la iglesia tiene hoy: los modulos que su plan y sus complementos activan
 const activos = computed(() => new Set(contratables.value.filter(m => auth.tieneModulo(m.clave)).map(m => m.clave)))
@@ -151,23 +153,25 @@ function diferenciaTexto(total: number) {
 const abrirModulo = (m: ModuloCat) => { modulo.value = m }
 
 onMounted(async () => {
-  const [planes, modulos, planMods, pPlan, pMod, aj] = await Promise.all([
+  const [planes, modulos, planMods, pPlan, pMod, aj, alta] = await Promise.all([
     supabase.from('planes').select('clave, nombre, max_miembros, max_usuarios, orden').eq('activo', true).order('orden'),
     supabase.from('modulos').select('clave, nombre, descripcion, tipo, orden').order('orden'),
     supabase.from('plan_modulos').select('plan, modulo'),
-    supabase.from('precios_plan').select('plan, importe_centimos'),
-    supabase.from('precios_modulo').select('modulo, importe_centimos'),
+    supabase.from('precios_plan').select('plan, moneda, importe_centimos'),
+    supabase.from('precios_modulo').select('modulo, moneda, importe_centimos'),
     supabase.from('precios_ajustes').select('moneda, impuestos_incluidos, propuesta').maybeSingle(),
+    supabase.from('altas_iglesia').select('moneda').maybeSingle(),
   ])
   if (planes.error || modulos.error || planMods.error || pPlan.error || pMod.error || !planes.data || !modulos.data) { cargando.value = false; return }
+  if (alta.data?.moneda) moneda.value = alta.data.moneda
   const planModulos: Record<string, string[]> = {}
   for (const r of planMods.data ?? []) (planModulos[r.plan] ??= []).push(r.modulo)
   cat.value = {
     planes: planes.data as PlanCat[],
     modulos: modulos.data as ModuloCat[],
     planModulos,
-    precioPlan: Object.fromEntries((pPlan.data ?? []).map((r: any) => [r.plan, r.importe_centimos])),
-    precioModulo: Object.fromEntries((pMod.data ?? []).map((r: any) => [r.modulo, r.importe_centimos])),
+    precioPlan: preciosDeMoneda(pPlan.data ?? [], 'plan', moneda.value),
+    precioModulo: preciosDeMoneda(pMod.data ?? [], 'modulo', moneda.value),
   }
   ajustes.value = aj.data ?? null
   elegidos.value = [...activos.value]

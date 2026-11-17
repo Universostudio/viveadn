@@ -124,7 +124,7 @@ begin
     select c.relname from pg_class c
     where c.relnamespace = 'public'::regnamespace and c.relkind in ('r', 'p')
       and c.relname <> all (array['iglesias', 'modulos', 'permisos', 'plan_modulos', 'planes', 'plataforma_admins',
-                                  'plataforma_ajustes', 'precios_ajustes', 'precios_modulo', 'precios_plan', 'registro_codigos', 'registro_intentos', 'rol_permisos'])
+                                  'monedas', 'plataforma_ajustes', 'precios_ajustes', 'precios_modulo', 'precios_plan', 'registro_codigos', 'registro_intentos', 'rol_permisos'])
       and not exists (select 1 from pg_attribute a where a.attrelid = c.oid and a.attname = 'iglesia_id' and not a.attisdropped)
   loop
     errores := errores || format('la tabla %s no tiene iglesia_id ni esta clasificada como global (exportar_iglesia y borrar_iglesia no la cubririan)', r.relname);

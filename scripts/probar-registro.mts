@@ -11,6 +11,7 @@ const r = validarRegistro(bueno, true)
 assert.ok(r.ok)
 assert.deepEqual(r.ok && r.datos, {
   iglesia: { nombre: 'Casa Reino', slug: 'casa-reino', pais: 'España', ciudad: 'Sevilla' },
+  paisIso: null, moneda: 'USD',
   propietario: { nombre: 'María José', apellido: 'García López', email: 'maria@ejemplo.com' },
   codigo: 'ADN-ABCD-2345',
   plan: 'semilla', estructura: { tipo: 'unica', personas: null, sedes: 0 }, modulos: [], administradores: [],
@@ -135,3 +136,15 @@ assert.deepEqual(decidirAlta({ estructura: { tipo: 'unica', personas: 1, sedes: 
 assert.equal(respuestaDeError('plan').status, 400); assert.equal(respuestaDeError('modulos').status, 400)
 
 console.log('OK: todas las pruebas del registro de iglesias pasan')
+
+// Pais y moneda: sin codigo se paga en USD; con codigo de la zona euro, en EUR; un codigo mal formado se rechaza
+const conPais = (iso: unknown) => validarRegistro({ ...bueno, iglesia: { ...bueno.iglesia, pais_iso: iso } }, true)
+const rEs = conPais('ES'); assert.ok(rEs.ok && rEs.datos.moneda === 'EUR' && rEs.datos.paisIso === 'ES')
+const rMx = conPais('MX'); assert.ok(rMx.ok && rMx.datos.moneda === 'USD')
+for (const malo of ['es', 'ESP', 'E', '1A', 5, {}, ['ES']]) assert.equal(conPais(malo).ok, false, `pais_iso ${JSON.stringify(malo)} se rechaza`)
+// La lista de paises con euro del servidor coincide con la del navegador
+const { PAISES_EURO: a1, monedaDePais: m1 } = await import('../supabase/functions/registro-iglesia/validar.ts')
+const { PAISES_EURO: a2, monedaDePais: m2 } = await import('../src/lib/cotizador.ts')
+assert.deepEqual([...a1], [...a2], 'PAISES_EURO igual en servidor y navegador')
+for (const c of ['ES', 'DE', 'US', 'MX', 'BR', 'FR']) assert.equal(m1(c), m2(c))
+console.log('OK: pais y moneda')

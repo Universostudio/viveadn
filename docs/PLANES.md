@@ -33,7 +33,7 @@ Es un costo de Visualiza, no del cliente. Para un cobro de 29 EUR con tarjeta eu
 
 ## 4. Propuesta de precios
 
-Importes mensuales en la moneda base, que Harold aún no fijó (la propuesta usa unidades neutras, a convertir). Sin impuestos [contador].
+Importes mensuales. Decisión de Harold (17 de noviembre de 2026): la base interna es USD y cada iglesia paga en la moneda de la entidad que cobra, con listas de precio fijas por moneda. Se empieza con EUR y USD. La moneda sale del país que la iglesia elige al registrarse: los países de la zona euro pagan en EUR y el resto en USD. Añadir MXN u otra moneda es insertar la moneda y su lista (`precios_plan` y `precios_modulo`) y el país en `PAISES_*` de `src/lib/cotizador.ts` y `validar.ts`, sin tocar el resto. Los importes en EUR repiten por ahora la cifra de USD: son una propuesta y el contador debe fijarlos. Sin impuestos [contador].
 
 | Plan | Propuesta | Personas | Usuarios | Módulos |
 | --- | --- | --- | --- | --- |
@@ -73,7 +73,7 @@ Fórmula para fijar un precio: el precio mínimo es (costo variable por cliente 
 
 ## 6. Pendientes
 
-- **Harold:** moneda base, si los impuestos van incluidos, si Semilla es de pago o gratuito, y el descuento por red de sedes.
+- **Harold:** país de la entidad que cobra hoy con Stripe y PayPal (de él depende si EUR y USD bastan), si los impuestos van incluidos, si Semilla es de pago o gratuito, y el descuento por red de sedes.
 - **Verificar:** costos de PayPal, correo transaccional, WhatsApp, dominio y de la app con marca propia.
 - **Mercado:** comparar con otros sistemas de gestión de iglesias. No se verificó ningún precio de la competencia y no se afirma nada de ella.
 - **Contador:** impuestos por país, facturación electrónica y cualquier cifra fiscal [contador].
