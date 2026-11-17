@@ -1795,6 +1795,25 @@
         "receso": "In recess",
         "suspendida": "Suspended",
         "borrada": "Closed down"
+      },
+      "imp": {
+        "titulo": "Taxes",
+        "pendiente": "Taxes: pending configuration",
+        "configurado": "Taxes: {n} active rule(s). The revenue estimate above is still before taxes.",
+        "nota": "There is no built-in rate. Rates are set per region and item once the accountant confirms them; a rule starts inactive and only informs, it is not yet applied to any calculation or charge.",
+        "region": "Country or region",
+        "concepto": "Item",
+        "tasa": "Rate (%)",
+        "incluido": "Price includes taxes",
+        "activo": "Active",
+        "sinDefinir": "Not set",
+        "si": "Included",
+        "no": "Not included",
+        "anadir": "Add rule",
+        "quitar": "Remove",
+        "guardar": "Save taxes",
+        "guardado": "Taxes saved.",
+        "tasaNoValida": "Each rule needs a numeric rate between 0 and 100."
       }
     },
     "soporte": {

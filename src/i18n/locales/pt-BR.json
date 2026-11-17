@@ -1795,6 +1795,25 @@
         "receso": "Em recesso",
         "suspendida": "Suspensas",
         "borrada": "Encerradas"
+      },
+      "imp": {
+        "titulo": "Impostos",
+        "pendiente": "Impostos: configuração pendente",
+        "configurado": "Impostos: {n} regra(s) ativa(s). A estimativa de receita acima continua sendo antes dos impostos.",
+        "nota": "Não há nenhuma alíquota de fábrica. As alíquotas são definidas por região e item quando o contador as confirmar; uma regra nasce inativa e só informa, ainda não é aplicada a nenhum cálculo ou cobrança.",
+        "region": "País ou região",
+        "concepto": "Item",
+        "tasa": "Alíquota (%)",
+        "incluido": "Preço com impostos",
+        "activo": "Ativa",
+        "sinDefinir": "Não definido",
+        "si": "Incluídos",
+        "no": "Não incluídos",
+        "anadir": "Adicionar regra",
+        "quitar": "Remover",
+        "guardar": "Salvar impostos",
+        "guardado": "Impostos salvos.",
+        "tasaNoValida": "Cada regra precisa de uma alíquota numérica entre 0 e 100."
       }
     },
     "soporte": {

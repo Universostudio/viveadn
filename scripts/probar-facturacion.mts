@@ -61,3 +61,33 @@ import { filasDeFacturacion } from '../supabase/functions/plataforma/facturacion
   assert.deepEqual(simular(filasDeFacturacion(null), planes).pagando, 0)
   console.log('Facturación: el agregado de SQL equivale a la lista')
 }
+
+// ---- Impuestos: configuración sin tasas de fábrica
+{
+  const { validarImpuestos, resumenImpuestos } = await import('../supabase/functions/plataforma/facturacion.ts')
+  assert.deepEqual(resumenImpuestos(undefined), { estado: 'pendiente', reglas: [], activas: 0, aplicados_en_simulacion: false }, 'sin nada guardado: pendiente de configurar, sin tasas inventadas')
+  assert.equal(resumenImpuestos({ reglas: 'basura' }).estado, 'pendiente'); assert.equal(resumenImpuestos(null).estado, 'pendiente')
+  const ok = validarImpuestos({ reglas: [{ region: ' es ', concepto: ' IVA ', tasa_pct: 21, activo: true, incluido_en_precio: false }, { region: 'MX', concepto: 'IVA', tasa_pct: 16.0125 }] })
+  assert.ok(ok.ok)
+  if (ok.ok) {
+    assert.deepEqual(ok.reglas[0], { region: 'ES', concepto: 'IVA', tasa_pct: 21, activo: true, incluido_en_precio: false })
+    assert.deepEqual(ok.reglas[1], { region: 'MX', concepto: 'IVA', tasa_pct: 16.0125, activo: false, incluido_en_precio: null }, 'sin decir nada, la regla nace desactivada y sin marca')
+  }
+  assert.equal(resumenImpuestos({ reglas: ok.ok ? ok.reglas : [] }).estado, 'configurado')
+  assert.equal(resumenImpuestos({ reglas: [{ region: 'MX', concepto: 'IVA', tasa_pct: 16, activo: false }] }).estado, 'pendiente', 'una regla desactivada no cuenta')
+  assert.deepEqual(validarImpuestos({ reglas: [] }), { ok: true, reglas: [] }, 'vaciar la lista es válido')
+  for (const mal of [{}, { reglas: 'x' }, { reglas: [null] }, { reglas: [{ region: 'E', concepto: 'IVA', tasa_pct: 1 }] }, { reglas: [{ region: 'ES', concepto: '', tasa_pct: 1 }] },
+    { reglas: [{ region: 'ES', concepto: '<b>', tasa_pct: 1 }] }, { reglas: [{ region: 'ES', concepto: 'IVA', tasa_pct: -1 }] }, { reglas: [{ region: 'ES', concepto: 'IVA', tasa_pct: 100.5 }] },
+    { reglas: [{ region: 'ES', concepto: 'IVA', tasa_pct: '21' }] }, { reglas: [{ region: 'ES', concepto: 'IVA', tasa_pct: 1.00001 }] }, { reglas: [{ region: 'ES', concepto: 'IVA', tasa_pct: NaN }] },
+    { reglas: [{ region: 'ES', concepto: 'IVA', tasa_pct: 1, activo: 'si' }] }, { reglas: [{ region: 'ES', concepto: 'IVA', tasa_pct: 1, incluido_en_precio: 1 }] },
+    { reglas: [{ region: 'ES', concepto: 'IVA', tasa_pct: 1 }, { region: 'es', concepto: 'iva', tasa_pct: 2 }] },
+    { reglas: Array.from({ length: 51 }, (_, i) => ({ region: 'R' + i, concepto: 'X', tasa_pct: 1 })) }])
+    assert.equal(validarImpuestos(mal as any).ok, false, JSON.stringify(mal).slice(0, 80))
+  // La simulación sigue siendo antes de impuestos: el módulo de cálculo no los usa
+  assert.equal(JSON.stringify(simular([], [])).includes('impuesto'), false)
+}
+{
+  const { resumenImpuestos } = await import('../supabase/functions/plataforma/facturacion.ts')
+  const { salidaSegura } = await import('../supabase/functions/plataforma/panel.ts')
+  salidaSegura({ ok: true, impuestos: resumenImpuestos({ reglas: [{ region: 'ES', concepto: 'IVA', tasa_pct: 21, activo: true }] }) })   // las claves de la regla no disparan la barrera de privacidad
+}

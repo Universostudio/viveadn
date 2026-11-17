@@ -86,3 +86,44 @@ export function simular(iglesias: IglesiaCobro[] | null | undefined, planes: Pla
 /** Las filas del agregado SQL (adn_plataforma_facturacion) con la forma que espera `simular`: una fila por grupo, con su número de iglesias */
 export const filasDeFacturacion = (filas: { plan: string; activa: boolean; etapa: string | null; es_demo: boolean; borrada: boolean; n: number | string }[] | null | undefined): IglesiaCobro[] =>
   (filas ?? []).map(f => ({ plan: f.plan, activa: f.activa, etapa: f.etapa, es_demo: f.es_demo, adn_borrada_en: f.borrada ? 'borrada' : null, n: Number(f.n) }))
+
+// ---- Impuestos: configuración, no cálculo. Ninguna tasa viene de fábrica: sin reglas activas la pantalla dice «pendiente de configurar».
+// Cada regla es (región, concepto, tasa en %, activa, si el precio ya los incluye). Se guardan en `plataforma_ajustes` (clave `impuestos`); quien opere la
+// plataforma las fija cuando el contador las defina. La simulación de ingresos NO las aplica todavía: se limita a informar de su estado.
+export interface ReglaImpuesto { region: string; concepto: string; tasa_pct: number; activo: boolean; incluido_en_precio: boolean | null }
+export const MAX_REGLAS_IMPUESTO = 50
+
+/** Valida la lista completa de reglas. Todas nacen desactivadas si no se dice lo contrario; la tasa es un número entre 0 y 100 con hasta 4 decimales. */
+export function validarImpuestos(body: Record<string, unknown>): Validado<{ reglas: ReglaImpuesto[] }> {
+  const lista = body.reglas
+  if (!Array.isArray(lista)) return { ok: false, error: 'Faltan las reglas' }
+  if (lista.length > MAX_REGLAS_IMPUESTO) return { ok: false, error: 'Demasiadas reglas' }
+  const reglas: ReglaImpuesto[] = []
+  const vistas = new Set<string>()
+  for (const r of lista) {
+    if (typeof r !== 'object' || r === null || Array.isArray(r)) return { ok: false, error: 'Regla no valida' }
+    const x = r as Record<string, unknown>
+    const region = typeof x.region === 'string' ? x.region.trim().toUpperCase() : ''
+    if (!/^[A-Z0-9_-]{2,12}$/.test(region)) return { ok: false, error: 'La region no es valida' }
+    const concepto = typeof x.concepto === 'string' ? x.concepto.trim() : ''
+    if (concepto.length < 1 || concepto.length > 60 || /[\u0000-\u001f<>]/.test(concepto)) return { ok: false, error: 'El concepto no es valido' }
+    const tasa = x.tasa_pct
+    if (typeof tasa !== 'number' || !Number.isFinite(tasa) || tasa < 0 || tasa > 100 || Math.abs(tasa * 10000 - Math.round(tasa * 10000)) > 1e-6) return { ok: false, error: 'La tasa no es valida' }
+    if (x.activo !== undefined && typeof x.activo !== 'boolean') return { ok: false, error: 'El estado de la regla no es valido' }
+    if (x.incluido_en_precio !== undefined && x.incluido_en_precio !== null && typeof x.incluido_en_precio !== 'boolean') return { ok: false, error: 'La marca de precio con impuestos no es valida' }
+    const clave = `${region}|${concepto.toLowerCase()}`
+    if (vistas.has(clave)) return { ok: false, error: 'Regla repetida' }
+    vistas.add(clave)
+    reglas.push({ region, concepto, tasa_pct: Math.round(tasa * 10000) / 10000, activo: x.activo === true, incluido_en_precio: typeof x.incluido_en_precio === 'boolean' ? x.incluido_en_precio : null })
+  }
+  return { ok: true, reglas }
+}
+
+/** Lo que lee la pantalla: las reglas guardadas (con cualquier forma rara descartada) y si hay alguna activa. Sin reglas activas el estado es «pendiente». */
+export function resumenImpuestos(valor: unknown): { estado: 'pendiente' | 'configurado'; reglas: ReglaImpuesto[]; activas: number; aplicados_en_simulacion: false } {
+  const v = typeof valor === 'object' && valor !== null ? (valor as { reglas?: unknown }).reglas : null
+  const r = validarImpuestos({ reglas: Array.isArray(v) ? v : [] })
+  const reglas = r.ok ? r.reglas : []
+  const activas = reglas.filter(x => x.activo).length
+  return { estado: activas > 0 ? 'configurado' : 'pendiente', reglas, activas, aplicados_en_simulacion: false }
+}

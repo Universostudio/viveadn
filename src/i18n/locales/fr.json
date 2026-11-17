@@ -1795,6 +1795,25 @@
         "receso": "En pause",
         "suspendida": "Suspendues",
         "borrada": "Résiliées"
+      },
+      "imp": {
+        "titulo": "Taxes",
+        "pendiente": "Taxes : configuration en attente",
+        "configurado": "Taxes : {n} règle(s) active(s). L'estimation des revenus ci-dessus reste avant taxes.",
+        "nota": "Aucun taux n'est fourni par défaut. Les taux se définissent par région et par type une fois confirmés par le comptable ; une règle démarre inactive et sert seulement d'information, elle n'est pas encore appliquée à un calcul ou à un paiement.",
+        "region": "Pays ou région",
+        "concepto": "Type",
+        "tasa": "Taux (%)",
+        "incluido": "Prix toutes taxes comprises",
+        "activo": "Active",
+        "sinDefinir": "Non défini",
+        "si": "Comprises",
+        "no": "Non comprises",
+        "anadir": "Ajouter une règle",
+        "quitar": "Retirer",
+        "guardar": "Enregistrer les taxes",
+        "guardado": "Taxes enregistrées.",
+        "tasaNoValida": "Chaque règle exige un taux numérique entre 0 et 100."
       }
     },
     "soporte": {

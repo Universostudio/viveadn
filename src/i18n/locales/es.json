@@ -1795,6 +1795,25 @@
         "receso": "En receso",
         "suspendida": "Suspendidas",
         "borrada": "Dadas de baja"
+      },
+      "imp": {
+        "titulo": "Impuestos",
+        "pendiente": "Impuestos: pendiente de configurar",
+        "configurado": "Impuestos: {n} regla(s) activa(s). La estimación de ingresos de arriba sigue siendo antes de impuestos.",
+        "nota": "No hay ninguna tasa de fábrica. Se definen por región y concepto cuando el contador las confirme; una regla nace desactivada y solo informa, todavía no se aplica a ningún cálculo ni cobro.",
+        "region": "País o región",
+        "concepto": "Concepto",
+        "tasa": "Tasa (%)",
+        "incluido": "Precio con impuestos",
+        "activo": "Activa",
+        "sinDefinir": "Sin definir",
+        "si": "Incluidos",
+        "no": "No incluidos",
+        "anadir": "Añadir regla",
+        "quitar": "Quitar",
+        "guardar": "Guardar impuestos",
+        "guardado": "Impuestos guardados.",
+        "tasaNoValida": "Cada regla necesita una tasa numérica entre 0 y 100."
       }
     },
     "soporte": {

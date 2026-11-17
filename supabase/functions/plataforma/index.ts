@@ -1,7 +1,7 @@
 import { createClient } from 'npm:@supabase/supabase-js@2'
 import { claveCronValida, errorDeCiclo, tamanoLote } from './ciclo.ts'
 import { avisoPurga, enviarAviso, leerConfig, type TipoEnvio } from './envio.ts'
-import { filasDeFacturacion, simular, validarPrecio } from './facturacion.ts'
+import { filasDeFacturacion, resumenImpuestos, simular, validarImpuestos, validarPrecio } from './facturacion.ts'
 import { leerTodo } from './paginar.ts'
 import { correoDeAviso, esUuid, estadisticasDeAgregado, estadisticasDeAvisos, resumenDeAgregado, listaDeTickets, resumenDeSoporte, sinDemos, ticketAbierto, validarAviso, validarNovedad, validarRespuesta } from './soporte.ts'
 import { conteosPorIglesia, envioDelDia, eventosDeActividad, faltaLaFuncion, historialDeIglesia, leerCuerpoJson, MAX_CUERPO, MAX_LIBRO, salidaSegura } from './panel.ts'
@@ -778,7 +778,18 @@ Deno.serve(async (req) => {
         if (e2) return json({ error: 'No se pudo leer la facturacion' }, 500)
         // Si la migracion de precios aun no esta aplicada, las columnas no vienen: todos los planes salen «sin precio», que es la verdad
         const migrado = (planes ?? []).length === 0 || 'precio_mensual_centimos' in (planes as Record<string, unknown>[])[0]
-        return json({ ok: true, migrado, ...simular(filas, planes) })
+        // Los impuestos son configuracion, no calculo: sin reglas activas el estado es «pendiente» y la simulacion sigue siendo antes de impuestos
+        const { data: ajuste } = await admin.from('plataforma_ajustes').select('valor').eq('clave', 'impuestos').maybeSingle()
+        return json({ ok: true, migrado, ...simular(filas, planes), impuestos: resumenImpuestos(ajuste?.valor) })
+      }
+
+      case 'impuestos_guardar': {
+        const v = validarImpuestos(body)
+        if (!v.ok) return json({ error: v.error }, 400)
+        const { error } = await admin.from('plataforma_ajustes').upsert({ clave: 'impuestos', valor: { reglas: v.reglas }, updated_at: new Date().toISOString() })
+        if (error) return json({ error: 'No se pudieron guardar los impuestos' }, 500)
+        const auditado = await auditar('impuestos_guardar', null, { reglas: v.reglas.length, activas: v.reglas.filter(r => r.activo).length })
+        return json({ ok: true, auditado, ...resumenImpuestos({ reglas: v.reglas }) })
       }
 
       case 'plan_precio_fijar': {

@@ -134,13 +134,13 @@
         },
         {
           "ruta": "facturacion.ts",
-          "bytes": 5816,
-          "sha256": "df9befbbbaca2f8b82b3575667b0189638a5f52ba2ba5265ad0b204119379a68"
+          "bytes": 9206,
+          "sha256": "3070e2a5fd76512906201f1e68b42bdd494cd37c4412a7b544d27fd7188b8eb0"
         },
         {
           "ruta": "index.ts",
-          "bytes": 54820,
-          "sha256": "173f084e71a7f560c8cb7d53a0ca0b792ebeca9c7d10ad7ad3da0e73f9fa5e2d"
+          "bytes": 55797,
+          "sha256": "53b8bcadf20c25aa8146d7468ed16a30fd991e5ff4f0238556b454538b91cc1a"
         },
         {
           "ruta": "paginar.ts",

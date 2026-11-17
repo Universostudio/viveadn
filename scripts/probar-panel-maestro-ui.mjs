@@ -43,7 +43,7 @@ const modulos = [{ clave: 'miembros', nombre: 'Miembros', tipo: 'nucleo', orden:
 const planModulos = [{ plan: 'semilla', modulo: 'miembros' }, { plan: 'premium', modulo: 'miembros' }, { plan: 'premium', modulo: 'comunicacion' }]
 
 async function escenario({ admin = true, conIglesia = false, ancho = 1366, alto = 900, purgaAtrasada = false, detalleFalla = false, actividadFalla = false, envioActivo = false, demo = 'no', sinDemos = false, ciclo = false, vencidaNoSuave = false, tarea = undefined } = {}) {
-  const estado = { llamadas: [], cuerpos: [], precio: null, sinAuditar: false }
+  const estado = { llamadas: [], cuerpos: [], precio: null, impReglas: [], sinAuditar: false }
   const browser = await chromium.launch()
   const ctx = await browser.newContext({ acceptDownloads: true, locale: 'es-ES', viewport: { width: ancho, height: alto }, deviceScaleFactor: 1 })
   const sesion = { access_token: 'x.y.z', refresh_token: 'r', token_type: 'bearer', expires_in: 3600, expires_at: Math.floor(Date.now() / 1000) + 3600,
@@ -79,8 +79,10 @@ async function escenario({ admin = true, conIglesia = false, ancho = 1366, alto 
             ingreso_mensual_centimos: n === 0 ? 0 : precio ? n * precio.m : null, causa: n === 0 ? 'sin_iglesias' : precio ? null : 'sin_precio' })
           const planesSim = [fila('semilla', 'Semilla', 0, null), fila('premium', 'Premium', 1, pr)]
           return json(200, { ok: true, migrado: true, etiqueta: 'datos_de_prueba', planes: planesSim, pagando: 1, incompleto: !pr, plan_desconocido: 0,
-            ingreso_mensual_por_moneda: pr ? { EUR: pr.m } : {}, fuera_del_calculo: { demo: 1, onboarding: 1, prueba: 2, receso: 0, suspendida: 1, borrada: 0 } })
+            ingreso_mensual_por_moneda: pr ? { EUR: pr.m } : {}, fuera_del_calculo: { demo: 1, onboarding: 1, prueba: 2, receso: 0, suspendida: 1, borrada: 0 },
+            impuestos: { estado: estado.impReglas.some(r => r.activo) ? 'configurado' : 'pendiente', reglas: estado.impReglas, activas: estado.impReglas.filter(r => r.activo).length, aplicados_en_simulacion: false } })
         }
+        case 'impuestos_guardar': estado.impReglas = cuerpo.reglas; return json(200, { ok: true, auditado: true })
         case 'plan_precio_fijar': estado.precio = cuerpo.precio_mensual_centimos === null ? null : { m: cuerpo.precio_mensual_centimos, a: cuerpo.precio_anual_centimos, mon: cuerpo.moneda }; return json(200, { ok: true, auditado: true })
         case 'etapa': return json(200, { ok: true, auditado: !estado.sinAuditar })
         case 'soporte_resumen': return json(501, { error: 'El soporte no esta disponible hasta aplicar su migracion' }) // esta prueba es de una base sin las tablas del soporte
@@ -503,6 +505,21 @@ try {
     assert.equal(c.precio_mensual_centimos, 4950); assert.equal(c.precio_anual_centimos, 49500); assert.equal(c.moneda, 'eur'); assert.equal(c.plan, 'premium')
     assert.equal(await page.locator('[data-test=fact-incompleto]').count(), 0)
     assert.match(await page.textContent('[data-test=fact-total]'), /49,50/)
+    // Impuestos: sin reglas, «pendiente de configurar»; una tasa mal escrita no se envía; una regla guardada se lee de vuelta y nace desactivada
+    assert.match(await page.textContent('[data-test=imp-pendiente]'), /Impuestos: pendiente de configurar/)
+    assert.equal(await page.locator('[data-imp-fila]').count(), 0, 'ninguna tasa de fábrica')
+    await page.click('[data-test=imp-anadir]')
+    await page.fill('[data-imp-fila] [data-campo=region]', 'mx'); await page.fill('[data-imp-fila] [data-campo=concepto]', 'IVA'); await page.fill('[data-imp-fila] [data-campo=tasa]', 'abc')
+    await page.click('[data-test=imp-guardar]')
+    assert.match(await page.textContent('[data-test=imp-fallo]'), /tasa numérica/); assert.equal(estado.cuerpos.filter(c => c.accion === 'impuestos_guardar').length, 0)
+    await page.fill('[data-imp-fila] [data-campo=tasa]', '16,5'); await page.click('[data-test=imp-guardar]')
+    await page.waitForFunction(() => /Impuestos guardados/.test(document.querySelector('[data-test=imp-aviso]')?.textContent ?? ''))
+    const ci = estado.cuerpos.find(x => x.accion === 'impuestos_guardar')
+    assert.deepEqual(ci.reglas, [{ region: 'mx', concepto: 'IVA', tasa_pct: 16.5, activo: false, incluido_en_precio: null }])
+    assert.equal(await page.locator('[data-test=imp-pendiente]').count(), 1, 'una regla desactivada sigue pendiente')
+    await page.check('[data-imp-fila] [data-campo=activo]'); await page.selectOption('[data-imp-fila] [data-campo=incluido]', 'si'); await page.click('[data-test=imp-guardar]')
+    await page.waitForFunction(() => /1 regla\(s\) activa/.test(document.querySelector('[data-test=imp-configurado]')?.textContent ?? ''))
+    assert.match(await page.textContent('[data-test=imp-configurado]'), /antes de impuestos/)
     assert.deepEqual(errores, [])
     await browser.close()
   })

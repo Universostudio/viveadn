@@ -45,6 +45,41 @@
         <p v-if="sim.plan_desconocido" class="text-xs text-amber-800 mt-2" data-test="fact-desconocido">{{ t('plataformaPanel.facturacion.planDesconocido', { n: sim.plan_desconocido }) }}</p>
       </section>
 
+      <section class="card space-y-3" aria-labelledby="f-imp" data-test="fact-impuestos">
+        <h2 id="f-imp" class="text-base font-semibold text-gray-900">{{ t('plataformaPanel.facturacion.imp.titulo') }}</h2>
+        <p v-if="sim.impuestos?.estado !== 'configurado'" class="text-sm font-medium text-amber-900 rounded-lg bg-amber-50 p-3" data-test="imp-pendiente">{{ t('plataformaPanel.facturacion.imp.pendiente') }}</p>
+        <p v-else class="text-sm text-gray-700" data-test="imp-configurado">{{ t('plataformaPanel.facturacion.imp.configurado', { n: sim.impuestos.activas }) }}</p>
+        <p class="text-xs text-gray-500">{{ t('plataformaPanel.facturacion.imp.nota') }}</p>
+        <p v-if="impError" class="text-sm text-red-700 rounded-lg bg-red-50 p-3" role="alert" data-test="imp-fallo">{{ impError }}</p>
+        <p v-if="impAviso" class="text-sm text-green-800 rounded-lg bg-green-50 p-3" role="status" data-test="imp-aviso">{{ impAviso }}</p>
+        <div class="overflow-x-auto">
+          <table v-if="impFilas.length" class="w-full text-sm" data-test="imp-tabla">
+            <thead class="text-left text-xs text-gray-500 border-b border-gray-100"><tr>
+              <th scope="col" class="py-2 pr-2 font-medium">{{ t('plataformaPanel.facturacion.imp.region') }}</th>
+              <th scope="col" class="py-2 px-2 font-medium">{{ t('plataformaPanel.facturacion.imp.concepto') }}</th>
+              <th scope="col" class="py-2 px-2 font-medium">{{ t('plataformaPanel.facturacion.imp.tasa') }}</th>
+              <th scope="col" class="py-2 px-2 font-medium">{{ t('plataformaPanel.facturacion.imp.incluido') }}</th>
+              <th scope="col" class="py-2 px-2 font-medium">{{ t('plataformaPanel.facturacion.imp.activo') }}</th>
+              <th scope="col" class="py-2 pl-2"><span class="sr-only">{{ t('plataformaPanel.facturacion.imp.quitar') }}</span></th></tr></thead>
+            <tbody class="divide-y divide-gray-50">
+              <tr v-for="(f, i) in impFilas" :key="i" data-imp-fila>
+                <td class="py-1 pr-2"><input v-model="f.region" maxlength="12" :aria-label="t('plataformaPanel.facturacion.imp.region')" data-campo="region" class="w-24 px-2 py-1 border border-gray-200 rounded-lg uppercase" /></td>
+                <td class="py-1 px-2"><input v-model="f.concepto" maxlength="60" :aria-label="t('plataformaPanel.facturacion.imp.concepto')" data-campo="concepto" class="w-40 px-2 py-1 border border-gray-200 rounded-lg" /></td>
+                <td class="py-1 px-2"><input v-model="f.tasa" inputmode="decimal" :aria-label="t('plataformaPanel.facturacion.imp.tasa')" data-campo="tasa" class="w-20 px-2 py-1 border border-gray-200 rounded-lg" /></td>
+                <td class="py-1 px-2"><select v-model="f.incluido" :aria-label="t('plataformaPanel.facturacion.imp.incluido')" data-campo="incluido" class="px-2 py-1 border border-gray-200 rounded-lg">
+                  <option value="">{{ t('plataformaPanel.facturacion.imp.sinDefinir') }}</option><option value="si">{{ t('plataformaPanel.facturacion.imp.si') }}</option><option value="no">{{ t('plataformaPanel.facturacion.imp.no') }}</option></select></td>
+                <td class="py-1 px-2"><input v-model="f.activo" type="checkbox" :aria-label="t('plataformaPanel.facturacion.imp.activo')" data-campo="activo" /></td>
+                <td class="py-1 pl-2 text-right"><button type="button" class="btn-secondary text-xs" data-imp-quitar @click="impFilas.splice(i, 1)">{{ t('plataformaPanel.facturacion.imp.quitar') }}</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="flex gap-2 flex-wrap">
+          <button type="button" class="btn-secondary text-sm" data-test="imp-anadir" @click="impFilas.push({ region: '', concepto: '', tasa: '', incluido: '', activo: false })">{{ t('plataformaPanel.facturacion.imp.anadir') }}</button>
+          <button type="button" class="btn-primary text-sm" :disabled="ocupado" data-test="imp-guardar" @click="guardarImpuestos">{{ t('plataformaPanel.facturacion.imp.guardar') }}</button>
+        </div>
+      </section>
+
       <form v-if="edicion" class="card space-y-3" novalidate data-test="fact-form" @submit.prevent="guardar">
         <h2 class="text-base font-semibold text-gray-900">{{ t('plataformaPanel.facturacion.fijarPara', { plan: edicion.nombre }) }}</h2>
         <p class="text-xs text-gray-500">{{ t('plataformaPanel.facturacion.fijarNota') }}</p>
@@ -97,8 +132,22 @@ const totalTexto = computed(() => {
   return m.length ? m.map(([mon, c]) => dinero(c, mon)).join(' + ') : '0'
 })
 
+const impFilas = ref<{ region: string; concepto: string; tasa: string; incluido: '' | 'si' | 'no'; activo: boolean }[]>([])
+const impError = ref(''); const impAviso = ref('')
+const filasDeImpuestos = (reglas: any[]) => (reglas ?? []).map(r => ({ region: r.region, concepto: r.concepto, tasa: String(r.tasa_pct), incluido: (r.incluido_en_precio === true ? 'si' : r.incluido_en_precio === false ? 'no' : '') as '' | 'si' | 'no', activo: !!r.activo }))
 async function cargar() {
-  try { sim.value = await pm.llamar({ accion: 'facturacion_simulacion' }); estado.value = 'ok' } catch { estado.value = 'error' }
+  try { sim.value = await pm.llamar({ accion: 'facturacion_simulacion' }); impFilas.value = filasDeImpuestos(sim.value?.impuestos?.reglas); estado.value = 'ok' } catch { estado.value = 'error' }
+}
+async function guardarImpuestos() {
+  impError.value = ''; impAviso.value = ''
+  const reglas: Record<string, unknown>[] = []
+  for (const f of impFilas.value) {
+    const tasa = Number(f.tasa.trim().replace(',', '.'))
+    if (!f.tasa.trim() || !Number.isFinite(tasa)) { impError.value = t('plataformaPanel.facturacion.imp.tasaNoValida'); return }
+    reglas.push({ region: f.region, concepto: f.concepto, tasa_pct: tasa, activo: f.activo, incluido_en_precio: f.incluido === '' ? null : f.incluido === 'si' })
+  }
+  ocupado.value = true
+  try { await pm.llamar({ accion: 'impuestos_guardar', reglas }); await cargar(); impAviso.value = t('plataformaPanel.facturacion.imp.guardado') } catch (x) { impError.value = (x as Error).message } finally { ocupado.value = false }
 }
 const aTexto = (c: number | null) => (c === null ? '' : String(c / 100))
 function editar(p: any) { aviso.value = ''; error.value = ''; edicion.value = { clave: p.clave, nombre: p.nombre, mensual: aTexto(p.precio_mensual_centimos), anual: aTexto(p.precio_anual_centimos), moneda: p.moneda ?? '' } }

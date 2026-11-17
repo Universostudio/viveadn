@@ -9,6 +9,27 @@ Estado: lo que existe hoy es **una tabla de precios por plan y una simulación d
 - **Ceros honestos.** Un cero solo sale con su causa («ninguna iglesia en este plan»). Si hay iglesias que pagan un plan sin precio, ese plan dice «No calculable: falta el precio» (no se pone cero) y el total se marca como parcial. Monedas distintas no se suman entre sí. Iglesias con un plan que ya no está en el catálogo se cuentan aparte.
 - **Límites de la simulación.** Supone cobro mensual (aún no se guarda si una iglesia paga al año), no aplica impuestos ni descuentos y no sabe quién ha pagado de verdad: es una estimación, no contabilidad. El indicador «Facturación recurrente mensual» de la portada sigue **sin conectar** a propósito, porque solo debe mostrar cobros reales.
 
+## 1b. Impuestos: configurables y pendientes [E]
+
+Decisión de Harold (17 de noviembre): los impuestos se fijarán cuando termine de configurarse la plataforma, con un contador. **El desarrollo no espera a conocer las tasas.**
+
+- **Qué existe.** Una lista de reglas guardada en `plataforma_ajustes` (clave `impuestos`), sin migración nueva. Cada regla es: país o región, concepto (por ejemplo, un impuesto sobre ventas), tasa en % (0 a 100, hasta cuatro decimales), si está **activa** y si el precio del plan ya los **incluye** (sí, no, sin definir). Se edita en «Facturación» (acción `impuestos_guardar`, queda en la auditoría de la plataforma). La respuesta de `facturacion_simulacion` lleva `impuestos`: su estado (`pendiente` o `configurado`), las reglas y cuántas están activas.
+- **Nada de fábrica.** No hay ninguna tasa precargada. Una regla nace **desactivada** y sin marca de precio. Mientras no haya una regla activa, la pantalla dice **«Impuestos: pendiente de configurar»**.
+- **Qué NO hace todavía.** La simulación de ingresos sigue siendo antes de impuestos y no los aplica: aún no se sabe a qué país o región pertenece cada iglesia ni si los precios los incluyen. Cuando el contador lo decida, aplicar las reglas será un cambio pequeño y aislado en `facturacion.ts`. Tampoco hay cobros, así que ningún impuesto se cobra ni se factura.
+- **Pruebas.** `npm run test:facturacion` (validación y estado pendiente) y `npm run test:panel-ui` (la pantalla).
+
+### Decisiones fiscales que debe tomar el contador
+
+1. **Dónde se vende y con qué obligación fiscal:** países o regiones a los que se factura, y si la entidad debe registrarse como contribuyente o como vendedor de servicios digitales en cada uno.
+2. **Qué impuestos aplican por región** y su nombre exacto en la factura (concepto), con sus tasas vigentes y quién las actualiza cuando cambien.
+3. **Precios con o sin impuestos:** si el precio publicado de cada plan los incluye. Cambia lo que cobra Stripe y lo que la plataforma ingresa de verdad.
+4. **Cómo se decide la región de cada iglesia:** país del domicilio, de la tarjeta o de la dirección de facturación, y qué hacer con las que no se pueden determinar.
+5. **Clientes exentos o con número de contribuyente:** si las iglesias u otras entidades sin ánimo de lucro tienen exención, y qué documento la acredita.
+6. **Impuesto sobre la comisión de Stripe** y su efecto en el margen de cada plan (enlaza con el apartado 3 de este documento).
+7. **Contenido y numeración de las facturas o recibos** exigidos en cada región, y cuánto tiempo se conservan.
+8. **Moneda base** y cómo se trata el cambio de moneda en la declaración.
+9. **Retenciones o impuestos sobre la renta** de la propia entidad (fuera del alcance de la aplicación, pero el contador debe confirmarlo).
+
 ## 2. Diseño de la conexión con Stripe en modo de prueba [H, para aprobar]
 
 Principios de `COBRO.md` que se mantienen: Visualiza cobra solo su software; el pago ocurre en la página alojada de Stripe (ningún dato de tarjeta toca nuestros servidores); sin comisión en origen, reparto ni custodia; primero se cobra, después se emite el evento.
@@ -66,7 +87,7 @@ Firma inválida rechazada; el mismo evento dos veces no duplica cobro ni cambia 
 
 ## 3. Decisiones que dependen de Harold («le diré»)
 
-- **Precios** de los planes, **moneda base** y si los **impuestos** van incluidos (hoy los precios están vacíos).
+- **Precios** de los planes, **moneda base** y si los **impuestos** van incluidos (hoy los precios están vacíos; los impuestos son configurables, ver 1b, y se fijan con un contador).
 - Si se ofrece **pago anual** y con qué descuento (la columna ya existe; la simulación todavía no la usa).
 - **Coste de Stripe.** No tiene cuota fija por su uso básico, pero cobra una comisión por cada transacción; es un coste variable nuevo y, por la regla del proyecto, **no se activa nada sin un análisis previo aprobado** (tarifa exacta de la cuenta de la entidad, impuestos sobre la comisión y su efecto en el margen de cada plan) [NV: la tarifa concreta no está verificada aquí].
 - Plazo de gracia ante impago y estado al que pasa la iglesia (enlaza con las decisiones comerciales de `docs/CICLO-DE-VIDA.md`).
