@@ -36,7 +36,7 @@ Generado por `scripts/entorno/generar-paquete.sh`. Reproduce `scripts/entorno/mo
 
 ## Funciones de borde y datos de demostración
 
-- `funciones.json`: las 11 funciones de borde con su `verify_jwt`, sus archivos (ruta relativa, bytes y sha256 completo). Sin verificación de JWT: baja, confirmar-suscripcion, enviar-confirmaciones; las demás la llevan. Al desplegar con una herramienta, cada archivo va con su ruta relativa (`index.ts` y los que importa, como `./ciclo.ts`) y se comprueba el sha256 antes. Los imports `npm:` no necesitan nada más.
+- `funciones.json`: las 11 funciones de borde con su `verify_jwt`, sus archivos (ruta relativa, bytes y sha256 completo). Sin verificación de JWT: baja, confirmar-suscripcion, enviar-confirmaciones, invitaciones; las demás la llevan. Al desplegar con una herramienta, cada archivo va con su ruta relativa (`index.ts` y los que importa, como `./ciclo.ts`) y se comprueba el sha256 antes. Los imports `npm:` no necesitan nada más.
 - `datos_demo.sql`: 300 personas, 6 zonas y 18 casas sintéticas **sin psql**. Exige que la iglesia `iglesia-demo` exista y esté marcada como demostración (se crea desde `/plataforma`); es de un solo uso.
 - `sembrar_iglesias_prueba.sql`: cuatro iglesias de prueba (una mega Premium con dos sedes, una mediana Básico, una pequeña Semilla y una en periodo de prueba en modo alias, seis filas en total) con más de 500 personas sintéticas, **sin psql** y de un solo uso. No crea usuarios ni consentimientos; contactos enmascarados (`@demo.invalid` y teléfonos `+999`).
 

@@ -1,5 +1,5 @@
 {
-  "nota": "verify_jwt de invitaciones en el real es false y aquí true: NO cambiarlo hasta que la sesión CRM confirme que no es intencionado.",
+  "nota": "invitaciones lleva verify_jwt false a propósito (confirmado por la sesión CRM, dueña del real): no se cambia.",
   "funciones": [
     {
       "nombre": "baja",
@@ -106,7 +106,7 @@
     },
     {
       "nombre": "invitaciones",
-      "verify_jwt": true,
+      "verify_jwt": false,
       "entrada": "index.ts",
       "carpeta": "supabase/functions/invitaciones",
       "archivos": [
@@ -140,8 +140,8 @@
         },
         {
           "ruta": "index.ts",
-          "bytes": 54393,
-          "sha256": "2585522291f8fb4e5e97d8235f59206ea5f98c0020d652c1a068172eabfe2913"
+          "bytes": 54820,
+          "sha256": "173f084e71a7f560c8cb7d53a0ca0b792ebeca9c7d10ad7ad3da0e73f9fa5e2d"
         },
         {
           "ruta": "paginar.ts",
@@ -150,8 +150,8 @@
         },
         {
           "ruta": "panel.ts",
-          "bytes": 3561,
-          "sha256": "78cb8c00f73f12594c742a0d5a3e882ea68abd6364259863728142bc65a1c819"
+          "bytes": 4885,
+          "sha256": "5e47e816cdb9eee46fa3d59e0b59dc67155cfc0575d91fb6bb7c4bab3787d379"
         },
         {
           "ruta": "soporte.ts",

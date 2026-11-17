@@ -105,7 +105,7 @@
     },
     {
       "nombre": "invitaciones",
-      "verify_jwt": true,
+      "verify_jwt": false,
       "entrada": "index.ts",
       "carpeta": "supabase/functions/invitaciones",
       "archivos": [
@@ -139,8 +139,8 @@
         },
         {
           "ruta": "index.ts",
-          "bytes": 53765,
-          "sha256": "3d19571d050c347940523c9c0e4bab627fe5d0c734ff66dbbd025e1d0a47cfb7"
+          "bytes": 54820,
+          "sha256": "173f084e71a7f560c8cb7d53a0ca0b792ebeca9c7d10ad7ad3da0e73f9fa5e2d"
         },
         {
           "ruta": "paginar.ts",
@@ -149,13 +149,13 @@
         },
         {
           "ruta": "panel.ts",
-          "bytes": 3235,
-          "sha256": "beac9f070dbfc48afbf1bb91ef480e164909cbc1452f91a1fd0dd18a5d29e9e9"
+          "bytes": 4885,
+          "sha256": "5e47e816cdb9eee46fa3d59e0b59dc67155cfc0575d91fb6bb7c4bab3787d379"
         },
         {
           "ruta": "soporte.ts",
-          "bytes": 8907,
-          "sha256": "4ae606abce92e613d0fa7b758ff668680df5d1ce60b6dfde2802506faea9c4f8"
+          "bytes": 9051,
+          "sha256": "408792304c6871dc43db404ba98d2d66e2811a4025555ac9741a447067493d00"
         }
       ]
     },

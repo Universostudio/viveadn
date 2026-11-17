@@ -61,3 +61,20 @@ export function faltaLaFuncion(error: { code?: string; message?: string } | null
 }
 
 export const MAX_LIBRO = 20
+
+/** Tope del cuerpo de una petición a la función: 32 KB (aviso de 4.000 caracteres, lista de planes y códigos caben de sobra) */
+export const MAX_CUERPO = 32 * 1024
+
+/** Lee el cuerpo como texto con tope y acepta solo un objeto JSON. 413 si el tamaño declarado o el real supera el máximo; 400 si no es un objeto JSON.
+ *  Un cuerpo vacío vale como objeto vacío (la acción desconocida ya responde 400 más abajo). */
+export function leerCuerpoJson(texto: string, declarado: string | number | null, max = MAX_CUERPO):
+  { ok: true; body: Record<string, any> } | { ok: false; status: 400 | 413; error: string } {
+  const d = declarado === null || declarado === '' ? NaN : Number(declarado)
+  if (Number.isFinite(d) && d > max) return { ok: false, status: 413, error: 'Cuerpo demasiado grande' }
+  if (new TextEncoder().encode(texto).length > max) return { ok: false, status: 413, error: 'Cuerpo demasiado grande' }
+  if (!texto.trim()) return { ok: true, body: {} }
+  let valor: unknown
+  try { valor = JSON.parse(texto) } catch { return { ok: false, status: 400, error: 'El cuerpo no es JSON valido' } }
+  if (valor === null || typeof valor !== 'object' || Array.isArray(valor)) return { ok: false, status: 400, error: 'El cuerpo debe ser un objeto JSON' }
+  return { ok: true, body: valor as Record<string, any> }
+}

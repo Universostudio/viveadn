@@ -21,7 +21,7 @@ Etiquetas de evidencia: **[E]** medido o probado con una prueba repetible, **[H]
 
 El real tiene exactamente el esquema de las migraciones hasta `20261106011008`: las huellas del catálogo (tablas, columnas, restricciones, índices, políticas, disparadores, permisos) coinciden con las de una base local montada hasta esa migración. La única diferencia es que seis funciones del real (`aplicar_modo_alias`, `sincronizar_etapa`, `trg_minimo_superadmins`, `gestionar_consolidacion`, `info_checkin`, `registrar_checkin`) no llevan los comentarios internos del texto del repositorio; el código es el mismo. Las seis las reemplaza el traspaso.
 
-Datos del real que el traspaso respeta: `casa-reino` (iglesia real, modo alias, enlazada a una madre) e `iglesia-en-linea-vive` (real), cinco iglesias de demostración (`demo-con-problemas`, `demo-grande`, `demo-nueva`, `demo-pequena`, `prueba-borrado-ficticia`), 2 usuarios y 2 miembros. Nada se importa desde pruebas.
+Datos del real que el traspaso respeta (CRM confirma que `casa-reino` e `iglesia-en-linea-vive` no se tocan y que `prueba-borrado-ficticia` está pendiente de borrar desde el panel): `casa-reino` (iglesia real, modo alias, enlazada a una madre) e `iglesia-en-linea-vive` (real), cinco iglesias de demostración (`demo-con-problemas`, `demo-grande`, `demo-nueva`, `demo-pequena`, `prueba-borrado-ficticia`), 2 usuarios y 2 miembros. Nada se importa desde pruebas.
 
 ## 2. El paquete: `supabase/paquete-traspaso/` (8 archivos más reversión)
 
@@ -55,7 +55,8 @@ El script monta en local el estado del real con datos sintéticos que imitan sus
 
 ## 3. Orden de ejecución
 
-0. **Coordinar con «Vive ADN CRM»** (dueña del real, PR 31). Pendiente de su respuesta: ¿tiene migraciones o cambios de datos en curso?, ¿modificó a propósito alguna de las nueve funciones que cambian?, ¿usa Vault, `pg_cron` o `pg_net`?, ¿por qué `invitaciones` tiene `verify_jwt` apagado en el real? Hasta que conteste, los objetos tocados quedan marcados **a revisar con CRM**: las funciones `aplicar_modo_alias`, `gestionar_consolidacion`, `guardar_iglesia`, `info_checkin`, `metricas_op72`, `registrar_checkin`, `sincronizar_etapa`, `trg_minimo_superadmins` y `trg_sembrar_roles`; las columnas nuevas de `iglesias` (`adn_borrada_en`, `adn_borrada_por`, `adn_estado_previo`) y de `consolidaciones` (`metodo_id`); y cualquier migración suya posterior a `20261106011008`.
+0. **Coordinación con «Vive ADN CRM»** (dueña del real). Respuesta recibida el 17 de noviembre, con lecturas suyas: no hay migraciones del real posteriores a `20261106011008`; las nueve funciones que cambian son idénticas al repositorio salvo comentarios y ninguna se tocó a propósito, así que se pueden reemplazar; no usa Vault, `pg_cron` ni `pg_net` (el real tiene `supabase_vault` con 0 secretos; `pg_cron` y `pg_net` no están instalados); `invitaciones` lleva `verify_jwt` apagado **a propósito** (`docs/MULTITENANT.md`, apartado 3) y no se cambia. Regla del entorno único: toda iglesia de prueba lleva `es_demo = true` y slug con prefijo `demo-` o `prueba-`.
+   **Orden decidido**: primero este traspaso, con la versión final de `trg_sembrar_roles` del repositorio (conserva `sembrar_eventos` y `sembrar_formacion` y añade `sembrar_comunicacion`); después CRM rehace sobre él sus tres PR con migraciones sin aplicar: #31 `credenciales_miembro` (`20261106020000`, que añade `sembrar_credencial` a `trg_sembrar_roles`), #35 precios (`20261116120000`) y #36 altas (`20261116130000`, apilada sobre #35). **Cuando el paquete esté aplicado y verificado, hay que avisar a CRM** (Gerencia o esta sesión): hasta entonces no puede rebasar.
 1. **Punto de restauración** del real antes de empezar (copia o PITR de Supabase) **[NV]**. Tiene datos reales mínimos, pero es lo único que no se puede rehacer.
 2. Comprobar las huellas del paquete: `sha256sum -c HUELLAS.sha256`.
 3. Aplicar `00` y exigir «ok». Después `01` a `04`, uno a uno, parando en el primer error. Después `05_DROP_HAROLD` a mano. Después `06_verificacion`: todas las filas `ok`.
@@ -81,7 +82,9 @@ El real tiene 7 (`dar-publico` v2, `verificar-certificado` v1, `checkin-evento` 
 | `confirmar-suscripcion` | no existe | Desplegar | **no** (enlace público) |
 | `baja` | no existe | Desplegar | **no** (enlace público) |
 | `dar-publico`, `verificar-certificado`, `registro-iglesia`, `red-resumen` | existen | Comparar el sha256 con `funciones.json`; redesplegar solo si difiere | sí |
-| `invitaciones` | v3 | **No cambiar `verify_jwt`** (en el real es `false`, en el manifiesto `true`) hasta que CRM confirme que no es intencionado | revisar con CRM |
+
+La función `plataforma` que se redespliega ya lee el cuerpo como texto con tope de 32 KB: responde 413 si el tamaño declarado o el real lo supera y 400 si no es un objeto JSON (`leerCuerpoJson`, con prueba). Si CRM exige entradas en `supabase/functions/politicas.json` para las funciones nuevas (`datos-iglesia` con `verify_jwt` sí; `baja`, `confirmar-suscripcion` y `enviar-confirmaciones` sin JWT, con su motivo), ese archivo no existe en esta rama: hay que acordar con ella su formato.
+| `invitaciones` | v3 | Redesplegar solo si su sha256 difiere. **`verify_jwt` se queda en `false`**: es a propósito (acciones públicas con token; las autenticadas validan con `auth.getUser`). El manifiesto ya lo refleja | **no** |
 
 ## 5. Vault, secretos y tarea programada
 
@@ -135,7 +138,7 @@ La rama `gerencia/contexto-2026-11-11` es la que contiene todo el trabajo; ningu
 
 | Riesgo | Mitigación |
 | --- | --- |
-| La sesión CRM tiene cambios en el real que no están en el repositorio | Paso 0 del apartado 3; la comprobación `00` falla si el real no tiene 33 tablas o ya tiene objetos del traspaso |
+| Choque con las migraciones sin aplicar de CRM (#31, #35, #36), sobre todo `trg_sembrar_roles` | Se aplica primero este traspaso y CRM rebasa después; la comprobación `00` falla si el real no tiene 33 tablas o ya tiene objetos del traspaso |
 | La herramienta de aplicación quita comentarios de las funciones | La huella `b03` puede fallar solo por eso; se compara sin comentarios |
 | Entre el paso `01` y `05_DROP_HAROLD` conviven dos firmas de `registrar_checkin` | Aplicar `05_DROP_HAROLD` justo después de `04`, sin pausas, y no desplegar `checkin-evento` antes. Mientras conviven las dos firmas, una llamada del check-in QR con 6 argumentos puede fallar por ambigüedad **[H]**: es una ventana de minutos, y el real tiene 0 registros de check-in |
 | El archivo `01` pesa 60 KB | Si la herramienta tiene un límite menor, se parte por migración |

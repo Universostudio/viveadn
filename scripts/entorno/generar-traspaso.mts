@@ -225,13 +225,13 @@ for (const f of ['programar.sql', 'verificar.sql']) {
 }
 
 // Funciones de borde con su huella
-const SIN_JWT = ['baja', 'confirmar-suscripcion', 'enviar-confirmaciones']
+const SIN_JWT = ['baja', 'confirmar-suscripcion', 'enviar-confirmaciones', 'invitaciones']   // invitaciones: false a propósito (acciones públicas con token; las autenticadas validan con auth.getUser, docs/MULTITENANT.md apartado 3)
 const carpetaF = join(RAIZ, 'supabase', 'functions')
 const funciones = readdirSync(carpetaF, { withFileTypes: true }).filter(d => d.isDirectory()).map(d => d.name).sort().map(nombre => ({
   nombre, verify_jwt: !SIN_JWT.includes(nombre), entrada: 'index.ts', carpeta: `supabase/functions/${nombre}`,
   archivos: readdirSync(join(carpetaF, nombre)).filter(f => f.endsWith('.ts')).sort().map(f => { const b = readFileSync(join(carpetaF, nombre, f)); return { ruta: f, bytes: b.length, sha256: sha(b) } }),
 }))
-writeFileSync(join(salida, 'funciones.json'), JSON.stringify({ nota: 'verify_jwt de invitaciones en el real es false y aquí true: NO cambiarlo hasta que la sesión CRM confirme que no es intencionado.', funciones }, null, 2) + '\n')
+writeFileSync(join(salida, 'funciones.json'), JSON.stringify({ nota: 'invitaciones lleva verify_jwt false a propósito (confirmado por la sesión CRM, dueña del real): no se cambia.', funciones }, null, 2) + '\n')
 
 writeFileSync(join(salida, 'CAMBIOS_SOBRE_LAS_MIGRACIONES.md'), `# Qué cambia el compilador respecto a las migraciones del repositorio\n\nEl paquete de traspaso es el resultado de compilar las ${cadena.length} migraciones posteriores a \`${BASE}\`. Estas son todas las diferencias con su texto original (${cambios.length}). La equivalencia del esquema resultante con la cadena sin tocar está probada en \`scripts/entorno/generar-traspaso.sh\`.\n\n${cambios.map(c => `- ${c}`).join('\n')}\n`)
 

@@ -85,3 +85,22 @@ console.log('Plataforma: sin exportación de datos de personas')
   assert.match(a, /correo === 'sin_envio'\) return json\(\{ error: [^}]*\}, 409\)/, 'con el envío encendido y nadie que lo envíe, el aviso con correo se rechaza')
   console.log('Panel (función): códigos y avisos con correo se validan sin cambiar valores en silencio')
 }
+
+// Cuerpo de la petición: tope de 32 KB y solo un objeto JSON
+{
+  const { leerCuerpoJson, MAX_CUERPO } = await import('../supabase/functions/plataforma/panel.ts')
+  assert.equal(MAX_CUERPO, 32768)
+  assert.deepEqual(leerCuerpoJson('{"accion":"listar"}', '19'), { ok: true, body: { accion: 'listar' } })
+  assert.deepEqual(leerCuerpoJson('', null), { ok: true, body: {} }, 'un cuerpo vacío es un objeto vacío')
+  assert.deepEqual(leerCuerpoJson('{}', null), { ok: true, body: {} })
+  const grande = JSON.stringify({ accion: 'x', relleno: 'a'.repeat(MAX_CUERPO) })
+  assert.deepEqual(leerCuerpoJson(grande, null), { ok: false, status: 413, error: 'Cuerpo demasiado grande' }, 'el texto real pasa del tope')
+  assert.equal((leerCuerpoJson('{}', String(MAX_CUERPO + 1)) as any).status, 413, 'el tamaño declarado pasa del tope aunque el texto sea corto')
+  assert.equal((leerCuerpoJson('ñ'.repeat(MAX_CUERPO / 2 + 1), null) as any).status, 413, 'se cuentan bytes, no caracteres')
+  for (const mal of ['[]', '"x"', '5', 'null', 'true', '{no es json']) assert.equal((leerCuerpoJson(mal, null) as any).status, 400, mal)
+  const { readFileSync } = await import('node:fs')
+  const f = readFileSync(new URL('../supabase/functions/plataforma/index.ts', import.meta.url), 'utf8')
+  assert.ok(!/req\.json\(\)/.test(f), 'la función ya no lee el cuerpo con req.json() sin tope')
+  assert.match(f, /Number\(declarado\) > MAX_CUERPO/, 'rechaza con 413 por el tamaño declarado antes de leer')
+  console.log('Panel (función): cuerpo con tope de 32 KB y solo un objeto JSON')
+}

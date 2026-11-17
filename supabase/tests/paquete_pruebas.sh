@@ -92,7 +92,7 @@ for f in m:
         d = open(os.path.join(ruta, a['ruta']), 'rb').read()
         if hashlib.sha256(d).hexdigest() != a['sha256'] or len(d) != a['bytes']: sys.exit(f"sha256 o tamaño distinto en {f['nombre']}/{a['ruta']}")
 sin = sorted(f['nombre'] for f in m if not f['verify_jwt'])
-if sin != ['baja', 'confirmar-suscripcion', 'enviar-confirmaciones']: sys.exit(f"verify_jwt inesperado: {sin}")
+if sin != ['baja', 'confirmar-suscripcion', 'enviar-confirmaciones', 'invitaciones']: sys.exit(f"verify_jwt inesperado: {sin}")   # invitaciones: false a propósito (confirmado por CRM)
 print(len(m), 'funciones')
 PY
 echo "OK: el manifiesto de funciones coincide con los archivos (11 funciones, tres sin JWT)"

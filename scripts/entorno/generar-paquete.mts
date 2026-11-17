@@ -152,7 +152,7 @@ Para un proyecto que ya tiene el paquete completo aplicado hasta la migración $
 
 // Funciones de borde: manifiesto con el nombre, si el despliegue verifica el JWT, los archivos de cada una y su sha256 completo.
 // Quien despliega con una herramienta (no con la CLI) copia cada archivo con su ruta relativa y comprueba el sha256 antes de desplegar.
-const SIN_JWT = ['baja', 'confirmar-suscripcion', 'enviar-confirmaciones']   // las abre cualquiera con un enlace o las llama la tarea programada con su propia clave
+const SIN_JWT = ['baja', 'confirmar-suscripcion', 'enviar-confirmaciones', 'invitaciones']   // invitaciones: false a propósito (acciones públicas con token; las autenticadas validan con auth.getUser, docs/MULTITENANT.md apartado 3)   // las abre cualquiera con un enlace o las llama la tarea programada con su propia clave
 const carpetaFunciones = join(RAIZ, 'supabase', 'functions')
 const funciones = readdirSync(carpetaFunciones, { withFileTypes: true }).filter(d => d.isDirectory()).map(d => d.name).sort().map(nombre => {
   const archivos = readdirSync(join(carpetaFunciones, nombre)).filter(f => f.endsWith('.ts')).sort().map(f => {

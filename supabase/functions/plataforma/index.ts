@@ -4,7 +4,7 @@ import { avisoPurga, enviarAviso, leerConfig, type TipoEnvio } from './envio.ts'
 import { filasDeFacturacion, simular, validarPrecio } from './facturacion.ts'
 import { leerTodo } from './paginar.ts'
 import { correoDeAviso, esUuid, estadisticasDeAgregado, estadisticasDeAvisos, resumenDeAgregado, listaDeTickets, resumenDeSoporte, sinDemos, ticketAbierto, validarAviso, validarNovedad, validarRespuesta } from './soporte.ts'
-import { conteosPorIglesia, envioDelDia, eventosDeActividad, faltaLaFuncion, historialDeIglesia, MAX_LIBRO, salidaSegura } from './panel.ts'
+import { conteosPorIglesia, envioDelDia, eventosDeActividad, faltaLaFuncion, historialDeIglesia, leerCuerpoJson, MAX_CUERPO, MAX_LIBRO, salidaSegura } from './panel.ts'
 
 // Panel de plataforma: solo para usuarios en plataforma_admins.
 // Usa service_role, asi que cada entrada se valida aqui.
@@ -50,6 +50,11 @@ Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors })
   if (req.method !== 'POST') return json({ error: 'Metodo no permitido' }, 405)
 
+  // El cuerpo se lee como texto con tope (413 si el tamano declarado o el real pasa de 32 KB) y solo se acepta un objeto JSON
+  const declarado = req.headers.get('content-length')
+  const leido = Number(declarado) > MAX_CUERPO ? { ok: false as const, status: 413 as const, error: 'Cuerpo demasiado grande' } : leerCuerpoJson(await req.text(), declarado)
+  if (!leido.ok) return json({ error: leido.error }, leido.status)
+
   try {
     const url = Deno.env.get('SUPABASE_URL')!
     const anon = Deno.env.get('SUPABASE_ANON_KEY')!
@@ -75,7 +80,7 @@ Deno.serve(async (req) => {
       user = autenticado
     }
 
-    const body = await req.json().catch(() => ({}))
+    const body = leido.body
     // La clave de la tarea solo abre la purga y dos lecturas sin datos de personas: el estado de la purga y el libro de purgadas
     if (esCron && !['purgar_vencidas', 'estado_purga', 'libro_purgas', 'avisar_purga'].includes(body.accion)) return json({ error: 'Sin permiso' }, 403)
 
