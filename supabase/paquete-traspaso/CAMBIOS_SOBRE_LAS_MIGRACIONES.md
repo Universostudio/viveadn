@@ -1,0 +1,75 @@
+# Qué cambia el compilador respecto a las migraciones del repositorio
+
+El paquete de traspaso es el resultado de compilar las 29 migraciones posteriores a `20261106011008`. Estas son todas las diferencias con su texto original (71). La equivalencia del esquema resultante con la cadena sin tocar está probada en `scripts/entorno/generar-traspaso.sh`.
+
+- 20261111160000_adn_comunicacion: se quita la restricción en línea adn_mensaje_destinatarios_motivo_check de public.adn_mensaje_destinatarios (la redefine 20261111190000_adn_consentimiento)
+- 20261111190000_adn_consentimiento: baja de una restricción creada en esta misma cadena — alter table public.adn_mensaje_destinatarios drop constraint adn_mensaje_destinatarios_motivo_check;
+- 20261111190000_adn_consentimiento: firma antigua sustituida más abajo (queda solo la final) — create or replace function public.adn_registrar_consentimiento(p_miembro uuid, p_canal text, p_estado text) re
+- 20261111190000_adn_consentimiento: permiso de una firma antigua — revoke all on function public.adn_registrar_consentimiento(uuid, text, text) from public, anon;
+- 20261111190000_adn_consentimiento: permiso de una firma antigua — grant execute on function public.adn_registrar_consentimiento(uuid, text, text) to authenticated, service_role
+- 20261111200000_adn_consentimiento_auditoria: baja de una firma creada en esta misma cadena — drop function if exists public.adn_registrar_consentimiento(uuid, text, text);
+- 20261111190000_adn_consentimiento: firma antigua sustituida más abajo (queda solo la final) — create or replace function private.adn_registrar_consentimiento(p_miembro uuid, p_canal text, p_estado text) r
+- 20261111190000_adn_consentimiento: permiso de una firma antigua — revoke execute on function private.adn_registrar_consentimiento(uuid, text, text) from public, anon;
+- 20261111190000_adn_consentimiento: permiso de una firma antigua — grant execute on function private.adn_registrar_consentimiento(uuid, text, text) to authenticated, service_rol
+- 20261111200000_adn_consentimiento_auditoria: baja de una firma creada en esta misma cadena — drop function if exists private.adn_registrar_consentimiento(uuid, text, text);
+- 20261111210000_adn_consentimiento_evidencia: pasa a DROP_HAROLD (la firma ya existe en el real) — drop function public.registrar_checkin(text, text, text, text, text, text);
+- 20261111190000_adn_consentimiento: firma antigua sustituida más abajo (queda solo la final) — create or replace function private.adn_aplicar_consentimiento(p_miembro uuid, p_consent jsonb, p_origen text, 
+- 20261111200000_adn_consentimiento_auditoria: firma antigua sustituida más abajo (queda solo la final) — create or replace function private.adn_aplicar_consentimiento(p_miembro uuid, p_consent jsonb, p_origen text, 
+- 20261111190000_adn_consentimiento: permiso de una firma antigua — revoke execute on function private.adn_aplicar_consentimiento(uuid, jsonb, text, text) from public, anon;
+- 20261111190000_adn_consentimiento: permiso de una firma antigua — grant execute on function private.adn_aplicar_consentimiento(uuid, jsonb, text, text) to authenticated, servic
+- 20261111210000_adn_consentimiento_evidencia: baja de una firma creada en esta misma cadena — drop function private.adn_aplicar_consentimiento(uuid, jsonb, text, text);
+- 20261111210000_adn_consentimiento_evidencia: se quita la restricción en línea adn_consentimiento_evidencias_forma de public.adn_consentimiento_evidencias (la redefine 20261111220000_adn_checkin_canales)
+- 20261111220000_adn_checkin_canales: baja de una restricción creada en esta misma cadena — alter table public.adn_consentimiento_evidencias drop constraint adn_consentimiento_evidencias_forma;
+- 20261111210000_adn_consentimiento_evidencia: firma antigua sustituida más abajo (queda solo la final) — create or replace function public.registrar_checkin(p_token text, p_nombre text, p_apellido text, p_email text
+- 20261111210000_adn_consentimiento_evidencia: permiso de una firma antigua — revoke execute on function public.registrar_checkin(text, text, text, text, text, text, text, text) from publi
+- 20261111210000_adn_consentimiento_evidencia: permiso de una firma antigua — grant execute on function public.registrar_checkin(text, text, text, text, text, text, text, text) to service_
+- 20261111220000_adn_checkin_canales: baja de una firma creada en esta misma cadena — drop function public.registrar_checkin(text, text, text, text, text, text, text, text);
+- 20261111210000_adn_consentimiento_evidencia: se quita la restricción en línea adn_consentimiento_evidencias_tipo_check de public.adn_consentimiento_evidencias (la redefine 20261111230000_adn_doble_confirmacion)
+- 20261111230000_adn_doble_confirmacion: baja de una restricción creada en esta misma cadena — alter table public.adn_consentimiento_evidencias drop constraint adn_consentimiento_evidencias_tipo_check;
+- 20261111220000_adn_checkin_canales: restricción sustituida más abajo (queda la final) — alter table public.adn_consentimiento_evidencias add constraint adn_consentimiento_evidencias_forma check ( (t
+- 20261111230000_adn_doble_confirmacion: baja de una restricción creada en esta misma cadena — alter table public.adn_consentimiento_evidencias drop constraint adn_consentimiento_evidencias_forma;
+- 20261111220000_adn_checkin_canales: firma antigua sustituida más abajo (queda solo la final) — create or replace function public.registrar_checkin(p_token text, p_nombre text, p_apellido text, p_email text
+- 20261111230000_adn_doble_confirmacion: firma antigua sustituida más abajo (queda solo la final) — create or replace function public.registrar_checkin(p_token text, p_nombre text, p_apellido text, p_email text
+- 20261111220000_adn_checkin_canales: permiso de una firma antigua — revoke execute on function public.registrar_checkin(text, text, text, text, text, text, text, text, text[]) fr
+- 20261111220000_adn_checkin_canales: permiso de una firma antigua — grant execute on function public.registrar_checkin(text, text, text, text, text, text, text, text, text[]) to 
+- 20261111230000_adn_doble_confirmacion: permiso de una firma antigua — revoke execute on function public.registrar_checkin(text, text, text, text, text, text, text, text, text[]) fr
+- 20261111230000_adn_doble_confirmacion: permiso de una firma antigua — grant execute on function public.registrar_checkin(text, text, text, text, text, text, text, text, text[]) to 
+- 20261111300000_adn_checkin_nuevo_creyente: baja de una firma creada en esta misma cadena — drop function if exists public.registrar_checkin(text, text, text, text, text, text, text, text, text[]);
+- 20261111310000_adn_asistencias_unico: limpieza de asistencias duplicadas (DELETE) sustituida por una comprobación que falla si hay duplicados (el real tiene 0)
+- 20261111320000_adn_seguimiento_metodos: guarda de un objeto que aún no existe — drop policy if exists adn_seguimiento_metodos_ver on public.adn_seguimiento_metodos;
+- 20261111320000_adn_seguimiento_metodos: guarda de un objeto que aún no existe — drop policy if exists adn_seguimiento_config_ver on public.adn_seguimiento_config;
+- 20261111320000_adn_seguimiento_metodos: guarda de un objeto que aún no existe — drop trigger if exists adn_seguimiento_config_metodo on public.adn_seguimiento_config;
+- 20261111320000_adn_seguimiento_metodos: guarda de un objeto que aún no existe — drop trigger if exists adn_seguimiento_metodos_plantilla on public.adn_seguimiento_metodos;
+- 20261111320000_adn_seguimiento_metodos: guarda de un objeto que aún no existe — drop trigger if exists consolidaciones_metodo on public.consolidaciones;
+- 20261111340000_adn_seguimiento_propio: guarda de un objeto que aún no existe — drop policy if exists adn_seguimiento_metodos_crear on public.adn_seguimiento_metodos;
+- 20261111340000_adn_seguimiento_propio: guarda de un objeto que aún no existe — drop policy if exists adn_seguimiento_metodos_editar on public.adn_seguimiento_metodos;
+- 20261111340000_adn_seguimiento_propio: guarda de un objeto que aún no existe — drop trigger if exists adn_seguimiento_metodos_limite on public.adn_seguimiento_metodos;
+- 20261111340000_adn_seguimiento_propio: guarda de un objeto que aún no existe — drop trigger if exists adn_seguimiento_metodos_archivo on public.adn_seguimiento_metodos;
+- 20261111340000_adn_seguimiento_propio: guarda de un objeto que aún no existe — drop trigger if exists adn_seguimiento_metodos_recalcular on public.adn_seguimiento_metodos;
+- 20261111340000_adn_seguimiento_propio: guarda de un objeto que aún no existe — drop policy if exists adn_seguimiento_config_elegir on public.adn_seguimiento_config;
+- 20261111340000_adn_seguimiento_propio: guarda de un objeto que aún no existe — drop policy if exists adn_seguimiento_config_cambiar on public.adn_seguimiento_config;
+- 20261111340000_adn_seguimiento_propio: guarda de un objeto que aún no existe — drop trigger if exists adn_seguimiento_config_fecha on public.adn_seguimiento_config;
+- 20261111340000_adn_seguimiento_propio: guarda de un objeto que aún no existe — drop trigger if exists consolidaciones_a_metodo on public.consolidaciones;
+- 20261111350000_adn_soporte: guarda de un objeto que aún no existe — drop trigger if exists adn_ticket_mensajes_iglesia on public.adn_ticket_mensajes;
+- 20261111350000_adn_soporte: guarda de un objeto que aún no existe — drop trigger if exists adn_ticket_mensajes_estado on public.adn_ticket_mensajes;
+- 20261111350000_adn_soporte: guarda de un objeto que aún no existe — drop trigger if exists adn_tickets_limite on public.adn_tickets;
+- 20261111350000_adn_soporte: guarda de un objeto que aún no existe — drop policy if exists adn_tickets_ver on public.adn_tickets;
+- 20261111350000_adn_soporte: guarda de un objeto que aún no existe — drop policy if exists adn_tickets_crear on public.adn_tickets;
+- 20261111350000_adn_soporte: guarda de un objeto que aún no existe — drop policy if exists adn_ticket_mensajes_ver on public.adn_ticket_mensajes;
+- 20261111350000_adn_soporte: guarda de un objeto que aún no existe — drop policy if exists adn_ticket_mensajes_crear on public.adn_ticket_mensajes;
+- 20261111350000_adn_soporte: guarda de un objeto que aún no existe — drop policy if exists adn_novedades_ver on public.adn_novedades;
+- 20261111350000_adn_soporte: guarda de un objeto que aún no existe — drop policy if exists adn_novedades_vistas_ver on public.adn_novedades_vistas;
+- 20261111350000_adn_soporte: guarda de un objeto que aún no existe — drop policy if exists adn_novedades_vistas_crear on public.adn_novedades_vistas;
+- 20261111350000_adn_soporte: guarda de un objeto que aún no existe — drop policy if exists adn_novedades_vistas_cambiar on public.adn_novedades_vistas;
+- 20261111350000_adn_soporte: guarda de un objeto que aún no existe — drop policy if exists adn_avisos_entregas_ver on public.adn_avisos_entregas;
+- 20261111350000_adn_soporte: guarda de un objeto que aún no existe — drop policy if exists adn_avisos_entregas_marcar on public.adn_avisos_entregas;
+- 20261111350000_adn_soporte: guarda de un objeto que aún no existe — drop policy if exists adn_avisos_ver on public.adn_avisos;
+- 20261111360000_adn_precios_plan: guarda de una restricción que aún no existe — alter table public.planes drop constraint if exists adn_planes_precio_coherente;
+- 20261111350000_adn_soporte: sustituida más abajo en la cadena (queda solo la definición final) — create policy adn_tickets_ver on public.adn_tickets for select to authenticated using (iglesia_id = (select pr
+- 20261111390000_adn_soporte_prueba_vencida: guarda de reemplazo, ya sin objeto previo — drop policy if exists adn_tickets_ver on public.adn_tickets;
+- 20261111350000_adn_soporte: sustituida más abajo en la cadena (queda solo la definición final) — create policy adn_tickets_crear on public.adn_tickets for insert to authenticated with check (iglesia_id = (se
+- 20261111390000_adn_soporte_prueba_vencida: guarda de reemplazo, ya sin objeto previo — drop policy if exists adn_tickets_crear on public.adn_tickets;
+- 20261111350000_adn_soporte: sustituida más abajo en la cadena (queda solo la definición final) — create policy adn_ticket_mensajes_ver on public.adn_ticket_mensajes for select to authenticated using (iglesia
+- 20261111390000_adn_soporte_prueba_vencida: guarda de reemplazo, ya sin objeto previo — drop policy if exists adn_ticket_mensajes_ver on public.adn_ticket_mensajes;
+- 20261111350000_adn_soporte: sustituida más abajo en la cadena (queda solo la definición final) — create policy adn_ticket_mensajes_crear on public.adn_ticket_mensajes for insert to authenticated with check (
+- 20261111390000_adn_soporte_prueba_vencida: guarda de reemplazo, ya sin objeto previo — drop policy if exists adn_ticket_mensajes_crear on public.adn_ticket_mensajes;
