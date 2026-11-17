@@ -130,6 +130,53 @@ begin
     errores := errores || format('la tabla %s no tiene iglesia_id ni esta clasificada como global (exportar_iglesia y borrar_iglesia no la cubririan)', r.relname);
   end loop;
 
+  -- 12. Ni visitantes ni usuarios con sesion tienen TRUNCATE, REFERENCES ni TRIGGER sobre tablas de public o private:
+  --     TRUNCATE se salta la seguridad por filas y vaciaria una tabla de todas las iglesias
+  for r in
+    select c.relname, g.rol from pg_class c join pg_namespace n on n.oid = c.relnamespace
+    cross join (values ('anon'), ('authenticated')) g(rol)
+    where n.nspname in ('public', 'private') and c.relkind in ('r', 'p') and has_table_privilege(g.rol, c.oid, 'truncate, references, trigger')
+  loop
+    errores := errores || format('%s tiene TRUNCATE, REFERENCES o TRIGGER en: %s', r.rol, r.relname);
+  end loop;
+
+  -- 13. Toda funcion SECURITY DEFINER que un usuario con sesion puede ejecutar comprueba quien es o de que iglesia:
+  --     usa tiene_permiso, get_iglesia_id o auth.uid. Una nueva que no lo haga se salta el aislamiento entre iglesias.
+  for r in
+    with f as materialized (
+      select n.nspname, p.proname, p.oid from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+      where n.nspname in ('public', 'private') and p.prokind = 'f' and p.prosecdef and has_function_privilege('authenticated', p.oid, 'execute')
+    )
+    select nspname, proname from f where pg_get_functiondef(oid) !~* '(tiene_permiso|get_iglesia_id|auth\.uid)'
+  loop
+    errores := errores || format('función privilegiada expuesta a usuarios que no comprueba permiso ni iglesia: %s.%s', r.nspname, r.proname);
+  end loop;
+
+  -- 14. Toda politica de una tabla con iglesia_id acota por iglesia (get_iglesia_id): una politica sin ese filtro
+  --     dejaria leer o escribir filas de otras iglesias
+  for r in
+    select p.tablename, p.policyname from pg_policies p
+    join pg_class c on c.relname = p.tablename and c.relnamespace = 'public'::regnamespace
+    join pg_attribute a on a.attrelid = c.oid and a.attname = 'iglesia_id' and not a.attisdropped
+    where p.schemaname = 'public'
+      and coalesce(p.qual, '') || coalesce(p.with_check, '') !~ 'get_iglesia_id'
+  loop
+    errores := errores || format('política sin filtro por iglesia: %s.%s', r.tablename, r.policyname);
+  end loop;
+
+  -- 15. Las funciones de public que un usuario con sesion puede ejecutar fijan search_path
+  for r in
+    with f as materialized (
+      select p.proname, p.oid, p.proconfig from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+      where n.nspname = 'public' and p.prokind = 'f'
+    )
+    select proname from f
+    where has_function_privilege('authenticated', oid, 'execute')
+      and (proconfig is null or not exists (select 1 from unnest(proconfig) x where x like 'search_path=%'))
+  loop
+    errores := errores || format('función de public ejecutable por usuarios sin search_path: %s', r.proname);
+  end loop;
+
   if array_length(errores, 1) > 0 then
     raise exception E'PERMISOS: % problema(s)\n%', array_length(errores, 1), array_to_string(errores, E'\n');
   end if;
