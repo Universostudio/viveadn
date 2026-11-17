@@ -118,14 +118,46 @@ for (const f of readdirSync(salida)) if (/^\d\d_.*\.sql$/.test(f) || ['INDICE.md
 rmSync(join(salida, 'reversion'), { recursive: true, force: true })
 rmSync(join(salida, 'despues'), { recursive: true, force: true })
 
-// Reparto de las migraciones en archivos de aplicación sin partir ninguna
-const grupos: M[][] = []; let actual: M[] = [], tam = 0
-for (const m of cadena) { const t = bytes(compilar(m)); if (actual.length && tam + t > MAX_BYTES) { grupos.push(actual); actual = []; tam = 0 } actual.push(m); tam += t }
-if (actual.length) grupos.push(actual)
+// Reparto en TRAMOS pequeños (como máximo 20.000 bytes por archivo), partiendo entre sentencias, nunca dentro de una. Cada tramo se puede aplicar solo y repetir sin error:
+// va dentro de un bloque que se salta si su objeto centinela (el último objeto nuevo que crea) ya existe, y exige que el tramo anterior esté aplicado.
+const LIMITE_ARCHIVO = 20_000, CUERPO_MAX = 16_000, CUERPO_DURO = 18_800
+interface Trozo { texto: string; clave?: string; comprobar?: string }
+const claveDe = (c: Clase): { clave: string; comprobar: string } | null => {
+  if (c.tipo === 'crear_tabla') return { clave: `t:${c.tabla}`, comprobar: `to_regclass('${c.tabla}') is not null` }
+  if (c.tipo === 'crear_funcion') return { clave: `f:${c.firma}`, comprobar: `to_regprocedure('${c.firma}') is not null` }
+  if (c.tipo === 'crear_politica') { const [e, t] = c.tabla.includes('.') ? c.tabla.split('.') : ['public', c.tabla]; return { clave: `p:${c.nombre}@${c.tabla}`, comprobar: `exists (select 1 from pg_policies where schemaname = '${e}' and tablename = '${t}' and policyname = '${c.nombre}')` } }
+  if (c.tipo === 'crear_disparador') return { clave: `g:${c.nombre}@${c.tabla}`, comprobar: `exists (select 1 from pg_trigger where tgname = '${c.nombre}' and tgrelid = '${c.tabla}'::regclass and not tgisinternal)` }
+  return null
+}
+const creadas = new Set<string>([...enBase.tabla].map(t => `t:${t}`).concat([...enBase.funcion].map(f => `f:${f}`), [...enBase.politica].map(x => `p:${x}`), [...enBase.disparador].map(x => `g:${x}`)))
+const trozos: Trozo[] = []
+for (const m of cadena) {
+  const c0 = compilar(m)
+  let primero = true
+  for (const st of m.stmts.filter(x => !x.fuera)) {
+    const cab = primero ? `\n-- ===== ${m.nombre} (origen sha256 ${sha(m.origen).slice(0, 12)}, compilado sha256 ${sha(c0).slice(0, 12)}) =====\n` : ''
+    primero = false
+    const k = claveDe(st.clase)
+    let nueva: { clave: string; comprobar: string } | null = null
+    if (k && !creadas.has(k.clave)) { creadas.add(k.clave); nueva = k }
+    trozos.push({ texto: cab + limpiarComentarios(st.texto), ...(nueva ?? {}) })
+  }
+}
+const tramos: Trozo[][] = []
+{ let act: Trozo[] = [], tam = 0
+  const tieneCentinela = (l: Trozo[]) => l.some(x => x.comprobar)
+  for (const t of trozos) {
+    const b = bytes(t.texto); if (b > CUERPO_MAX) throw new Error(`Una sentencia pesa ${b} bytes y no cabe en un tramo`)
+    // Un tramo se cierra al llegar al tamaño máximo, pero solo si ya tiene un objeto nuevo que sirva de centinela; si no, sigue hasta el tope duro
+    if (act.length && tam + b > CUERPO_MAX && (tieneCentinela(act) || tam + b > CUERPO_DURO)) { tramos.push(act); act = []; tam = 0 }
+    act.push(t); tam += b
+  }
+  if (act.length) tramos.push(act) }
+const centinela = tramos.map((t, i) => { const nuevos = t.filter(x => x.comprobar); if (!nuevos.length) throw new Error(`El tramo ${i + 1} no crea ningún objeto nuevo que sirva de centinela: reordenar o fusionar`); return nuevos[nuevos.length - 1]!.comprobar! })
 const hayDrop = dropHarold.length > 0
-const TOTAL = 1 + grupos.length + (hayDrop ? 1 : 0) + 1 + 1     // comprobación, aplicación, DROP_HAROLD, verificación, registro de migraciones
+const TOTAL = 1 + tramos.length + (hayDrop ? 1 : 0) + 1 + 1     // comprobación, aplicación, DROP_HAROLD, verificación, registro de migraciones
 const encabezado = (n: number, titulo: string) => `-- Vive ADN, traspaso al proyecto real, archivo ${n} de ${TOTAL}: ${titulo}\n`
-const escribir = (nombre: string, texto: string) => { if (bytes(texto) > LIMITE_DURO) throw new Error(`${nombre} supera ${LIMITE_DURO} bytes`); writeFileSync(join(salida, nombre), texto) }
+const escribir = (nombre: string, texto: string) => { if (bytes(texto) > 20_000) throw new Error(`${nombre} supera 20.000 bytes`); writeFileSync(join(salida, nombre), texto) }
 const indice: { archivo: string; n: number; bytes: number; sha: string; contenido: string }[] = []
 const registrar = (archivo: string, n: number, texto: string, contenido: string) => { escribir(archivo, texto); indice.push({ archivo, n, bytes: bytes(texto), sha: sha(texto), contenido }) }
 
@@ -144,20 +176,32 @@ select 'ok: el real está en el estado esperado, listo para el traspaso' as resu
 `
 registrar('00_comprobar_estado_real.sql', 1, comprobacion, 'Comprobación previa (solo lectura)')
 
-grupos.forEach((g, i) => {
-  const n = i + 2
-  let t = `${encabezado(n, `aplicación ${i + 1} de ${grupos.length}. Aplicar una sola vez y detenerse en el primer error.`)}${CABECERA}`
-  for (const m of g) { const c = compilar(m); t += `\n-- ===== ${m.nombre} (origen sha256 ${sha(m.origen).slice(0, 12)}, compilado sha256 ${sha(c).slice(0, 12)}) =====\n${c.endsWith('\n') ? c : c + '\n'}` }
-  registrar(`${pad(n - 1)}_aplicar_${pad(i + 1)}_de_${pad(grupos.length)}.sql`, n, t, g.map(m => m.nombre.replace(/^\d+_/, '')).join(', '))
+tramos.forEach((t, i) => {
+  const n = i + 2, N = tramos.length
+  const cuerpo = t.map(x => x.texto).join('')
+  if (cuerpo.includes('$cuerpo$') || cuerpo.includes('$tramo$')) throw new Error(`El tramo ${i + 1} contiene una etiqueta reservada`)
+  const previo = i > 0 ? `  if not (${centinela[i - 1]}) then raise exception 'Falta aplicar antes el tramo ${i} de ${N}: no se sigue.'; end if;\n` : ''
+  const texto = `${encabezado(n, `tramo ${i + 1} de ${N}. Se puede aplicar solo y repetir sin error: si ya está aplicado, no hace nada. Detenerse en el primer error.`)}${CABECERA}do $tramo$
+begin
+  -- Ya aplicado: el último objeto nuevo que crea este tramo existe. Las sentencias van en un solo bloque, así que o se aplican todas o ninguna.
+  if ${centinela[i]} then raise notice 'Tramo ${i + 1} de ${N} ya aplicado: no se repite'; return; end if;
+${previo}  execute $cuerpo$
+${cuerpo}
+$cuerpo$;
+end $tramo$;
+select 'ok: tramo ${i + 1} de ${N} aplicado' as resultado, (${centinela[i]}) as comprobado;
+`
+  if (bytes(texto) > LIMITE_ARCHIVO) throw new Error(`El tramo ${i + 1} pesa ${bytes(texto)} bytes (máximo ${LIMITE_ARCHIVO})`)
+  registrar(`${pad(i + 1)}_tramo_${pad(i + 1)}_de_${pad(N)}.sql`, n, texto, `tramo ${i + 1} de ${N}: ${[...new Set(cuerpo.match(/-- ===== (\S+)/g) ?? [])].map(x => x.slice(9).replace(/^\d+_/, '')).join(', ')}`)
 })
 
-let n = grupos.length + 2
+let n = tramos.length + 2
 if (hayDrop) {
   const t = `${encabezado(n, 'DROP_HAROLD: lo único destructivo. Se aplica a mano, DESPUÉS de todos los de aplicación y ANTES de la verificación.')}${CABECERA}` +
     `-- Quita la firma antigua de public.registrar_checkin (6 parámetros) que el real tiene desde la migración del check-in QR y que la migración nueva sustituye por la de 10 parámetros.\n` +
     `-- No toca datos: es solo la definición de una función. Mientras no se aplique, conviven las dos firmas y una llamada con exactamente 6 argumentos sería ambigua;\n` +
     `-- por eso hay que aplicarlo antes de redesplegar checkin-evento.\n` +
-    dropHarold.map(d => `\n-- (${d.migracion}: ${d.motivo})\n${d.texto.trim()}\n`).join('')
+    dropHarold.map(d => `\n-- (${d.migracion}: ${d.motivo}). «if exists» para poder repetirlo sin error.\n${d.texto.trim().replace(/(^|\n)drop function (if exists )?/i, '$1drop function if exists ')}\n`).join('')
   registrar(`${pad(n - 1)}_DROP_HAROLD_firma_antigua_registrar_checkin.sql`, n, t, 'DROP_HAROLD: quita la firma antigua de registrar_checkin (única orden destructiva)')
   n++
 }
@@ -196,7 +240,7 @@ registrar(`${pad(n - 1)}_registro_migraciones.sql`, n, registro, 'Registro de la
 const downs = cadena.map(m => ({ m, t: readFileSync(join(RAIZ, 'supabase', 'reversiones', `${m.nombre}.down.sql`), 'utf8').replace(/^\\set ON_ERROR_STOP on\s*$/m, '').trim() + '\n' })).reverse()
 mkdirSync(join(salida, 'reversion'), { recursive: true })
 const gr: typeof downs[] = []; let ar: typeof downs = [], tr = 0
-for (const d of downs) { if (ar.length && tr + bytes(d.t) > MAX_BYTES) { gr.push(ar); ar = []; tr = 0 } ar.push(d); tr += bytes(d.t) }
+for (const d of downs) { if (ar.length && tr + bytes(d.t) > 17_000) { gr.push(ar); ar = []; tr = 0 } ar.push(d); tr += bytes(d.t) }
 if (ar.length) gr.push(ar)
 const reversionIndice: { archivo: string; bytes: number; sha: string; contenido: string }[] = []
 gr.forEach((g, i) => {
@@ -245,7 +289,7 @@ Generado por \`scripts/entorno/generar-traspaso.sh\`. Lleva el real, que tiene l
 | --- | --- | --- | --- | --- |
 ${indice.map(i => `| ${i.n} de ${TOTAL} | \`${i.archivo}\` | ${i.bytes.toLocaleString('es-ES')} | \`${i.sha.slice(0, 16)}\` | ${i.contenido} |`).join('\n')}
 
-1. Aplicar los archivos en orden, uno a uno. **Detenerse en el primer error** y avisar con el texto del error: no hay reintento seguro de un archivo a medias.
+1. Aplicar los archivos en orden, uno a uno, ninguno de más de 20 KB. Cada tramo se puede aplicar solo y **repetir sin error** (si ya está aplicado, no hace nada) y falla si falta el tramo anterior. **Detenerse en el primer error** y avisar con el texto del error: cada tramo es un solo bloque, así que o se aplica entero o no se aplica nada.
 2. El de comprobación (1 de ${TOTAL}) no cambia nada y debe decir «ok». Si dice otra cosa, no se sigue.
 3. Tras los de aplicación, \`DROP_HAROLD\` (a mano), y después la verificación: todas las filas con \`ok = true\`.
 4. Solo entonces: siembra de demostraciones (\`sembrar_iglesias_prueba.sql\`), funciones de borde (\`funciones.json\`), Vault y tareas (ver \`docs/TRASPASO-AL-REAL.md\`).
@@ -269,4 +313,4 @@ const todos = [...indice.map(i => i.archivo), ...reversionIndice.map(r => r.arch
 const lineas = todos.map(f => `${sha(readFileSync(join(salida, f)))}  ${f}`)
 writeFileSync(join(salida, 'HUELLAS.sha256'), lineas.join('\n') + '\n' + `# huella del conjunto: ${sha(lineas.join('\n'))}\n`.replace(/^/, ''))
 if (!existsSync(join(salida, 'INDICE.md'))) throw new Error('sin índice')
-console.log(`Traspaso en ${salida}: ${TOTAL} archivos (${grupos.length} de aplicación), ${gr.length} de reversión, ${cambios.length} cambios sobre las migraciones, ${dropHarold.length} DROP_HAROLD`)
+console.log(`Traspaso en ${salida}: ${TOTAL} archivos (${tramos.length} tramos de aplicación), ${gr.length} de reversión, ${cambios.length} cambios sobre las migraciones, ${dropHarold.length} DROP_HAROLD`)

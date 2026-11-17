@@ -41,11 +41,22 @@ for f in "$SAL"/[0-9][0-9]_*.sql; do
   case "$f" in *verificacion*|*registro_migraciones*) continue ;; esac
   q -d tr_tra -f "$f" >/dev/null 2>"$TMP/err" || { cat "$TMP/err"; echo "FALLA $f"; exit 1; }
 done
+echo "   cada archivo del paquete pesa como mucho 20.000 bytes: $(wc -c "$SAL"/[0-9][0-9]_*.sql "$SAL"/reversion/*.sql "$SAL"/despues/*.sql "$SAL"/sembrar_iglesias_prueba.sql | grep -v total | sort -rn | head -1)"
+for f in "$SAL"/[0-9][0-9]_*.sql "$SAL"/reversion/*.sql "$SAL"/despues/*.sql "$SAL"/sembrar_iglesias_prueba.sql; do [ "$(wc -c < "$f")" -le 20000 ] || { echo "FALLA: $f pesa más de 20.000 bytes"; exit 1; }; done
 echo "5/7 Verificación del paquete y equivalencia con la cadena sin compilar"
 v=$(q -At -F'|' -d tr_tra -f "$SAL"/[0-9][0-9]_verificacion.sql)
 echo "$v" | grep -q '^zz_todo_ok|||t$' || { echo "$v" | awk -F'|' '$4 != "t"'; echo "FALLA la verificación del paquete"; exit 1; }
 echo "   verificación: $(echo "$v" | grep -vc '^zz_todo_ok') comprobaciones, todas ok"
 dumpear tr_tra "$TMP/tra.sql"; datos_hash tr_tra > "$TMP/tra.datos"
+# Cada tramo se puede repetir sin error y sin cambiar nada; y no se puede saltar un tramo
+for f in "$SAL"/[0-9][0-9]_tramo_*.sql "$SAL"/[0-9][0-9]_DROP_HAROLD*.sql; do q -d tr_tra -f "$f" >/dev/null 2>"$TMP/err" || { cat "$TMP/err"; echo "FALLA al repetir $f"; exit 1; }; done
+dumpear tr_tra "$TMP/repetido.sql"; diff -q "$TMP/tra.sql" "$TMP/repetido.sql" >/dev/null || { echo "FALLA: repetir los tramos cambia el esquema"; exit 1; }
+echo "   repetir todos los tramos y DROP_HAROLD: sin error y sin cambios"
+q -d postgres -c "create database tr_sem template tr_base" >/dev/null
+if q -d tr_sem -f "$(ls "$SAL"/[0-9][0-9]_tramo_*.sql | sed -n 3p)" >/dev/null 2>"$TMP/err"; then echo "FALLA: un tramo se aplicó saltándose los anteriores"; exit 1; fi
+grep -q "Falta aplicar antes el tramo" "$TMP/err" || { cat "$TMP/err"; echo "FALLA: mensaje inesperado al saltar un tramo"; exit 1; }
+echo "   un tramo no se aplica si falta el anterior"
+q -d postgres -c "drop database tr_sem" >/dev/null
 diff -q "$TMP/cad.sql" "$TMP/tra.sql" >/dev/null || { diff "$TMP/cad.sql" "$TMP/tra.sql" | head -40; echo "FALLA: el esquema compilado difiere del de la cadena original"; exit 1; }
 echo "   esquema idéntico al de aplicar las migraciones originales sin compilar"
 diff -q "$TMP/cad.datos" "$TMP/tra.datos" >/dev/null || { diff "$TMP/cad.datos" "$TMP/tra.datos" | head -30; echo "FALLA: los datos difieren"; exit 1; }

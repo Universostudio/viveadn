@@ -1,4 +1,4 @@
--- Vive ADN, traspaso al proyecto real, archivo 7 de 8: verificación (solo lee). Resultado correcto: TODAS las filas con ok = true y zz_todo_ok = true.
+-- Vive ADN, traspaso al proyecto real, archivo 18 de 19: verificación (solo lee). Resultado correcto: TODAS las filas con ok = true y zz_todo_ok = true.
 -- Cada fila compara una huella del esquema con el valor de la cadena completa montada en local. No mira los datos del real (iglesias, usuarios).
 set search_path = pg_catalog;
 with obtenido(nombre, valor) as (

@@ -1,4 +1,4 @@
--- Vive ADN, traspaso al proyecto real, archivo 1 de 8: comprobación previa (solo lee, no cambia nada). Si falla, NO se sigue.
+-- Vive ADN, traspaso al proyecto real, archivo 1 de 19: comprobación previa (solo lee, no cambia nada). Si falla, NO se sigue.
 set search_path = public, extensions;
 do $$
 begin

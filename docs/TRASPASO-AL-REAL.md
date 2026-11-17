@@ -23,19 +23,19 @@ El real tiene exactamente el esquema de las migraciones hasta `20261106011008`: 
 
 Datos del real que el traspaso respeta (CRM confirma que `casa-reino` e `iglesia-en-linea-vive` no se tocan y que `prueba-borrado-ficticia` está pendiente de borrar desde el panel): `casa-reino` (iglesia real, modo alias, enlazada a una madre) e `iglesia-en-linea-vive` (real), cinco iglesias de demostración (`demo-con-problemas`, `demo-grande`, `demo-nueva`, `demo-pequena`, `prueba-borrado-ficticia`), 2 usuarios y 2 miembros. Nada se importa desde pruebas.
 
-## 2. El paquete: `supabase/paquete-traspaso/` (8 archivos más reversión)
+## 2. El paquete: `supabase/paquete-traspaso/` (19 archivos, ninguno de más de 20 KB, más reversión)
 
-Se construye desde las migraciones del repositorio posteriores a `20261106011008` (29 migraciones), no desde el estado de pruebas, que aún no tiene las de la 350000 a la 400000. Solo añade. `INDICE.md` lista cada archivo con su `N de 8`, sus bytes y su sha256; `HUELLAS.sha256` lleva el sha256 completo de todos y el del conjunto.
+Se construye desde las migraciones del repositorio posteriores a `20261106011008` (29 migraciones), no desde el estado de pruebas, que aún no tiene las de la 350000 a la 400000. Solo añade. `INDICE.md` lista cada archivo con su `N de 19`, sus bytes y su sha256; `HUELLAS.sha256` lleva el sha256 completo de todos y el del conjunto.
 
-| N de 8 | Archivo | Qué hace |
+| N de 19 | Archivo | Qué hace |
 | --- | --- | --- |
 | 1 | `00_comprobar_estado_real.sql` | Solo lee. Exige rol `postgres`, 33 tablas públicas, la firma antigua de `registrar_checkin` y que no esté ya aplicado nada del traspaso |
-| 2 a 5 | `01` a `04_aplicar_NN_de_04.sql` | Las 29 migraciones compiladas, en orden |
-| 6 | `05_DROP_HAROLD_firma_antigua_registrar_checkin.sql` | **Lo único destructivo**: quita la firma de 6 parámetros de `registrar_checkin` que el real tiene y que la migración nueva sustituye. Solo quita una función, no toca datos. Se aplica a mano |
-| 7 | `06_verificacion.sql` | Solo lee. 18 huellas del esquema; todas deben salir `ok` |
-| 8 | `07_registro_migraciones.sql` | Paso aparte, solo tras verificar: inserta las 29 versiones en `supabase_migrations.schema_migrations` con `created_by` vacío. Repetible |
+| 2 a 16 | `01_tramo_01_de_15.sql` a `15_tramo_15_de_15.sql` | Las 29 migraciones compiladas, en orden, partidas entre sentencias en 15 tramos de 11 a 18,5 KB. Cada tramo es un solo bloque (se aplica entero o no se aplica nada), **se puede aplicar solo y repetir sin error** (si su último objeto nuevo ya existe, no hace nada), falla si falta el tramo anterior y termina con una fila `ok: tramo i de 15 aplicado` |
+| 17 | `16_DROP_HAROLD_firma_antigua_registrar_checkin.sql` | **Lo único destructivo**: quita la firma de 6 parámetros de `registrar_checkin` que el real tiene y que la migración nueva sustituye (`if exists`, repetible). Solo quita una función, no toca datos. Se aplica a mano, **justo después del tramo 15** |
+| 18 | `17_verificacion.sql` | Solo lee. 18 huellas del esquema; todas deben salir `ok` |
+| 19 | `18_registro_migraciones.sql` | Paso aparte, solo tras verificar: inserta las 29 versiones en `supabase_migrations.schema_migrations` con `created_by` vacío. Repetible |
 
-Complementos: `reversion/R01` y `R02` (reversión, solo si Gerencia lo ordena), `sembrar_iglesias_prueba.sql` (demostraciones, con la mega como `prueba-mega` porque `casa-reino` es real), `despues/programar.sql` y `despues/verificar.sql` (tarea de purga), `funciones.json` (funciones de borde con sha256 de cada archivo) y `CAMBIOS_SOBRE_LAS_MIGRACIONES.md` (las 71 diferencias entre el compilado y el texto original, una por una).
+Complementos: `reversion/R01` a `R07` (reversión, de 7 a 17 KB cada uno, solo si Gerencia lo ordena), `sembrar_iglesias_prueba.sql` (demostraciones, con la mega como `prueba-mega` porque `casa-reino` es real), `despues/programar.sql` y `despues/verificar.sql` (tarea de purga), `funciones.json` (funciones de borde con sha256 de cada archivo) y `CAMBIOS_SOBRE_LAS_MIGRACIONES.md` (las 71 diferencias entre el compilado y el texto original, una por una).
 
 **Ningún archivo de aplicación contiene `drop`, `delete from` ni `truncate`**; la comprobación es automática y falla si aparece alguno. Para lograrlo, el compilador hace cuatro cosas, todas listadas en `CAMBIOS_SOBRE_LAS_MIGRACIONES.md`: quita las guardas `drop policy/trigger/constraint if exists` de objetos que aún no existen; cuando una migración sustituye algo creado antes en la misma cadena (cuatro políticas de soporte, restricciones de evidencias, firmas de `registrar_checkin`, `adn_registrar_consentimiento` y `adn_aplicar_consentimiento`), deja solo la definición final; manda a `DROP_HAROLD` lo que reemplaza algo que el real ya tiene; y sustituye la limpieza de asistencias duplicadas (un `delete`) por una comprobación que falla si hubiera duplicados, porque el real tiene 0 asistencias.
 
@@ -51,7 +51,7 @@ El script monta en local el estado del real con datos sintéticos que imitan sus
 6. Ningún archivo de aplicación contiene una orden destructiva.
 7. La reversión devuelve el **esquema y los datos exactamente** al estado de partida.
 
-[NV] Lo que no se ha podido probar desde aquí: aplicar con la herramienta de Gerencia sobre Supabase real. Dos avisos: si la herramienta quita los comentarios del cuerpo de las funciones, la huella `b03_funciones_con_su_codigo` fallará aunque el código sea el mismo (el real ya muestra ese efecto en seis funciones); en ese caso la diferencia son solo comentarios y se comprueba por la huella del código sin comentarios. Y el archivo `01` pesa 60 KB: si la herramienta tiene un límite menor, se parte la migración por su mitad sin partir ninguna sentencia.
+[NV] Lo que no se ha podido probar desde aquí: aplicar con la herramienta de Gerencia sobre Supabase real. Dos avisos: si la herramienta quita los comentarios del cuerpo de las funciones, la huella `b03_funciones_con_su_codigo` fallará aunque el código sea el mismo (el real ya muestra ese efecto en seis funciones); en ese caso la diferencia son solo comentarios y se comprueba por la huella del código sin comentarios. Y, si la herramienta corta un tramo por su tamaño o su contenido, se repite solo ese (es repetible) y se dice cuál: no se esquiva el control.
 
 ## 3. Orden de ejecución
 
@@ -59,15 +59,15 @@ El script monta en local el estado del real con datos sintéticos que imitan sus
    **Orden decidido**: primero este traspaso, con la versión final de `trg_sembrar_roles` del repositorio (conserva `sembrar_eventos` y `sembrar_formacion` y añade `sembrar_comunicacion`); después CRM rehace sobre él sus tres PR con migraciones sin aplicar: #31 `credenciales_miembro` (`20261106020000`, que añade `sembrar_credencial` a `trg_sembrar_roles`), #35 precios (`20261116120000`) y #36 altas (`20261116130000`, apilada sobre #35). **Cuando el paquete esté aplicado y verificado, hay que avisar a CRM** (Gerencia o esta sesión): hasta entonces no puede rebasar.
 1. **Punto de restauración** del real antes de empezar (copia o PITR de Supabase) **[NV]**. Tiene datos reales mínimos, pero es lo único que no se puede rehacer.
 2. Comprobar las huellas del paquete: `sha256sum -c HUELLAS.sha256`.
-3. Aplicar `00` y exigir «ok». Después `01` a `04`, uno a uno, parando en el primer error. Después `05_DROP_HAROLD` a mano. Después `06_verificacion`: todas las filas `ok`.
-4. Desplegar las funciones de borde (apartado 4) **después** de `05_DROP_HAROLD`, porque mientras conviven las dos firmas de `registrar_checkin` una llamada de 6 argumentos sería ambigua.
+3. Aplicar `00` y exigir «ok». Después los tramos `01` a `15`, uno a uno, parando en el primer error (cada uno devuelve su fila `ok: tramo i de 15 aplicado`; si un tramo se corta, se repite solo ese). Después `16_DROP_HAROLD` a mano, sin pausa. Después `17_verificacion`: todas las filas `ok`.
+4. Desplegar las funciones de borde (apartado 4) **después** de `16_DROP_HAROLD`, porque mientras conviven las dos firmas de `registrar_checkin` una llamada de 6 argumentos sería ambigua.
 5. Sembrar demostraciones: `sembrar_iglesias_prueba.sql`.
 6. Activar `pg_cron` y `pg_net` (panel de Supabase, Database, Extensions), crear los secretos de Vault y de las funciones (apartado 5) y aplicar `despues/programar.sql`; comprobar con `despues/verificar.sql`.
 7. Apuntar Vercel (apartado 6) y redesplegar.
-8. `07_registro_migraciones.sql`, ya con todo verificado.
+8. `18_registro_migraciones.sql`, ya con todo verificado.
 9. Gerencia comprueba con `npm run check:entorno` y recorre los flujos principales. Solo entonces Harold borra `viveadn-pruebas`.
 
-**Reversión.** `reversion/R01` y `R02`, en ese orden, solo por orden de Gerencia. Si ya se había aplicado `05_DROP_HAROLD`, la reversión recrea la firma antigua de `registrar_checkin` (probado). Quitar la tarea de purga: `scripts/entorno/purga-programada/desprogramar.sql`.
+**Reversión.** `reversion/R01` a `R07`, en ese orden, solo por orden de Gerencia. Si ya se había aplicado `16_DROP_HAROLD`, la reversión recrea la firma antigua de `registrar_checkin` (probado). Quitar la tarea de purga: `scripts/entorno/purga-programada/desprogramar.sql`.
 
 ## 4. Funciones de borde
 
@@ -140,6 +140,6 @@ La rama `gerencia/contexto-2026-11-11` es la que contiene todo el trabajo; ningu
 | --- | --- |
 | Choque con las migraciones sin aplicar de CRM (#31, #35, #36), sobre todo `trg_sembrar_roles` | Se aplica primero este traspaso y CRM rebasa después; la comprobación `00` falla si el real no tiene 33 tablas o ya tiene objetos del traspaso |
 | La herramienta de aplicación quita comentarios de las funciones | La huella `b03` puede fallar solo por eso; se compara sin comentarios |
-| Entre el paso `01` y `05_DROP_HAROLD` conviven dos firmas de `registrar_checkin` | Aplicar `05_DROP_HAROLD` justo después de `04`, sin pausas, y no desplegar `checkin-evento` antes. Mientras conviven las dos firmas, una llamada del check-in QR con 6 argumentos puede fallar por ambigüedad **[H]**: es una ventana de minutos, y el real tiene 0 registros de check-in |
-| El archivo `01` pesa 60 KB | Si la herramienta tiene un límite menor, se parte por migración |
+| Entre los tramos y `16_DROP_HAROLD` conviven dos firmas de `registrar_checkin` | Aplicar `16_DROP_HAROLD` justo después del tramo 15, sin pausas, y no desplegar `checkin-evento` antes. Mientras conviven las dos firmas, una llamada del check-in QR con 6 argumentos puede fallar por ambigüedad **[H]**: es una ventana de minutos, y el real tiene 0 registros de check-in |
+| La herramienta de base de datos corta un archivo | Ninguno pasa de 20 KB. Si se corta uno, se repite solo ese tramo (es repetible) y se dice cuál para reducirlo o aislarlo; no se esquiva el control |
 | Las demostraciones nuevas aparecen en el Panel Maestro del real | Es lo pedido; con `VITE_ENTORNO=pruebas` entran en las cifras por defecto y el interruptor las saca |

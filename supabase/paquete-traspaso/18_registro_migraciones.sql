@@ -1,4 +1,4 @@
--- Vive ADN, traspaso al proyecto real, archivo 8 de 8: registro de las migraciones en supabase_migrations. PASO APARTE: solo después de que la verificación salga toda en verde.
+-- Vive ADN, traspaso al proyecto real, archivo 19 de 19: registro de las migraciones en supabase_migrations. PASO APARTE: solo después de que la verificación salga toda en verde.
 -- Anota las 29 versiones del repositorio para que el historial del proyecto real coincida con el de la rama. Solo añade filas (created_by queda vacío) y se puede repetir.
 insert into supabase_migrations.schema_migrations (version, name) values
   ('20261111120000', 'adn_ciclo_vida'),
