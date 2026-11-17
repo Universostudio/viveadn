@@ -16,10 +16,10 @@ Generado por `scripts/entorno/generar-paquete.sh`. Reproduce `scripts/entorno/mo
 | `05_aplicar_05.sql` | 57.590 | 20261111150000_adn_informes, 20261111160000_adn_comunicacion, 20261111170000_adn_panel_inicio, 20261111180000_adn_descargas_informe, 20261111190000_adn_consentimiento | Ninguno especial |
 | `06_aplicar_06.sql` | 45.676 | 20261111200000_adn_consentimiento_auditoria, 20261111210000_adn_consentimiento_evidencia, 20261111220000_adn_checkin_canales | Ninguno especial |
 | `07_aplicar_07.sql` | 56.194 | 20261111230000_adn_doble_confirmacion, 20261111240000_adn_purga_estado, 20261111250000_adn_purgas_libro, 20261111260000_adn_exportacion_paginada, 20261111270000_adn_autoservicio_datos, 20261111280000_adn_envios_topes, 20261111290000_adn_plataforma_resumen, 20261111300000_adn_checkin_nuevo_creyente, 20261111310000_adn_asistencias_unico | Ninguno especial |
-| `08_aplicar_08.sql` | 57.637 | 20261111320000_adn_seguimiento_metodos, 20261111330000_adn_seguimiento_metricas, 20261111340000_adn_seguimiento_propio, 20261111350000_adn_soporte, 20261111360000_adn_precios_plan, 20261111370000_adn_prueba_vencida_lectura, 20261111380000_adn_purga_tarea_estado, 20261111390000_adn_soporte_prueba_vencida | Ninguno especial |
+| `08_aplicar_08.sql` | 57.794 | 20261111320000_adn_seguimiento_metodos, 20261111330000_adn_seguimiento_metricas, 20261111340000_adn_seguimiento_propio, 20261111350000_adn_soporte, 20261111360000_adn_precios_plan, 20261111370000_adn_prueba_vencida_lectura, 20261111380000_adn_purga_tarea_estado, 20261111390000_adn_soporte_prueba_vencida | Ninguno especial |
 | `09_aplicar_09.sql` | 4145 | 20261111400000_adn_agregados_plataforma | Ninguno especial |
 | `99_verificacion.sql` | 6478 | Verificación del esquema (solo lectura) | Lectura del catálogo y de storage.buckets |
-| `incremental/01_aplicar_incremental.sql` | 32.121 | Incremental tras 20261111340000: 20261111350000_adn_soporte, 20261111360000_adn_precios_plan, 20261111370000_adn_prueba_vencida_lectura, 20261111380000_adn_purga_tarea_estado, 20261111390000_adn_soporte_prueba_vencida, 20261111400000_adn_agregados_plataforma | Ninguno especial |
+| `incremental/01_aplicar_incremental.sql` | 32.278 | Incremental tras 20261111340000: 20261111350000_adn_soporte, 20261111360000_adn_precios_plan, 20261111370000_adn_prueba_vencida_lectura, 20261111380000_adn_purga_tarea_estado, 20261111390000_adn_soporte_prueba_vencida, 20261111400000_adn_agregados_plataforma | Ninguno especial |
 
 ## Resultado esperado
 

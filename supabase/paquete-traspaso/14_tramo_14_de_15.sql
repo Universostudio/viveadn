@@ -114,11 +114,13 @@ grant select on public.adn_novedades_vistas to authenticated;
 grant insert (vista_en) on public.adn_novedades_vistas to authenticated;
 grant update (vista_en) on public.adn_novedades_vistas to authenticated;
 grant all on public.adn_novedades_vistas to service_role;
-create policy adn_novedades_vistas_ver on public.adn_novedades_vistas for select to authenticated using (usuario = (select auth.uid()));
+create policy adn_novedades_vistas_ver on public.adn_novedades_vistas for select to authenticated
+  using (usuario = (select auth.uid()) and iglesia_id = (select private.get_iglesia_id()));
 create policy adn_novedades_vistas_crear on public.adn_novedades_vistas for insert to authenticated
   with check (usuario = (select auth.uid()) and iglesia_id = (select private.get_iglesia_id()));
 create policy adn_novedades_vistas_cambiar on public.adn_novedades_vistas for update to authenticated
-  using (usuario = (select auth.uid())) with check (usuario = (select auth.uid()));
+  using (usuario = (select auth.uid()) and iglesia_id = (select private.get_iglesia_id()))
+  with check (usuario = (select auth.uid()) and iglesia_id = (select private.get_iglesia_id()));
 
 -- Marca las novedades como vistas ahora (con los permisos de quien llama)
 create or replace function public.adn_novedades_marcar_vistas() returns void language sql set search_path to '' as $$
@@ -225,12 +227,6 @@ returns table (nombre text, filtro text) language sql stable set search_path to 
   union all
   select 'rol_permisos', 'rol_id in (select id from public.roles where iglesia_id = $1)'
 $$;
--- ===== 20261111360000_adn_precios_plan (origen sha256 06083fc9aa73, compilado sha256 f4ddce57851b) =====
--- Precios por plan (modo de prueba). Solo añade tres columnas opcionales a planes: precio mensual y anual en céntimos y la moneda.
--- Quedan VACÍAS: los valores los fija quien opera la plataforma cuando estén validados (hoy son una propuesta pendiente), y mientras estén vacías el panel
--- lo dice en vez de inventar un precio. No cobra nada ni conecta ninguna pasarela. Reversión: reversiones/20261111360000_adn_precios_plan.down.sql.
-alter table public.planes add column if not exists precio_mensual_centimos integer;
-alter table public.planes add column if not exists precio_anual_centimos integer;
 $cuerpo$;
 end $tramo$;
 select 'ok: tramo 14 de 15 aplicado' as resultado, (to_regprocedure('public.adn_aviso_entregar(uuid)') is not null) as comprobado;

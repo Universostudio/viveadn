@@ -1,5 +1,5 @@
 import { createClient } from 'npm:@supabase/supabase-js@2'
-import { claveCronValida, construirCorreo } from './correo.ts'
+import { iguales_en_tiempo_constante, construirCorreo } from './correo.ts'
 
 // Envío de los correos de confirmación de la suscripción (doble confirmación del registro por QR).
 // TODO ESTÁ APAGADO POR DEFECTO, con tres cerrojos independientes:
@@ -12,10 +12,20 @@ import { claveCronValida, construirCorreo } from './correo.ts'
 // List-Unsubscribe y List-Unsubscribe-Post; en `marketing` Bird pone las suyas. Por eso este envío fija category 'transactional'.
 // [NV] Que Gmail y Outlook muestren el botón de baja con este envío real no está comprobado: solo se puede ver con un buzón de pruebas.
 
+// Tope del cuerpo: se mide lo declarado y lo leido, y se responde 413 antes de interpretarlo.
+const MAX_CUERPO = 1 * 1024
+const leerCuerpo = async (req: Request): Promise<string | null> => {
+  if (Number(req.headers.get('content-length') ?? 0) > MAX_CUERPO) return null
+  const texto = await req.text()
+  return new TextEncoder().encode(texto).length > MAX_CUERPO ? null : texto
+}
+
 Deno.serve(async (req) => {
   const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } })
   if (req.method !== 'POST') return json({ error: 'Metodo no permitido' }, 405)
-  if (!(await claveCronValida(req.headers.get('x-adn-cron'), Deno.env.get('ADN_CRON_SECRET')))) return json({ error: 'Sin permiso' }, 403)
+  if (!(await iguales_en_tiempo_constante(req.headers.get('x-adn-cron'), Deno.env.get('ADN_CRON_SECRET')))) return json({ error: 'Sin permiso' }, 403)
+  // La tarea programada manda un cuerpo vacio o {}; se lee con tope y no se usa
+  if ((await leerCuerpo(req)) === null) return json({ error: 'Cuerpo demasiado grande' }, 413)
   if (Deno.env.get('ADN_CONFIRMACION_ACTIVA') !== '1') return json({ activo: false })
 
   const clave = Deno.env.get('BIRD_API_KEY')

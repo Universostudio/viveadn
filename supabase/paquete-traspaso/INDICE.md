@@ -19,11 +19,11 @@ Generado por `scripts/entorno/generar-traspaso.sh`. Lleva el real, que tiene las
 | 11 de 19 | `10_tramo_10_de_15.sql` | 16.634 | `fad16126208b2204` | tramo 10 de 15: adn_autoservicio_datos, adn_envios_topes |
 | 12 de 19 | `11_tramo_11_de_15.sql` | 14.425 | `58312144d9da5b31` | tramo 11 de 15: adn_plataforma_resumen, adn_checkin_nuevo_creyente, adn_asistencias_unico |
 | 13 de 19 | `12_tramo_12_de_15.sql` | 16.516 | `ab745408ad90615d` | tramo 12 de 15: adn_seguimiento_metodos, adn_seguimiento_metricas |
-| 14 de 19 | `13_tramo_13_de_15.sql` | 16.181 | `5e0b3283c67d3fef` | tramo 13 de 15: adn_seguimiento_propio, adn_soporte |
-| 15 de 19 | `14_tramo_14_de_15.sql` | 16.797 | `6a9cc02fe3268648` | tramo 14 de 15: adn_precios_plan |
-| 16 de 19 | `15_tramo_15_de_15.sql` | 11.934 | `4aaed5ec2a395f36` | tramo 15 de 15: adn_prueba_vencida_lectura, adn_purga_tarea_estado, adn_soporte_prueba_vencida, adn_agregados_plataforma |
+| 14 de 19 | `13_tramo_13_de_15.sql` | 16.181 | `652204526c31e550` | tramo 13 de 15: adn_seguimiento_propio, adn_soporte |
+| 15 de 19 | `14_tramo_14_de_15.sql` | 16.237 | `dc1cc7e23690c36b` | tramo 14 de 15:  |
+| 16 de 19 | `15_tramo_15_de_15.sql` | 12.651 | `1cd5f266c2229049` | tramo 15 de 15: adn_precios_plan, adn_prueba_vencida_lectura, adn_purga_tarea_estado, adn_soporte_prueba_vencida, adn_agregados_plataforma |
 | 17 de 19 | `16_DROP_HAROLD_firma_antigua_registrar_checkin.sql` | 962 | `410cc63a8b372ed3` | DROP_HAROLD: quita la firma antigua de registrar_checkin (única orden destructiva) |
-| 18 de 19 | `17_verificacion.sql` | 6470 | `6a6e938470e05c2b` | Verificación del esquema (solo lectura) |
+| 18 de 19 | `17_verificacion.sql` | 6470 | `5155d37d6c639f61` | Verificación del esquema (solo lectura) |
 | 19 de 19 | `18_registro_migraciones.sql` | 1891 | `4f298eafcb76b9a2` | Registro de las migraciones en supabase_migrations (paso aparte, tras verificar) |
 
 1. Aplicar los archivos en orden, uno a uno, ninguno de más de 20 KB. Cada tramo se puede aplicar solo y **repetir sin error** (si ya está aplicado, no hace nada) y falla si falta el tramo anterior. **Detenerse en el primer error** y avisar con el texto del error: cada tramo es un solo bloque, así que o se aplica entero o no se aplica nada.

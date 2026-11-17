@@ -19,6 +19,8 @@ const corsPara = (req: Request) => {
   }
 }
 
+const MAX_CUERPO = 4096
+
 Deno.serve(async (req) => {
   const cors = corsPara(req)
   const json = (body: unknown, status = 200) =>
@@ -45,7 +47,13 @@ Deno.serve(async (req) => {
     const { data: sedes } = await admin.from('iglesias')
       .select('id, nombre, pais, ciudad, activa, red_acceso').eq('iglesia_madre_id', perfil.iglesia_id).order('nombre')
     if (!sedes?.length) return json({ sedes: [], propia: null, totales: null, total: 0 })
-    const cuerpo = await req.clone().json().catch(() => ({}))
+    // Cuerpo con tope: se mira el tamano declarado y el real, y solo se acepta un objeto JSON
+    const declarado = Number(req.headers.get('content-length') ?? '0')
+    if (declarado > MAX_CUERPO) return json({ error: 'Solicitud demasiado grande' }, 413)
+    const bruto = await req.text()
+    if (bruto.length > MAX_CUERPO) return json({ error: 'Solicitud demasiado grande' }, 413)
+    let cuerpo: Record<string, unknown> = {}
+    try { const j = JSON.parse(bruto); if (typeof j === 'object' && j !== null && !Array.isArray(j)) cuerpo = j } catch { /* cuerpo vacio o roto: se trata como vacio */ }
     // Para decidir si se muestra el menu basta con saber cuantas sedes hay
     if (cuerpo?.solo_contar === true) return json({ total: sedes.length })
 

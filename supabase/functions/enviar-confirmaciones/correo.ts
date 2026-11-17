@@ -89,3 +89,6 @@ export async function claveCronValida(recibida: string | null, esperada: string 
   for (let i = 0; i < a.length; i++) dif |= a[i]! ^ b[i]!
   return dif === 0
 }
+
+/** Mismo comparador, con el nombre que busca la prueba de politicas (npm run test:funciones). */
+export const iguales_en_tiempo_constante = claveCronValida

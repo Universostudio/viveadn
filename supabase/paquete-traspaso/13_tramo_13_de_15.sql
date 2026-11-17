@@ -149,7 +149,7 @@ create or replace function public.adn_seguimiento_en_uso(p_metodo uuid) returns 
 $$;
 revoke all on function public.adn_seguimiento_en_uso(uuid) from public, anon, authenticated, service_role;
 grant execute on function public.adn_seguimiento_en_uso(uuid) to authenticated, service_role;
--- ===== 20261111350000_adn_soporte (origen sha256 000cd3949bf1, compilado sha256 631a1c94630f) =====
+-- ===== 20261111350000_adn_soporte (origen sha256 dddf06b599e8, compilado sha256 88c62c62458b) =====
 -- Soporte dentro de la plataforma, sin servicios externos de pago. Tres piezas independientes:
 --  (a) Tickets: la iglesia (quien puede configurarla, iglesia.configurar) abre un ticket con asunto, texto y prioridad y sigue su conversación; la plataforma
 --      lo ve, responde y cierra desde la función de borde (service_role). Una iglesia solo ve los suyos.

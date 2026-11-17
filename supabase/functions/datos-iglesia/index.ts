@@ -11,6 +11,14 @@ import { avisoBaja, enviarAviso, IDIOMAS, leerConfig, type ResultadoEnvio, type 
 const ORIGENES_EXTRA = (Deno.env.get('ADN_ORIGENES_EXTRA') ?? '').split(',').map(s => s.trim()).filter(s => /^https:\/\/[a-z0-9]([a-z0-9.-]*[a-z0-9])?(:\d{1,5})?$/.test(s)).slice(0, 10)
 const ORIGENES_PERMITIDOS = ['https://viveadn.com', 'https://www.viveadn.com', 'https://viveadn-web-app.vercel.app', ...ORIGENES_EXTRA, 'http://localhost:5173']
 
+// Tope del cuerpo: se mide lo declarado y lo leido, y se responde 413 antes de interpretarlo.
+const MAX_CUERPO = 16 * 1024
+const leerCuerpo = async (req: Request): Promise<string | null> => {
+  if (Number(req.headers.get('content-length') ?? 0) > MAX_CUERPO) return null
+  const texto = await req.text()
+  return new TextEncoder().encode(texto).length > MAX_CUERPO ? null : texto
+}
+
 const corsPara = (req: Request) => {
   const origen = req.headers.get('Origin') ?? ''
   return {
@@ -46,7 +54,10 @@ Deno.serve(async (req) => {
     const iglesiaId: string | null = perfil?.iglesia_id ?? null
     if (!iglesiaId) return json({ error: 'Solo el propietario de la iglesia puede hacerlo' }, 403)
 
-    const body = await req.json().catch(() => ({}))
+    const cuerpo = await leerCuerpo(req)
+    if (cuerpo === null) return json({ error: 'Cuerpo demasiado grande' }, 413)
+    let body: Record<string, any> = {}
+    try { body = JSON.parse(cuerpo || '{}') ?? {} } catch { /* cuerpo no valido: se trata como vacio */ }
     const falloDe = (mensaje: string | undefined) => { const e = errorDeAutoservicio(mensaje); return json({ error: e.mensaje }, e.estado) }
 
     // Cada entrada comprueba otra vez que quien llama es el propietario activo: una cuenta desactivada pierde el acceso al instante

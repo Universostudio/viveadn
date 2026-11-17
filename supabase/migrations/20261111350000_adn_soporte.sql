@@ -151,13 +151,15 @@ grant insert (vista_en) on public.adn_novedades_vistas to authenticated;
 grant update (vista_en) on public.adn_novedades_vistas to authenticated;
 grant all on public.adn_novedades_vistas to service_role;
 drop policy if exists adn_novedades_vistas_ver on public.adn_novedades_vistas;
-create policy adn_novedades_vistas_ver on public.adn_novedades_vistas for select to authenticated using (usuario = (select auth.uid()));
+create policy adn_novedades_vistas_ver on public.adn_novedades_vistas for select to authenticated
+  using (usuario = (select auth.uid()) and iglesia_id = (select private.get_iglesia_id()));
 drop policy if exists adn_novedades_vistas_crear on public.adn_novedades_vistas;
 create policy adn_novedades_vistas_crear on public.adn_novedades_vistas for insert to authenticated
   with check (usuario = (select auth.uid()) and iglesia_id = (select private.get_iglesia_id()));
 drop policy if exists adn_novedades_vistas_cambiar on public.adn_novedades_vistas;
 create policy adn_novedades_vistas_cambiar on public.adn_novedades_vistas for update to authenticated
-  using (usuario = (select auth.uid())) with check (usuario = (select auth.uid()));
+  using (usuario = (select auth.uid()) and iglesia_id = (select private.get_iglesia_id()))
+  with check (usuario = (select auth.uid()) and iglesia_id = (select private.get_iglesia_id()));
 
 -- Marca las novedades como vistas ahora (con los permisos de quien llama)
 create or replace function public.adn_novedades_marcar_vistas() returns void language sql set search_path to '' as $$

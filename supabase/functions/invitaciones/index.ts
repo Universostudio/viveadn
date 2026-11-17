@@ -92,6 +92,8 @@ function claveValida(p: string, email: string) {
   return null
 }
 
+const MAX_CUERPO = 4096
+
 Deno.serve(async (req) => {
   const cors = corsPara(req)
   const json = (body: unknown, status = 200) =>
@@ -104,7 +106,13 @@ Deno.serve(async (req) => {
     const anon = Deno.env.get('SUPABASE_ANON_KEY')!
     const service = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     const admin = createClient(url, service, { auth: { persistSession: false, autoRefreshToken: false } })
-    const body = await req.json().catch(() => ({}))
+    // Cuerpo con tope: se mira el tamano declarado y el real, y solo se acepta un objeto JSON (nada de listas ni null)
+    const declarado = Number(req.headers.get('content-length') ?? '0')
+    if (declarado > MAX_CUERPO) return json({ error: 'Solicitud demasiado grande' }, 413)
+    const bruto = await req.text()
+    if (bruto.length > MAX_CUERPO) return json({ error: 'Solicitud demasiado grande' }, 413)
+    let body: Record<string, any> = {}
+    try { const j = JSON.parse(bruto); if (typeof j === 'object' && j !== null && !Array.isArray(j)) body = j } catch { /* cuerpo vacio o roto: se trata como vacio */ }
     const origenCrudo = req.headers.get('Origin') ?? ''
     const origen = ORIGENES_INVITACION.includes(origenCrudo) ? origenCrudo : ORIGENES_INVITACION[0]
 

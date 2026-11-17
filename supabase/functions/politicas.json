@@ -1,0 +1,72 @@
+{
+  "_nota": "Fuente de verdad del acceso a cada funcion de borde. verify_jwt no vive en el repositorio sino en el despliegue: al desplegar una funcion hay que pasar exactamente ese valor. Una funcion con verify_jwt false es publica de verdad y debe declarar en autenticacion_sin_jwt como se identifica quien llama: token_en_enlace (un token secreto y largo en el enlace), sesion_dentro (valida la sesion dentro con auth.getUser) o secreto_de_servidor (una tarea programada que manda un secreto compartido). sin_navegador true marca una funcion que solo llama otro servidor y no necesita lista de origenes. scripts/probar-funciones-borde.mts comprueba que cada carpeta tenga entrada y las invariantes de seguridad.",
+  "baja": {
+    "verify_jwt": false,
+    "acceso": "persona que recibe un mensaje, sin sesion",
+    "motivo": "La persona no tiene sesion: el enlace lleva un secreto de 244 bits y la base guarda solo su huella; solo acepta POST y la respuesta no revela nada de la persona ni de la iglesia.",
+    "autenticacion_sin_jwt": [
+      "token_en_enlace"
+    ]
+  },
+  "checkin-evento": {
+    "verify_jwt": true,
+    "acceso": "visitante con el QR de un evento",
+    "motivo": "Se identifica con el token del QR; la clave anonima de la web basta para llegar."
+  },
+  "confirmar-suscripcion": {
+    "verify_jwt": false,
+    "acceso": "persona que confirma su suscripcion, sin sesion",
+    "motivo": "La persona no tiene sesion: el enlace del correo lleva un secreto largo de un solo uso y la base guarda solo su huella; la respuesta no revela datos de la persona.",
+    "autenticacion_sin_jwt": [
+      "token_en_enlace"
+    ]
+  },
+  "dar-publico": {
+    "verify_jwt": true,
+    "acceso": "visitante",
+    "motivo": "Lee solo fondos y apariencia de una iglesia activa, sin datos de personas."
+  },
+  "datos-iglesia": {
+    "verify_jwt": true,
+    "acceso": "propietario de una iglesia con sesion",
+    "motivo": "Valida dentro de la funcion la sesion y que quien llama es el propietario activo de su iglesia; exporta y da de baja solo los datos de esa iglesia."
+  },
+  "enviar-confirmaciones": {
+    "verify_jwt": false,
+    "acceso": "tarea programada del servidor",
+    "motivo": "Solo la llama la tarea programada con un secreto compartido (cabecera x-adn-cron) que se compara en tiempo constante; sin el secreto responde 403 y esta apagada por defecto.",
+    "autenticacion_sin_jwt": [
+      "secreto_de_servidor"
+    ],
+    "sin_navegador": true
+  },
+  "invitaciones": {
+    "verify_jwt": false,
+    "acceso": "persona invitada sin sesion, y usuarios autenticados",
+    "motivo": "La persona invitada no tiene sesion: las acciones publicas (consultar y aceptar) se identifican con el token del enlace, y las autenticadas (crear, reenviar y revocar) validan al usuario dentro de la funcion con auth.getUser.",
+    "autenticacion_sin_jwt": [
+      "token_en_enlace",
+      "sesion_dentro"
+    ]
+  },
+  "plataforma": {
+    "verify_jwt": true,
+    "acceso": "administrador de la plataforma",
+    "motivo": "Valida dentro de la funcion que quien llama es administrador de la plataforma."
+  },
+  "red-resumen": {
+    "verify_jwt": true,
+    "acceso": "superadministrador de una iglesia madre",
+    "motivo": "Solo devuelve conteos agregados de las sedes autorizadas."
+  },
+  "registro-iglesia": {
+    "verify_jwt": true,
+    "acceso": "visitante con codigo de beta",
+    "motivo": "Alta de iglesia con codigo de un solo uso, limite de intentos y respuesta identica para un correo existente."
+  },
+  "verificar-certificado": {
+    "verify_jwt": true,
+    "acceso": "visitante con el codigo de un certificado",
+    "motivo": "Codigo de 128 bits; devuelve solo estado, iglesia, programa, fecha y el titular reducido."
+  }
+}

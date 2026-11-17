@@ -83,7 +83,9 @@ El real tiene 7 (`dar-publico` v2, `verificar-certificado` v1, `checkin-evento` 
 | `baja` | no existe | Desplegar | **no** (enlace público) |
 | `dar-publico`, `verificar-certificado`, `registro-iglesia`, `red-resumen` | existen | Comparar el sha256 con `funciones.json`; redesplegar solo si difiere | sí |
 
-La función `plataforma` que se redespliega ya lee el cuerpo como texto con tope de 32 KB: responde 413 si el tamaño declarado o el real lo supera y 400 si no es un objeto JSON (`leerCuerpoJson`, con prueba). Si CRM exige entradas en `supabase/functions/politicas.json` para las funciones nuevas (`datos-iglesia` con `verify_jwt` sí; `baja`, `confirmar-suscripcion` y `enviar-confirmaciones` sin JWT, con su motivo), ese archivo no existe en esta rama: hay que acordar con ella su formato.
+La función `plataforma` que se redespliega ya lee el cuerpo como texto con tope de 32 KB: responde 413 si el tamaño declarado o el real lo supera y 400 si no es un objeto JSON (`leerCuerpoJson`, con prueba). `supabase/functions/politicas.json` ya está en esta rama, con el formato de CRM (rama `seg/superficie-y-funciones`, fusionada): `datos-iglesia` con `verify_jwt` sí; `baja` y `confirmar-suscripcion` sin JWT con `token_en_enlace`; `enviar-confirmaciones` sin JWT con `secreto_de_servidor` y `sin_navegador`. Esas cuatro funciones leen el cuerpo con `req.text()` y un tope (`MAX_CUERPO`, 4 KB; 16 KB en `datos-iglesia`; 1 KB en `enviar-confirmaciones`) y responden 413 si lo declarado o lo leído lo supera. `npm run test:funciones` pasa con las 11 funciones. Al desplegar, `verify_jwt` debe ser exactamente el de `politicas.json` y `funciones.json`.
+Cambió también la política de `adn_novedades_vistas` (ahora filtra además por iglesia, regla nueva de CRM en `permisos.sql`): está en la migración 350000, ya recompilada en los tramos 13 y 14.
+
 | `invitaciones` | v3 | Redesplegar solo si su sha256 difiere. **`verify_jwt` se queda en `false`**: es a propósito (acciones públicas con token; las autenticadas validan con `auth.getUser`). El manifiesto ya lo refleja | **no** |
 
 ## 5. Vault, secretos y tarea programada

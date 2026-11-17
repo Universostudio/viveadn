@@ -14,6 +14,14 @@ import { leerPeticion } from './entrada.ts'
 const ORIGENES_EXTRA = (Deno.env.get('ADN_ORIGENES_EXTRA') ?? '').split(',').map(s => s.trim()).filter(s => /^https:\/\/[a-z0-9]([a-z0-9.-]*[a-z0-9])?(:\d{1,5})?$/.test(s)).slice(0, 10)
 const ORIGENES_PERMITIDOS = ['https://viveadn.com', 'https://www.viveadn.com', 'https://viveadn-web-app.vercel.app', 'http://localhost:5173', ...ORIGENES_EXTRA]
 
+// Tope del cuerpo: se mide lo declarado y lo leido, y se responde 413 antes de interpretarlo.
+const MAX_CUERPO = 4 * 1024
+const leerCuerpo = async (req: Request): Promise<string | null> => {
+  if (Number(req.headers.get('content-length') ?? 0) > MAX_CUERPO) return null
+  const texto = await req.text()
+  return new TextEncoder().encode(texto).length > MAX_CUERPO ? null : texto
+}
+
 const corsPara = (req: Request) => {
   const origen = req.headers.get('Origin') ?? ''
   return {
@@ -32,7 +40,9 @@ Deno.serve(async (req) => {
   if (req.method !== 'POST') return json({ error: 'Metodo no permitido' }, 405)
 
   try {
-    const peticion = leerPeticion(req.url, req.headers.get('Content-Type'), await req.text())
+    const cuerpo = await leerCuerpo(req)
+    if (cuerpo === null) return json({ error: 'Cuerpo demasiado grande' }, 413)
+    const peticion = leerPeticion(req.url, req.headers.get('Content-Type'), cuerpo)
     if (!peticion) return json({ ok: false, motivo: 'invalido' }, new URL(req.url).searchParams.has('t') ? 400 : 200)
     const { token, modo } = peticion
 

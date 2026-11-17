@@ -29,6 +29,11 @@ Estado verificado en producción el 5 de noviembre de 2026 (proyecto `viveadn-sa
 | Aislamiento entre iglesias | `aislamiento.sql` | CI |
 | Aislamiento total con dos usuarios: lectura, modificación, borrado e inserción sobre todas las tablas con `iglesia_id`, funciones, informes, envío, importación y claves foráneas | `adn_aislamiento_total.sql` (dentro de `exportacion/origen.sql`) | CI |
 | El mismo aislamiento a través de la API (PostgREST) | `aislamiento_api.sh` y `aislamiento_api.py` | Manual, ver `docs/AISLAMIENTO.md` |
+| Ni visitantes ni usuarios tienen `TRUNCATE`, `REFERENCES` ni `TRIGGER` | `permisos.sql`: `TRUNCATE` se salta la seguridad por filas | CI |
+| Toda función privilegiada que un usuario puede ejecutar comprueba permiso o iglesia | `permisos.sql`: debe usar `tiene_permiso`, `get_iglesia_id` o `auth.uid` | CI |
+| Toda política de una tabla de iglesia filtra por iglesia | `permisos.sql`: debe usar `get_iglesia_id` | CI |
+| Las funciones de `public` que un usuario puede ejecutar fijan `search_path` | `permisos.sql` | CI |
+| Cada función de borde tiene su política de acceso versionada y cuerpo con tope | `supabase/functions/politicas.json` y `npm run test:funciones` | CI |
 
 ## 3. Únicas vías entre iglesias
 
@@ -42,6 +47,8 @@ Todo lo que cruza iglesias pasa por una función de borde con `service_role`, qu
 | `checkin-evento` | Visitante con el QR de un evento | Registro de asistencia, con respuesta idéntica para nuevo y existente |
 | `registro-iglesia` | Visitante con código de beta | Alta de una iglesia y su superadministrador |
 | `invitaciones` | Persona invitada | Aceptar una invitación (pública por diseño) |
+
+La política de acceso de cada función vive en [`supabase/functions/politicas.json`](../supabase/functions/politicas.json): si lleva `verify_jwt` y por qué. `verify_jwt` no se guarda en el repositorio sino en el despliegue, así que al desplegar una función hay que pasar exactamente ese valor. `npm run test:funciones` comprueba sobre el código que cada carpeta tenga su entrada, que solo `invitaciones` vaya sin `verify_jwt` (con su motivo), que ninguna use CORS con comodín, que ninguna devuelva al cliente el mensaje interno de un error, que las URL de redirección salgan de una lista y que el cuerpo se lea con tope de tamaño. Una excepción conocida (`plataforma`, solo administradores con sesión) está declarada en esa prueba y debe desaparecer en su próximo despliegue.
 
 ## 4. Brechas, por prioridad
 

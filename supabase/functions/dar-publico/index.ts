@@ -24,6 +24,8 @@ const COLOR_RE = /^#[0-9a-fA-F]{6}$/
 const ORIGINALES: Record<string, number> = { diezmo: 1, ofrenda: 2, donacion: 3 }
 const POR_DEFECTO = { plantilla: 'clasica', titulo: null, subtitulo: null, color_primario: '#00523c', color_acento: '#f5a623', logo_url: null, calculadora: 'dia', moneda: 'EUR' }
 
+const MAX_CUERPO = 4096
+
 Deno.serve(async (req) => {
   const cors = corsPara(req)
   const json = (body: unknown, status = 200) =>
@@ -32,7 +34,13 @@ Deno.serve(async (req) => {
   if (req.method !== 'POST') return json({ error: 'Metodo no permitido' }, 405)
 
   try {
-    const body = await req.json().catch(() => ({}))
+    // Cuerpo con tope: se mira el tamano declarado y el real, y solo se acepta un objeto JSON (nada de listas ni null)
+    const declarado = Number(req.headers.get('content-length') ?? '0')
+    if (declarado > MAX_CUERPO) return json({ error: 'Solicitud demasiado grande' }, 413)
+    const bruto = await req.text()
+    if (bruto.length > MAX_CUERPO) return json({ error: 'Solicitud demasiado grande' }, 413)
+    let body: Record<string, any> = {}
+    try { const j = JSON.parse(bruto); if (typeof j === 'object' && j !== null && !Array.isArray(j)) body = j } catch { /* cuerpo vacio o roto: se trata como vacio */ }
     const slug = String(body.slug ?? '').trim().toLowerCase()
     const noDisponible = () => json({ error: 'Esta pagina no esta disponible' }, 404)
     if (!SLUG_RE.test(slug)) return noDisponible()

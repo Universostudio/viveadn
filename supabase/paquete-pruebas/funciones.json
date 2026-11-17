@@ -13,8 +13,8 @@
         },
         {
           "ruta": "index.ts",
-          "bytes": 3406,
-          "sha256": "4f0307c7babdd361d0164121ad9ac2e8bd63f0e77da524807d496d3532f247bb"
+          "bytes": 3900,
+          "sha256": "d0e6637dc502f0b0a7583b31a89cae9985c1ea22835bbe3f3b890b7578420c28"
         }
       ]
     },
@@ -44,8 +44,8 @@
       "archivos": [
         {
           "ruta": "index.ts",
-          "bytes": 2934,
-          "sha256": "cad627279d2240f6508e0d25b32b1ea85ee2beab53ee4303c171f8c002d73205"
+          "bytes": 3531,
+          "sha256": "7bb7add7212c3d59d95039acf9af51985ed7be1fff6af04cdfc9912abdd1c232"
         }
       ]
     },
@@ -57,8 +57,8 @@
       "archivos": [
         {
           "ruta": "index.ts",
-          "bytes": 4011,
-          "sha256": "2f326228b302ee90aba2ae58cad268311e3b57da4252f71f669a5b4fa271cdff"
+          "bytes": 4601,
+          "sha256": "7edb79c502e94135421e8a19a7adaedc002a6bd9a5bb722135036234461d0198"
         }
       ]
     },
@@ -80,8 +80,8 @@
         },
         {
           "ruta": "index.ts",
-          "bytes": 9700,
-          "sha256": "f5270ddeffa3dc095f14aa5f9406f5623880380a40f8b8ac5460749fa537cec4"
+          "bytes": 10298,
+          "sha256": "bd85d1fe0474248daf5c9278e5a92deade01161e8ff2b4e915a05facc58ff0a4"
         }
       ]
     },
@@ -93,13 +93,13 @@
       "archivos": [
         {
           "ruta": "correo.ts",
-          "bytes": 6934,
-          "sha256": "f4005b5f77a7163c8ee9e6c946c30ef5bc2e4aee832a8264f8b256355f97eee4"
+          "bytes": 7092,
+          "sha256": "57c78111b3a9c82d1d70bced5f2a9a714ca7eb57d6c1ddebe8a7029edd6c724c"
         },
         {
           "ruta": "index.ts",
-          "bytes": 4236,
-          "sha256": "c501d8d315b997e7e93849329dd7a90002d07ff735cbdd88f62681aee454d020"
+          "bytes": 4819,
+          "sha256": "95b541730e95ea2f4ec6eeac8d478982486368fccdb61ccf4236f05ba9eff520"
         }
       ]
     },
@@ -111,8 +111,8 @@
       "archivos": [
         {
           "ruta": "index.ts",
-          "bytes": 18217,
-          "sha256": "b21d5b8cf4722665bb6b024860877a0c63439ce44130d09c4621e838637a7717"
+          "bytes": 18807,
+          "sha256": "729c23fa67876fa26a205479a37afb63fed0ae83effd6912f56e74763f187662"
         }
       ]
     },
@@ -167,8 +167,8 @@
       "archivos": [
         {
           "ruta": "index.ts",
-          "bytes": 4831,
-          "sha256": "9727f0c17cc7f47e49e46b32277bd34f431c1a763ffc3b41ed80475c6958513c"
+          "bytes": 5394,
+          "sha256": "f841d3be67844b710818df823927bf099b5e5c197eee01279cd3c710a72ff8b9"
         }
       ]
     },

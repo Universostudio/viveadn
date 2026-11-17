@@ -7,6 +7,12 @@ begin
   if not (to_regprocedure('public.adn_aviso_entregar(uuid)') is not null) then raise exception 'Falta aplicar antes el tramo 14 de 15: no se sigue.'; end if;
   execute $cuerpo$
 
+-- ===== 20261111360000_adn_precios_plan (origen sha256 06083fc9aa73, compilado sha256 f4ddce57851b) =====
+-- Precios por plan (modo de prueba). Solo añade tres columnas opcionales a planes: precio mensual y anual en céntimos y la moneda.
+-- Quedan VACÍAS: los valores los fija quien opera la plataforma cuando estén validados (hoy son una propuesta pendiente), y mientras estén vacías el panel
+-- lo dice en vez de inventar un precio. No cobra nada ni conecta ninguna pasarela. Reversión: reversiones/20261111360000_adn_precios_plan.down.sql.
+alter table public.planes add column if not exists precio_mensual_centimos integer;
+alter table public.planes add column if not exists precio_anual_centimos integer;
 alter table public.planes add column if not exists moneda text;
 alter table public.planes add constraint adn_planes_precio_coherente check (
   (precio_mensual_centimos is null or precio_mensual_centimos between 0 and 10000000)
